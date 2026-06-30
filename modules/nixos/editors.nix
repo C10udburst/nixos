@@ -12,10 +12,11 @@ in {
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      gimp
+      gimp3-with-plugins
       inkscape
       kdePackages.kdenlive
       audacity
+      imagemagick
     ];
   };
 }

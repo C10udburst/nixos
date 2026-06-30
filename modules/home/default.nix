@@ -10,6 +10,7 @@
     ./user.nix
     ./starship.nix
     ./tailscale.nix
+    ./shell.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -24,5 +25,6 @@
     plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
     llm.enable = lib.mkDefault (config.hostSettings.llm or false);
     tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
+    shell.enable = lib.mkDefault true;
   };
 }

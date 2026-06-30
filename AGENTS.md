@@ -12,7 +12,6 @@ This repository contains the **`nixos-managing`** skill — a structured set of 
    - `image-building.md` — ISO, VM, disk images
    - `impermanence.md` — ephemeral root, wipe-on-boot
    - `luks.md` — disk encryption, remote unlock (SSH, Tailscale)
-   - `monitoring.md` — health checks and alerting
    - `anti-patterns.md` — common mistakes
 3. Verify every NixOS option before suggesting it (the skill includes guidance on this — `search.nixos.org/options` is always available).
 4. Ask the user about the execution context (local NixOS host vs. remote deploy from macOS/Linux) before suggesting commands.

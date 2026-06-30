@@ -23,6 +23,9 @@
   fuse = true;
   office = true;
   latex = true;
+  appimage = true;
+  nettools = true;
+  obs = true;
 
   # Home-Manager-only modules
   git = true;

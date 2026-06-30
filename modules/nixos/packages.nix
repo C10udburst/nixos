@@ -20,17 +20,11 @@ in {
         file
         curl
         wget
-        dnsutils
         openssh
-        nettools
-        traceroute
-        nmap
         tmux
         fastfetch
         libnotify
         gparted
-        jmtpfs
-        android-file-transfer
         haruna
         ffmpeg
         yt-dlp

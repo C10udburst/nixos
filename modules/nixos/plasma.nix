@@ -26,12 +26,18 @@ in {
 
     # Enable Xwayland
     programs.xwayland.enable = true;
+    programs.kdeconnect.enable = true;
+
+    # Mouse acceleration - flat/none profile (often preferred for Windows-like feel)
+    services.libinput.mouse.accelProfile = "flat";
+    services.libinput.mouse.accelSpeed = "0";
 
     environment.systemPackages = with pkgs; [
       kdePackages.plasma-systemmonitor
       kdePackages.kwalletmanager
       kdePackages.kmix
       kdePackages.ksystemlog
+      kdePackages.kdeconnect-kde
     ];
   };
 }

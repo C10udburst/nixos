@@ -1,0 +1,23 @@
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.systemSettings.nettools;
+in {
+  options.systemSettings.nettools = {
+    enable = lib.mkEnableOption "Enable network tools (netcat, nmap, etc.)";
+  };
+
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      netcat-gnu
+      nmap
+      dnsutils
+      traceroute
+      nettools
+      wireshark
+    ];
+  };
+}

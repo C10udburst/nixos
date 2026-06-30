@@ -17,6 +17,11 @@ in {
           requests
           pandas
           torch
+          numpy
+          ipython
+          matplotlib
+          scipy
+          scikit-learn
         ]))
     ];
   };

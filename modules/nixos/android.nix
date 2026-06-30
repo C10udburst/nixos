@@ -14,6 +14,8 @@ in {
     environment.systemPackages = with pkgs; [
       scrcpy
       android-tools
+      jmtpfs
+      android-file-transfer
     ];
   };
 }

@@ -14,6 +14,9 @@ in {
     environment.systemPackages = with pkgs; [
       libreoffice-qt
       karp
+      poppler-utils
+      pandoc
+      pdfgrep
     ];
   };
 }
