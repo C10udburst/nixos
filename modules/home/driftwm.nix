@@ -5,7 +5,7 @@
   ...
 }:
 with lib; let
-  cfg = config.features.driftwm;
+  cfg = config.homeSettings.driftwm;
   # Note: Requires driftwm flake input available
   driftwmPkg = pkgs.driftwm or (throw "driftwm package not found");
 
@@ -57,7 +57,7 @@ with lib; let
   row3 = row2 - ws.stats.h / 2 - wGap - ws.canvas.h / 2;
   i = toString;
 in {
-  options.features.driftwm = {
+  options.homeSettings.driftwm = {
     enable = mkEnableOption "driftwm";
   };
 
@@ -67,8 +67,8 @@ in {
       pkgs.swaynotificationcenter
       pkgs.swayosd
       pkgs.tofi
-      pkgs.konsole
-      pkgs.dolphin
+      pkgs.kdePackages.konsole
+      pkgs.kdePackages.dolphin
       pkgs.grim
       pkgs.slurp
     ];
