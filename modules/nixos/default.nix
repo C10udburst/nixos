@@ -31,6 +31,7 @@
     ./appimage.nix
     ./nettools.nix
     ./obs.nix
+    ./hevel.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -68,5 +69,6 @@
     appimage.enable = lib.mkDefault (config.hostSettings.appimage or false);
     nettools.enable = lib.mkDefault (config.hostSettings.nettools or false);
     obs.enable = lib.mkDefault (config.hostSettings.obs or false);
+    hevel.enable = lib.mkDefault (config.hostSettings.hevel or false);
   };
 }

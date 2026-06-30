@@ -26,6 +26,7 @@
   appimage = true;
   nettools = true;
   obs = true;
+  hevel = true;
 
   # Home-Manager-only modules
   git = true;

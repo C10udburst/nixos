@@ -38,5 +38,10 @@
 
     pi-agent.url = "github:lukasl-dev/pi-mono.nix";
     antigravity-nix.url = "github:jacopone/antigravity-nix";
+
+    neu-nix = {
+      url = "github:ricardomaps/neu-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }

@@ -76,50 +76,15 @@
         find ${appimageContents} -maxdepth 1 -name "*.png" -exec cp {} $out/share/icons/hicolor/128x128/apps/orcaslicer-nanashi.png \;
       '';
     };
-
-  dust3d = let
-    pname = "dust3d";
-    version = "1.1.6";
-    src = pkgs.fetchurl {
-      url = "https://github.com/huxingyi/dust3d/releases/download/1.1.6/dust3d-1.1.6.AppImage";
-      sha256 = "efbc1fafe9aa6cbc2679494e45a43bae6df50c7feec58e4a850e94189904fc5a";
-    };
-    appimageContents = pkgs.appimageTools.extractType2 {
-      inherit pname version src;
-    };
-    desktopItem = pkgs.makeDesktopItem {
-      name = "dust3d";
-      exec = "dust3d";
-      icon = "dust3d";
-      comment = "3D Modeling Software";
-      desktopName = "Dust3D";
-      genericName = "3D Modeling";
-      categories = ["Utility" "3DGraphics"];
-    };
-  in
-    pkgs.appimageTools.wrapType2 {
-      inherit pname version src;
-      extraPkgs = appimageLibs;
-      extraInstallCommands = ''
-        # Copy desktop file
-        mkdir -p $out/share/applications
-        cp ${desktopItem}/share/applications/* $out/share/applications/
-
-        # Copy icon
-        mkdir -p $out/share/icons/hicolor/128x128/apps
-        find ${appimageContents} -maxdepth 1 -name "*.png" -exec cp {} $out/share/icons/hicolor/128x128/apps/dust3d.png \;
-      '';
-    };
 in {
   options.systemSettings.threed = {
-    enable = lib.mkEnableOption "Enable 3D modeling and slicing tools (Blender, custom OrcaSlicer, and Dust3D)";
+    enable = lib.mkEnableOption "Enable 3D modeling and slicing tools (Blender, custom OrcaSlicer)";
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       blender
       orcaslicer-nanashi
-      dust3d
       openscad
     ];
   };

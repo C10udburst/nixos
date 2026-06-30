@@ -30,6 +30,7 @@ in {
         ips = "ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(\\([0-9]\\+\\.\\)\\{3\\}[0-9]\\+\\)\\|[a-fA-F0-9:]\\+\\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'";
         pause = "printf \"Press any key to continue...\"; read -s -n 1; printf \"\\n\"";
         "cd.." = "cd ..";
+        "-" = "cd -";
       }
       // (lib.listToAttrs (
         builtins.map (i: {

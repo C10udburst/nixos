@@ -107,6 +107,26 @@
         "type": "github"
       }
     },
+    "neu-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780971711,
+        "narHash": "sha256-K5ZtuvpN2s3Sh34gaP/zvpc0EpolSVrcgy3sksoLPhU=",
+        "owner": "ricardomaps",
+        "repo": "neu-nix",
+        "rev": "0d0ec546626f9ae7bbb24d0cbc17f684c56b2ecc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ricardomaps",
+        "repo": "neu-nix",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1778869304,
@@ -202,6 +222,7 @@
       "inputs": {
         "antigravity-nix": "antigravity-nix",
         "home-manager": "home-manager",
+        "neu-nix": "neu-nix",
         "nixpkgs": "nixpkgs_2",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager"
