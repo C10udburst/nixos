@@ -29,5 +29,5 @@
 
   # Home-Manager-only modules
   git = true;
-  driftwm = false;
+  driftwm = true;
 }

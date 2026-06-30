@@ -18,6 +18,12 @@ in {
 
   hostSettings = hostSettings;
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      driftwm = inputs.driftwm.packages.${prev.system}.default;
+    })
+  ];
+
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
     fsType = "ntfs3";

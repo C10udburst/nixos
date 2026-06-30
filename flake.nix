@@ -36,12 +36,12 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    pi-agent.url = "github:lukasl-dev/pi-mono.nix";
-    antigravity-nix.url = "github:jacopone/antigravity-nix";
-
-    neu-nix = {
-      url = "github:ricardomaps/neu-nix";
+    driftwm = {
+      url = "github:malbiruk/driftwm";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    pi-agent.url = "github:lukasl-dev/pi-mono.nix";
+    antigravity-nix.url = "github:jacopone/antigravity-nix";
   };
 }

@@ -47,6 +47,26 @@
         "type": "github"
       }
     },
+    "driftwm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782842951,
+        "narHash": "sha256-p3dvKhuuDNEOLqT8xYV3YAJoW/CWYLrGWQdTXmvbUnk=",
+        "owner": "malbiruk",
+        "repo": "driftwm",
+        "rev": "da86374f802788a0b28abfd4949041078c737b00",
+        "type": "github"
+      },
+      "original": {
+        "owner": "malbiruk",
+        "repo": "driftwm",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -104,26 +124,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "neu-nix": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1780971711,
-        "narHash": "sha256-K5ZtuvpN2s3Sh34gaP/zvpc0EpolSVrcgy3sksoLPhU=",
-        "owner": "ricardomaps",
-        "repo": "neu-nix",
-        "rev": "0d0ec546626f9ae7bbb24d0cbc17f684c56b2ecc",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ricardomaps",
-        "repo": "neu-nix",
         "type": "github"
       }
     },
@@ -221,8 +221,8 @@
     "root": {
       "inputs": {
         "antigravity-nix": "antigravity-nix",
+        "driftwm": "driftwm",
         "home-manager": "home-manager",
-        "neu-nix": "neu-nix",
         "nixpkgs": "nixpkgs_2",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager"
