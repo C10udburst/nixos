@@ -45,7 +45,6 @@ in {
         kdePackages.kate
         brave
         vscode
-        gemini-cli
       ];
     });
   };
