@@ -35,7 +35,6 @@ in {
     environment.systemPackages = with pkgs; [
       kdePackages.plasma-systemmonitor
       kdePackages.kwalletmanager
-      kdePackages.kmix
       kdePackages.ksystemlog
       kdePackages.kdeconnect-kde
     ];
