@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+# A rebuild script that commits on a successful build
+set -e
+
+# cd to your config dir
+pushd ~/nixos/
+
+# Early return if no changes were detected (thanks @singiamtel!)
+# if git diff --quiet '*.nix'; then
+#     echo "No changes detected, exiting."
+#     popd
+#     exit 0
+# fi
+
+# Autoformat your nix files
+alejandra . &>/dev/null \
+  || ( alejandra . ; echo "formatting failed!" && exit 1)
+
+# Shows your changes
+git diff -U0 '*.nix'
+
+git add .
+
+echo "NixOS Rebuilding..."
+
+# Prompt for sudo password upfront so the prompt isn't hidden by redirection
+sudo -v
+
+# Rebuild, output simplified errors, log trackebacks
+sudo nixos-rebuild switch --flake . 2>&1 | tee nixos-switch.log | nom; [ ${PIPESTATUS[0]} -eq 0 ] || (grep --color error nixos-switch.log && exit 1)
+
+# Get current generation metadata
+current=$(nixos-rebuild list-generations --json | jq '.[] | select (.current == true) | "\(.generation)"')
+
+# Commit all changes witih the generation metadata
+git commit -am "$current"
+
+# Back to where you were
+popd
+
+# Notify all OK!
+notify-send -e "NixOS Rebuilt OK!" --icon=software-update-available
