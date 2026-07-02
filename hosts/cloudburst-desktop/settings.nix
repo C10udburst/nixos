@@ -15,17 +15,20 @@
   python = true;
   programming = true;
   java = true;
+  jetbrains = true;
   utils = true;
   tailscale = true;
   xrdp = true;
   editors = true;
   threed = true;
   fuse = true;
+  hubfs = true;
   office = true;
   latex = true;
   appimage = true;
   nettools = true;
   obs = true;
+  zram = true;
 
   # Home-Manager-only modules
   git = true;

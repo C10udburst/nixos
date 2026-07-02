@@ -11,8 +11,9 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      jdk
-    ];
+    programs.java = {
+      enable = true;
+      package = pkgs.jdk;
+    };
   };
 }

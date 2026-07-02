@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# A script to validate NixOS configuration changes (dry-run) without applying them.
+# Displays a condensed output focusing only on errors if the build fails.
+set -eo pipefail
+
+# Navigate to config directory
+pushd "$(dirname "$0")" >/dev/null
+
+# Autoformat your nix files
+alejandra . &>/dev/null \
+  || ( alejandra . ; echo "formatting failed!" && exit 1)
+
+# Stage changes (necessary for Nix flakes to see untracked files)
+git add .
+
+echo "Validating NixOS configuration (dry-run)..."
+
+# Temp file for logs
+LOGFILE=$(mktemp)
+trap 'rm -f "$LOGFILE"' EXIT
+
+# Run dry-run build check
+if ! nixos-rebuild build --flake . --no-link > "$LOGFILE" 2>&1; then
+    echo -e "\n❌ Configuration validation failed! Errors:\n"
+    # Display lines containing 'error', 'failed', or 'trace'
+    if grep -E -i "error|trace|failed" "$LOGFILE"; then
+        true
+    else
+        # Fallback to last 20 lines if no matching error pattern is found
+        tail -n 20 "$LOGFILE"
+    fi
+    popd >/dev/null
+    exit 1
+fi
+
+echo "✅ Configuration is valid! Dry-run succeeded."
+popd >/dev/null

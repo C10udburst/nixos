@@ -13,6 +13,11 @@ in {
   config = lib.mkIf cfg.enable {
     nixpkgs.config.android_sdk.accept_license = true;
 
+    environment.sessionVariables = {
+      ANDROID_HOME = "/run/current-system/sw/libexec/android-sdk";
+      ANDROID_SDK_ROOT = "/run/current-system/sw/libexec/android-sdk";
+    };
+
     environment.systemPackages = with pkgs; [
       scrcpy
       android-tools

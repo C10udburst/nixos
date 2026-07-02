@@ -27,7 +27,7 @@ in {
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
     fsType = "ntfs3";
-    options = ["nofail" "rw" "uid=1000" "gid=100" "dmask=007" "fmask=117" "user" "exec"];
+    options = ["nofail" "rw" "uid=1000" "gid=100" "dmask=007" "fmask=117" "user" "exec" "noacsrules"];
   };
 
   # Bootloader.

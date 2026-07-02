@@ -11,6 +11,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    programs.fuse.userAllowOther = true;
+
     environment.systemPackages = with pkgs; [
       cifs-utils
       adbfs-rootless

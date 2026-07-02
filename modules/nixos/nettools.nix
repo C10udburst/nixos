@@ -18,6 +18,7 @@ in {
       traceroute
       nettools
       wireshark
+      websocat
     ];
   };
 }

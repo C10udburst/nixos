@@ -20,6 +20,7 @@
     ./programming.nix
     ./ldfix.nix
     ./java.nix
+    ./jetbrains.nix
     ./utils.nix
     ./tailscale.nix
     ./xrdp.nix
@@ -27,11 +28,13 @@
     ./editors.nix
     ./threed.nix
     ./fuse.nix
+    ./hubfs.nix
     ./office.nix
     ./latex.nix
     ./appimage.nix
     ./nettools.nix
     ./obs.nix
+    ./zram.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -59,16 +62,19 @@
     python.enable = lib.mkDefault (config.hostSettings.python or false);
     programming.enable = lib.mkDefault (config.hostSettings.programming or false);
     java.enable = lib.mkDefault (config.hostSettings.java or false);
+    jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
     utils.enable = lib.mkDefault (config.hostSettings.utils or false);
     tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
     xrdp.enable = lib.mkDefault (config.hostSettings.xrdp or false);
     editors.enable = lib.mkDefault (config.hostSettings.editors or false);
     threed.enable = lib.mkDefault (config.hostSettings.threed or false);
     fuse.enable = lib.mkDefault (config.hostSettings.fuse or false);
+    hubfs.enable = lib.mkDefault (config.hostSettings.hubfs or false);
     office.enable = lib.mkDefault (config.hostSettings.office or false);
     latex.enable = lib.mkDefault (config.hostSettings.latex or false);
     appimage.enable = lib.mkDefault (config.hostSettings.appimage or false);
     nettools.enable = lib.mkDefault (config.hostSettings.nettools or false);
     obs.enable = lib.mkDefault (config.hostSettings.obs or false);
+    zram.enable = lib.mkDefault (config.hostSettings.zram or false);
   };
 }

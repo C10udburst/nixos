@@ -30,4 +30,9 @@
     libdrm
     udev
   ];
+
+  systemd.tmpfiles.rules = [
+    "L+ /usr/local/bin - - - - /usr/bin"
+    "L+ /sbin - - - - /bin"
+  ];
 }
