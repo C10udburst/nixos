@@ -29,6 +29,10 @@ in {
         ffmpeg
         yt-dlp
         wl-clipboard
+        zip
+        unzip
+        unrar
+        gnutar
       ]
       ++ (
         if config.networking.wireless.enable

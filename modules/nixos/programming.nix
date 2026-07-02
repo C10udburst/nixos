@@ -16,6 +16,7 @@ in {
       cargo
       go
       nodejs
+      pnpm
       sqlitebrowser
       kotlin
       imhex

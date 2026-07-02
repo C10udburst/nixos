@@ -15,6 +15,7 @@ in {
       enable = true;
       defaultWindowManager = "startplasma-x11";
       openFirewall = true;
+      audio.enable = true;
     };
   };
 }
