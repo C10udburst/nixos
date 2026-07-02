@@ -23,7 +23,9 @@ in {
       android-tools
       jmtpfs
       android-file-transfer
-      androidenv.androidPkgs.androidsdk
+      (androidenv.composeAndroidPackages {
+        platformVersions = ["35"];
+      }).androidsdk
     ];
   };
 }
