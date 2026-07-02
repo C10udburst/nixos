@@ -20,7 +20,7 @@ in {
 
   nixpkgs.overlays = [
     (final: prev: {
-      driftwm = inputs.driftwm.packages.${prev.system}.default;
+      driftwm = inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default;
     })
   ];
 
