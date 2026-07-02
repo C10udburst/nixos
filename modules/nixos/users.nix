@@ -40,6 +40,11 @@ in {
           then ["podman"]
           else []
         )
+        ++ (
+          if (config.virtualisation.libvirtd.enable or false)
+          then ["libvirtd"]
+          else []
+        )
         ++ ["video" "audio" "render"];
       packages = with pkgs; [
         kdePackages.kate

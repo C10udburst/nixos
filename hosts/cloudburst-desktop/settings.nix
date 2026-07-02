@@ -22,13 +22,13 @@
   editors = true;
   threed = true;
   fuse = true;
-  hubfs = true;
   office = true;
   latex = true;
   appimage = true;
   nettools = true;
   obs = true;
   zram = true;
+  kvm = true;
 
   # Home-Manager-only modules
   git = true;

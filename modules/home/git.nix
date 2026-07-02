@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.homeSettings.git;
@@ -22,5 +23,9 @@ in {
         };
       };
     };
+
+    home.packages = with pkgs; [
+      git-filter-repo
+    ];
   };
 }

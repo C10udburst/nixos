@@ -28,13 +28,13 @@
     ./editors.nix
     ./threed.nix
     ./fuse.nix
-    ./hubfs.nix
     ./office.nix
     ./latex.nix
     ./appimage.nix
     ./nettools.nix
     ./obs.nix
     ./zram.nix
+    ./kvm.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -69,12 +69,12 @@
     editors.enable = lib.mkDefault (config.hostSettings.editors or false);
     threed.enable = lib.mkDefault (config.hostSettings.threed or false);
     fuse.enable = lib.mkDefault (config.hostSettings.fuse or false);
-    hubfs.enable = lib.mkDefault (config.hostSettings.hubfs or false);
     office.enable = lib.mkDefault (config.hostSettings.office or false);
     latex.enable = lib.mkDefault (config.hostSettings.latex or false);
     appimage.enable = lib.mkDefault (config.hostSettings.appimage or false);
     nettools.enable = lib.mkDefault (config.hostSettings.nettools or false);
     obs.enable = lib.mkDefault (config.hostSettings.obs or false);
     zram.enable = lib.mkDefault (config.hostSettings.zram or false);
+    kvm.enable = lib.mkDefault (config.hostSettings.kvm or false);
   };
 }

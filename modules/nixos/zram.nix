@@ -13,7 +13,7 @@ in {
   config = lib.mkIf cfg.enable {
     zramSwap = {
       enable = true;
-      memoryPercent = 20;
+      memoryPercent = 25;
     };
   };
 }
