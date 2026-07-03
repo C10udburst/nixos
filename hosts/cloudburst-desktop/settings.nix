@@ -2,6 +2,8 @@
   username = "cloudburst";
   adminUsers = ["cloudburst"];
 
+  sambaPath = "/mnt/dane";
+
   # Modules to enable across NixOS and Home Manager
   plasma = true;
   llm = true;
@@ -29,8 +31,12 @@
   obs = true;
   zram = true;
   kvm = true;
+  brave = true;
+  flatpak = true;
+  scripts = true;
 
   # Home-Manager-only modules
   git = true;
   driftwm = true;
+  ulauncher = false;
 }

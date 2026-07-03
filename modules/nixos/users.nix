@@ -45,11 +45,9 @@ in {
           then ["libvirtd"]
           else []
         )
-        ++ ["video" "audio" "render"];
+        ++ ["video" "audio" "render" "i2c"];
       packages = with pkgs; [
         kdePackages.kate
-        brave
-        vscode
       ];
     });
   };

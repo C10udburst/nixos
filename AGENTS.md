@@ -2,23 +2,9 @@
 
 You are inside nixOS configuration repository. This configuration is mainly intended to configure the current host. Ensure changes you make are modular, test them only for syntax errors, and do not apply them to the system, you can only use dry-run commands.
 
+You should assume that the user is working specifically under this local NixOS host unless they explicitly state otherwise and they will run nixos-rebuild commands themselves on this machine. You should not run any commands that would change the system state, and you should not suggest commands that would change the system state unless the user explicitly asks for them.
+
 This repository contains the **`nixos-managing`** skill — a structured set of Markdown files that teach an AI coding agent how to safely manage NixOS systems (rebuilds, flakes, modules, deployment, impermanence, LUKS remote-unlock, monitoring).
-
-**Any agent that understands this `AGENTS.md` convention should:**
-
-1. Treat `nixos-managing/SKILL.md` as the entry point — it contains a decision table pointing to the right reference file for the task.
-2. Load reference files on demand based on that table:
-   - `configuration.md` — flakes, modules, packages, services, secrets
-   - `vm-management.md` — `nixos-rebuild`, generations, rollback, remote deployment
-   - `installation.md` — initial install, disko, hardware configuration
-   - `image-building.md` — ISO, VM, disk images
-   - `impermanence.md` — ephemeral root, wipe-on-boot
-   - `luks.md` — disk encryption, remote unlock (SSH, Tailscale)
-   - `anti-patterns.md` — common mistakes
-3. Verify every NixOS option before suggesting it (the skill includes guidance on this — `search.nixos.org/options` is always available).
-4. Ask the user about the execution context (local NixOS host vs. remote deploy from macOS/Linux) before suggesting commands.
-
----
 
 ## Repository Structure & Configuration Flow
 
@@ -42,3 +28,21 @@ Configurations are divided into granular, reusable modules:
   - **[default.nix](modules/nixos/default.nix)**: Imports all available modules in this directory, defines a `hostSettings` option, and maps options in `hostSettings` (from `settings.nix`) to set system settings defaults (e.g., enabling pipewire, tailscale, podman, etc.).
 - **[modules/home/](modules/home/)**: Home Manager-level user-environment configurations (dotfiles, user-facing programs like shells, starship, git).
   - **[default.nix](modules/home/default.nix)**: Imports all user configuration modules, defines `hostSettings` and `homeSettings` options, and configures defaults based on values set in `settings.nix` (e.g., git, plasma, driftwm).
+
+## Specific types
+
+Any custom small cli utility requested, should be implemented inside scripts/ directory and added to default.nix as a package.
+
+1. Treat `nixos-managing/SKILL.md` as the entry point — it contains a decision table pointing to the right reference file for the task.
+2. Load reference files on demand based on that table:
+   - `configuration.md` — flakes, modules, packages, services, secrets
+   - `vm-management.md` — `nixos-rebuild`, generations, rollback, remote deployment
+   - `installation.md` — initial install, disko, hardware configuration
+   - `image-building.md` — ISO, VM, disk images
+   - `impermanence.md` — ephemeral root, wipe-on-boot
+   - `luks.md` — disk encryption, remote unlock (SSH, Tailscale)
+   - `anti-patterns.md` — common mistakes
+3. Verify every NixOS option before suggesting it (the skill includes guidance on this — `search.nixos.org/options` is always available).
+4. Ask the user about the execution context (local NixOS host vs. remote deploy from macOS/Linux) before suggesting commands.
+
+---

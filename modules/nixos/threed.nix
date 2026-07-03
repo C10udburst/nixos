@@ -86,6 +86,7 @@ in {
       blender
       orcaslicer-nanashi
       openscad
+      freecad
     ];
   };
 }

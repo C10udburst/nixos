@@ -11,7 +11,9 @@
     ./starship.nix
     ./tailscale.nix
     ./shell.nix
-    ./driftwm.nix
+    ./driftwm
+    ./ulauncher.nix
+    ./vscode.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -31,6 +33,20 @@
         driftwm.enable = lib.mkOption {type = lib.types.bool;};
         tailscale.enable = lib.mkOption {type = lib.types.bool;};
         shell.enable = lib.mkOption {type = lib.types.bool;};
+        ulauncher.enable = lib.mkOption {type = lib.types.bool;};
+        editors.enable = lib.mkOption {type = lib.types.bool;};
+        programming = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
+        python = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
+        latex = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
       };
     };
     default = {};
@@ -46,6 +62,11 @@
       driftwm.enable = lib.mkDefault (config.hostSettings.driftwm or false);
       tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
       shell.enable = lib.mkDefault true;
+      ulauncher.enable = lib.mkDefault (config.hostSettings.ulauncher or false);
+      editors.enable = lib.mkDefault (config.hostSettings.editors or false);
+      programming = lib.mkDefault (config.hostSettings.programming or false);
+      python = lib.mkDefault (config.hostSettings.python or false);
+      latex = lib.mkDefault (config.hostSettings.latex or false);
     };
   };
 }

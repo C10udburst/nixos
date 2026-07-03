@@ -20,6 +20,11 @@ in {
       dust
       fzf
       hexyl
+      binwalk
+      asciinema
+      qrencode
+      zbar
+      ranger
     ];
   };
 }

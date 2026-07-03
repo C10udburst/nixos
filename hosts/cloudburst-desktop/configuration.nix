@@ -13,6 +13,7 @@ in {
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
+    inputs.nix-flatpak.nixosModules.nix-flatpak
     ../../modules/nixos
   ];
 
@@ -27,16 +28,42 @@ in {
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
     fsType = "ntfs3";
-    options = ["nofail" "rw" "uid=1000" "gid=100" "dmask=007" "fmask=117" "user" "exec" "noacsrules"];
+    options = ["nofail" "rw" "uid=1000" "gid=100" "dmask=007" "fmask=117" "exec" "force"];
   };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.timeout = 1;
+  boot.loader.systemd-boot.extraInstallCommands = ''
+    echo "auto-entries 0" >> ${config.boot.loader.efi.efiSysMountPoint}/loader/loader.conf
+  '';
 
   networking.hostName = "cloudburst-desktop"; # Define your hostname.
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
+
+  hardware.i2c.enable = true;
+
+  services.udev.extraRules = ''
+    KERNEL=="cec*", SUBSYSTEM=="cec", MODE="0660", GROUP="video"
+  '';
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+    ];
+    config = {
+      common = {
+        default = ["gtk"];
+        "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+      };
+    };
+  };
 
   home-manager = {
     backupFileExtension = "hm-backup";

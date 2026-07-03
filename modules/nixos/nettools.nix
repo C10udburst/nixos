@@ -20,6 +20,10 @@ in {
       wireshark
       websocat
       lsof
+      wakeonlan
+      inetutils
     ];
+
+    programs.wireshark.enable = true;
   };
 }

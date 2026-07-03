@@ -15,20 +15,20 @@
       add_newline = false;
       format = "[](color_orange)$os$username[](bg:color_yellow fg:color_orange)$directory[](fg:color_yellow bg:color_aqua)$git_branch$git_status[](fg:color_aqua bg:color_blue)$c$rust$golang$nodejs[](fg:color_blue bg:color_bg3)$docker_context[](fg:color_bg3 bg:color_purple)$time[ ](fg:color_purple)\n$character";
 
-      palette = "gruvbox";
+      palette = lib.mkForce "stylix";
 
-      palettes.gruvbox = {
-        color_fg0 = "#fbf1c7";
-        color_bg0 = "#282828";
-        color_bg1 = "#3c3836";
-        color_bg3 = "#665c54";
-        color_blue = "#458588";
-        color_aqua = "#689d6a";
-        color_green = "#b8bb26";
-        color_orange = "#fe8019";
-        color_purple = "#b16286";
-        color_red = "#fb4934";
-        color_yellow = "#fabd2f";
+      palettes.stylix = {
+        color_fg0 = config.lib.stylix.colors.withHashtag.base05;
+        color_bg0 = config.lib.stylix.colors.withHashtag.base00;
+        color_bg1 = config.lib.stylix.colors.withHashtag.base01;
+        color_bg3 = config.lib.stylix.colors.withHashtag.base03;
+        color_blue = config.lib.stylix.colors.withHashtag.base0D;
+        color_aqua = config.lib.stylix.colors.withHashtag.base0C;
+        color_green = config.lib.stylix.colors.withHashtag.base0B;
+        color_orange = config.lib.stylix.colors.withHashtag.base09;
+        color_purple = config.lib.stylix.colors.withHashtag.base0E;
+        color_red = config.lib.stylix.colors.withHashtag.base08;
+        color_yellow = config.lib.stylix.colors.withHashtag.base0A;
       };
 
       os = {

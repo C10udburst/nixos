@@ -15,8 +15,6 @@ in {
       enable = true;
 
       workspace = {
-        colorScheme = "BreezeDark";
-        lookAndFeel = "org.kde.breezedark.desktop";
         iconTheme = "breeze-dark";
       };
 
@@ -52,21 +50,9 @@ in {
       };
     };
 
-    gtk = {
-      gtk2.force = true; # some random file gets created and breaks home-manager if this is not set
-      enable = true;
-      theme = {
-        name = "Breeze-Dark";
-        package = pkgs.kdePackages.breeze-gtk;
-      };
-      iconTheme = {
-        name = "breeze-dark";
-        package = pkgs.kdePackages.breeze-icons;
-      };
-    };
-
     home.packages = [
       pkgs.klassy
+      pkgs.kdePackages.karousel
     ];
   };
 }

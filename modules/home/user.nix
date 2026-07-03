@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.homeSettings.user;
@@ -22,6 +23,15 @@ in {
     home.username = cfg.username;
     home.homeDirectory = cfg.homeDirectory;
     programs.home-manager.enable = true;
+
+    gtk = {
+      enable = true;
+      gtk2.force = true; # some random file gets created and breaks home-manager if this is not set
+      iconTheme = {
+        name = "breeze-dark";
+        package = pkgs.kdePackages.breeze-icons;
+      };
+    };
 
     # Configure Konsole to use JetBrains Mono Nerd Font
     home.file.".local/share/konsole/JetBrainsMono.profile".text = ''

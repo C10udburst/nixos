@@ -13,7 +13,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.xrdp = {
       enable = true;
-      defaultWindowManager = "startplasma-x11";
+      defaultWindowManager = "${pkgs.driftwm}/bin/driftwm";
       openFirewall = true;
       audio.enable = true;
     };

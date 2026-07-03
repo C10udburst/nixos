@@ -23,6 +23,7 @@ in {
       android-tools
       jmtpfs
       android-file-transfer
+      jadx
       (androidenv.composeAndroidPackages {
         platformVersions = ["35"];
       }).androidsdk

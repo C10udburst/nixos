@@ -1,0 +1,75 @@
+mod_key = "super"
+autostart = [
+  "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
+  "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
+  "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0",
+  "while true; do noctalia-shell; sleep 1; done"
+]
+window_placement = "auto"
+
+[input.keyboard]
+layout = "pl"
+num_lock = true
+
+[input.mouse]
+accel_speed = 0.1
+accel_profile = "adaptive"
+
+[navigation.edge_pan]
+zone = 100
+cursor_pan = false
+
+[snap]
+enabled = true
+gap = 8
+distance = 20
+centers = true
+corners = true
+
+[background]
+type = "shader"
+path = "~/.config/driftwm/background.glsl"
+cache_shader = true
+
+[decorations]
+title_bar_height = 30
+bg_color = "#{{ base00 }}"
+fg_color = "#{{ base05 }}"
+corner_radius = 10
+border_width = 2
+border_color = "#{{ base02 }}"
+border_color_focused = "#{{ base0E }}"
+shadow = true
+font = "{{ font }}"
+
+[keybindings]
+"mod+space" = "spawn noctalia-shell ipc call launcher toggle"
+"mod+return" = "spawn noctalia-shell ipc call launcher toggle"
+"ctrl+alt+t" = "exec kitty"
+"alt+f4" = "close-window"
+"XF86AudioRaiseVolume" = "spawn pamixer -i 5"
+"XF86AudioLowerVolume" = "spawn pamixer -d 5"
+"XF86AudioMute" = "spawn pamixer -t"
+"mod+equal" = "zoom-in"
+"mod+minus" = "zoom-out"
+"mod+up" = "center-nearest up"
+"mod+down" = "center-nearest down"
+"mod+left" = "center-nearest left"
+"mod+right" = "center-nearest right"
+"mod+q" = "close-window"
+"mod+e" = "exec dolphin"
+"mod+w" = "pan-viewport up"
+"mod+s" = "pan-viewport down"
+"mod+a" = "pan-viewport left"
+"mod+d" = "pan-viewport right"
+"mod+n" = "spawn noctalia-shell ipc call notifications toggleHistory"
+"mod+v" = "spawn noctalia-shell ipc call launcher clipboard"
+"mod+escape" = "spawn noctalia-shell ipc call sessionMenu toggle"
+"mod+f11" = "spawn noctalia-shell ipc call bar toggle"
+"mod+l" = "spawn noctalia-shell ipc call lockScreen lock"
+"mod+r" = "spawn noctalia-shell ipc call controlCenter toggle"
+
+# Cosmic settings: hide winit window helper and apply fixed window size
+[[window_rules]]
+title = "winit window"
+widget = true

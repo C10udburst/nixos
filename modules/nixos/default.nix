@@ -5,6 +5,7 @@
 }: {
   imports = [
     ./android.nix
+    ./theme.nix
     ./llm.nix
     ./locale.nix
     ./networking.nix
@@ -35,6 +36,10 @@
     ./obs.nix
     ./zram.nix
     ./kvm.nix
+    ./brave.nix
+    ./flatpak.nix
+    ./samba.nix
+    ./scripts
   ];
 
   options.hostSettings = lib.mkOption {
@@ -76,5 +81,11 @@
     obs.enable = lib.mkDefault (config.hostSettings.obs or false);
     zram.enable = lib.mkDefault (config.hostSettings.zram or false);
     kvm.enable = lib.mkDefault (config.hostSettings.kvm or false);
+    brave.enable = lib.mkDefault (config.hostSettings.brave or false);
+    flatpak.enable = lib.mkDefault (config.hostSettings.flatpak or false);
+    scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
+
+    samba.enable = lib.mkDefault (config.hostSettings.sambaPath or "" != "");
+    samba.path = lib.mkDefault (config.hostSettings.sambaPath or "");
   };
 }

@@ -14,6 +14,7 @@ in {
     environment.systemPackages = with pkgs;
       [
         alejandra
+        libargon2
         jq
         git
         nix-output-monitor
@@ -21,6 +22,7 @@ in {
         curl
         wget
         openssh
+        openssl
         tmux
         fastfetch
         libnotify
@@ -29,10 +31,20 @@ in {
         ffmpeg
         yt-dlp
         wl-clipboard
+        wlr-randr
         zip
         unzip
         unrar
         gnutar
+        rar
+        p7zip
+        killall
+        pciutils
+        screen
+        cabextract
+        ncompress
+        cpio
+        socat
       ]
       ++ (
         if config.networking.wireless.enable

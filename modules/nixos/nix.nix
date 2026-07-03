@@ -3,10 +3,8 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
+    automatic = false;
   };
 
-  nix.optimise.automatic = true;
+  nix.optimise.automatic = false;
 }
