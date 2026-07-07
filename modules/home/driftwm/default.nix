@@ -46,6 +46,7 @@ in {
     home.packages = [
       driftwmPkg
       pkgs.wlr-randr
+      pkgs.xwayland
       pkgs.playerctl
       pkgs.pavucontrol
       pkgs.pamixer
