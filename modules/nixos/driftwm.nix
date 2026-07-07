@@ -15,6 +15,21 @@ in {
     systemd.packages = [
       pkgs.driftwm
     ];
+    environment.systemPackages = [
+      pkgs.driftwm
+      pkgs.wlr-randr
+      pkgs.playerctl
+      pkgs.pavucontrol
+      pkgs.pamixer
+      pkgs.kdePackages.dolphin
+      pkgs.xwayland-satellite
+
+      # Qt / SVG icon support
+      pkgs.libsForQt5.qtsvg
+      pkgs.kdePackages.qtsvg
+      pkgs.libsForQt5.qt5ct
+      pkgs.kdePackages.qt6ct
+    ];
 
     security.pam.services.swaylock = lib.mkDefault {};
     services.graphical-desktop.enable = lib.mkDefault true;
@@ -30,6 +45,10 @@ in {
 
     # Set XDG_MENU_PREFIX so KDE apps inside DriftWM find the Plasma app menu
     environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";
+
+    # Tell the XDG portal dispatcher which desktop we are so it can pick
+    # the right portal backend (wlr for ScreenCast / Screenshot).
+    environment.sessionVariables.XDG_CURRENT_DESKTOP = "sway";
 
     systemd.user.services.driftwm = {
       restartIfChanged = false;
@@ -53,18 +72,22 @@ in {
     ];
 
     xdg.portal = {
-      enable = lib.mkDefault true;
+      enable = true;
       configPackages = lib.mkDefault [pkgs.driftwm];
       extraPortals = lib.mkDefault [
-        pkgs.xdg-desktop-portal-gtk
         pkgs.xdg-desktop-portal-wlr
+        pkgs.xdg-desktop-portal-gtk
       ];
+      # Explicitly route ScreenCast and Screenshot to the wlr portal.
+      # Without this, xdg-desktop-portal may pick gtk which has no
+      # wlr-screencopy support, causing OBS / PipeWire capture to fail.
+      config = {
+        sway = {
+          default = ["wlr" "gtk"];
+          "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+          "org.freedesktop.impl.portal.Screenshot" = "wlr";
+        };
+      };
     };
-
-    # add gtk for portal support
-    environment.systemPackages = with pkgs; [
-      gtk3
-      gtk4
-    ];
   };
 }

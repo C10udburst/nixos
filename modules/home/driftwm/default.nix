@@ -2,11 +2,11 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
   cfg = config.homeSettings.driftwm;
-  driftwmPkg = pkgs.driftwm or (throw "driftwm package not found");
 
   renderUtils = import ../../render-template.nix {inherit pkgs config lib;};
   renderJinja2 = renderUtils.renderJinja2;
@@ -39,23 +39,13 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = [
-      driftwmPkg
-      pkgs.wlr-randr
-      pkgs.playerctl
-      pkgs.pavucontrol
-      pkgs.pamixer
-      pkgs.kdePackages.dolphin
-      pkgs.xwayland-satellite
+    programs.kitty = {
+      enable = true;
 
-      # Qt / SVG icon support
-      pkgs.libsForQt5.qtsvg
-      pkgs.kdePackages.qtsvg
-      pkgs.libsForQt5.qt5ct
-      pkgs.kdePackages.qt6ct
-    ];
-
-    programs.kitty.enable = true;
+      settings = {
+        confirm_os_window_close = 0;
+      };
+    };
 
     xdg.configFile = {
       "qt5ct/qt5ct.conf".text = ''
@@ -66,6 +56,12 @@ in {
         [Appearance]
         icon_theme=breeze-dark
       '';
+    };
+
+    home.sessionVariables = {
+      #QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
+      #QT_QPA_PLATFORM = "wayland;xcb";
+      QS_ICON_THEME = "breeze-dark";
     };
 
     programs.noctalia-shell = {
@@ -87,7 +83,7 @@ in {
         NotifyAccess = "main";
         UnsetEnvironment = "WAYLAND_DISPLAY DISPLAY WAYLAND_SOCKET";
         Environment = "XKB_DEFAULT_LAYOUT=pl";
-        ExecStart = "${driftwmPkg}/bin/driftwm --backend udev";
+        ExecStart = "${pkgs.driftwm}/bin/driftwm --backend udev";
       };
     };
 

@@ -104,8 +104,21 @@
       flatpak.enable = lib.mkDefault (config.hostSettings.flatpak or false);
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
 
-      wayvnc.enable = lib.mkDefault (config.hostSettings.wayvnc or false);
-      wayvnc.windowManager = lib.mkDefault "${pkgs.driftwm}/bin/driftwm-session";
+      wayvnc.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.wayvnc or false)
+        then config.hostSettings.wayvnc.enable or false
+        else config.hostSettings.wayvnc or false
+      );
+      wayvnc.windowManager = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.wayvnc or false)
+        then config.hostSettings.wayvnc.windowManager or "${pkgs.driftwm}/bin/driftwm-session"
+        else "${pkgs.driftwm}/bin/driftwm-session"
+      );
+      wayvnc.extraArgs = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.wayvnc or false)
+        then config.hostSettings.wayvnc.extraArgs or []
+        else []
+      );
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
 

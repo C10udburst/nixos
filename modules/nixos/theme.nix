@@ -31,6 +31,15 @@
         package = pkgs.nerd-fonts.jetbrains-mono;
         name = "JetBrainsMono Nerd Font";
       };
+      # Explicit sizes prevent Stylix from deriving an inflated Xft.dpi
+      # that causes GTK apps (Chrome, Brave) to render context menus larger
+      # than Qt/native Wayland apps on 1080p displays.
+      sizes = {
+        applications = 11;
+        desktop = 11;
+        popups = 11;
+        terminal = 11;
+      };
     };
   };
 }

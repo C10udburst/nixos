@@ -18,6 +18,11 @@
       installPhase = ''
         mkdir -p $out
         unzip $src -d $out
+        # move all out of jetbra subdirectory to $out
+        mv $out/jetbra/* $out/
+        rmdir $out/jetbra
+        rm $out/README.pdf
+        rm -rf $out/scripts
 
         for file in $out/vmoptions/*; do
           sed -i '/^\-javaagent:.*[\/\\]ja\-netfilter\.jar.*/d' "$file"

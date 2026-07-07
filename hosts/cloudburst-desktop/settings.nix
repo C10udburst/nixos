@@ -21,7 +21,10 @@
   utils = true;
   tailscale = true;
   xrdp = true;
-  wayvnc = true;
+  wayvnc = {
+    enable = true;
+    extraArgs = ["--disable-input"];
+  };
   waypipe = true;
   editors = true;
   threed = true;

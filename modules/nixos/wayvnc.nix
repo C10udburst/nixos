@@ -14,6 +14,12 @@ in {
       default = "${pkgs.driftwm}/bin/driftwm-session";
       description = "Command used to launch the Wayland compositor/session that wayvnc attaches to.";
     };
+
+    extraArgs = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "Extra command line arguments to pass to wayvnc.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -36,7 +42,7 @@ in {
       serviceConfig = {
         Type = "simple";
         ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
-        ExecStart = "${pkgs.wayvnc}/bin/wayvnc 0.0.0.0 5900";
+        ExecStart = "${pkgs.wayvnc}/bin/wayvnc 0.0.0.0 5900" + (lib.optionalString (cfg.extraArgs != []) " ${lib.escapeShellArgs cfg.extraArgs}");
         Restart = "on-failure";
         RestartSec = "5s";
       };

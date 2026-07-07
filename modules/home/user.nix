@@ -28,14 +28,19 @@ in {
       JAVA_HOME = "/run/current-system/sw/lib/openjdk";
       ANDROID_HOME = "/run/current-system/sw/libexec/android-sdk";
       ANDROID_SDK_ROOT = "/run/current-system/sw/libexec/android-sdk";
+      _JAVA_AWT_WM_NONREPARENTING = "1"; # Fixes Java GUI apps on non-reparenting WMs like driftwm
     };
 
     gtk = {
       enable = true;
       gtk2.force = true; # some random file gets created and breaks home-manager if this is not set
       iconTheme = {
-        name = "breeze-dark";
-        package = pkgs.kdePackages.breeze-icons;
+        # Adwaita ships window-close-symbolic / window-minimize-symbolic etc.
+        # in the hicolor-compatible path GTK expects for CSD title bars.
+        # breeze-dark (a KDE theme) misses these outside a full Plasma session,
+        # causing Inkscape / GIMP close+minimize icons to show as missing.
+        name = "Adwaita";
+        package = pkgs.adwaita-icon-theme;
       };
       gtk3.extraConfig = {
         gtk-application-prefer-dark-theme = true;
@@ -45,36 +50,10 @@ in {
       };
     };
 
-    qt = {
-      enable = true;
-    };
-
-    home.sessionVariables = {
-      QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
-      QT_QPA_PLATFORM = "wayland;xcb";
-      QS_ICON_THEME = "breeze-dark";
-    };
-
     dconf.settings = {
       "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
       };
     };
-
-    # # Configure Konsole to use JetBrains Mono Nerd Font
-    # home.file.".local/share/konsole/JetBrainsMono.profile".text = ''
-    #   [Appearance]
-    #   Font=JetBrainsMono Nerd Font,11,-1,5,50,0,0,0,0,0
-
-    #   [General]
-    #   Name=JetBrainsMono
-    #   Parent=FALLBACK/
-    # '';
-
-    # home.activation.removeExistingKonsolerc = lib.hm.dag.entryBefore ["writeBoundary"] ''
-    #   if [ -L "$HOME/.config/konsolerc" ]; then
-    #     rm -f "$HOME/.config/konsolerc"
-    #   fi
-    # '';
   };
 }

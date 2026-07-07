@@ -13,13 +13,6 @@
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ./nx.sh);
 
   noctalia-dmenu = pkgs.writeShellScriptBin "noctalia-dmenu" (builtins.readFile ./noctalia-dmenu.sh);
-  dmenu = pkgs.writeShellScriptBin "dmenu" (builtins.readFile ./dmenu.sh);
-  rofi = pkgs.writeShellScriptBin "rofi" (builtins.readFile ./rofi.sh);
-  wofi = pkgs.writeShellScriptBin "wofi" (builtins.readFile ./wofi.sh);
-  wmenu = pkgs.writeShellScriptBin "wmenu" (builtins.readFile ./wmenu.sh);
-  bemenu = pkgs.writeShellScriptBin "bemenu" (builtins.readFile ./bemenu.sh);
-  fuzzel = pkgs.writeShellScriptBin "fuzzel" (builtins.readFile ./fuzzel.sh);
-  mew = pkgs.writeShellScriptBin "mew" (builtins.readFile ./mew.sh);
 
   palette = pkgs.writeShellScriptBin "palette" (builtins.readFile ./palette.sh);
   gcode-bounds = pkgs.writers.writePython3Bin "gcode-bounds" {} (builtins.readFile ./gcode-bounds.py);
@@ -46,13 +39,6 @@ in {
       ics-merge
       nx
       noctalia-dmenu
-      dmenu
-      rofi
-      wofi
-      wmenu
-      bemenu
-      fuzzel
-      mew
       palette
     ];
   };

@@ -46,6 +46,7 @@ in {
         cpio
         socat
         xorg.xcbutilcursor
+        rofi
       ]
       ++ (
         if config.networking.wireless.enable
