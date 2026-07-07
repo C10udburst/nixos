@@ -38,7 +38,6 @@ in {
       kdePackages.ksystemlog
       kdePackages.kdeconnect-kde
       kdePackages.kdesu
-      glib
     ];
   };
 }

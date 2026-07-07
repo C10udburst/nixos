@@ -9,7 +9,7 @@
     version = "1.0.0";
     src = pkgs.fetchurl {
       url = "https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip";
-      sha1 = "sha1-5a50fc03d68a014f893b7fc3aa465380d59f9095";
+      sha1 = "5a50fc03d68a014f893b7fc3aa465380d59f9095";
     };
   in
     pkgs.stdenv.mkDerivation {
@@ -37,16 +37,7 @@ in {
       jetbra-netfilter
     ];
 
-    vmoptionsMap = {
-      "IntelliJIdea2026.1" = "idea";
-      "PyCharm2026.1" = "pycharm";
-    };
-
-    # iterate over the vmoptionsMap and create symlinks for each IDE
-    home.file = lib.mkMerge (lib.attrsets.mapAttrs (name: vmoptions: {
-        source = "${jetbra-netfilter}/vmoptions/${vmoptions}.vmoptions";
-        target = ".config/JetBrains/${name}/${vmoptions}64.vmoptions";
-      })
-      cfg.vmoptionsMap);
+    home.file.".config/JetBrains/IntelliJIdea2026.1/idea.vmoptions".source = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
+    home.file.".config/JetBrains/PyCharm2026.1/pycharm.vmoptions".source = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
   };
 }

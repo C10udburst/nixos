@@ -32,6 +32,5 @@
         name = "JetBrainsMono Nerd Font";
       };
     };
-    targets.qt.platform = "kde";
   };
 }

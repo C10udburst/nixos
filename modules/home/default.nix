@@ -5,6 +5,7 @@
 }: {
   imports = [
     ./git.nix
+    ./jetbrains.nix
     ./llm.nix
     ./plasma.nix
     ./user.nix

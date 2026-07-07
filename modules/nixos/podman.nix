@@ -11,7 +11,7 @@
       ps.pyqt5
     ]);
   in
-    pkgs.stdenv.mkDerivation rec {
+    pkgs.stdenv.mkDerivation {
       pname = "qocker";
       version = "1.0.0";
 
