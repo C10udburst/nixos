@@ -53,14 +53,11 @@ in {
       QS_ICON_THEME = "breeze-dark";
     };
 
-    xdg.configFile."kdeglobals".text = ''
-      [General]
-      ColorScheme=BreezeDark
-      Name=Breeze Dark
-
-      [Icons]
-      Theme=breeze-dark
-    '';
+    dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        color-scheme = "prefer-dark";
+      };
+    };
 
     # # Configure Konsole to use JetBrains Mono Nerd Font
     # home.file.".local/share/konsole/JetBrainsMono.profile".text = ''

@@ -26,8 +26,12 @@ in {
     # Plasma this prefix is not set, so we provide the symlink directly.
     environment.etc."xdg/menus/applications.menu".source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
 
-    # Ensure kservice can rebuild the sycoca cache and find app entries
-    environment.systemPackages = [pkgs.kdePackages.kservice];
+    # Ensure kservice can rebuild the sycoca cache and find app entries;
+    # kdesu provides a polkit-backed graphical privilege escalation dialog
+    environment.systemPackages = with pkgs; [
+      kdePackages.kservice
+      kdePackages.kdesu
+    ];
 
     # Set XDG_MENU_PREFIX so KDE apps inside DriftWM find the Plasma app menu
     environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";

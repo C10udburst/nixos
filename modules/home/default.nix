@@ -56,6 +56,7 @@
     homeSettings = {
       user.username = lib.mkDefault (config.hostSettings.username or "cloudburst");
       git.enable = lib.mkDefault (config.hostSettings.git or false);
+      jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
       driftwm.enable = lib.mkDefault (

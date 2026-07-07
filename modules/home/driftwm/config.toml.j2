@@ -9,9 +9,6 @@ autostart = [
 ]
 window_placement = "auto"
 
-[env]
-"QT_QPA_PLATFORMTHEME"="qt6ct"
-
 [input.keyboard]
 layout = "pl"
 num_lock = true
@@ -19,6 +16,9 @@ num_lock = true
 [input.mouse]
 accel_speed = 0.1
 accel_profile = "adaptive"
+
+[mouse.on-canvas]
+"right" = "spawn noctalia-shell ipc call launcher toggle"
 
 [navigation.edge_pan]
 zone = 100
@@ -46,6 +46,10 @@ border_color = "#{{ base02 }}"
 border_color_focused = "#{{ base0E }}"
 shadow = true
 font = "{{ font }}"
+
+[xwayland]
+enabled = true
+path = "{{ xwayland_satellite_path }}"
 
 [keybindings]
 "mod+space" = "spawn noctalia-shell ipc call launcher toggle"

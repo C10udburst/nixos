@@ -7,6 +7,7 @@
   # Modules to enable across NixOS and Home Manager
   plasma = true;
   llm = true;
+  jetbrains = true;
 
   # NixOS-only modules
   podman = true;
@@ -17,10 +18,11 @@
   python = true;
   programming = true;
   java = true;
-  jetbrains = true;
   utils = true;
   tailscale = true;
   xrdp = true;
+  wayvnc = true;
+  waypipe = true;
   editors = true;
   threed = true;
   fuse = true;

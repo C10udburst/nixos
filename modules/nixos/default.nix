@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   imports = [
@@ -25,6 +26,8 @@
     ./utils.nix
     ./tailscale.nix
     ./xrdp.nix
+    ./wayvnc.nix
+    ./waypipe.nix
     ./fonts.nix
     ./editors.nix
     ./threed.nix
@@ -78,7 +81,16 @@
       jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
       utils.enable = lib.mkDefault (config.hostSettings.utils or false);
       tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
-      xrdp.enable = lib.mkDefault (config.hostSettings.xrdp or false);
+      xrdp.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.xrdp or false)
+        then config.hostSettings.xrdp.enable or false
+        else config.hostSettings.xrdp or false
+      );
+      xrdp.windowManager = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.xrdp or false)
+        then config.hostSettings.xrdp.windowManager or "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11"
+        else "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11"
+      );
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
       threed.enable = lib.mkDefault (config.hostSettings.threed or false);
       fuse.enable = lib.mkDefault (config.hostSettings.fuse or false);
@@ -92,6 +104,11 @@
       brave.enable = lib.mkDefault (config.hostSettings.brave or false);
       flatpak.enable = lib.mkDefault (config.hostSettings.flatpak or false);
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
+
+      wayvnc.enable = lib.mkDefault (config.hostSettings.wayvnc or false);
+      wayvnc.windowManager = lib.mkDefault "${pkgs.driftwm}/bin/driftwm-session";
+
+      waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
 
       samba.enable = lib.mkDefault (config.hostSettings.sambaPath or "" != "");
       samba.path = lib.mkDefault (config.hostSettings.sambaPath or "");

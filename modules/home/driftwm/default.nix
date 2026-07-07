@@ -18,6 +18,7 @@ with lib; let
     // {
       font = config.stylix.fonts.monospace.name or "JetBrainsMono Nerd Font";
       extracmds = cfg.extracmds;
+      xwayland_satellite_path = "${pkgs.xwayland-satellite}/bin/Xwayland-satellite";
     };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
@@ -46,7 +47,7 @@ in {
     home.packages = [
       driftwmPkg
       pkgs.wlr-randr
-      pkgs.xwayland
+      pkgs.xwayland-satellite
       pkgs.playerctl
       pkgs.pavucontrol
       pkgs.pamixer

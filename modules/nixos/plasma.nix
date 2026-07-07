@@ -37,6 +37,10 @@ in {
       kdePackages.kwalletmanager
       kdePackages.ksystemlog
       kdePackages.kdeconnect-kde
+      kdePackages.kdesu
     ];
+
+    # Make kdesu the default graphical su frontend
+    environment.sessionVariables.SUDO_ASKPASS = "${pkgs.kdePackages.kdesu}/bin/kdesu";
   };
 }
