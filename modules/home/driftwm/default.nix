@@ -51,6 +51,7 @@ in {
       pkgs.pavucontrol
       pkgs.pamixer
       pkgs.kdePackages.dolphin
+      pkgs.xwayland-satellite
 
       # Qt / SVG icon support
       pkgs.libsForQt5.qtsvg
@@ -92,24 +93,6 @@ in {
         UnsetEnvironment = "WAYLAND_DISPLAY DISPLAY WAYLAND_SOCKET";
         Environment = "XKB_DEFAULT_LAYOUT=pl";
         ExecStart = "${driftwmPkg}/bin/driftwm --backend udev";
-      };
-    };
-
-    systemd.user.services.pam-kwallet-init = {
-      Unit = {
-        Description = "Unlock kwallet from pam credentials";
-        PartOf = ["graphical-session.target"];
-        After = ["driftwm.service"];
-        Requisite = ["driftwm.service"];
-      };
-      Service = {
-        ExecStart = "${pkgs.kdePackages.kwallet-pam}/libexec/pam_kwallet_init";
-        Environment = "PATH=${silencedSocat}/bin:${pkgs.socat}/bin:${pkgs.coreutils}/bin:\${PATH}";
-        Type = "simple";
-        Restart = "no";
-      };
-      Install = {
-        WantedBy = ["driftwm.service"];
       };
     };
 

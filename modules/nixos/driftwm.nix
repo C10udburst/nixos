@@ -14,7 +14,6 @@ in {
     # Expose systemd units from driftwm package
     systemd.packages = [
       pkgs.driftwm
-      pkgs.xwayland-satellite
     ];
 
     security.pam.services.swaylock = lib.mkDefault {};
@@ -61,5 +60,11 @@ in {
         pkgs.xdg-desktop-portal-wlr
       ];
     };
+
+    # add gtk for portal support
+    environment.systemPackages = with pkgs; [
+      gtk3
+      gtk4
+    ];
   };
 }
