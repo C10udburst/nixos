@@ -37,7 +37,30 @@ in {
         name = "breeze-dark";
         package = pkgs.kdePackages.breeze-icons;
       };
+      gtk3.extraConfig = {
+        gtk-application-prefer-dark-theme = true;
+      };
+      gtk4.extraConfig = {
+        gtk-application-prefer-dark-theme = true;
+      };
     };
+
+    qt.enable = true;
+
+    home.sessionVariables = {
+      QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
+      QT_QPA_PLATFORM = "wayland;xcb";
+      QS_ICON_THEME = "breeze-dark";
+    };
+
+    xdg.configFile."kdeglobals".text = ''
+      [General]
+      ColorScheme=BreezeDark
+      Name=Breeze Dark
+
+      [Icons]
+      Theme=breeze-dark
+    '';
 
     # # Configure Konsole to use JetBrains Mono Nerd Font
     # home.file.".local/share/konsole/JetBrainsMono.profile".text = ''
