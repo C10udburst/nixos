@@ -29,6 +29,7 @@
     libuuid
     libdrm
     udev
+    xorg.xcbutilcursor
   ];
 
   systemd.tmpfiles.rules = [

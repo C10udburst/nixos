@@ -284,7 +284,7 @@
     "compactLockScreen": false,
     "lockScreenAnimations": true,
     "lockOnSuspend": true,
-    "showSessionButtonsOnLockScreen": true,
+    "showSessionButtonsOnLockScreen": false,
     "showHibernateOnLockScreen": false,
     "enableLockScreenMediaControls": false,
     "enableShadows": true,
@@ -304,7 +304,7 @@
     "clockFormat": "hh\\nmm",
     "passwordChars": true,
     "lockScreenMonitors": [],
-    "lockScreenBlur": 0,
+    "lockScreenBlur": 0.2,
     "lockScreenTint": 0,
     "keybinds": {
       "keyUp": [
@@ -444,7 +444,7 @@
     "viewMode": "list",
     "showCategories": true,
     "iconMode": "tabler",
-    "showIconBackground": false,
+    "showIconBackground": true,
     "enableSettingsSearch": true,
     "enableWindowsSearch": true,
     "enableSessionSearch": true,
@@ -534,7 +534,7 @@
     "useCustomColors": false,
     "warningColor": "",
     "criticalColor": "",
-    "externalMonitor": "resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+    "externalMonitor": "plasma-systemmonitor || resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
   },
   "noctaliaPerformance": {
     "disableWallpaper": true,
@@ -700,8 +700,8 @@
     "spectrumMirrored": false,
     "mprisBlacklist": [],
     "preferredPlayer": "",
-    "volumeFeedback": false,
-    "volumeFeedbackSoundFile": ""
+    "volumeFeedback": true,
+    "volumeFeedbackSoundFile": "{{ volume_sfx_path }}"
   },
   "brightness": {
     "brightnessStep": 5,

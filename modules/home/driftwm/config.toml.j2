@@ -1,8 +1,10 @@
 mod_key = "super"
 autostart = [
-  "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
-  "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
-  "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0",
+  "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY PATH XDG_DATA_DIRS",
+  "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY PATH XDG_DATA_DIRS",
+{% for cmd in extracmds %}
+  "{{ cmd }}",
+{% endfor %}
   "while true; do noctalia-shell; sleep 1; done"
 ]
 window_placement = "auto"

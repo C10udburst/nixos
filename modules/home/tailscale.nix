@@ -11,21 +11,21 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    systemd.user.services.tailscale-systray = {
-      Unit = {
-        Description = "Tailscale System Tray";
-        After = ["graphical-session.target"];
-        PartOf = ["graphical-session.target"];
-      };
+    # systemd.user.services.tailscale-systray = {
+    #   Unit = {
+    #     Description = "Tailscale System Tray";
+    #     After = ["graphical-session.target"];
+    #     PartOf = ["graphical-session.target"];
+    #   };
 
-      Service = {
-        ExecStart = "${pkgs.tailscale}/bin/tailscale systray";
-        Restart = "on-failure";
-      };
+    #   Service = {
+    #     ExecStart = "${pkgs.tailscale}/bin/tailscale systray";
+    #     Restart = "on-failure";
+    #   };
 
-      Install = {
-        WantedBy = ["graphical-session.target"];
-      };
-    };
+    #   Install = {
+    #     WantedBy = ["graphical-session.target"];
+    #   };
+    # };
   };
 }

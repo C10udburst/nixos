@@ -9,67 +9,37 @@ with lib; let
   cfg = config.homeSettings.driftwm;
   driftwmPkg = pkgs.driftwm or (throw "driftwm package not found");
 
-  renderJinja2 = name: template: data:
-    pkgs.runCommand name {
-      nativeBuildInputs = [(pkgs.python3.withPackages (ps: [ps.jinja2]))];
-      jsonData = builtins.toJSON data;
-      passAsFile = ["jsonData"];
-    } ''
-      python3 -c "
-      import json
-      from jinja2 import Template
-
-      def to_rgb_vec3(hex_str):
-          hex_str = hex_str.lstrip('#')
-          r = int(hex_str[0:2], 16) / 255.0
-          g = int(hex_str[2:4], 16) / 255.0
-          b = int(hex_str[4:6], 16) / 255.0
-          return f'vec3({r:.3f}, {g:.3f}, {b:.3f})'
-
-      with open('$jsonDataPath') as f:
-          data = json.load(f)
-
-      with open('${template}') as f:
-          tmpl = Template(f.read())
-
-      tmpl.globals['to_rgb_vec3'] = to_rgb_vec3
-
-      with open('$out', 'w') as f:
-          f.write(tmpl.render(**data))
-      "
-    '';
-
-  base16Keys = [
-    "base00"
-    "base01"
-    "base02"
-    "base03"
-    "base04"
-    "base05"
-    "base06"
-    "base07"
-    "base08"
-    "base09"
-    "base0A"
-    "base0B"
-    "base0C"
-    "base0D"
-    "base0E"
-    "base0F"
-  ];
-  cleanColors = lib.genAttrs base16Keys (key: config.lib.stylix.colors.${key});
+  renderUtils = import ../../render-template.nix {inherit pkgs config lib;};
+  renderJinja2 = renderUtils.renderJinja2;
+  cleanColors = renderUtils.cleanColors;
 
   templateData =
     cleanColors
     // {
       font = config.stylix.fonts.monospace.name or "JetBrainsMono Nerd Font";
+      extracmds = cfg.extracmds;
     };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
   renderedShader = renderJinja2 "background.glsl" ./background.glsl.j2 templateData;
+  renderedNoctalia = renderJinja2 "noctalia.json" ./noctalia.json.j2 (
+    templateData
+    // {
+      volume_sfx_path = "${pkgs.kdePackages.ocean-sound-theme}/share/sounds/ocean/stereo/audio-volume-change.oga";
+    }
+  );
+
+  silencedSocat = pkgs.writeShellScriptBin "socat" ''
+    exec ${pkgs.socat}/bin/socat -d1 "$@"
+  '';
 in {
   options.homeSettings.driftwm = {
     enable = mkEnableOption "driftwm";
+    extracmds = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Extra commands to run on startup";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -103,7 +73,7 @@ in {
 
     programs.noctalia-shell = {
       enable = true;
-      settings = mkForce ./noctalia.json;
+      settings = mkForce renderedNoctalia;
     };
 
     systemd.user.services.driftwm = {
@@ -133,6 +103,7 @@ in {
       };
       Service = {
         ExecStart = "${pkgs.kdePackages.kwallet-pam}/libexec/pam_kwallet_init";
+        Environment = "PATH=${silencedSocat}/bin:${pkgs.socat}/bin:${pkgs.coreutils}/bin:\${PATH}";
         Type = "simple";
         Restart = "no";
       };

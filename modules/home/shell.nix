@@ -32,9 +32,9 @@ in {
         "-" = "cd -";
       }
       // (lib.listToAttrs (
-        builtins.map (i: {
+        map (i: {
           name = "..${toString i}";
-          value = "cd " + (lib.concatStringsSep "/" (builtins.map (x: "..") (lib.range 1 i)));
+          value = "cd " + (lib.concatStringsSep "/" (map (x: "..") (lib.range 1 i)));
         }) (lib.range 2 10)
       ));
   };

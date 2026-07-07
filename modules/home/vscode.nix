@@ -89,27 +89,38 @@
   ]);
 
   allExtensions = coreExtensions ++ programmingExtensions ++ pythonExtensions ++ latexExtensions;
+  fhsVscode = pkgs.vscode.fhsWithPackages (p:
+    lib.optionals isProgramming (with p; [
+      cargo
+      rustc
+      rust-analyzer
+    ])
+    ++ lib.optionals isPython (with p; [
+      python3
+      python3Packages.ipykernel
+      black
+      isort
+    ])
+    ++ [p.nixd]);
+
+  ephemeralVscode = pkgs.symlinkJoin {
+    name = "code";
+    paths = [fhsVscode];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      rm $out/bin/code
+      makeWrapper ${fhsVscode}/bin/code $out/bin/code \
+        --run 'USER_DATA_DIR="/tmp/vscode-''${USER}"; mkdir -p "''${USER_DATA_DIR}/User"; if [ -f "''${HOME}/.config/Code/User/settings.json" ]; then cp -f "''${HOME}/.config/Code/User/settings.json" "''${USER_DATA_DIR}/User/settings.json"; chmod +w "''${USER_DATA_DIR}/User/settings.json"; fi; if [ -f "''${HOME}/.config/Code/User/keybindings.json" ]; then cp -f "''${HOME}/.config/Code/User/keybindings.json" "''${USER_DATA_DIR}/User/keybindings.json"; chmod +w "''${USER_DATA_DIR}/User/keybindings.json"; fi' \
+        --add-flags '--user-data-dir /tmp/vscode-''${USER}'
+    '';
+  };
 in {
   config = lib.mkIf cfg.editors.enable {
     stylix.targets.vscode.enable = true;
 
     programs.vscode = {
       enable = true;
-      # FHS wrapper with language-server binaries available inside the chroot.
-      # Packages are gated on the same feature flags as their extensions.
-      package = pkgs.vscode.fhsWithPackages (p:
-        lib.optionals isProgramming (with p; [
-          cargo
-          rustc
-          rust-analyzer
-        ])
-        ++ lib.optionals isPython (with p; [
-          python3
-          python3Packages.ipykernel
-          black
-          isort
-        ])
-        ++ [p.nixd]);
+      package = ephemeralVscode;
       mutableExtensionsDir = false;
 
       profiles.default = {
@@ -128,6 +139,7 @@ in {
           "editor.wordWrap" = "off";
           "editor.formatOnSave" = true;
           "editor.inlineSuggest.enabled" = true;
+          "editor.mouseWheelZoom" = true;
 
           # ── Updates & Auto-updates ────────────────────────────────────────────
           "extensions.autoUpdate" = false;
@@ -142,8 +154,8 @@ in {
 
           # ── Telemetry — fully disabled ────────────────────────────────────────
           "telemetry.telemetryLevel" = "off";
-          "telemetry.enableCrashReporter" = false;
-          "telemetry.enableTelemetry" = false;
+          #"telemetry.enableCrashReporter" = false;
+          #"telemetry.enableTelemetry" = false;
           "redhat.telemetry.enabled" = false;
           "ms-python.python.experiments.enabled" = false;
           "julia.enableTelemetry" = false;

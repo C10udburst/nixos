@@ -37,6 +37,12 @@
 
   # Home-Manager-only modules
   git = true;
-  driftwm = true;
+  driftwm = {
+    enable = true;
+    extracmds = [
+      # sets monitor layout for my dual-monitor setup
+      "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0"
+    ];
+  };
   ulauncher = false;
 }

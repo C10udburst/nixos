@@ -18,41 +18,12 @@ in {
         iconTheme = "breeze-dark";
       };
 
-      configFile = {
-        "kwinrc" = {
-          "org.kde.kdecoration2" = {
-            "library" = "org.kde.klassy";
-            "theme" = "org.kde.klassy";
-          };
-        };
-        "kdeglobals" = {
-          "KDE" = {
-            "widgetStyle" = "klassy";
-          };
-        };
-        "dolphinrc" = {
-          "MainWindow" = {
-            "MenuBar" = "Enabled";
-          };
-        };
-        "konsolerc" = {
-          "Desktop Entry" = {
-            "DefaultProfile" = "JetBrainsMono.profile";
-          };
-          "KonsoleWindow" = {
-            "ShowMenuBarByDefault" = true;
-          };
-        };
-      };
-
       krunner = {
         shortcuts.launch = "Meta+Space";
       };
     };
 
     home.packages = [
-      pkgs.klassy
-      pkgs.kdePackages.karousel
     ];
   };
 }

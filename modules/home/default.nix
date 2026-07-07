@@ -30,7 +30,6 @@
         git.enable = lib.mkOption {type = lib.types.bool;};
         plasma.enable = lib.mkOption {type = lib.types.bool;};
         llm.enable = lib.mkOption {type = lib.types.bool;};
-        driftwm.enable = lib.mkOption {type = lib.types.bool;};
         tailscale.enable = lib.mkOption {type = lib.types.bool;};
         shell.enable = lib.mkOption {type = lib.types.bool;};
         ulauncher.enable = lib.mkOption {type = lib.types.bool;};
@@ -59,7 +58,16 @@
       git.enable = lib.mkDefault (config.hostSettings.git or false);
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
-      driftwm.enable = lib.mkDefault (config.hostSettings.driftwm or false);
+      driftwm.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.driftwm or false)
+        then config.hostSettings.driftwm.enable or false
+        else config.hostSettings.driftwm or false
+      );
+      driftwm.extracmds = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.driftwm or false)
+        then config.hostSettings.driftwm.extracmds or []
+        else []
+      );
       tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
       shell.enable = lib.mkDefault true;
       ulauncher.enable = lib.mkDefault (config.hostSettings.ulauncher or false);

@@ -40,6 +40,7 @@
     ./flatpak.nix
     ./samba.nix
     ./scripts
+    ./sddm
   ];
 
   options.hostSettings = lib.mkOption {
@@ -59,7 +60,11 @@
     android.enable = lib.mkDefault (config.hostSettings.android or false);
     llm.enable = lib.mkDefault (config.hostSettings.llm or false);
     plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
-    driftwm.enable = lib.mkDefault (config.hostSettings.driftwm or false);
+    driftwm.enable = lib.mkDefault (
+      if builtins.isAttrs (config.hostSettings.driftwm or false)
+      then config.hostSettings.driftwm.enable or false
+      else config.hostSettings.driftwm or false
+    );
     pipewire.enable = lib.mkDefault (config.hostSettings.pipewire or false);
     openssh.enable = lib.mkDefault (config.hostSettings.openssh or false);
     packages.enable = lib.mkDefault (config.hostSettings.packages or false);
