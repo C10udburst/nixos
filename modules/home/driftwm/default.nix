@@ -29,10 +29,6 @@ with lib; let
       volume_sfx_path = "${pkgs.kdePackages.ocean-sound-theme}/share/sounds/ocean/stereo/audio-volume-change.oga";
     }
   );
-
-  silencedSocat = pkgs.writeShellScriptBin "socat" ''
-    exec ${pkgs.socat}/bin/socat -d1 "$@"
-  '';
 in {
   options.homeSettings.driftwm = {
     enable = mkEnableOption "driftwm";

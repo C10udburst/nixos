@@ -38,14 +38,14 @@ in {
     ];
 
     vmoptionsMap = {
-      "IntelliJIdea2026.1" = "idea.vmoptions";
-      "PyCharm2026.1" = "pycharm.vmoptions";
+      "IntelliJIdea2026.1" = "idea";
+      "PyCharm2026.1" = "pycharm";
     };
 
     # iterate over the vmoptionsMap and create symlinks for each IDE
     home.file = lib.mkMerge (lib.attrsets.mapAttrs (name: vmoptions: {
-        source = "${jetbra-netfilter}/vmoptions/${vmoptions}";
-        target = ".config/JetBrains/${name}/${vmoptions}";
+        source = "${jetbra-netfilter}/vmoptions/${vmoptions}.vmoptions";
+        target = ".config/JetBrains/${name}/${vmoptions}64.vmoptions";
       })
       cfg.vmoptionsMap);
   };
