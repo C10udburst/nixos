@@ -103,17 +103,56 @@
     ])
     ++ [p.nixd]);
 
-  ephemeralVscode = pkgs.symlinkJoin {
-    name = "code";
-    paths = [fhsVscode];
-    nativeBuildInputs = [pkgs.makeWrapper];
-    postBuild = ''
-      rm $out/bin/code
-      makeWrapper ${fhsVscode}/bin/code $out/bin/code \
-        --run 'USER_DATA_DIR="/tmp/vscode-''${USER}"; mkdir -p "''${USER_DATA_DIR}/User"; if [ -f "''${HOME}/.config/Code/User/settings.json" ]; then cp -f "''${HOME}/.config/Code/User/settings.json" "''${USER_DATA_DIR}/User/settings.json"; chmod +w "''${USER_DATA_DIR}/User/settings.json"; fi; if [ -f "''${HOME}/.config/Code/User/keybindings.json" ]; then cp -f "''${HOME}/.config/Code/User/keybindings.json" "''${USER_DATA_DIR}/User/keybindings.json"; chmod +w "''${USER_DATA_DIR}/User/keybindings.json"; fi' \
-        --add-flags '--user-data-dir /tmp/vscode-''${USER}'
-    '';
-  };
+  ephemeralVscode = pkgs.writeShellScriptBin "code" ''
+    REAL_CODE_DIR="$HOME/.config/Code"
+    TEMP_BASE="/tmp/vscode-overlay-$USER"
+    UPPER_DIR="$TEMP_BASE/upper"
+    WORK_DIR="$TEMP_BASE/work"
+    MERGED_DIR="$TEMP_BASE/merged"
+
+    # Ensure dirs exist
+    mkdir -p "$REAL_CODE_DIR"
+    mkdir -p "$REAL_CODE_DIR/User/globalStorage"
+    mkdir -p "$REAL_CODE_DIR/User/workspaceStorage"
+    mkdir -p "$REAL_CODE_DIR/User/History"
+    mkdir -p "$REAL_CODE_DIR/User/snippets"
+    mkdir -p "$REAL_CODE_DIR/Backups"
+
+    # Recreate temp mount structures
+    rm -rf "$TEMP_BASE"
+    mkdir -p "$UPPER_DIR" "$WORK_DIR" "$MERGED_DIR"
+
+    # Run unshare to create a user and mount namespace
+    exec ${pkgs.util-linux}/bin/unshare -U -m -r bash -c '
+      # Mount the overlayfs over the entire Code config directory
+      ${pkgs.util-linux}/bin/mount -t overlay overlay -o lowerdir="'"$REAL_CODE_DIR"'",upperdir="'"$UPPER_DIR"'",workdir="'"$WORK_DIR"'" "'"$MERGED_DIR"'"
+
+      # Bind mount the persistent directories to ensure they write back to the real directory
+      ${pkgs.util-linux}/bin/mount --bind "'"$REAL_CODE_DIR"'/User/globalStorage" "'"$MERGED_DIR"'/User/globalStorage"
+      ${pkgs.util-linux}/bin/mount --bind "'"$REAL_CODE_DIR"'/User/workspaceStorage" "'"$MERGED_DIR"'/User/workspaceStorage"
+      ${pkgs.util-linux}/bin/mount --bind "'"$REAL_CODE_DIR"'/User/History" "'"$MERGED_DIR"'/User/History"
+      ${pkgs.util-linux}/bin/mount --bind "'"$REAL_CODE_DIR"'/User/snippets" "'"$MERGED_DIR"'/User/snippets"
+      ${pkgs.util-linux}/bin/mount --bind "'"$REAL_CODE_DIR"'/Backups" "'"$MERGED_DIR"'/Backups"
+
+      # Now, in the merged directory, make settings.json and keybindings.json writable copies
+      if [ -L "'"$MERGED_DIR"'/User/settings.json" ]; then
+        TARGET=$(readlink "'"$MERGED_DIR"'/User/settings.json")
+        rm -f "'"$MERGED_DIR"'/User/settings.json"
+        cp "$TARGET" "'"$MERGED_DIR"'/User/settings.json"
+        chmod +w "'"$MERGED_DIR"'/User/settings.json"
+      fi
+
+      if [ -L "'"$MERGED_DIR"'/User/keybindings.json" ]; then
+        TARGET=$(readlink "'"$MERGED_DIR"'/User/keybindings.json")
+        rm -f "'"$MERGED_DIR"'/User/keybindings.json"
+        cp "$TARGET" "'"$MERGED_DIR"'/User/keybindings.json"
+        chmod +w "'"$MERGED_DIR"'/User/keybindings.json"
+      fi
+
+      # Execute VSCode with the merged directory as user-data-dir
+      exec ${fhsVscode}/bin/code --user-data-dir "'"$MERGED_DIR"'" "$@"
+    ' -- "$@"
+  '';
 in {
   config = lib.mkIf cfg.editors.enable {
     stylix.targets.vscode.enable = true;
@@ -127,6 +166,9 @@ in {
         extensions = allExtensions;
 
         userSettings = {
+          # ── Security & Trust ──────────────────────────────────────────────────
+          "security.workspace.trust.enabled" = false;
+
           # ── Appearance & editor UX ────────────────────────────────────────────
           "editor.bracketPairColorization.enabled" = true;
           "editor.guides.bracketPairs" = "active";

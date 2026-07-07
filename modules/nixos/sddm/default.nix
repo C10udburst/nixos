@@ -34,6 +34,11 @@
     installPhase = ''
       mkdir -p $out/share/sddm/themes/eucalyptus-drop
       cp -r * $out/share/sddm/themes/eucalyptus-drop/
+
+      # Copy background image into the theme directory to bypass sandboxing issues
+      mkdir -p $out/share/sddm/themes/eucalyptus-drop/Backgrounds
+      cp -f ${config.stylix.image} $out/share/sddm/themes/eucalyptus-drop/Backgrounds/stylix_bg
+
       cp -f ${renderedConfig} $out/share/sddm/themes/eucalyptus-drop/theme.conf
     '';
   };

@@ -30,6 +30,13 @@
     libdrm
     udev
     xorg.xcbutilcursor
+    xorg.libXcomposite
+    xorg.libXdamage
+    xorg.libXrender
+    xorg.libXxf86vm
+    expat
+    libxml2
+    libpng
   ];
 
   systemd.tmpfiles.rules = [

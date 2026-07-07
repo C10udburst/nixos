@@ -24,5 +24,13 @@ in {
     services.flatpak.packages = [
       "org.jdownloader.JDownloader"
     ];
+
+    services.flatpak.overrides = {
+      "org.jdownloader.JDownloader" = {
+        Context = {
+          sockets = ["x11" "wayland" "fallback-x11"];
+        };
+      };
+    };
   };
 }

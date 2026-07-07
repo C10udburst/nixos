@@ -45,6 +45,7 @@ in {
         ncompress
         cpio
         socat
+        xorg.xcbutilcursor
       ]
       ++ (
         if config.networking.wireless.enable
