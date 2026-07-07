@@ -20,7 +20,6 @@ in {
     security.pam.services.swaylock = lib.mkDefault {};
     services.graphical-desktop.enable = lib.mkDefault true;
     security.polkit.enable = lib.mkDefault true;
-    services.displayManager.sessionPackages = [pkgs.driftwm];
 
     services.gnome.gnome-keyring.enable = lib.mkDefault true;
 
@@ -37,6 +36,22 @@ in {
       restartIfChanged = false;
       enableDefaultPath = false;
     };
+
+    services.displayManager.sessionPackages = [
+      (pkgs.runCommand "driftwm-session" {
+          passthru.providedSessions = ["driftwm"];
+        } ''
+          mkdir -p $out/share/wayland-sessions
+          cat <<EOF > $out/share/wayland-sessions/driftwm.desktop
+          [Desktop Entry]
+          Name=driftwm
+          Comment=A trackpad-first infinite canvas Wayland compositor
+          Exec=${pkgs.driftwm}/bin/driftwm-session
+          Type=Application
+          DesktopNames=driftwm
+          EOF
+        '')
+    ];
 
     xdg.portal = {
       enable = lib.mkDefault true;

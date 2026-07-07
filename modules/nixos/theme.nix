@@ -32,6 +32,6 @@
         name = "JetBrainsMono Nerd Font";
       };
     };
-    targets.qt.platform = lib.mkForce "qtct";
+    #targets.qt.platform = lib.mkForce "qtct";
   };
 }

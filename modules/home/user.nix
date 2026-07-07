@@ -45,7 +45,9 @@ in {
       };
     };
 
-    qt.enable = true;
+    qt = {
+      enable = true;
+    };
 
     home.sessionVariables = {
       QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";

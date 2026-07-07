@@ -43,7 +43,6 @@
     ./flatpak.nix
     ./samba.nix
     ./scripts
-    ./sddm
   ];
 
   options.hostSettings = lib.mkOption {
