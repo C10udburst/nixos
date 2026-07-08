@@ -25,9 +25,6 @@ in {
     programs.home-manager.enable = true;
 
     systemd.user.sessionVariables = {
-      JAVA_HOME = "/run/current-system/sw/lib/openjdk";
-      ANDROID_HOME = "/run/current-system/sw/libexec/android-sdk";
-      ANDROID_SDK_ROOT = "/run/current-system/sw/libexec/android-sdk";
       _JAVA_AWT_WM_NONREPARENTING = "1"; # Fixes Java GUI apps on non-reparenting WMs like driftwm
     };
 

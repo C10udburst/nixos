@@ -3,7 +3,7 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   nix.gc = {
-    automatic = false;
+    automatic = true;
   };
 
   nix.optimise.automatic = false;

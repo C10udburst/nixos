@@ -18,6 +18,7 @@ in {
         jq
         git
         nix-output-monitor
+        nix-heuristic-gc
         file
         curl
         wget

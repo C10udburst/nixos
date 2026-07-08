@@ -15,5 +15,9 @@ in {
       enable = true;
       package = pkgs.jdk;
     };
+
+    environment.sessionVariables = {
+      JAVA_HOME = "/run/current-system/sw/lib/openjdk";
+    };
   };
 }

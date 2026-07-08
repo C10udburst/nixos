@@ -52,8 +52,6 @@
   };
 
   config = {
-    security.polkit.enable = true;
-
     systemSettings = {
       users = lib.mkDefault (
         if config.hostSettings ? username

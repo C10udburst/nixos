@@ -18,6 +18,7 @@ in {
     environment.systemPackages = [
       pkgs.driftwm
       pkgs.wlr-randr
+      pkgs.wl-clipboard
       pkgs.playerctl
       pkgs.pavucontrol
       pkgs.pamixer
@@ -33,7 +34,6 @@ in {
 
     security.pam.services.swaylock = lib.mkDefault {};
     services.graphical-desktop.enable = lib.mkDefault true;
-    security.polkit.enable = lib.mkDefault true;
 
     services.gnome.gnome-keyring.enable = lib.mkDefault true;
 

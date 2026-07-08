@@ -55,7 +55,14 @@ in {
       }
     '';
     environment.systemPackages = with pkgs; [
-      brave
+      (brave.override {
+        commandLineArgs = [
+          "--enable-blink-features=MiddleClickAutoscrol"
+          "--allow-insecure-localhost"
+          "--ozone-platform-hint=wayland"
+          "--enable-features=WaylandWindowDecorations"
+        ];
+      })
     ];
   };
 }

@@ -15,6 +15,7 @@
     ./driftwm
     ./ulauncher.nix
     ./vscode.nix
+    ./associations.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -77,6 +78,7 @@
       programming = lib.mkDefault (config.hostSettings.programming or false);
       python = lib.mkDefault (config.hostSettings.python or false);
       latex = lib.mkDefault (config.hostSettings.latex or false);
+      associations.enable = lib.mkDefault true;
     };
   };
 }
