@@ -54,17 +54,6 @@ in {
         "BrowserGuestModeEnabled": true
       }
     '';
-    environment.etc."brave/policies/managed/extra_policies.json".text = builtins.toJSON {
-      LocalStateFeaturesEnabled = [
-        "middle-button-autoscroll"
-        "brave-extensions-manifest-v2"
-        "brave-origin"
-        "containers"
-      ];
-      LocalStateFeaturesDisabled = [
-        "brave-dark-mode-block"
-      ];
-    };
     environment.systemPackages = with pkgs; [
       (brave.override {
         commandLineArgs = [
