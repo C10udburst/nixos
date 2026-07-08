@@ -39,16 +39,22 @@ with lib; let
   in
     builtins.listToAttrs allMappings;
 
-  # Custom wrapper for Mayo to add MIME types to its desktop file
+  # Custom wrapper for Mayo to add MIME types to its desktop file and prevent crashes
   mayoCustom = pkgs.symlinkJoin {
     name = "mayo-custom";
     paths = [pkgs.mayo];
+    nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
       rm -rf $out/share/applications
       mkdir -p $out/share/applications
       cp ${pkgs.mayo}/share/applications/mayo.desktop $out/share/applications/mayo.desktop
       chmod +w $out/share/applications/mayo.desktop
       echo "MimeType=model/step;model/iges;model/x3d+xml;model/gltf+json;model/gltf-binary;application/x-step;application/x-iges;application/x-3ds;application/x-obj;application/x-stl;application/sla;model/x-brep;application/x-brep;image/vnd.dxf;application/dxf;model/obj;model/vrml;x-world/x-vrml;application/x-amf;model/ply;application/x-ply;model/x-off;application/x-off;model/3mf;application/vnd.ms-package.3dmanufacturing-3dmodel+xml;image/x-3ds;model/fbx;application/x-fbx;model/vnd.collada+xml;application/x-dae;model/x3d+vrml;model/x-directx;application/x-directx;" >> $out/share/applications/mayo.desktop
+
+      rm -f $out/bin/mayo
+      makeWrapper ${pkgs.mayo}/bin/mayo $out/bin/mayo \
+        --set vblank_mode 0 \
+        --set QT_QPA_PLATFORM xcb
     '';
   };
 
