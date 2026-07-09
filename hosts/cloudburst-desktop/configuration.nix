@@ -39,6 +39,7 @@ in {
   boot.loader.systemd-boot.extraInstallCommands = ''
     echo "auto-entries 0" >> ${config.boot.loader.efi.efiSysMountPoint}/loader/loader.conf
   '';
+  boot.initrd.kernelModules = ["amdgpu"];
 
   networking.hostName = "cloudburst-desktop"; # Define your hostname.
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.

@@ -14,6 +14,16 @@ in {
     services.greetd = {
       enable = true;
     };
+
+    systemd.services.greetd = {
+      after = ["graphical.target" "systemd-user-sessions.service"];
+      wants = ["graphical.target"];
+      environment = {
+        GTK_USE_PORTAL = "0";
+        GDK_DEBUG = "no-portals";
+      };
+    };
+
     programs.regreet = {
       enable = true;
       cageArgs = ["-s" "-m" "last" "-d"];

@@ -13,7 +13,50 @@
     enableFishIntegration = true;
     settings = {
       add_newline = false;
-      format = "[](color_orange)$os$username[](bg:color_yellow fg:color_orange)$directory[](fg:color_yellow bg:color_aqua)$git_branch$git_status[](fg:color_aqua bg:color_blue)$c$rust$golang$nodejs[](fg:color_blue bg:color_bg3)$docker_context[](fg:color_bg3 bg:color_purple)$time[ ](fg:color_purple)\n$character";
+      format = let
+        segments = [
+          {
+            bg = "color_orange";
+            content = "$os$username$hostname";
+          }
+          {
+            bg = "color_yellow";
+            content = "$directory";
+          }
+          {
+            bg = "color_aqua";
+            content = "$git_branch$git_status";
+          }
+          {
+            bg = "color_blue";
+            content = "$c$rust$golang$nodejs$gradle$nix_shell$python";
+          }
+          {
+            bg = "color_bg3";
+            content = "$docker_context";
+          }
+          {
+            bg = "color_purple";
+            content = "$status$cmd_duration";
+          }
+        ];
+
+        # Recursively join segments with transition arrows
+        joinSegments = list:
+          if list == []
+          then ""
+          else if builtins.length list == 1
+          then (builtins.head list).content + "[ ](fg:${(builtins.head list).bg})\n$character"
+          else let
+            first = builtins.head list;
+            rest = builtins.tail list;
+            second = builtins.head rest;
+          in
+            first.content + "[](bg:${second.bg} fg:${first.bg})" + (joinSegments rest);
+
+        firstBg = (builtins.head segments).bg;
+      in
+        "[](${firstBg})" + (joinSegments segments);
 
       palette = lib.mkForce "stylix";
 
@@ -89,22 +132,58 @@
         format = "[ $symbol($version) ]($style)";
       };
 
+      gradle = {
+        symbol = " ";
+        style = "bg:color_blue fg:color_bg0";
+        format = "[ $symbol($version) ]($style)";
+      };
+
       docker_context = {
         symbol = " ";
         style = "bg:color_bg3 fg:color_fg0";
         format = "[ $symbol ]($style)";
       };
 
-      time = {
+      nix_shell = {
         disabled = false;
-        time_format = "%R";
+        symbol = "❄️ ";
+        style = "bg:color_blue fg:color_bg0";
+        format = "[ $symbol($state) ]($style)";
+        heuristic = true;
+      };
+
+      python = {
+        symbol = " ";
+        style = "bg:color_blue fg:color_bg0";
+        format = "[ $symbol$version ]($style)[(\\($virtualenv\\)) ]($style)";
+      };
+
+      hostname = {
+        ssh_only = true;
+        disabled = false;
+        symbol = "󰢹 ";
+        style = "bg:color_orange fg:color_fg0";
+        format = "[ $symbol$hostname ]($style)";
+      };
+
+      status = {
+        disabled = false;
+        symbol = "✗ ";
         style = "bg:color_purple fg:color_fg0";
-        format = "[  $time ]($style)";
+        format = "[$symbol$status ]($style)";
+      };
+
+      cmd_duration = {
+        disabled = false;
+        min_time = 0;
+        show_milliseconds = true;
+        style = "bg:color_purple fg:color_fg0";
+        format = "[ $duration ]($style)";
       };
 
       character = {
-        success_symbol = "[➜](bold green) ";
-        error_symbol = "[➜](bold red) ";
+        success_symbol = "[$](bold green) ";
+        error_symbol = "[$](bold red) ";
       };
     };
   };
