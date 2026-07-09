@@ -22,16 +22,19 @@ in {
 
     programs.regreet = {
       enable = true;
-      cageArgs = ["-d" "-s" "-m" "last"];
+      cageArgs = ["-d" "-s"];
+      settings = {
+        widget.clock = {
+          format = "%a %H:%M";
+          timezone = config.time.timeZone;
+          locale = config.i18n.defaultLocale;
+        };
+      };
     };
 
     services.accounts-daemon.enable = true;
     services.displayManager.sddm.enable = lib.mkForce false;
     services.gnome.gnome-keyring.enable = true;
     security.pam.services.greetd.enableGnomeKeyring = true;
-
-    systemd.services.greetd.environment = {
-      GSK_RENDERER = "ngl";
-    };
   };
 }
