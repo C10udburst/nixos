@@ -22,7 +22,7 @@ in {
 
     programs.regreet = {
       enable = true;
-      cageArgs = ["-d" "-s"];
+      cageArgs = ["-d" "-m" "last"];
       settings = {
         widget.clock = {
           format = "%a %H:%M";
