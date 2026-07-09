@@ -28,7 +28,6 @@
     ./utils.nix
     ./tailscale.nix
     ./xrdp.nix
-    ./wayvnc.nix
     ./waypipe.nix
     ./fonts.nix
     ./editors.nix
@@ -104,12 +103,6 @@
       brave.enable = lib.mkDefault (config.hostSettings.brave or false);
       flatpak.enable = lib.mkDefault (config.hostSettings.flatpak or false);
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
-
-      wayvnc.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.wayvnc or false)
-        then config.hostSettings.wayvnc.enable or false
-        else config.hostSettings.wayvnc or false
-      );
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
 

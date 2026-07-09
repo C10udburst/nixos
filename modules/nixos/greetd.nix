@@ -15,22 +15,23 @@ in {
       enable = true;
     };
 
-    systemd.services.greetd = {
-      after = ["graphical.target" "systemd-user-sessions.service"];
-      wants = ["graphical.target"];
-      environment = {
-        GTK_USE_PORTAL = "0";
-        GDK_DEBUG = "no-portals";
-      };
+    users.users.greeter = {
+      home = "/var/lib/greetd";
+      createHome = true;
     };
 
     programs.regreet = {
       enable = true;
-      cageArgs = ["-s" "-m" "last" "-d"];
+      cageArgs = ["-d" "-s" "-m" "last"];
     };
+
     services.accounts-daemon.enable = true;
     services.displayManager.sddm.enable = lib.mkForce false;
     services.gnome.gnome-keyring.enable = true;
     security.pam.services.greetd.enableGnomeKeyring = true;
+
+    systemd.services.greetd.environment = {
+      GSK_RENDERER = "ngl";
+    };
   };
 }
