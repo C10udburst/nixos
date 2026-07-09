@@ -9,6 +9,7 @@
     ./theme.nix
     ./llm.nix
     ./locale.nix
+    ./main.nix
     ./networking.nix
     ./nix.nix
     ./openssh.nix

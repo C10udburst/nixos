@@ -16,7 +16,7 @@ in {
     };
     programs.regreet = {
       enable = true;
-      cageArgs = ["-s" "-m" "last"];
+      cageArgs = ["-s" "-m" "last" "-d"];
     };
     services.accounts-daemon.enable = true;
     services.displayManager.sddm.enable = lib.mkForce false;
