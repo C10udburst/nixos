@@ -5,93 +5,83 @@
   ...
 }: let
   cfg = config.systemSettings.wayvnc;
-  allUsers = lib.unique (config.systemSettings.users ++ config.systemSettings.adminUsers);
-  isHeadless = cfg.session == "headless";
-  headlessSwayConfig = pkgs.writeText "sway-headless.config" ''
-    # Minimal headless Sway configuration
-    output HEADLESS-1 resolution 1920x1080
 
-    # Run the default driftwm window manager session
-    exec ${pkgs.driftwm}/bin/driftwm-session
+  greetdWayvncWrapper = pkgs.writeShellScript "greetd-wayvnc-wrapper" ''
+    # Wait for the Wayland socket created by Cage
+    for i in {1..20}; do
+      if [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
+        ${pkgs.wayvnc}/bin/wayvnc 0.0.0.0 5900 &
+        break
+      fi
+      sleep 0.1
+    done
+    exec ${config.programs.regreet.package}/bin/regreet
+  '';
+
+  headlessGreetdConfig = pkgs.writeText "greetd-headless.toml" ''
+    [general]
+    run_directory = "/run/greetd-headless"
+
+    [terminal]
+    vt = 8
+
+    [default_session]
+    command = "${pkgs.dbus}/bin/dbus-run-session ${pkgs.cage}/bin/cage -s -m last -d -- ${greetdWayvncWrapper}"
+    user = "greeter"
   '';
 in {
   options.systemSettings.wayvnc = {
-    enable = lib.mkEnableOption "Enable wayvnc VNC server running inside a Wayland session";
-
-    session = lib.mkOption {
-      type = lib.types.enum ["greetd" "headless"];
-      default = "greetd";
-      description = "The type of display/compositor session wayvnc attaches to.";
-    };
+    enable = lib.mkEnableOption "Enable wayvnc VNC server running inside a Wayland/greetd session";
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [pkgs.wayvnc] ++ lib.optional isHeadless pkgs.sway;
+    environment.systemPackages = [pkgs.wayvnc];
 
     networking.firewall.allowedTCPPorts = [5900];
 
-    users.users = lib.mkIf isHeadless (
-      lib.genAttrs allUsers (username: {
-        linger = true;
-      })
-    );
+    # Setup the PAM service for greetd if not already present
+    security.pam.services.greetd = {};
 
-    # systemd user services
-    systemd.user.services = {
-      # Headless Sway compositor service
-      sway-headless = lib.mkIf isHeadless {
-        description = "Headless Sway compositor for wayvnc";
-        before = ["wayvnc.service"];
-        after = ["graphical-session-pre.target"];
-        wants = ["graphical-session-pre.target"];
-        wantedBy = ["default.target"];
+    # Run a separate, concurrent greetd instance in headless mode
+    systemd.services.greetd-headless = {
+      description = "Headless greetd Login Manager";
+      after = ["network.target" "dbus.socket" "systemd-user-sessions.service" "plymouth-quit-active.service" "getty@tty8.service"];
+      wants = ["dbus.socket" "systemd-user-sessions.service"];
+      wantedBy = ["multi-user.target"];
 
-        environment = {
-          WLR_BACKENDS = "headless";
-          WLR_LIBINPUT_NO_DEVICES = "1";
-          WAYLAND_DISPLAY = "wayland-1";
-          XDG_RUNTIME_DIR = "/run/user/%U";
-        };
-
-        serviceConfig = {
-          Type = "simple";
-          ExecStart = "${pkgs.sway}/bin/sway -c ${headlessSwayConfig} -s wayland-1";
-          Restart = "on-failure";
-          RestartSec = "5s";
-        };
+      environment = {
+        WLR_BACKENDS = "headless";
+        WLR_LIBINPUT_NO_DEVICES = "1";
       };
 
-      # WayVNC VNC server service
-      wayvnc = {
-        description = "WayVNC — VNC server for Wayland compositors";
+      serviceConfig = {
+        ExecStart = "${pkgs.greetd}/bin/greetd --config ${headlessGreetdConfig}";
+        Restart = "always";
+        RestartSec = "1s";
+        RuntimeDirectory = "greetd-headless";
+        RuntimeDirectoryMode = "0755";
+      };
+    };
 
-        # In headless mode, wayvnc starts after sway-headless.
-        # Otherwise, it starts after graphical-session.target.
-        after =
-          if isHeadless
-          then ["sway-headless.service"]
-          else ["graphical-session.target"];
-        wants =
-          if isHeadless
-          then ["sway-headless.service"]
-          else ["graphical-session.target"];
-        wantedBy =
-          if isHeadless
-          then ["default.target"]
-          else ["graphical-session.target"];
+    # systemd user service for wayvnc inside the logged-in user session
+    systemd.user.services.wayvnc = {
+      description = "WayVNC — VNC server for Wayland compositors";
 
-        environment = {
-          WAYLAND_DISPLAY = "wayland-1";
-          XDG_RUNTIME_DIR = "/run/user/%U";
-        };
+      after = ["graphical-session.target"];
+      wants = ["graphical-session.target"];
+      wantedBy = ["graphical-session.target"];
 
-        serviceConfig = {
-          Type = "simple";
-          ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
-          ExecStart = "${pkgs.wayvnc}/bin/wayvnc 0.0.0.0 5900";
-          Restart = "on-failure";
-          RestartSec = "5s";
-        };
+      # Let wayvnc inherit WAYLAND_DISPLAY from systemd user manager environment.
+      environment = {
+        XDG_RUNTIME_DIR = "/run/user/%U";
+      };
+
+      serviceConfig = {
+        Type = "simple";
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
+        ExecStart = "${pkgs.wayvnc}/bin/wayvnc 0.0.0.0 5900";
+        Restart = "on-failure";
+        RestartSec = "5s";
       };
     };
   };

@@ -161,9 +161,9 @@
       hostname = {
         ssh_only = true;
         disabled = false;
-        symbol = "󰢹 ";
+        ssh_symbol = "󰢹 ";
         style = "bg:color_orange fg:color_fg0";
-        format = "[ $symbol$hostname ]($style)";
+        format = "[ $ssh_symbol$hostname ]($style)";
       };
 
       status = {
@@ -182,8 +182,8 @@
       };
 
       character = {
-        success_symbol = "[$](bold green) ";
-        error_symbol = "[$](bold red) ";
+        success_symbol = "[\\$](bold green) ";
+        error_symbol = "[\\$](bold red) ";
       };
     };
   };

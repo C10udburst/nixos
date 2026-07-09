@@ -22,9 +22,7 @@
   utils = true;
   tailscale = true;
   xrdp = true;
-  wayvnc = {
-    enable = true;
-  };
+  wayvnc = true;
   waypipe = true;
   editors = true;
   threed = true;
