@@ -13,6 +13,7 @@
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ./nx.sh);
 
   noctalia-dmenu = pkgs.writeShellScriptBin "noctalia-dmenu" (builtins.readFile ./noctalia-dmenu.sh);
+  rofi = pkgs.writeShellScriptBin "rofi" (builtins.readFile ./rofi.sh);
 
   palette = pkgs.writeShellScriptBin "palette" (builtins.readFile ./palette.sh);
   gcode-bounds = pkgs.writers.writePython3Bin "gcode-bounds" {} (builtins.readFile ./gcode-bounds.py);
@@ -23,7 +24,7 @@
   ics-merge = pkgs.writers.writePython3Bin "ics-merge" {} (builtins.readFile ./ics-merge.py);
 in {
   options.systemSettings.scripts = {
-    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, nx)";
+    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, nx, rofi)";
   };
 
   config = lib.mkIf cfg.enable {
@@ -39,6 +40,7 @@ in {
       ics-merge
       nx
       noctalia-dmenu
+      rofi
       palette
     ];
   };

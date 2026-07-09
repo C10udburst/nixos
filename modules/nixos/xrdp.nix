@@ -5,14 +5,22 @@
   ...
 }: let
   cfg = config.systemSettings.xrdp;
+
+  westonIni = pkgs.writeText "weston.ini" ''
+    [core]
+    shell=kiosk-shell.so
+
+    [shell]
+    quit-when-apps-close=true
+  '';
 in {
   options.systemSettings.xrdp = {
     enable = lib.mkEnableOption "Enable xrdp Remote Desktop daemon";
 
     windowManager = lib.mkOption {
       type = lib.types.str;
-      default = "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11";
-      description = "Session command xrdp launches for each connection. Must be an X11 session (startplasma-wayland does not work reliably with xrdp).";
+      default = "${pkgs.coreutils}/bin/env GSK_RENDERER=ngl ${pkgs.weston}/bin/weston --config=${westonIni} -- ${config.programs.regreet.package}/bin/regreet";
+      description = "Session command xrdp launches for each connection. Launches Weston with ReGreet.";
     };
   };
 
@@ -23,5 +31,7 @@ in {
       openFirewall = true;
       audio.enable = true;
     };
+
+    programs.regreet.enable = true;
   };
 }
