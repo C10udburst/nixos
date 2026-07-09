@@ -9,8 +9,8 @@
   environment.systemPackages = with pkgs; [
     kdePackages.breeze-icons
     hicolor-icon-theme
-    libsForQt5.qtstyleplugin-kvantum
-    kdePackages.qtstyleplugin-kvantum
+    #libsForQt5.qtstyleplugin-kvantum
+    #kdePackages.qtstyleplugin-kvantum
   ];
 
   stylix = {

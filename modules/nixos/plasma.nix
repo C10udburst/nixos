@@ -37,7 +37,13 @@ in {
       kdePackages.kwalletmanager
       kdePackages.ksystemlog
       kdePackages.kdeconnect-kde
-      kdePackages.kdesu
+      kdePackages.kde-cli-tools
+    ];
+
+    environment.plasma6.excludePackages = with pkgs.kdePackages; [
+      discover
+      plasma-browser-integration
+      khelpcenter
     ];
   };
 }

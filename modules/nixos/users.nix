@@ -53,11 +53,11 @@ in {
 
     security.polkit.enable = true;
 
-    # security.wrappers.pkexec = {
-    #   setuid = true;
-    #   owner = "root";
-    #   group = "root";
-    #   source = "/run/current-system/sw/bin/pkexec";
-    # };
+    security.wrappers.pkexec = {
+      setuid = true;
+      owner = "root";
+      group = "root";
+      source = "/run/current-system/sw/bin/pkexec";
+    };
   };
 }

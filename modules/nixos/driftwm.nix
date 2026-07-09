@@ -17,10 +17,12 @@ in {
     ];
     environment.systemPackages = [
       pkgs.driftwm
+      pkgs.grim
+      pkgs.slurp
+      pkgs.wlroots
       pkgs.wlr-randr
       pkgs.wl-clipboard
       pkgs.playerctl
-      pkgs.pavucontrol
       pkgs.pamixer
       pkgs.kdePackages.dolphin
       pkgs.xwayland-satellite
@@ -35,8 +37,6 @@ in {
 
     security.pam.services.swaylock = lib.mkDefault {};
     services.graphical-desktop.enable = lib.mkDefault true;
-
-    services.gnome.gnome-keyring.enable = lib.mkDefault true;
 
     # Fix empty "Open With" / default apps in Dolphin and Konsole when running
     # outside of a full Plasma session. KDE service discovery (kbuildsycoca6)

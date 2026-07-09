@@ -44,31 +44,6 @@ in {
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
 
-  hardware.i2c.enable = true;
-
-  services.udev.extraRules = ''
-    KERNEL=="cec*", SUBSYSTEM=="cec", MODE="0660", GROUP="video"
-  '';
-
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
-      xdg-desktop-portal-gtk
-      kdePackages.xdg-desktop-portal-kde
-    ];
-    config = {
-      common = {
-        default = ["gtk"];
-      };
-      driftwm = {
-        default = lib.mkForce ["kde"];
-        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
-        "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-      };
-    };
-  };
-
   home-manager = {
     backupFileExtension = "hm-backup";
     extraSpecialArgs = {inherit inputs;};

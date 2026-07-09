@@ -16,8 +16,11 @@ in {
     };
     programs.regreet = {
       enable = true;
+      cageArgs = ["-s" "-m" "last"];
     };
     services.accounts-daemon.enable = true;
     services.displayManager.sddm.enable = lib.mkForce false;
+    services.gnome.gnome-keyring.enable = true;
+    security.pam.services.greetd.enableGnomeKeyring = true;
   };
 }

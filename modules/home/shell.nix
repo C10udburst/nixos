@@ -19,6 +19,7 @@ in {
         cls = "clear";
         ll = "eza -la --sort name --group-directories-first --git --smart-group -h --extended --icons -M";
         l = "eza --icons --git --group-directories-first";
+        ls = "eza --icons --git --group-directories-first";
         tree = "eza --icons --git --group-directories-first -T -L 2";
         t = "eza --icons --git --group-directories-first -T -L 2";
         "top-10" = "history | awk '{CMD[\$2]++;count++;}END { for (a in CMD)print CMD[a] \" \" CMD[a]/count*100 \"% \" a;}' | grep -v \"./\" | column -c3 -s \" \" -t | sort -nr | nl |  head -n10";
