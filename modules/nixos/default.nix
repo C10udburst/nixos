@@ -110,15 +110,10 @@
         then config.hostSettings.wayvnc.enable or false
         else config.hostSettings.wayvnc or false
       );
-      wayvnc.windowManager = lib.mkDefault (
+      wayvnc.session = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.wayvnc or false)
-        then config.hostSettings.wayvnc.windowManager or "${pkgs.driftwm}/bin/driftwm-session"
-        else "${pkgs.driftwm}/bin/driftwm-session"
-      );
-      wayvnc.extraArgs = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.wayvnc or false)
-        then config.hostSettings.wayvnc.extraArgs or []
-        else []
+        then config.hostSettings.wayvnc.session or "greetd"
+        else "greetd"
       );
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);

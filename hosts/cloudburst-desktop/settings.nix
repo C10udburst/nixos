@@ -24,7 +24,6 @@
   xrdp = true;
   wayvnc = {
     enable = true;
-    extraArgs = ["--disable-input"];
   };
   waypipe = true;
   editors = true;
