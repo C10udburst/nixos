@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 with lib; let
@@ -93,6 +92,8 @@ in {
     xdg.configFile."xdg-desktop-portal/driftwm-portals.conf".text = ''
       [preferred]
       default=kde
+      org.freedesktop.impl.portal.ScreenCast=wlr
+      org.freedesktop.impl.portal.Screenshot=wlr
     '';
   };
 }

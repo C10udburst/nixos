@@ -84,22 +84,5 @@ in {
           EOF
         '')
     ];
-
-    xdg.portal = {
-      enable = true;
-      configPackages = lib.mkDefault [pkgs.driftwm];
-      extraPortals = lib.mkDefault [
-        pkgs.xdg-desktop-portal-gnome
-        pkgs.xdg-desktop-portal-gtk
-      ];
-      config = {
-        driftwm = {
-          default = ["gnome"];
-        };
-        sway = {
-          default = ["gnome"];
-        };
-      };
-    };
   };
 }

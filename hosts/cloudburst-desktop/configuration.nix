@@ -4,6 +4,7 @@
 {
   config,
   pkgs,
+  lib,
   inputs,
   ...
 }: let
@@ -28,7 +29,7 @@ in {
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
     fsType = "ntfs3";
-    options = ["nofail" "rw" "uid=1000" "gid=100" "dmask=007" "fmask=117" "exec" "force"];
+    options = ["nofail" "rw" "windows_names" "uid=1000" "gid=100" "dmask=000" "fmask=000" "iocharset=utf8"];
   };
 
   # Bootloader.
@@ -52,11 +53,18 @@ in {
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
       xdg-desktop-portal-gtk
+      kdePackages.xdg-desktop-portal-kde
     ];
     config = {
       common = {
         default = ["gtk"];
+      };
+      driftwm = {
+        default = lib.mkForce ["kde"];
+        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+        "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
       };
     };
   };

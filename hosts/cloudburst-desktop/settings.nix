@@ -6,6 +6,7 @@
 
   # Modules to enable across NixOS and Home Manager
   plasma = true;
+  greetd = true;
   llm = true;
   jetbrains = true;
 

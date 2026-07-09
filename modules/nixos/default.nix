@@ -16,6 +16,7 @@
     ./pipewire.nix
     ./plasma.nix
     ./driftwm.nix
+    ./greetd.nix
     ./podman.nix
     ./users.nix
     ./python.nix
@@ -63,6 +64,7 @@
       android.enable = lib.mkDefault (config.hostSettings.android or false);
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
+      greetd.enable = lib.mkDefault (config.hostSettings.greetd or false);
       driftwm.enable = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.driftwm or false)
         then config.hostSettings.driftwm.enable or false

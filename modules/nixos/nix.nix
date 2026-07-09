@@ -7,4 +7,5 @@
   };
 
   nix.optimise.automatic = false;
+  nix.settings.warn-dirty = false;
 }
