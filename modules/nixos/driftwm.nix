@@ -24,6 +24,7 @@ in {
       pkgs.pamixer
       pkgs.kdePackages.dolphin
       pkgs.xwayland-satellite
+      pkgs.kdePackages.polkit-kde-agent-1
 
       # Qt / SVG icon support
       pkgs.libsForQt5.qtsvg
@@ -47,12 +48,25 @@ in {
     environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";
 
     # Tell the XDG portal dispatcher which desktop we are so it can pick
-    # the right portal backend (wlr for ScreenCast / Screenshot).
-    environment.sessionVariables.XDG_CURRENT_DESKTOP = "sway";
+    # the right portal backend.
+    environment.sessionVariables.XDG_CURRENT_DESKTOP = "driftwm";
 
     systemd.user.services.driftwm = {
       restartIfChanged = false;
       enableDefaultPath = false;
+    };
+
+    systemd.user.services.polkit-kde-agent = {
+      description = "Polkit KDE Authentication Agent";
+      wantedBy = ["graphical-session.target"];
+      wants = ["graphical-session.target"];
+      after = ["graphical-session.target"];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
+        Restart = "on-failure";
+        RestartSec = 1;
+      };
     };
 
     services.displayManager.sessionPackages = [
@@ -75,17 +89,11 @@ in {
       enable = true;
       configPackages = lib.mkDefault [pkgs.driftwm];
       extraPortals = lib.mkDefault [
-        pkgs.xdg-desktop-portal-wlr
-        pkgs.xdg-desktop-portal-gtk
+        pkgs.kdePackages.xdg-desktop-portal-kde
       ];
-      # Explicitly route ScreenCast and Screenshot to the wlr portal.
-      # Without this, xdg-desktop-portal may pick gtk which has no
-      # wlr-screencopy support, causing OBS / PipeWire capture to fail.
       config = {
-        sway = {
-          default = ["wlr" "gtk"];
-          "org.freedesktop.impl.portal.ScreenCast" = "wlr";
-          "org.freedesktop.impl.portal.Screenshot" = "wlr";
+        driftwm = {
+          default = ["kde"];
         };
       };
     };

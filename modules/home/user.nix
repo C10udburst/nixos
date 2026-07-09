@@ -24,10 +24,6 @@ in {
     home.homeDirectory = cfg.homeDirectory;
     programs.home-manager.enable = true;
 
-    systemd.user.sessionVariables = {
-      _JAVA_AWT_WM_NONREPARENTING = "1"; # Fixes Java GUI apps on non-reparenting WMs like driftwm
-    };
-
     gtk = {
       enable = true;
       gtk2.force = true; # some random file gets created and breaks home-manager if this is not set

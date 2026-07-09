@@ -5,9 +5,13 @@ autostart = [
 {% for cmd in extracmds %}
   "{{ cmd }}",
 {% endfor %}
+  "{{ polkit_kde_agent_path }}",
   "while true; do noctalia-shell; sleep 1; done"
 ]
 window_placement = "auto"
+
+[env]
+"_JAVA_AWT_WM_NONREPARENTING" = "1"
 
 [input.keyboard]
 layout = "pl"
