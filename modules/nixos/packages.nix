@@ -19,6 +19,7 @@ in {
         git
         nix-output-monitor
         nix-heuristic-gc
+        polkit
         file
         curl
         wget

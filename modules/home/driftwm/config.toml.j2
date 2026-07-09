@@ -1,7 +1,5 @@
 mod_key = "super"
 autostart = [
-  "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY PATH XDG_DATA_DIRS",
-  "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY PATH XDG_DATA_DIRS",
 {% for cmd in extracmds %}
   "{{ cmd }}",
 {% endfor %}

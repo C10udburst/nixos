@@ -43,4 +43,11 @@
     "L+ /usr/local/bin - - - - /usr/bin"
     "L+ /sbin - - - - /bin"
   ];
+
+  security.wrappers.pkexec = {
+    source = "${pkgs.polkit.bin}/bin/pkexec";
+    setuid = true;
+    owner = "root";
+    group = "root";
+  };
 }
