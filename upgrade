@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+pushd ~/nixos
+nix flake update
+./apply
+popd

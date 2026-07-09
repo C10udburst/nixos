@@ -29,11 +29,15 @@
           }
           {
             bg = "color_blue";
-            content = "$c$rust$golang$nodejs$gradle$nix_shell$python";
+            content = "$c$rust$golang$nodejs$gradle$python";
           }
           {
             bg = "color_bg3";
             content = "$docker_context";
+          }
+          {
+            bg = "color_green";
+            content = "$shlvl";
           }
           {
             bg = "color_purple";
@@ -144,12 +148,12 @@
         format = "[ $symbol ]($style)";
       };
 
-      nix_shell = {
+      shlvl = {
         disabled = false;
-        symbol = "❄️ ";
-        style = "bg:color_blue fg:color_bg0";
-        format = "[ $symbol($state) ]($style)";
-        heuristic = true;
+        threshold = 1;
+        symbol = " ";
+        style = "bg:color_green fg:color_bg0";
+        format = "[ $symbol$shlvl ]($style)";
       };
 
       python = {
