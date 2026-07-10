@@ -51,7 +51,10 @@ in {
         "ReportWebsiteTelemetry": [""],
         "AlternateErrorPagesEnabled": false,
         "FeedbackSurveysEnabled": false,
-        "BrowserGuestModeEnabled": true
+        "BrowserGuestModeEnabled": true,
+        "EnableFeatures": [
+          "MiddleClickAutoscroll",
+        ],
       }
     '';
     environment.systemPackages = with pkgs; [

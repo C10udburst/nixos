@@ -45,6 +45,11 @@ in {
           then ["libvirtd"]
           else []
         )
+        ++ (
+          if (config.virtualisation.nettools.enable or false)
+          then ["wireshark"]
+          else []
+        )
         ++ ["video" "audio" "render" "i2c"];
       packages = with pkgs; [
         kdePackages.kate

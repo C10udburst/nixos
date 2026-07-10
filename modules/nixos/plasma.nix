@@ -44,6 +44,7 @@ in {
       discover
       plasma-browser-integration
       khelpcenter
+      gwenview
     ];
   };
 }

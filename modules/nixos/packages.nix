@@ -49,6 +49,7 @@ in {
         cpio
         socat
         xorg.xcbutilcursor
+        hardinfo2
       ]
       ++ (
         if config.networking.wireless.enable

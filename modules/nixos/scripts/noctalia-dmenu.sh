@@ -23,6 +23,8 @@
 
 set -euo pipefail
 
+export QT_QPA_PLATFORM=offscreen
+
 PROMPT=""
 CALLBACK=""
 ALLOW_CUSTOM=false

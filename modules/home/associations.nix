@@ -54,7 +54,8 @@ with lib; let
       rm -f $out/bin/mayo
       makeWrapper ${pkgs.mayo}/bin/mayo $out/bin/mayo \
         --set vblank_mode 0 \
-        --set QT_QPA_PLATFORM xcb
+        --set QT_QPA_PLATFORM "wayland;xcb" \
+        --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [pkgs.libxcb-cursor]}"
     '';
   };
 

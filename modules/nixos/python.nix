@@ -16,6 +16,7 @@
       matplotlib
       scipy
       scikit-learn
+      pypdf
     ]);
 in {
   options.systemSettings.python = {
