@@ -55,6 +55,7 @@
     # Bracket / UI niceties
     usernamehw.errorlens
     pkief.material-icon-theme
+    kamikillerto.vscode-colorize
   ];
 
   # Programming-specific extensions (Rust, Kotlin, Nix, Jinja, Jupyter)
@@ -236,6 +237,10 @@ in {
           # ── Window ────────────────────────────────────────────────────────────
           "window.titleBarStyle" = "custom";
           "window.zoomLevel" = 0;
+
+          # ── Colorize ──────────────────────────────────────────────────────────
+          "colorize.include" = ["**/*"];
+          "colorize.decoration_type" = "background";
         };
       };
     };

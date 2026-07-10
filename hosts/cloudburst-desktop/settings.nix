@@ -19,6 +19,7 @@
   # NixOS-only modules
   podman = true;
   android = true;
+  waydroid = true;
   pipewire = true;
   openssh = true;
   packages = true;

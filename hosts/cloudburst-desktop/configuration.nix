@@ -29,7 +29,7 @@ in {
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
     fsType = "ntfs3";
-    options = ["nofail" "rw" "windows_names" "uid=1000" "gid=100" "dmask=000" "fmask=000" "iocharset=utf8"];
+    options = ["nofail" "rw" "windows_names" "dmask=000" "fmask=000" "iocharset=utf8" "nocase" "noacsrules"];
   };
 
   # Bootloader.

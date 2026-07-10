@@ -43,6 +43,7 @@
     ./brave.nix
     ./flatpak.nix
     ./samba.nix
+    ./waydroid.nix
     ./scripts
   ];
 
@@ -103,6 +104,7 @@
       brave.enable = lib.mkDefault (config.hostSettings.brave or false);
       flatpak.enable = lib.mkDefault (config.hostSettings.flatpak or false);
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
+      waydroid.enable = lib.mkDefault (config.hostSettings.waydroid or false);
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
 
