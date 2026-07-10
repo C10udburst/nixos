@@ -51,7 +51,12 @@ in {
               transformCompoundSentence = false;
               enableStreamQualityBypass = true;
             };
+            CharacterCounter.enabled = true;
+            DisableCallIdle.enabled = true;
             ForceOwnerCrown.enabled = true;
+            FixYoutubeEmbeds.enabled = true;
+            ImageFilename.enabled = true;
+            NoF1.enabled = true;
             GifPaste.enabled = true;
             ImageLink.enabled = true;
             NoOnboardingDelay.enabled = true;
@@ -71,11 +76,20 @@ in {
             WebKeybinds.enabled = true;
             WebScreenShareFixes.enabled = true;
             ImageZoom.enabled = true;
-            YouTubeAdblock.enabled = true;
+            YoutubeAdblock.enabled = true;
             VoiceDownload.enabled = true;
             VoiceMessages.enabled = true;
             BetterUploadButton.enabled = true;
+            ViewIcons.enabled = true;
+
             PermissionsViewer.enabled = true;
+            TypingTweaks.enabled = true;
+            UnsuppressEmbeds.enabled = true;
+            ViewRaw.enabled = true;
+            ShowTimeoutDuration.enabled = true;
+            Summaries.enabled = true;
+            BetterSessions.enabled = true;
+            BetterGifPicker.enabled = true;
             SilentTyping = {
               enabled = true;
               showIcon = true;
