@@ -8,6 +8,7 @@
   plasma = true;
   llm = true;
   jetbrains = true;
+  typst = true;
   driftwm = {
     enable = true;
     extracmds = [

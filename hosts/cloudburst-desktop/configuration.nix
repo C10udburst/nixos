@@ -28,8 +28,8 @@ in {
 
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
-    fsType = "ntfs3";
-    options = ["nofail" "rw" "windows_names" "dmask=000" "fmask=000" "iocharset=utf8" "nocase"];
+    fsType = "lowntfs-3g";
+    options = ["nofail" "rw" "windows_names" "ignore_case" "dmask=000" "fmask=000" "utf8" "noatime" "allow_other"];
   };
 
   # Bootloader.
@@ -40,6 +40,7 @@ in {
     echo "auto-entries 0" >> ${config.boot.loader.efi.efiSysMountPoint}/loader/loader.conf
   '';
   boot.initrd.kernelModules = ["amdgpu"];
+  boot.supportedFilesystems = ["ntfs"];
 
   networking.hostName = "cloudburst-desktop"; # Define your hostname.
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.

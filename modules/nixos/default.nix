@@ -35,6 +35,7 @@
     ./fuse.nix
     ./office.nix
     ./latex.nix
+    ./typst.nix
     ./appimage.nix
     ./nettools.nix
     ./obs.nix
@@ -96,6 +97,7 @@
       fuse.enable = lib.mkDefault (config.hostSettings.fuse or false);
       office.enable = lib.mkDefault (config.hostSettings.office or false);
       latex.enable = lib.mkDefault (config.hostSettings.latex or false);
+      typst.enable = lib.mkDefault (config.hostSettings.typst or false);
       appimage.enable = lib.mkDefault (config.hostSettings.appimage or false);
       nettools.enable = lib.mkDefault (config.hostSettings.nettools or false);
       obs.enable = lib.mkDefault (config.hostSettings.obs or false);

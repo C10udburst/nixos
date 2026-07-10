@@ -84,12 +84,6 @@ with lib; let
   dolphinMimes = {
     "inode/directory" = ["org.kde.dolphin.desktop"];
     "application/zip" = ["org.kde.dolphin.desktop"];
-    "application/x-tar" = ["org.kde.dolphin.desktop"];
-    "application/x-gzip" = ["org.kde.dolphin.desktop"];
-    "application/x-bzip2" = ["org.kde.dolphin.desktop"];
-    "application/x-7z-compressed" = ["org.kde.dolphin.desktop"];
-    "application/x-rar" = ["org.kde.dolphin.desktop"];
-    "application/x-xz" = ["org.kde.dolphin.desktop"];
   };
 
   # 6. VSCode (programming files)
@@ -167,6 +161,19 @@ in {
       mayoCustom
       pkgs.kdePackages.okular
     ];
+
+    # Ensure STEP files are recognized as model/step instead of text/plain
+    home.file.".local/share/mime/packages/step.xml".text = ''
+      <?xml version="1.0" encoding="UTF-8"?>
+      <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+        <mime-type type="model/step">
+          <comment>STEP 3D Model</comment>
+          <glob-deleteall/>
+          <glob pattern="*.step"/>
+          <glob pattern="*.stp"/>
+        </mime-type>
+      </mime-info>
+    '';
 
     # Setup terminal exec default terminal and TERMINAL env var
     xdg.terminal-exec = {

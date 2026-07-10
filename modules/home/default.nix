@@ -47,6 +47,10 @@
           type = lib.types.bool;
           default = false;
         };
+        typst = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
         vencord.enable = lib.mkOption {type = lib.types.bool;};
       };
     };
@@ -77,6 +81,7 @@
       programming = lib.mkDefault (config.hostSettings.programming or false);
       python = lib.mkDefault (config.hostSettings.python or false);
       latex = lib.mkDefault (config.hostSettings.latex or false);
+      typst = lib.mkDefault (config.hostSettings.typst or false);
       vencord.enable = lib.mkDefault (config.hostSettings.vencord or false);
       associations.enable = lib.mkDefault true;
     };

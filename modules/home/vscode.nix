@@ -8,6 +8,7 @@
   isProgramming = cfg.programming or false;
   isPython = cfg.python or false;
   isLatex = cfg.latex or false;
+  isTypst = cfg.typst or false;
 
   # Build kaiwood.tauren from the Open VSX / Marketplace (not in nixpkgs)
   tauren = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
@@ -19,6 +20,20 @@
     };
     meta = {
       description = "Transparent AI coding assistant built on the Pi agent";
+      license = lib.licenses.mit;
+    };
+  };
+
+  # Build G-Code syntax highlighting extension (not in nixpkgs)
+  gcode-syntax = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+    mktplcRef = {
+      name = "vscode-gcode-syntax";
+      publisher = "appliedengdesign";
+      version = "0.7.7";
+      sha256 = "14jcm0bg2vwjp8835xkq8rj44915dw5hls007dglh5md286p17hd";
+    };
+    meta = {
+      description = "G-Code syntax highlighting and utilities";
       license = lib.licenses.mit;
     };
   };
@@ -43,15 +58,27 @@
     tauren
     # Remote Repositories (ms-vscode.remote-repositories — built above)
     remoteRepositories
+    # G-Code syntax highlighting (appliedengdesign.vscode-gcode-syntax — built above)
+    gcode-syntax
     # Remote - SSH
     ms-vscode-remote.remote-ssh
     # GitHub Codespaces
     github.codespaces
+    # GitHub Pull Requests
+    github.vscode-pull-request-github
     # REST client — always useful
     humao.rest-client
     # Markdown
     shd101wyy.markdown-preview-enhanced
     yzhang.markdown-all-in-one
+    # Hex Editor
+    ms-vscode.hexeditor
+    # SVG Previewer
+    jock.svg
+    # Shell Formatter
+    foxundermoon.shell-format
+    # JSON Formatter
+    zainchen.json
     # Bracket / UI niceties
     usernamehw.errorlens
     pkief.material-icon-theme
@@ -89,7 +116,12 @@
     james-yu.latex-workshop
   ]);
 
-  allExtensions = coreExtensions ++ programmingExtensions ++ pythonExtensions ++ latexExtensions;
+  # Typst extensions
+  typstExtensions = lib.optionals isTypst (with pkgs.vscode-extensions; [
+    myriad-dreamin.tinymist
+  ]);
+
+  allExtensions = coreExtensions ++ programmingExtensions ++ pythonExtensions ++ latexExtensions ++ typstExtensions;
   fhsVscode = pkgs.vscode.fhsWithPackages (p:
     lib.optionals isProgramming (with p; [
       cargo
@@ -101,6 +133,10 @@
       python3Packages.ipykernel
       black
       isort
+    ])
+    ++ lib.optionals isTypst (with p; [
+      typst
+      typstyle
     ])
     ++ [p.nixd]);
 
@@ -230,6 +266,12 @@ in {
           "latex-workshop.latex.autoBuild.run" = "onSave";
           "latex-workshop.showContextMenu" = true;
           "latex-workshop.intellisense.package.enabled" = true;
+
+          # ── Typst (Tinymist) ──────────────────────────────────────────────────
+          "[typst]" = {
+            "editor.formatOnSave" = true;
+          };
+          "tinymist.formatterMode" = "typstyle";
 
           # ── REST Client ───────────────────────────────────────────────────────
           "rest-client.enableTelemetry" = false;
