@@ -5,10 +5,6 @@
   sambaPath = "/mnt/dane";
 
   # Modules to enable across NixOS and Home Manager
-  plasma = true;
-  llm = true;
-  jetbrains = true;
-  typst = true;
   driftwm = {
     enable = true;
     extracmds = [
@@ -16,38 +12,42 @@
       "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0"
     ];
   };
+  jetbrains = true;
+  llm = true;
+  plasma = true;
 
   # NixOS-only modules
-  podman = true;
   android = true;
-  waydroid = true;
-  pipewire = true;
-  openssh = true;
-  packages = true;
-  python = true;
-  programming = true;
-  java = true;
-  utils = true;
-  tailscale = true;
-  xrdp = true;
-  waypipe = true;
-  editors = true;
-  threed = true;
-  fuse = true;
-  office = true;
-  latex = true;
   appimage = true;
+  brave = true;
+  editors = true;
+  flatpak = true;
+  fuse = true;
+  greetd = true;
+  java = true;
+  kvm = true;
+  latex = true;
   nettools = true;
   obs = true;
-  zram = true;
-  kvm = true;
-  brave = true;
-  flatpak = true;
+  office = true;
+  openssh = true;
+  packages = true;
+  pipewire = true;
+  podman = true;
+  programming = true;
+  python = true;
   scripts = true;
-  greetd = true;
+  tailscale = true;
+  threed = true;
+  typst = true;
+  utils = true;
+  waydroid = true;
+  waypipe = true;
+  xrdp = true;
+  zram = true;
 
   # Home-Manager-only modules
   git = true;
-  vencord = true;
   ulauncher = false;
+  vencord = true;
 }
