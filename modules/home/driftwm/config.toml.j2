@@ -3,7 +3,7 @@ autostart = [
 {% for cmd in extracmds %}
   "{{ cmd }}",
 {% endfor %}
-  "plasmawindowed org.kde.plasma.folder "file:///$HOME/Pulpit",
+  "plasmawindowed org.kde.plasma.folder file:///$HOME/Pulpit",
   "while true; do noctalia-shell; sleep 1; done"
 ]
 window_placement = "auto"
