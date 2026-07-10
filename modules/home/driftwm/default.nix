@@ -60,7 +60,7 @@ in {
 
     home.sessionVariables = {
       #QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
-      #QT_QPA_PLATFORM = "wayland;xcb";
+      QT_QPA_PLATFORM = "wayland;xcb";
       QS_ICON_THEME = "breeze-dark";
     };
 

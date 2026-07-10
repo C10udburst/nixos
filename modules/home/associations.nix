@@ -54,8 +54,7 @@ with lib; let
       rm -f $out/bin/mayo
       makeWrapper ${pkgs.mayo}/bin/mayo $out/bin/mayo \
         --set vblank_mode 0 \
-        --set QT_QPA_PLATFORM "wayland;xcb" \
-        --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [pkgs.libxcb-cursor]}"
+        --set QT_QPA_PLATFORM "xcb"
     '';
   };
 
@@ -108,6 +107,18 @@ with lib; let
     "text/markdown" = ["code.desktop"];
     "text/x-nix" = ["code.desktop"];
     "text/x-yaml" = ["code.desktop"];
+    "text/x-toml" = ["code.desktop"];
+    "text/x-ini" = ["code.desktop"];
+    "text/x-xml" = ["code.desktop"];
+    "text/x-sql" = ["code.desktop"];
+    "text/x-php" = ["code.desktop"];
+    "text/x-perl" = ["code.desktop"];
+    "text/x-ruby" = ["code.desktop"];
+    "text/x-lua" = ["code.desktop"];
+    "text/x-haskell" = ["code.desktop"];
+    "text/x-scala" = ["code.desktop"];
+    "text/x-kotlin" = ["code.desktop"];
+    "text/x-vb" = ["code.desktop"];
   };
 
   # 7. KDE Connect (phones)
