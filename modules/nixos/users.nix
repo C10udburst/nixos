@@ -46,7 +46,7 @@ in {
           else []
         )
         ++ (
-          if (config.virtualisation.nettools.enable or false)
+          if config.programs.wireshark.enable
           then ["wireshark"]
           else []
         )
