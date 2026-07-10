@@ -14,6 +14,7 @@
     ./driftwm
     ./ulauncher.nix
     ./vscode.nix
+    ./vencord.nix
     ./associations.nix
   ];
 
@@ -46,6 +47,7 @@
           type = lib.types.bool;
           default = false;
         };
+        vencord.enable = lib.mkOption {type = lib.types.bool;};
       };
     };
     default = {};

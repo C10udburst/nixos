@@ -6,9 +6,15 @@
 
   # Modules to enable across NixOS and Home Manager
   plasma = true;
-  greetd = true;
   llm = true;
   jetbrains = true;
+  driftwm = {
+    enable = true;
+    extracmds = [
+      # sets monitor layout for my dual-monitor setup
+      "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0"
+    ];
+  };
 
   # NixOS-only modules
   podman = true;
@@ -36,15 +42,10 @@
   brave = true;
   flatpak = true;
   scripts = true;
+  greetd = true;
 
   # Home-Manager-only modules
   git = true;
-  driftwm = {
-    enable = true;
-    extracmds = [
-      # sets monitor layout for my dual-monitor setup
-      "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0"
-    ];
-  };
+  vencord = true;
   ulauncher = false;
 }
