@@ -77,6 +77,7 @@
       programming = lib.mkDefault (config.hostSettings.programming or false);
       python = lib.mkDefault (config.hostSettings.python or false);
       latex = lib.mkDefault (config.hostSettings.latex or false);
+      vencord.enable = lib.mkDefault (config.hostSettings.vencord or false);
       associations.enable = lib.mkDefault true;
     };
   };

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
@@ -29,6 +30,10 @@ with lib; let
     }
   );
 in {
+  imports = [
+    inputs.driftwm-noctalia.homeModules.default
+  ];
+
   options.homeSettings.driftwm = {
     enable = mkEnableOption "driftwm";
     extracmds = mkOption {
