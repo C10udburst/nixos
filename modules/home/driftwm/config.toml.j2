@@ -3,7 +3,6 @@ autostart = [
 {% for cmd in extracmds %}
   "{{ cmd }}",
 {% endfor %}
-  "plasmawindowed org.kde.plasma.folder file:///$HOME/Pulpit",
   "while true; do noctalia-shell; sleep 1; done"
 ]
 window_placement = "auto"
@@ -89,11 +88,6 @@ path = "xwayland-satellite"
 [[window_rules]]
 title = "winit window"
 widget = true
-
-[[window_rules]]
-app_id = "org.kde.plasmawindowed"
-widget = true
-size=[1000, 500]
 
 [[window_rules]]
 app_id = "Waydroid"

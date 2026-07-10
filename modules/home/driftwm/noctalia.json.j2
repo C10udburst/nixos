@@ -9,8 +9,8 @@
     "showCapsule": true,
     "capsuleOpacity": 1,
     "capsuleColorKey": "none",
-    "widgetSpacing": 6,
-    "contentPadding": 2,
+    "widgetSpacing": 5,
+    "contentPadding": 1,
     "fontScale": 1,
     "enableExclusionZoneInset": true,
     "backgroundOpacity": 1,
@@ -292,9 +292,9 @@
   "general": {
     "avatarImage": "/home/cloudburst/.face",
     "dimmerOpacity": 0.2,
-    "showScreenCorners": false,
-    "forceBlackScreenCorners": false,
-    "scaleRatio": 1,
+    "showScreenCorners": true,
+    "forceBlackScreenCorners": true,
+    "scaleRatio": 0.95,
     "radiusRatio": 1,
     "iRadiusRatio": 1,
     "boxRadiusRatio": 1,
@@ -309,9 +309,9 @@
     "enableLockScreenMediaControls": false,
     "enableShadows": true,
     "enableBlurBehind": false,
-    "shadowDirection": "bottom_right",
-    "shadowOffsetX": 2,
-    "shadowOffsetY": 3,
+    "shadowDirection": "center",
+    "shadowOffsetX": 0,
+    "shadowOffsetY": 0,
     "language": "",
     "allowPanelsOnScreenWithoutBar": true,
     "showChangelogOnStartup": true,
@@ -360,12 +360,12 @@
     "fontFixedScale": 1,
     "tooltipsEnabled": true,
     "scrollbarAlwaysVisible": true,
-    "boxBorderEnabled": false,
+    "boxBorderEnabled": true,
     "panelBackgroundOpacity": 1,
-    "translucentWidgets": false,
+    "translucentWidgets": true,
     "panelsAttachedToBar": true,
-    "settingsPanelMode": "attached",
-    "settingsPanelSideBarCardStyle": false
+    "settingsPanelMode": "centered",
+    "settingsPanelSideBarCardStyle": true
   },
   "location": {
     "name": "Warsaw",
@@ -374,7 +374,7 @@
     "weatherTaliaMascotAlways": false,
     "useFahrenheit": false,
     "use12hourFormat": false,
-    "showWeekNumberInCalendar": false,
+    "showWeekNumberInCalendar": true,
     "showCalendarEvents": true,
     "showCalendarWeather": true,
     "analogClockInCalendar": false,
@@ -563,7 +563,7 @@
   "dock": {
     "enabled": true,
     "position": "bottom",
-    "displayMode": "auto_hide",
+    "displayMode": "always_visible",
     "dockType": "floating",
     "backgroundOpacity": 1,
     "floatingRatio": 1,
@@ -608,7 +608,7 @@
     "showHeader": true,
     "showKeybinds": true,
     "largeButtonsStyle": true,
-    "largeButtonsLayout": "single-row",
+    "largeButtonsLayout": "grid",
     "powerOptions": [
       {
         "action": "lock",
@@ -640,7 +640,7 @@
       },
       {
         "action": "logout",
-        "command": "pkill -x driftwm",
+        "command": "driftwm msg action quit",
         "countdownEnabled": true,
         "enabled": true,
         "keybind": "5"
@@ -695,7 +695,7 @@
       "lowSoundFile": "",
       "excludedApps": "discord,firefox,chrome,chromium,edge"
     },
-    "enableMediaToast": false,
+    "enableMediaToast": true,
     "enableKeyboardLayoutToast": true,
     "enableBatteryToast": true
   },
@@ -708,7 +708,8 @@
     "enabledTypes": [
       0,
       1,
-      2
+      2,
+      3
     ],
     "monitors": []
   },
