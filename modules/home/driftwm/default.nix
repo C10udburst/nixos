@@ -18,7 +18,6 @@ with lib; let
       font = config.stylix.fonts.monospace.name or "JetBrainsMono Nerd Font";
       extracmds = cfg.extracmds;
       xwayland_satellite_path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
-      polkit_kde_agent_path = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
     };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
