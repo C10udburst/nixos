@@ -22,9 +22,10 @@
   } (builtins.readFile ./beamer-clean.py);
   sarif-md = pkgs.writers.writePython3Bin "sarif-md" {} (builtins.readFile ./sarif-md.py);
   ics-merge = pkgs.writers.writePython3Bin "ics-merge" {} (builtins.readFile ./ics-merge.py);
+  video8mb = pkgs.writers.writePython3Bin "video8mb" {} (builtins.readFile ./video8mb.py);
 in {
   options.systemSettings.scripts = {
-    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, nx, rofi)";
+    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, video8mb, nx, rofi)";
   };
 
   config = lib.mkIf cfg.enable {
@@ -38,6 +39,7 @@ in {
       beamer-clean
       sarif-md
       ics-merge
+      video8mb
       nx
       noctalia-dmenu
       rofi

@@ -77,6 +77,7 @@ with lib; let
     "x-scheme-handler/https" = ["brave-browser.desktop"];
     "x-scheme-handler/about" = ["brave-browser.desktop"];
     "x-scheme-handler/unknown" = ["brave-browser.desktop"];
+    "x-scheme-handler/mailto" = ["brave-browser.desktop"];
   };
 
   # 5. Dolphin (file browser & archive opener)
@@ -126,9 +127,22 @@ with lib; let
     "x-scheme-handler/tel" = ["org.kde.kdeconnect.handler.desktop"];
     "x-scheme-handler/sms" = ["org.kde.kdeconnect.handler.desktop"];
   };
+  # 8. okular (PDFs, eBooks, and documents)
+  okularMimes = filterAttrs (
+    name: value:
+      ! (builtins.any (
+          desktopFile:
+            lib.hasSuffix "tiff.desktop" desktopFile
+            || lib.hasSuffix "txt.desktop" desktopFile
+            || lib.hasSuffix "md.desktop" desktopFile
+        )
+        value)
+      && name != "image/tiff"
+  ) (associatePackage pkgs.kdePackages.okular);
 
   # Merge all defaults (with VSCode and others added as secondary/primary accordingly)
   mergedDefaults = foldl' recursiveUpdate {} [
+    okularMimes
     harunaMimes
     nomacsMimes
     mayoMimes
@@ -151,6 +165,7 @@ in {
     home.packages = [
       pkgs.nomacs
       mayoCustom
+      pkgs.kdePackages.okular
     ];
 
     # Setup terminal exec default terminal and TERMINAL env var
