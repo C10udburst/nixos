@@ -14,6 +14,7 @@ in {
     environment.systemPackages = with pkgs;
       [
         alejandra
+        qalculate-qt
         libargon2
         jq
         git

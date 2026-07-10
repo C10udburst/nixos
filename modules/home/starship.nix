@@ -5,13 +5,14 @@
 }: {
   programs.bash.enable = true;
   programs.zsh.enable = true;
-
+  home.sessionVariables.STARSHIP_LOG = "error";
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
     enableZshIntegration = true;
     enableFishIntegration = true;
     settings = {
+      scan_timeout = 120;
       add_newline = false;
       format = let
         segments = [

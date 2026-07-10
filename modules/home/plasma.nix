@@ -21,6 +21,12 @@ in {
       krunner = {
         shortcuts.launch = "Meta+Space";
       };
+
+      shortcuts = {
+        "services/qalculate-qt.desktop" = {
+          _launch = "Launch (1)";
+        };
+      };
     };
 
     home.packages = [
