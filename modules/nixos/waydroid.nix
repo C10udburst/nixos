@@ -36,7 +36,6 @@ in {
           mkdir -p /var/lib/waydroid
           waydroid init -s GAPPS -f
         fi
-        waydroid container start
       '';
     };
 
