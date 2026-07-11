@@ -23,9 +23,25 @@
   sarif-md = pkgs.writers.writePython3Bin "sarif-md" {} (builtins.readFile ./sarif-md.py);
   ics-merge = pkgs.writers.writePython3Bin "ics-merge" {} (builtins.readFile ./ics-merge.py);
   video8mb = pkgs.writers.writePython3Bin "video8mb" {} (builtins.readFile ./video8mb.py);
+
+  scrcpy-app = let
+    script = pkgs.writeShellScriptBin "scrcpy-app" (builtins.readFile ./scrcpy-app.sh);
+    desktopItem = pkgs.makeDesktopItem {
+      name = "scrcpy-app";
+      exec = "scrcpy-app";
+      icon = "phone";
+      comment = "Run Android app on PC via scrcpy";
+      desktopName = "Scrcpy App";
+      categories = ["Utility"];
+    };
+  in
+    pkgs.symlinkJoin {
+      name = "scrcpy-app";
+      paths = [script desktopItem];
+    };
 in {
   options.systemSettings.scripts = {
-    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, video8mb, nx, rofi)";
+    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, video8mb, nx, rofi, scrcpy-app)";
   };
 
   config = lib.mkIf cfg.enable {
@@ -44,6 +60,7 @@ in {
       noctalia-dmenu
       rofi
       palette
+      scrcpy-app
     ];
   };
 }
