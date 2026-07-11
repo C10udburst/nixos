@@ -7,7 +7,7 @@
   cfg = config.systemSettings.waydroid;
 in {
   options.systemSettings.waydroid = {
-    enable = lib.mkEnableOption "Enable declarative Waydroid with GApps and Aurora Store";
+    enable = lib.mkEnableOption "Enable declarative Waydroid";
   };
 
   config = lib.mkIf cfg.enable {

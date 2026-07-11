@@ -24,6 +24,8 @@ in {
     home.homeDirectory = cfg.homeDirectory;
     programs.home-manager.enable = true;
 
+    xdg.configFile."fontconfig/conf.d/10-hm-fonts.conf".force = true;
+
     gtk = {
       enable = true;
       gtk2.force = true; # some random file gets created and breaks home-manager if this is not set

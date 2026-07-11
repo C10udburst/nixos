@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -9,6 +8,7 @@ in {
   services.udev.extraRules = ''
     KERNEL=="cec*", SUBSYSTEM=="cec", MODE="0660", GROUP="video"
   '';
+  networking.networkmanager.enable = true;
 
   xdg.portal = {
     enable = true;

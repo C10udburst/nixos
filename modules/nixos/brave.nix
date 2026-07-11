@@ -64,6 +64,7 @@ in {
           "--ozone-platform-hint=wayland"
           "--enable-features=WaylandWindowDecorations"
           "--force-device-scale-factor=0.9"
+          "--password-store=basic"
         ];
       })
     ];
