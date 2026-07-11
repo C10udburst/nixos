@@ -20,6 +20,6 @@ fi
 echo "[2/3] Starting virtual display and app: $APP_PACKAGE..."
 # scrcpy will automatically create a display, launch the app within it,
 # and destroy it along with the app process upon closing the window.
-scrcpy --new-display=720x1280/320 --flex-display --no-vd-system-decorations --start-app="$APP_PACKAGE" --keep-active
+scrcpy --new-display --flex-display --no-vd-system-decorations --start-app="$APP_PACKAGE" --keep-active
 
 echo "[3/3] scrcpy window closed. Display removed, app stopped."
