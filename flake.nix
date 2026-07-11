@@ -59,6 +59,11 @@
     pi-agent.url = "github:lukasl-dev/pi-mono.nix";
     antigravity-nix.url = "github:jacopone/antigravity-nix";
 
+    orcaslicer-nanashi-appimage = {
+      url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";
+      flake = false;
+    };
+
     # Ulauncher Extensions
     ulauncher-homepage = {
       url = "github:pucodev/ulauncher-homepage";

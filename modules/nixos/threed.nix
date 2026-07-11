@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.threed;
@@ -46,10 +47,7 @@
   orcaslicer-nanashi = let
     pname = "orcaslicer-nanashi";
     version = "nightly";
-    src = pkgs.fetchurl {
-      url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";
-      sha256 = "75f3d10504f97a0835796994a8676d983e83824655d781e57cc359bcd2965ac2";
-    };
+    src = inputs.orcaslicer-nanashi-appimage;
     appimageContents = pkgs.appimageTools.extractType2 {
       inherit pname version src;
     };

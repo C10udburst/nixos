@@ -29,11 +29,11 @@
     libuuid
     libdrm
     udev
-    xorg.xcbutilcursor
-    xorg.libXcomposite
-    xorg.libXdamage
-    xorg.libXrender
-    xorg.libXxf86vm
+    libxcb-cursor
+    libxcomposite
+    libxdamage
+    libxrender
+    libxxf86vm
     expat
     libxml2
     libpng

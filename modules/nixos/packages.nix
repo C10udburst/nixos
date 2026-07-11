@@ -48,7 +48,7 @@ in {
         ncompress
         cpio
         socat
-        xorg.xcbutilcursor
+        libxcb-cursor
         hardinfo2
       ]
       ++ (

@@ -398,6 +398,18 @@
         "type": "github"
       }
     },
+    "orcaslicer-nanashi-appimage": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-0zM8SAfWzBoBS7R5zgiwNWJ37/hjSW4ZyJU2aFQakLA=",
+        "type": "file",
+        "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
+      }
+    },
     "pi-agent": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -449,6 +461,7 @@
         "home-manager": "home-manager",
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs_2",
+        "orcaslicer-nanashi-appimage": "orcaslicer-nanashi-appimage",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager",
         "stylix": "stylix",
