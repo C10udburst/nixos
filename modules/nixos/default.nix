@@ -62,7 +62,16 @@
       );
       adminUsers = lib.mkDefault (config.hostSettings.adminUsers or []);
 
-      android.enable = lib.mkDefault (config.hostSettings.android or false);
+      android.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.android or false)
+        then config.hostSettings.android.enable or false
+        else config.hostSettings.android or false
+      );
+      android.dev = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.android or false)
+        then config.hostSettings.android.dev or false
+        else false
+      );
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
       greetd.enable = lib.mkDefault (config.hostSettings.greetd or false);

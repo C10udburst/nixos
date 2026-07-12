@@ -17,7 +17,10 @@
   plasma = true;
 
   # NixOS-only modules
-  android = true;
+  android = {
+    enable = true;
+    dev = true;
+  };
   appimage = true;
   brave = true;
   editors = true;
