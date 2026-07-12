@@ -6,6 +6,8 @@ import subprocess
 import tempfile
 import zipfile
 import hashlib
+import shutil
+import argparse
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -28,6 +30,166 @@ from PyQt6.QtGui import (
 
 # Cache directory
 CACHE_DIR = "/tmp/scrcpy-app-cache"
+
+
+def find_aapt_binary():
+    import shutil
+    import glob
+
+    # 1. Check PATH
+    for name in ["aapt2", "aapt"]:
+        path = shutil.which(name)
+        if path:
+            return path
+
+    # 2. Check current system bin
+    for path in [
+        "/run/current-system/sw/bin/aapt2",
+        "/run/current-system/sw/bin/aapt",
+    ]:
+        if os.path.exists(path):
+            return path
+
+    # 3. Check Nix store via globbing
+    for pattern in [
+        "/nix/store/*-aapt-*/bin/aapt2",
+        "/nix/store/*-aapt-*/bin/aapt",
+    ]:
+        matches = glob.glob(pattern)
+        if matches:
+            return matches[0]
+
+    # 4. Check Android SDK build tools in Nix store
+    sdk_matches = glob.glob(
+        "/nix/store/*-android-sdk-*/share/android-sdk/"
+        "build-tools/*/aapt2"
+    )
+    if sdk_matches:
+        return sdk_matches[0]
+
+    sdk_matches_aapt = glob.glob(
+        "/nix/store/*-android-sdk-*/share/android-sdk/"
+        "build-tools/*/aapt"
+    )
+    if sdk_matches_aapt:
+        return sdk_matches_aapt[0]
+
+    return "aapt2"  # Fallback to name
+
+
+def extract_best_icon(zip_file_path, icon_path_in_apk, output_png_path):
+    try:
+        with zipfile.ZipFile(zip_file_path) as z:
+            namelist = z.namelist()
+
+            # 1. If we have a specific icon path from badging
+            if icon_path_in_apk:
+                is_xml = icon_path_in_apk.endswith(".xml")
+                if not is_xml and icon_path_in_apk in namelist:
+                    try:
+                        with open(output_png_path, "wb") as f:
+                            f.write(z.read(icon_path_in_apk))
+                        return True
+                    except Exception:
+                        pass
+
+                # If XML or not found, try to find a raster counterpart
+                base_name = os.path.basename(icon_path_in_apk).rsplit(
+                    ".", 1
+                )[0]
+
+                # List of target directory qualifiers (descending resolution)
+                resolutions = [
+                    "xxxhdpi",
+                    "xxhdpi",
+                    "xhdpi",
+                    "hdpi",
+                    "mdpi",
+                    "ldpi",
+                    "anydpi",
+                    "nodpi",
+                    "drawable",
+                ]
+
+                # First try: Find an exact filename match in resolution dirs
+                for res in resolutions:
+                    for ext in [".png", ".webp", ".jpg"]:
+                        for name in namelist:
+                            if (
+                                res in name
+                                and name.endswith(f"/{base_name}{ext}")
+                                and "background" not in name.lower()
+                                and "foreground" not in name.lower()
+                            ):
+                                try:
+                                    with open(output_png_path, "wb") as f:
+                                        f.write(z.read(name))
+                                    return True
+                                except Exception:
+                                    pass
+
+                # Second try: Look for any raster file with base_name
+                for res in resolutions:
+                    for ext in [".png", ".webp", ".jpg"]:
+                        for name in namelist:
+                            if (
+                                res in name
+                                and base_name in os.path.basename(name)
+                                and name.endswith(ext)
+                                and "background" not in name.lower()
+                                and "foreground" not in name.lower()
+                            ):
+                                try:
+                                    with open(output_png_path, "wb") as f:
+                                        f.write(z.read(name))
+                                    return True
+                                except Exception:
+                                    pass
+
+            # 2. General Fallback: Search for any launcher icon
+            resolutions_simple = [
+                "xxxhdpi",
+                "xxhdpi",
+                "xhdpi",
+                "hdpi",
+                "mdpi",
+                "ldpi",
+            ]
+            for res in resolutions_simple:
+                for keyword in ["ic_launcher", "launcher", "icon", "logo"]:
+                    for ext in [".png", ".webp"]:
+                        for name in namelist:
+                            if (
+                                res in name
+                                and keyword in os.path.basename(name).lower()
+                                and name.endswith(ext)
+                                and "background" not in name.lower()
+                                and "foreground" not in name.lower()
+                            ):
+                                try:
+                                    with open(output_png_path, "wb") as f:
+                                        f.write(z.read(name))
+                                    return True
+                                except Exception:
+                                    pass
+
+            # Last resort: just find any png in mipmap/drawable
+            for name in namelist:
+                is_img = name.endswith(".png")
+                is_res = "mipmap" in name or "drawable" in name
+                is_bg = "background" in name.lower()
+                is_fg = "foreground" in name.lower()
+                if is_img and is_res and not is_bg and not is_fg:
+                    try:
+                        with open(output_png_path, "wb") as f:
+                            f.write(z.read(name))
+                        return True
+                    except Exception:
+                        pass
+    except Exception as e:
+        print(f"Error extracting icon: {e}")
+
+    return False
 
 
 def get_launcher_icon(icon_path, label):
@@ -106,16 +268,11 @@ class DeviceMonitorThread(QThread):
                 self.device_status_changed.emit(connected, serial)
 
                 if connected:
-                    self.load_apps()
-            elif connected:
-                # If already connected but we want to make sure apps
-                # are loaded or updated, we could run load_apps just in
-                # case, but once is enough per connection event.
-                pass
+                    self.load_apps(serial)
 
             self.msleep(2000)
 
-    def load_apps(self):
+    def load_apps(self, serial):
         try:
             # Query launchable activities
             cmd = [
@@ -138,7 +295,6 @@ class DeviceMonitorThread(QThread):
             return
 
         packages = []
-        # Split output by "Activity #" to isolate activity blocks
         for block in output.split("Activity #")[1:]:
             pkg_match = re.search(r"packageName=([a-zA-Z0-9_.]+)", block)
             if not pkg_match:
@@ -152,9 +308,17 @@ class DeviceMonitorThread(QThread):
         if not packages:
             return
 
-        # Load cache
-        os.makedirs(CACHE_DIR, exist_ok=True)
-        cache_file = os.path.join(CACHE_DIR, "apps.json")
+        # Scope cache per device
+        safe_serial = "".join(
+            c for c in serial if c.isalnum() or c in ("-", "_")
+        )
+        if not safe_serial:
+            safe_serial = "default"
+
+        device_cache_dir = os.path.join(CACHE_DIR, safe_serial)
+        os.makedirs(device_cache_dir, exist_ok=True)
+        cache_file = os.path.join(device_cache_dir, "apps.json")
+
         cache = {}
         if os.path.exists(cache_file):
             try:
@@ -171,7 +335,6 @@ class DeviceMonitorThread(QThread):
             if pkg in cache:
                 cached_info = cache[pkg]
                 icon_path = cached_info.get("icon")
-                # Check if icon exists on disk (if path is provided)
                 if (
                     not icon_path
                     or os.path.exists(icon_path)
@@ -196,7 +359,7 @@ class DeviceMonitorThread(QThread):
             if not self.connected or not self.running:
                 break
 
-            info = self.fetch_app_details(pkg)
+            info = self.fetch_app_details(pkg, device_cache_dir)
             if info:
                 new_cache[pkg] = info
                 self.app_resolved.emit(
@@ -210,14 +373,20 @@ class DeviceMonitorThread(QThread):
                 # Fallback: deduce name from package
                 label_parts = pkg.split(".")
                 label = label_parts[-1].capitalize()
-                if (
-                    label.lower()
-                    in ("android", "google", "app", "application")
-                    and len(label_parts) > 1
-                ):
+                is_generic = label.lower() in (
+                    "android",
+                    "google",
+                    "app",
+                    "application",
+                )
+                if is_generic and len(label_parts) > 1:
                     label = label_parts[-2].capitalize()
 
-                fallback_info = {"label": label, "icon": "", "apk_path": ""}
+                fallback_info = {
+                    "label": label,
+                    "icon": "",
+                    "apk_path": "",
+                }
                 new_cache[pkg] = fallback_info
                 self.app_resolved.emit(
                     {
@@ -234,7 +403,7 @@ class DeviceMonitorThread(QThread):
         except Exception as e:
             print(f"Error saving cache: {e}")
 
-    def fetch_app_details(self, package_name):
+    def fetch_app_details(self, package_name, device_cache_dir):
         try:
             # 1. Get APK path on the device
             path_cmd = ["adb", "shell", "pm", "path", package_name]
@@ -260,8 +429,9 @@ class DeviceMonitorThread(QThread):
                 if pull_res.returncode != 0:
                     return None
 
-                # 3. Dump badging using aapt
-                badging_cmd = ["aapt", "dump", "badging", temp_apk_path]
+                # 3. Dump badging using aapt/aapt2
+                aapt_bin = find_aapt_binary()
+                badging_cmd = [aapt_bin, "dump", "badging", temp_apk_path]
                 badging_res = subprocess.run(
                     badging_cmd, capture_output=True, text=True, timeout=5
                 )
@@ -291,34 +461,16 @@ class DeviceMonitorThread(QThread):
                     )
 
                 icon_path_in_apk = icon_matches[-1] if icon_matches else None
-                cached_icon_path = ""
+                cached_icon_path = os.path.join(
+                    device_cache_dir, f"{package_name}.png"
+                )
 
-                if icon_path_in_apk:
-                    cached_icon_path = os.path.join(
-                        CACHE_DIR, f"{package_name}.png"
-                    )
-                    with zipfile.ZipFile(temp_apk_path) as z:
-                        # Handle adaptive/XML drawables
-                        if icon_path_in_apk.endswith(".xml"):
-                            basename = os.path.basename(
-                                icon_path_in_apk
-                            ).rsplit(".", 1)[0]
-                            for name in z.namelist():
-                                if basename in name and (
-                                    name.endswith(".png")
-                                    or name.endswith(".webp")
-                                ):
-                                    icon_path_in_apk = name
-                                    break
-
-                        if not icon_path_in_apk.endswith(".xml"):
-                            try:
-                                with open(cached_icon_path, "wb") as icon_f:
-                                    icon_f.write(z.read(icon_path_in_apk))
-                            except Exception:
-                                cached_icon_path = ""
-                        else:
-                            cached_icon_path = ""
+                # Extract best icon using robust logic
+                success = extract_best_icon(
+                    temp_apk_path, icon_path_in_apk, cached_icon_path
+                )
+                if not success:
+                    cached_icon_path = ""
 
                 return {
                     "label": label,
@@ -347,11 +499,11 @@ class LauncherApp(QMainWindow):
         # 1. Connection Waiting Screen
         self.conn_widget = QWidget()
         conn_layout = QVBoxLayout(self.conn_widget)
-        conn_layout.setAlignment(Qt.AlignmentFlag.Center)
+        conn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.conn_title = QLabel("🔌 Waiting for Android Device...")
         self.conn_title.setStyleSheet(
-            "font-size: 20px; font-weight: bold; color: #eff0f1;"
+            "font-size: 20px; font-weight: bold;"
         )
         self.conn_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -360,7 +512,7 @@ class LauncherApp(QMainWindow):
             "USB debugging is enabled."
         )
         self.conn_subtitle.setStyleSheet(
-            "font-size: 13px; color: #bdc3c7; margin-top: 10px;"
+            "font-size: 13px; margin-top: 10px;"
         )
         self.conn_subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -381,15 +533,9 @@ class LauncherApp(QMainWindow):
         self.search_bar.setStyleSheet(
             """
             QLineEdit {
-                background-color: #1d2022;
-                border: 1px solid #31363b;
                 border-radius: 6px;
-                color: #eff0f1;
                 padding: 8px 14px;
                 font-size: 14px;
-            }
-            QLineEdit:focus {
-                border: 1px solid #3daee9;
             }
         """
         )
@@ -517,34 +663,48 @@ class LauncherApp(QMainWindow):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Scrcpy App Launcher")
+    parser.add_argument(
+        "--clean-cache",
+        "-c",
+        action="store_true",
+        help="Clean the cache for the connected device",
+    )
+    cli_args, _ = parser.parse_known_args()
+
+    if cli_args.clean_cache:
+        try:
+            res = subprocess.run(
+                ["adb", "get-state"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            if res.stdout.strip() == "device":
+                serial = subprocess.run(
+                    ["adb", "get-serialno"],
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip()
+                safe_serial = "".join(
+                    c for c in serial if c.isalnum() or c in ("-", "_")
+                )
+                if safe_serial:
+                    device_dir = os.path.join(CACHE_DIR, safe_serial)
+                    if os.path.exists(device_dir):
+                        shutil.rmtree(device_dir)
+                        print(f"Cleared cache directory: {device_dir}")
+                    else:
+                        print(f"No cache found for device: {serial}")
+            else:
+                print("No active ADB device detected. Cannot clear cache.")
+        except Exception as e:
+            print(f"Error cleaning cache: {e}")
+
     app = QApplication(sys.argv)
 
     if "breeze" in QIcon.themeSearchPaths():
         QIcon.setThemeName("breeze")
-
-    app.setStyleSheet(
-        """
-        QMainWindow { background-color: #232629; }
-        QListView {
-            background-color: #232629;
-            border: none;
-            color: #eff0f1;
-            font-size: 11px;
-        }
-        QListView::item {
-            border-radius: 6px;
-            padding: 6px;
-            color: #eff0f1;
-        }
-        QListView::item:hover {
-            background-color: #31363b;
-        }
-        QListView::item:selected {
-            background-color: #3daee9;
-            color: #ffffff;
-        }
-    """
-    )
 
     window = LauncherApp()
     window.show()
