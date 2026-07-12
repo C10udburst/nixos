@@ -26,7 +26,7 @@
     ./jetbrains.nix
     ./utils.nix
     ./tailscale.nix
-    ./xrdp.nix
+    ./weston-rdp.nix
     ./waypipe.nix
     ./fonts.nix
     ./editors.nix
@@ -90,16 +90,22 @@
       jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
       utils.enable = lib.mkDefault (config.hostSettings.utils or false);
       tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
-      xrdp.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.xrdp or false)
-        then config.hostSettings.xrdp.enable or false
-        else config.hostSettings.xrdp or false
+      weston-rdp.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.weston-rdp or false)
+        then config.hostSettings.weston-rdp.enable or false
+        else config.hostSettings.weston-rdp or false
       );
-      xrdp.windowManager = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.xrdp or false)
-        then config.hostSettings.xrdp.windowManager or "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11"
-        else "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11"
+      weston-rdp.user = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.weston-rdp or false)
+        then config.hostSettings.weston-rdp.user or config.hostSettings.username or "cloudburst"
+        else config.hostSettings.username or "cloudburst"
       );
+      weston-rdp.windowManager = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.weston-rdp or false)
+        then config.hostSettings.weston-rdp.windowManager or "${pkgs.driftwm}/bin/driftwm"
+        else "${pkgs.driftwm}/bin/driftwm"
+      );
+
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
       threed.enable = lib.mkDefault (config.hostSettings.threed or false);
       fuse.enable = lib.mkDefault (config.hostSettings.fuse or false);

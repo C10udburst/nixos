@@ -26,7 +26,7 @@ in {
     enable = true;
     polarity = "dark";
     image = renderedPng;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest-dark-medium.yaml";
     fonts = {
       monospace = {
         package = pkgs.nerd-fonts.jetbrains-mono;
@@ -50,5 +50,6 @@ in {
         terminal = 11;
       };
     };
+    targets.gtksourceview.enable = false; # fixes cache miss on inkscape
   };
 }

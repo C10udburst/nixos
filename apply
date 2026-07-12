@@ -7,8 +7,11 @@ set -e
 pushd ~/nixos/
 
 # Autoformat your nix files
-alejandra . &>/dev/null \
-  || ( alejandra . ; echo "formatting failed!" && exit 1)
+alejandra . &>/dev/null ||
+  (
+    alejandra .
+    echo "formatting failed!" && exit 1
+  )
 
 git add .
 
@@ -17,14 +20,22 @@ echo "NixOS Rebuilding..."
 # Prompt for sudo password upfront so the prompt isn't hidden by redirection
 sudo -v
 
-# Rebuild, output simplified errors, log trackebacks
-sudo nixos-rebuild switch --flake . 2>&1 | tee nixos-switch.log | nom; [ ${PIPESTATUS[0]} -eq 0 ] || (grep --color error nixos-switch.log && exit 1)
+# Rebuild, output simplified errors, log trackebacks, if boot/b in argv boot instead of switch
+if [[ "$@" == *"boot"* || "$@" == *"b"* ]]; then
+  sudo nixos-rebuild boot --flake . 2>&1 | tee nixos-switch.log | nom
+else
+  sudo nixos-rebuild switch --flake . 2>&1 | tee nixos-switch.log | nom
+fi
+[ ${PIPESTATUS[0]} -eq 0 ] || (grep --color error nixos-switch.log && exit 1)
 
 # Get current generation metadata
 current=$(nixos-rebuild list-generations --json | jq '.[] | select (.current == true) | "\(.generation)"')
 
-# Commit all changes witih the generation metadata
-git commit -am "$current"
+# get hostname for commit message
+hostname=$(hostname)
+
+# Commit all changes with the generation metadata
+git commit -am "${hostname}:${current}"
 
 # Back to where you were
 popd

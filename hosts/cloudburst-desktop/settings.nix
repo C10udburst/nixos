@@ -46,7 +46,7 @@
   utils = true;
   waydroid = true;
   waypipe = true;
-  xrdp = true;
+  weston-rdp = true;
   zram = true;
 
   # Home-Manager-only modules
