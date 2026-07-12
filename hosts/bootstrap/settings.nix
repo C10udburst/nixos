@@ -43,9 +43,9 @@
   typst = false;
   utils = true;
   waydroid = false;
-  waypipe = true;
+  waypipe = false;
   weston-rdp = false;
-  zram = true;
+  zram = false;
 
   # Home-Manager-only modules
   git = true;

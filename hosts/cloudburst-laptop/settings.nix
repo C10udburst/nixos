@@ -6,38 +6,38 @@
 
   # Modules to enable across NixOS and Home Manager
   driftwm = {
-    enable = false;
+    enable = true;
     extracmds = [];
   };
   jetbrains = false;
-  llm = false;
+  llm = true;
   plasma = true;
 
   # NixOS-only modules
   android = {
-    enable = false;
+    enable = true;
     dev = false;
   };
-  appimage = false;
+  appimage = true;
   brave = true;
   editors = false;
-  flatpak = false;
-  fuse = false;
+  flatpak = true;
+  fuse = true;
   greetd = true;
-  java = false;
+  java = true;
   kvm = false;
   latex = false;
-  nettools = false;
+  nettools = true;
   obs = false;
-  office = false;
+  office = true;
   openssh = true;
   packages = true;
   pipewire = true;
   podman = false;
   programming = false;
   python = true;
-  scripts = false;
-  tailscale = false;
+  scripts = true;
+  tailscale = true;
   peerix = true;
   threed = false;
   typst = false;
