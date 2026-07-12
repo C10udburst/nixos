@@ -11,6 +11,7 @@
   www = pkgs.writeScriptBin "www" (builtins.readFile ./www.py);
   extract = pkgs.writeShellScriptBin "extract" (builtins.readFile ./extract.sh);
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ./nx.sh);
+  nix-py = pkgs.writeShellScriptBin "nix-py" (builtins.readFile ./nix-py.sh);
 
   noctalia-dmenu = pkgs.writeShellScriptBin "noctalia-dmenu" (builtins.readFile ./noctalia-dmenu.sh);
   rofi = pkgs.writeShellScriptBin "rofi" (builtins.readFile ./rofi.sh);
@@ -41,7 +42,7 @@
     };
 in {
   options.systemSettings.scripts = {
-    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, video8mb, nx, rofi, scrcpy-app)";
+    enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, video8mb, nx, rofi, scrcpy-app, nix-py)";
   };
 
   config = lib.mkIf cfg.enable {
@@ -61,6 +62,7 @@ in {
       rofi
       palette
       scrcpy-app
+      nix-py
     ];
   };
 }
