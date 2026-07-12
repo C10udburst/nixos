@@ -21,7 +21,7 @@
   appimage = true;
   brave = true;
   editors = false;
-  nvidia = false; # TODO: broken
+  nvidia = true; # TODO: broken
   flatpak = true;
   fuse = true;
   greetd = true;

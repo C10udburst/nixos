@@ -20,31 +20,30 @@ in {
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       # Kernel modesetting is required for Wayland
       modesetting.enable = true;
-      # Enable the open-source kernel module (required for Turing/Ampere+ for Wayland)
+      # Open-source kernel module (for Turing/Ampere+); set true if supported
       open = lib.mkDefault false;
-      # Power management — helps with suspend/resume
+      # Power management
       powerManagement.enable = lib.mkDefault false;
       powerManagement.finegrained = lib.mkDefault false;
-      # NVIDIASettings GUI tool
+      # NVIDIASettings GUI
       nvidiaSettings = true;
     };
 
-    # Enable CUDA support system-wide
-    hardware.nvidia-container-toolkit.enable = lib.mkIf podmanEnabled true;
-
-    # Allow unfree packages needed for NVIDIA drivers and CUDA
+    # Allow unfree packages for the proprietary NVIDIA driver
     nixpkgs.config.allowUnfree = true;
-    nixpkgs.config.cudaSupport = true;
 
-    # CUDA toolkit and related tools in system packages
+    # Lightweight CUDA tools: compiler + runtime headers only.
+    # Deliberately excludes cudatoolkit (pulls in libnvshmem/ucx/openmpi
+    # which require DOCA/InfiniBand headers and fail to build).
     environment.systemPackages = with pkgs; [
-      cudaPackages.cudatoolkit
-      cudaPackages.cuda_nvcc
-      nvtopPackages.nvidia
+      cudaPackages.cuda_nvcc # CUDA compiler
+      cudaPackages.cuda_cudart # CUDA runtime headers/libs
+      nvtopPackages.nvidia # GPU process monitor
     ];
 
-    # Podman CDI (Container Device Interface) for GPU passthrough
-    # Enabled automatically when both nvidia and podman are on
+    # nvidia-container-toolkit enables CDI GPU passthrough for Podman/Docker.
+    # Activated automatically when both nvidia and podman flags are on.
+    hardware.nvidia-container-toolkit.enable = lib.mkIf podmanEnabled true;
     virtualisation.containers.cdi.dynamic.nvidia.enable = lib.mkIf podmanEnabled true;
   };
 }
