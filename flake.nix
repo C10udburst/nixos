@@ -21,6 +21,22 @@
         }
       ];
     };
+
+    nixosConfigurations."cloudburst-laptop" = nixpkgs.lib.nixosSystem {
+      specialArgs = {inherit inputs;};
+      modules = [
+        ./hosts/cloudburst-laptop/configuration.nix
+        inputs.home-manager.nixosModules.home-manager
+        inputs.stylix.nixosModules.stylix
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.cloudburst = {
+            imports = [inputs.plasma-manager.homeModules.plasma-manager];
+          };
+        }
+      ];
+    };
   };
 
   inputs = {
