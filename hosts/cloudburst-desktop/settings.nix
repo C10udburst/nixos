@@ -49,6 +49,7 @@
   waypipe = true;
   weston-rdp = false;
   zram = true;
+  nvidia = false;
 
   # Home-Manager-only modules
   git = true;

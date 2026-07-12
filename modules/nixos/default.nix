@@ -46,6 +46,7 @@
     ./samba.nix
     ./waydroid.nix
     ./scripts
+    ./nvidia.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -125,6 +126,8 @@
       waydroid.enable = lib.mkDefault (config.hostSettings.waydroid or false);
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
+
+      nvidia.enable = lib.mkDefault (config.hostSettings.nvidia or false);
 
       samba.enable = lib.mkDefault (config.hostSettings.sambaPath or "" != "");
       samba.path = lib.mkDefault (config.hostSettings.sambaPath or "");
