@@ -105,15 +105,38 @@ in {
           export XDG_RUNTIME_DIR="/run/user/$USER_UID"
           export GSK_RENDERER="${cfg.gskRenderer}"
 
-          # Run Weston with the RDP backend and launch the window manager
-          exec ${pkgs.weston}/bin/weston \
+          # Ensure the runtime directory exists
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+
+          # Start Weston with RDP backend in the background
+          ${pkgs.weston}/bin/weston \
             --backend=rdp \
             --address="0.0.0.0" \
             --port=3389 \
             --rdp-tls-cert="${cfg.tlsCert}" \
             --rdp-tls-key="${cfg.tlsKey}" \
             --config="${westonIni}" \
-            -- ${cfg.windowManager}
+            --socket=wayland-3 &
+          WESTON_PID=$!
+
+          # Wait for Weston to create the wayland-3 socket
+          for i in {1..50}; do
+            if [ -S "$XDG_RUNTIME_DIR/wayland-3" ]; then
+              break
+            fi
+            sleep 0.1
+          done
+
+          # Check if Weston is still running
+          if ! kill -0 "$WESTON_PID" 2>/dev/null; then
+            echo "Weston RDP server failed to start"
+            exit 1
+          fi
+
+          # Run the window manager nested inside Weston
+          export WAYLAND_DISPLAY=wayland-3
+          exec ${cfg.windowManager}
         '';
 
         Restart = "on-failure";
