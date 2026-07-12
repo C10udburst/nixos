@@ -99,10 +99,15 @@ in {
         WorkingDirectory = "/home/${cfg.user}";
 
         ExecStart = pkgs.writeShellScript "start-weston-rdp" ''
-          # Resolve user UID and export wayland session variables
+          echo "=== SYSTEMD SERVICE SIGNAL STATUS ==="
+          grep -E "Sig(Pnd|Blk|Ign|Cgt)" /proc/self/status
+          echo "====================================="
+
           USER_UID=$(${pkgs.coreutils}/bin/id -u "${cfg.user}")
+          export HOME="/home/${cfg.user}"
           export XDG_RUNTIME_DIR="/run/user/$USER_UID"
           export GSK_RENDERER="${cfg.gskRenderer}"
+          export PATH="/run/wrappers/bin:/home/${cfg.user}/.nix-profile/bin:/etc/profiles/per-user/${cfg.user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:${lib.makeBinPath [pkgs.weston]}"
 
           # Ensure the runtime directory exists
           mkdir -p "$XDG_RUNTIME_DIR"
@@ -135,7 +140,10 @@ in {
 
           # Run the window manager nested inside Weston
           export WAYLAND_DISPLAY=wayland-3
-          exec ${cfg.windowManager}
+
+          # Reset SIGCHLD to default using Python before exec'ing driftwm
+          # to ensure child processes (like autostart commands) can be correctly waited for.
+          exec ${pkgs.python3}/bin/python3 -c 'import signal, os, sys; signal.signal(signal.SIGCHLD, signal.SIG_DFL); os.execv(sys.argv[1], sys.argv[1:])' ${cfg.windowManager} --backend winit
         '';
 
         Restart = "on-failure";
