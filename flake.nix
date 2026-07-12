@@ -26,6 +26,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    peerix = {
+      url = "github:cid-chan/peerix";
+      inputs.nixpkgs.url = "github:NixOS/nixpkgs/5cb226a06c49f7a2d02863d0b5786a310599df6b";
+    };
+
     nix-flatpak = {
       url = "github:gmodena/nix-flatpak/?ref=latest";
     };

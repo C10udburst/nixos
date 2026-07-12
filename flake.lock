@@ -172,6 +172,22 @@
         "type": "github"
       }
     },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1627913399,
+        "narHash": "sha256-hY8g6H2KFL8ownSiFeMOjwPC8P0ueXpCVEbxgda3pko=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "12c64ca55c1014cdc1b16ed5a804aa8576601ff2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -225,6 +241,21 @@
         "owner": "numtide",
         "repo": "flake-utils",
         "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1634851050,
+        "narHash": "sha256-N83GlSGPJJdcqhUxSCS/WwW5pksYf3VP1M13cDRTSVA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "c91f3de5adaf1de973b797ef7485e441a65b8935",
         "type": "github"
       },
       "original": {
@@ -336,6 +367,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1636886446,
+        "narHash": "sha256-4xsVM2H8CG3d/3V+GqDDLDOmb3kdrugbqKVyrg8Q/zc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5cb226a06c49f7a2d02863d0b5786a310599df6b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5cb226a06c49f7a2d02863d0b5786a310599df6b",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1773646010,
         "narHash": "sha256-iYrs97hS7p5u4lQzuNWzuALGIOdkPXvjz7bviiBjUu8=",
         "owner": "nixos",
@@ -410,10 +457,30 @@
         "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       }
     },
+    "peerix": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1661429880,
+        "narHash": "sha256-7/m468XZW82O7KhDtRdQ7RnPsh83+tA8N4U0FncFo1U=",
+        "owner": "cid-chan",
+        "repo": "peerix",
+        "rev": "32cd1b098b83c90726848bd6726f74e72c557abb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cid-chan",
+        "repo": "peerix",
+        "type": "github"
+      }
+    },
     "pi-agent": {
       "inputs": {
         "bun2nix": "bun2nix",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "systems": "systems_3"
       },
       "locked": {
@@ -462,6 +529,7 @@
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs_2",
         "orcaslicer-nanashi-appimage": "orcaslicer-nanashi-appimage",
+        "peerix": "peerix",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager",
         "stylix": "stylix",

@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+import sys
+import os
+import shutil
+import re
+import subprocess
+
+def print_usage():
+    print("Usage: ./bootstrap <new-hostname>")
+    print("Example: ./bootstrap my-new-server")
+
+def main():
+    if len(sys.argv) < 2:
+        print_usage()
+        sys.exit(1)
+
+    hostname = sys.argv[1].strip()
+    if not hostname:
+        print("Error: hostname cannot be empty.")
+        print_usage()
+        sys.exit(1)
+
+    repo_root = os.path.dirname(os.path.abspath(__file__))
+    bootstrap_dir = os.path.join(repo_root, "hosts", "bootstrap")
+    target_dir = os.path.join(repo_root, "hosts", hostname)
+
+    if not os.path.isdir(bootstrap_dir):
+        print(f"Error: Bootstrap template directory not found at {bootstrap_dir}")
+        sys.exit(1)
+
+    if os.path.exists(target_dir):
+        print(f"Error: Host directory already exists at {target_dir}")
+        sys.exit(1)
+
+    print(f"Bootstrapping configuration for new host: '{hostname}'...")
+
+    # 1. Copy bootstrap to target_dir
+    try:
+        shutil.copytree(bootstrap_dir, target_dir)
+        print(f"✓ Copied template to {target_dir}")
+    except Exception as e:
+        print(f"Error copying template directory: {e}")
+        sys.exit(1)
+
+    # 2. Update hostname in configuration.nix
+    config_path = os.path.join(target_dir, "configuration.nix")
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config_content = f.read()
+
+        # Replace bootstrap-host with hostname
+        new_content = config_content.replace('"bootstrap-host"', f'"{hostname}"')
+
+        with open(config_path, "w") as f:
+            f.write(new_content)
+        print(f"✓ Set hostname to '{hostname}' in configuration.nix")
+    else:
+        print(f"Warning: configuration.nix not found at {config_path}")
+
+    # 3. Copy hardware-configuration.nix from /etc/nixos/ if it exists
+    etc_hw_path = "/etc/nixos/hardware-configuration.nix"
+    target_hw_path = os.path.join(target_dir, "hardware-configuration.nix")
+    if os.path.exists(etc_hw_path):
+        try:
+            shutil.copy2(etc_hw_path, target_hw_path)
+            print(f"✓ Copied hardware configuration from {etc_hw_path}")
+        except Exception as e:
+            print(f"Warning: Could not copy {etc_hw_path}: {e}. Retaining template fallback.")
+    else:
+        print(f"Warning: {etc_hw_path} not found. Retaining template fallback hardware-configuration.nix.")
+
+    # 4. Modify flake.nix to register the new host
+    flake_path = os.path.join(repo_root, "flake.nix")
+    if os.path.exists(flake_path):
+        try:
+            with open(flake_path, "r") as f:
+                flake_content = f.read()
+
+            # Find nixosConfigurations."cloudburst-desktop"
+            match = re.search(r'nixosConfigurations\."cloudburst-desktop"\s*=\s*nixpkgs\.lib\.nixosSystem\s*\{', flake_content)
+            if not match:
+                print("Error: Could not find nixosConfigurations.cloudburst-desktop in flake.nix. Host not registered automatically.")
+                sys.exit(1)
+
+            # Brace count to find closing brace of the config block
+            brace_count = 1
+            idx = match.end()
+            while idx < len(flake_content) and brace_count > 0:
+                if flake_content[idx] == '{':
+                    brace_count += 1
+                elif flake_content[idx] == '}':
+                    brace_count -= 1
+                idx += 1
+
+            # Find next semicolon
+            while idx < len(flake_content) and flake_content[idx] != ';':
+                idx += 1
+
+            if idx >= len(flake_content):
+                print("Error: Could not find closing semicolon of cloudburst-desktop configuration. Host not registered automatically.")
+                sys.exit(1)
+
+            end_idx = idx + 1 # Include semicolon
+
+            new_host_block = f"""
+
+    nixosConfigurations."{hostname}" = nixpkgs.lib.nixosSystem {{
+      specialArgs = {{inherit inputs;}};
+      modules = [
+        ./hosts/{hostname}/configuration.nix
+        inputs.home-manager.nixosModules.home-manager
+        inputs.stylix.nixosModules.stylix
+        {{
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.cloudburst = {{
+            imports = [inputs.plasma-manager.homeModules.plasma-manager];
+          }};
+        }}
+      ];
+    }};"""
+
+            updated_flake = flake_content[:end_idx] + new_host_block + flake_content[end_idx:]
+            with open(flake_path, "w") as f:
+                f.write(updated_flake)
+            print(f"✓ Registered '{hostname}' in flake.nix under nixosConfigurations")
+
+        except Exception as e:
+            print(f"Error modifying flake.nix: {e}")
+            sys.exit(1)
+    else:
+        print(f"Error: flake.nix not found at {flake_path}")
+        sys.exit(1)
+
+    # 5. Format the Nix files
+    print("Formatting repository with alejandra...")
+    try:
+        subprocess.run(["alejandra", "."], cwd=repo_root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print("✓ Formatting completed successfully.")
+    except Exception as e:
+        print(f"Warning: Failed to run alejandra formatting: {e}")
+
+    # 6. Stage files in Git so Nix flakes can see them
+    print("Staging files in Git...")
+    try:
+        subprocess.run(["git", "add", f"hosts/{hostname}"], cwd=repo_root, check=True)
+        print("✓ Staged host configuration directory.")
+    except Exception as e:
+        print(f"Warning: Failed to run git add: {e}")
+
+    print(f"\n🎉 Successfully bootstrapped host '{hostname}'!")
+    print(f"Configuration is located at: hosts/{hostname}/")
+    print(f"You can dry-run build this config with: nixos-rebuild build --flake .#{hostname} --no-link")
+
+if __name__ == "__main__":
+    main()

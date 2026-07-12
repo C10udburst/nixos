@@ -41,12 +41,13 @@
   python = true;
   scripts = true;
   tailscale = true;
+  peerix = true;
   threed = true;
   typst = true;
   utils = true;
   waydroid = true;
   waypipe = true;
-  weston-rdp = true;
+  weston-rdp = false;
   zram = true;
 
   # Home-Manager-only modules
