@@ -74,6 +74,7 @@ in {
       description = "Weston RDP remote desktop service running ${cfg.windowManager}";
       after = ["network.target" "systemd-user-sessions.service"];
       wantedBy = ["multi-user.target"];
+      enable = false;
 
       preStart = ''
         # Ensure directories exist
