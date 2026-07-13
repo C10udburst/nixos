@@ -100,7 +100,7 @@
     ${lib.concatMapStringsSep "\n" (core: ''selected_cores["${core}"]=1'') selectedCores}
 
     if installed_json=$(arduino-cli core list --format json 2>/dev/null); then
-      echo "$installed_json" | jq -r '.[].id' | while read -r installed_core; do
+      echo "$installed_json" | jq -r '.platforms[].id' | while read -r installed_core; do
         if [ -n "$installed_core" ] && [ -z "''${selected_cores[$installed_core]+x}" ]; then
           echo "==> Uninstalling unselected core: $installed_core"
           arduino-cli core uninstall "$installed_core"
