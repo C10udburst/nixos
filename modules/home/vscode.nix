@@ -2,80 +2,24 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.homeSettings;
-  isProgramming = cfg.programming or false;
+  isProgramming = cfg.programming.enable or false;
   isPython = cfg.python or false;
   isLatex = cfg.latex or false;
   isTypst = cfg.typst or false;
   isArduino = (cfg.arduino or {}).enable or false;
+  isThreed = cfg.threed or false;
+  isLlm = cfg.llm.enable or false;
 
-  # Build kaiwood.tauren from the Open VSX / Marketplace (not in nixpkgs)
-  tauren = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
-    mktplcRef = {
-      name = "tauren";
-      publisher = "kaiwood";
-      version = "1.8.0";
-      sha256 = "sha256-RAlJgPON/CxOMroaoJc95pjtGzPQ+yVGi2PyyBY5UG8=";
-    };
-    meta = {
-      description = "Transparent AI coding assistant built on the Pi agent";
-      license = lib.licenses.mit;
-    };
-  };
-
-  # Build PlatformIO IDE extension (supports Arduino, ESP32, Digispark, …)
-  # Not in nixpkgs vscode-extensions, built from VS Marketplace.
-  platformioIde = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
-    mktplcRef = {
-      name = "platformio-ide";
-      publisher = "platformio";
-      version = "3.3.4";
-      sha256 = "1vsrs6ph0nlbij9mn81q4gwnrv2jkk5wv2km901da6zlap52a2yq";
-    };
-    meta = {
-      description = "PlatformIO IDE — embedded development for Arduino, ESP32, STM32, and more";
-      license = lib.licenses.asl20;
-    };
-  };
-
-  # Build G-Code syntax highlighting extension (not in nixpkgs)
-  gcode-syntax = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
-    mktplcRef = {
-      name = "vscode-gcode-syntax";
-      publisher = "appliedengdesign";
-      version = "0.7.7";
-      sha256 = "14jcm0bg2vwjp8835xkq8rj44915dw5hls007dglh5md286p17hd";
-    };
-    meta = {
-      description = "G-Code syntax highlighting and utilities";
-      license = lib.licenses.mit;
-    };
-  };
-
-  # Build Remote Repositories extension (not in nixpkgs)
-  remoteRepositories = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
-    mktplcRef = {
-      name = "remote-repositories";
-      publisher = "ms-vscode";
-      version = "0.43.2026060101";
-      sha256 = "sha256-NP/NAAFdK1KZeXppxcQNjsug1tVNR4SmfbY5ltICC6M=";
-    };
-    meta = {
-      description = "Browse, search, edit, and commit to remote Git repositories directly from VS Code";
-      license = lib.licenses.mit;
-    };
-  };
+  exts = pkgs.vscode-marketplace;
 
   # Core extensions always installed
-  coreExtensions = with pkgs.vscode-extensions; [
-    # AI coding assistant (kaiwood.tauren — not in nixpkgs, built above)
-    tauren
-    # Remote Repositories (ms-vscode.remote-repositories — built above)
-    remoteRepositories
-    # G-Code syntax highlighting (appliedengdesign.vscode-gcode-syntax — built above)
-    gcode-syntax
+  coreExtensions = with exts; [
+    # Remote Repositories
+    ms-vscode.remote-repositories
     # Remote - SSH
     ms-vscode-remote.remote-ssh
     # GitHub Codespaces
@@ -89,8 +33,6 @@
     yzhang.markdown-all-in-one
     # Hex Editor
     ms-vscode.hexeditor
-    # SVG Previewer
-    jock.svg
     # Shell Formatter
     foxundermoon.shell-format
     # JSON Formatter
@@ -99,56 +41,58 @@
     usernamehw.errorlens
     pkief.material-icon-theme
     kamikillerto.vscode-colorize
-  ];
-
-  # Programming-specific extensions (Rust, Kotlin, Nix, Jinja, Jupyter)
-  programmingExtensions = lib.optionals isProgramming (with pkgs.vscode-extensions; [
     # Nix
     jnoortheen.nix-ide
-    # Rust
-    rust-lang.rust-analyzer
-    # Kotlin
-    mathiasfrohlich.kotlin
-    # Jinja templates
-    wholroyd.jinja
-    # Jupyter notebooks
+  ];
+
+  programmingExtensions = lib.optionals isProgramming (with exts;
+    [
+      wholroyd.jinja
+      jock.svg
+    ]
+    ++ lib.optionals (cfg.programming.rust or false) [
+      rust-lang.rust-analyzer
+    ]
+    ++ lib.optionals (cfg.programming.go or false) [
+      golang.go
+    ]
+    ++ lib.optionals (cfg.programming.kotlin or false) [
+      mathiasfrohlich.kotlin
+    ]);
+
+  # Python extensions
+  pythonExtensions = lib.optionals isPython (with exts; [
+    ms-python.python
+    ms-python.vscode-pylance
+    ms-python.debugpy
+    ms-python.black-formatter
+    ms-python.isort
     ms-toolsai.jupyter
     ms-toolsai.jupyter-renderers
     ms-toolsai.vscode-jupyter-cell-tags
     ms-toolsai.vscode-jupyter-slideshow
   ]);
 
-  # Python extensions
-  pythonExtensions = lib.optionals isPython (with pkgs.vscode-extensions; [
-    ms-python.python
-    ms-python.vscode-pylance
-    ms-python.debugpy
-    ms-python.black-formatter
-    ms-python.isort
-  ]);
-
-  # LaTeX extensions
-  latexExtensions = lib.optionals isLatex (with pkgs.vscode-extensions; [
-    james-yu.latex-workshop
-  ]);
-
-  # Typst extensions
-  typstExtensions = lib.optionals isTypst (with pkgs.vscode-extensions; [
-    myriad-dreamin.tinymist
-  ]);
-
-  # Arduino / embedded extensions
-  arduinoExtensions = lib.optionals isArduino [
-    platformioIde
-  ];
-
-  allExtensions = coreExtensions ++ programmingExtensions ++ pythonExtensions ++ latexExtensions ++ typstExtensions ++ arduinoExtensions;
+  allExtensions =
+    coreExtensions
+    ++ programmingExtensions
+    ++ pythonExtensions
+    ++ lib.optionals isLatex [exts.james-yu.latex-workshop]
+    ++ lib.optionals isTypst [exts.myriad-dreamin.tinymist]
+    ++ lib.optionals isArduino [exts.platformio.platformio-ide]
+    ++ lib.optionals isThreed [exts.appliedengdesign.vscode-gcode-syntax]
+    ++ lib.optionals isLlm [exts.kaiwood.tauren];
   fhsVscode = pkgs.vscode.fhsWithPackages (p:
-    lib.optionals isProgramming (with p; [
-      cargo
-      rustc
-      rust-analyzer
-    ])
+    lib.optionals isProgramming (with p;
+      [
+        cargo
+        rustc
+        rust-analyzer
+      ]
+      ++ lib.optionals (cfg.programming.go or false) [
+        go
+        gopls
+      ])
     ++ lib.optionals isPython (with p; [
       python3
       python3Packages.ipykernel

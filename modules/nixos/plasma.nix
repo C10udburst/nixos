@@ -37,6 +37,7 @@ in {
       kdePackages.ksystemlog
       kdePackages.kdeconnect-kde
       kdePackages.kde-cli-tools
+      kdePackages.kfind
     ];
 
     environment.plasma6.excludePackages = with pkgs.kdePackages; [

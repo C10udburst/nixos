@@ -42,6 +42,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     peerix = {
       url = "github:cid-chan/peerix";
       inputs.nixpkgs.url = "github:NixOS/nixpkgs/5cb226a06c49f7a2d02863d0b5786a310599df6b";

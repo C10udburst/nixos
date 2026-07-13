@@ -33,7 +33,7 @@
   fileSystems."/nix" = {
     device = "/dev/mapper/luks-b4e1a0c8-0db6-45ec-93da-8b296092dde3";
     fsType = "btrfs";
-    options = ["subvol=nix"];
+    options = ["subvol=nix" "noatime"];
   };
 
   fileSystems."/boot" = {

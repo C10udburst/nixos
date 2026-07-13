@@ -46,7 +46,7 @@
     kotlin = true;
   };
   arduino = {
-    enable = false;
+    enable = true;
     boards = ["arduino" "esp32" "digispark" "esp8266"];
   };
   python = true;

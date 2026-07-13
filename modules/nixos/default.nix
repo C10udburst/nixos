@@ -6,48 +6,48 @@
 }: {
   imports = [
     ./android.nix
+    ./appimage.nix
     ./arduino.nix
-    ./theme.nix
+    ./brave.nix
+    ./driftwm.nix
+    ./editors.nix
+    ./flatpak.nix
+    ./fonts.nix
+    ./fuse.nix
+    ./greetd.nix
+    ./java.nix
+    ./jetbrains.nix
+    ./kvm.nix
+    ./latex.nix
+    ./ldfix.nix
     ./llm.nix
     ./locale.nix
     ./main.nix
+    ./nettools.nix
     ./nix.nix
+    ./nvidia.nix
+    ./obs.nix
+    ./office.nix
     ./openssh.nix
     ./packages.nix
+    ./peerix.nix
     ./pipewire.nix
     ./plasma.nix
-    ./driftwm.nix
-    ./greetd.nix
     ./podman.nix
-    ./users.nix
-    ./python.nix
     ./programming.nix
-    ./ldfix.nix
-    ./java.nix
-    ./jetbrains.nix
-    ./utils.nix
-    ./tailscale.nix
-    ./peerix.nix
-    ./weston-rdp.nix
-    ./waypipe.nix
-    ./fonts.nix
-    ./editors.nix
-    ./threed.nix
-    ./fuse.nix
-    ./office.nix
-    ./latex.nix
-    ./typst.nix
-    ./appimage.nix
-    ./nettools.nix
-    ./obs.nix
-    ./zram.nix
-    ./kvm.nix
-    ./brave.nix
-    ./flatpak.nix
+    ./python.nix
     ./samba.nix
-    ./waydroid.nix
     ./scripts
-    ./nvidia.nix
+    ./tailscale.nix
+    ./theme.nix
+    ./threed.nix
+    ./typst.nix
+    ./users.nix
+    ./utils.nix
+    ./waydroid.nix
+    ./waypipe.nix
+    ./weston-rdp.nix
+    ./zram.nix
   ];
 
   options.hostSettings = lib.mkOption {

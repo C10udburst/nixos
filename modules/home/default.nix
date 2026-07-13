@@ -4,18 +4,19 @@
   ...
 }: {
   imports = [
+    ./associations.nix
+    ./dolphin
+    ./driftwm
     ./git.nix
     ./jetbrains.nix
     ./llm.nix
     ./plasma.nix
-    ./user.nix
-    ./starship.nix
     ./shell.nix
-    ./driftwm
+    ./starship.nix
     ./ulauncher.nix
-    ./vscode.nix
+    ./user.nix
     ./vencord.nix
-    ./associations.nix
+    ./vscode.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -36,8 +37,31 @@
         ulauncher.enable = lib.mkOption {type = lib.types.bool;};
         editors.enable = lib.mkOption {type = lib.types.bool;};
         programming = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
+          type = lib.types.submodule {
+            options = {
+              enable = lib.mkOption {
+                type = lib.types.bool;
+                default = false;
+              };
+              rust = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+              };
+              go = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+              };
+              node = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+              };
+              kotlin = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+              };
+            };
+          };
+          default = {};
         };
         python = lib.mkOption {
           type = lib.types.bool;
@@ -66,6 +90,10 @@
           };
           default = {};
         };
+        threed = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
         vencord.enable = lib.mkOption {type = lib.types.bool;};
       };
     };
@@ -93,10 +121,30 @@
       shell.enable = lib.mkDefault true;
       ulauncher.enable = lib.mkDefault (config.hostSettings.ulauncher or false);
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
-      programming = lib.mkDefault (
+      programming.enable = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.programming or false)
         then config.hostSettings.programming.enable or false
         else config.hostSettings.programming or false
+      );
+      programming.rust = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.rust or true
+        else true
+      );
+      programming.go = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.go or true
+        else true
+      );
+      programming.node = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.node or true
+        else true
+      );
+      programming.kotlin = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.kotlin or true
+        else true
       );
       python = lib.mkDefault (config.hostSettings.python or false);
       latex = lib.mkDefault (config.hostSettings.latex or false);
@@ -111,6 +159,7 @@
         then config.hostSettings.arduino.boards or ["arduino"]
         else ["arduino"]
       );
+      threed = lib.mkDefault (config.hostSettings.threed or false);
       vencord.enable = lib.mkDefault (config.hostSettings.vencord or false);
       associations.enable = lib.mkDefault true;
     };

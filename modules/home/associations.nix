@@ -174,6 +174,11 @@ in {
         </mime-type>
       </mime-info>
     '';
+    # run update-mime-database to apply the new MIME type
+    home.activation.updateMimeDatabase = lib.mkAfter ''
+      echo "Updating MIME database..."
+      ${pkgs.shared-mime-info}/bin/update-mime-database $HOME/.local/share/mime
+    '';
 
     # Setup terminal exec default terminal and TERMINAL env var
     xdg.terminal-exec = {
