@@ -16,13 +16,6 @@ in {
 
   hostSettings = hostSettings;
 
-  nixpkgs.overlays = [
-    inputs.nix-vscode-extensions.overlays.default
-    (final: prev: {
-      driftwm = inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default;
-    })
-  ];
-
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
