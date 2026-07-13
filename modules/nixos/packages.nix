@@ -30,7 +30,6 @@ in {
         tmux
         fastfetch
         libnotify
-        gparted
         haruna
         ffmpeg
         yt-dlp

@@ -1,4 +1,9 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   services.envfs.enable = false;
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -39,7 +44,7 @@
     libpng
   ];
 
-  systemd.tmpfiles.rules = [
+  systemd.tmpfiles.rules = lib.mkIf config.services.envfs.enable [
     "L+ /usr/local/bin - - - - /usr/bin"
     "L+ /sbin - - - - /bin"
   ];

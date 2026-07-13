@@ -35,6 +35,8 @@ in {
     environment.systemPackages = with pkgs; [
       kdePackages.plasma-systemmonitor
       kdePackages.ksystemlog
+      kdePackages.kclock
+      kdePackages.partitionmanager
       kdePackages.kdeconnect-kde
       kdePackages.kde-cli-tools
       kdePackages.kfind
