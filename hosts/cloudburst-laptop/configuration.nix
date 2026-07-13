@@ -27,6 +27,11 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 2;
 
+  # MSI Embedded Controller (EC) support
+  boot.extraModulePackages = [config.boot.kernelPackages.msi-ec];
+  boot.kernelModules = ["msi-ec"];
+  boot.kernelParams = ["ec_sys.write_support=1"];
+
   networking.hostName = "cloudburst-laptop";
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
