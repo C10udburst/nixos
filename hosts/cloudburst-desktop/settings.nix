@@ -37,7 +37,17 @@
   packages = true;
   pipewire = true;
   podman = true;
-  programming = true;
+  programming = {
+    enable = true;
+    rust = true;
+    go = true;
+    node = true;
+    kotlin = true;
+  };
+  arduino = {
+    enable = false;
+    boards = ["arduino" "esp32" "digispark" "esp8266"];
+  };
   python = true;
   scripts = true;
   tailscale = true;

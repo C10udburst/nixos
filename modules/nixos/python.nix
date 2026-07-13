@@ -5,12 +5,19 @@
   ...
 }: let
   cfg = config.systemSettings.python;
+  nvidiaEnabled = config.systemSettings.nvidia.enable;
+
+  # Use the CUDA-enabled torch when nvidia is on, plain CPU torch otherwise
+  torchPkg =
+    if nvidiaEnabled
+    then pkgs.python3Packages.torch #WithCuda
+    else pkgs.python3Packages.torch;
 
   pythonPkg = pkgs.python3.withPackages (ps:
     with ps; [
       requests
       pandas
-      torch
+      torchPkg
       numpy
       ipython
       matplotlib

@@ -9,6 +9,7 @@
   isPython = cfg.python or false;
   isLatex = cfg.latex or false;
   isTypst = cfg.typst or false;
+  isArduino = (cfg.arduino or {}).enable or false;
 
   # Build kaiwood.tauren from the Open VSX / Marketplace (not in nixpkgs)
   tauren = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
@@ -21,6 +22,21 @@
     meta = {
       description = "Transparent AI coding assistant built on the Pi agent";
       license = lib.licenses.mit;
+    };
+  };
+
+  # Build PlatformIO IDE extension (supports Arduino, ESP32, Digispark, …)
+  # Not in nixpkgs vscode-extensions, built from VS Marketplace.
+  platformioIde = pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+    mktplcRef = {
+      name = "platformio-ide";
+      publisher = "platformio";
+      version = "3.3.4";
+      sha256 = "1vsrs6ph0nlbij9mn81q4gwnrv2jkk5wv2km901da6zlap52a2yq";
+    };
+    meta = {
+      description = "PlatformIO IDE — embedded development for Arduino, ESP32, STM32, and more";
+      license = lib.licenses.asl20;
     };
   };
 
@@ -121,7 +137,12 @@
     myriad-dreamin.tinymist
   ]);
 
-  allExtensions = coreExtensions ++ programmingExtensions ++ pythonExtensions ++ latexExtensions ++ typstExtensions;
+  # Arduino / embedded extensions
+  arduinoExtensions = lib.optionals isArduino [
+    platformioIde
+  ];
+
+  allExtensions = coreExtensions ++ programmingExtensions ++ pythonExtensions ++ latexExtensions ++ typstExtensions ++ arduinoExtensions;
   fhsVscode = pkgs.vscode.fhsWithPackages (p:
     lib.optionals isProgramming (with p; [
       cargo

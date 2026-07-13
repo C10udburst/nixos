@@ -6,6 +6,7 @@
 }: {
   imports = [
     ./android.nix
+    ./arduino.nix
     ./theme.nix
     ./llm.nix
     ./locale.nix
@@ -87,7 +88,44 @@
       packages.enable = lib.mkDefault (config.hostSettings.packages or false);
       podman.enable = lib.mkDefault (config.hostSettings.podman or false);
       python.enable = lib.mkDefault (config.hostSettings.python or false);
-      programming.enable = lib.mkDefault (config.hostSettings.programming or false);
+
+      programming.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.enable or false
+        else config.hostSettings.programming or false
+      );
+      programming.rust = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.rust or true
+        else true
+      );
+      programming.go = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.go or true
+        else true
+      );
+      programming.node = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.node or true
+        else true
+      );
+      programming.kotlin = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.kotlin or true
+        else true
+      );
+
+      arduino.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.arduino or false)
+        then config.hostSettings.arduino.enable or false
+        else config.hostSettings.arduino or false
+      );
+      arduino.boards = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.arduino or false)
+        then config.hostSettings.arduino.boards or ["arduino"]
+        else ["arduino"]
+      );
+
       java.enable = lib.mkDefault (config.hostSettings.java or false);
       jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
       utils.enable = lib.mkDefault (config.hostSettings.utils or false);

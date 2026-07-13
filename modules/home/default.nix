@@ -51,6 +51,21 @@
           type = lib.types.bool;
           default = false;
         };
+        arduino = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              enable = lib.mkOption {
+                type = lib.types.bool;
+                default = false;
+              };
+              boards = lib.mkOption {
+                type = lib.types.listOf lib.types.str;
+                default = ["arduino"];
+              };
+            };
+          };
+          default = {};
+        };
         vencord.enable = lib.mkOption {type = lib.types.bool;};
       };
     };
@@ -78,10 +93,24 @@
       shell.enable = lib.mkDefault true;
       ulauncher.enable = lib.mkDefault (config.hostSettings.ulauncher or false);
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
-      programming = lib.mkDefault (config.hostSettings.programming or false);
+      programming = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.enable or false
+        else config.hostSettings.programming or false
+      );
       python = lib.mkDefault (config.hostSettings.python or false);
       latex = lib.mkDefault (config.hostSettings.latex or false);
       typst = lib.mkDefault (config.hostSettings.typst or false);
+      arduino.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.arduino or false)
+        then config.hostSettings.arduino.enable or false
+        else config.hostSettings.arduino or false
+      );
+      arduino.boards = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.arduino or false)
+        then config.hostSettings.arduino.boards or ["arduino"]
+        else ["arduino"]
+      );
       vencord.enable = lib.mkDefault (config.hostSettings.vencord or false);
       associations.enable = lib.mkDefault true;
     };
