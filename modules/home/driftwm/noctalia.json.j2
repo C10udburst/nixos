@@ -790,7 +790,7 @@
     "notifyUpdates": true
   },
   "idle": {
-    "enabled": false,
+    "enabled": {% if mobile %}true{% else %}false{% endif %},
     "screenOffTimeout": 600,
     "lockTimeout": 660,
     "suspendTimeout": 1800,

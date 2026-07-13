@@ -29,32 +29,15 @@ in {
         "BraveP3AEnabled": false,
         "BraveStatsPingEnabled": false,
         "BraveWebDiscoveryEnabled": false,
-        "DefaultSearchProviderAlternateURLS": [
-          "https://search.nixos.org/packages?channel=unstable&query={searchTerms}"
-        ],
         "PasswordSharingEnabled": false,
         "PasswordLeakDetectionEnabled": false,
-        "ReportAppInventory": [""],
         "ExtensionManifestV2Availability": 2,
         "SafeBrowsingExtendedReportingEnabled": false,
         "SafeBrowsingSurveysEnabled": false,
         "SafeBrowsingDeepScanningEnabled": false,
-        "DeviceActivityHeartbeatEnabled": false,
-        "DeviceMetricsReportingEnabled": false,
-        "HeartbeatEnabled": false,
-        "LogUploadEnabled": false,
-        "ReportAppInventory": [""],
-        "ReportDeviceActivityTimes": false,
-        "ReportDeviceAppInfo": false,
-        "ReportDeviceSystemInfo": false,
-        "ReportDeviceUsers": false,
-        "ReportWebsiteTelemetry": [""],
         "AlternateErrorPagesEnabled": false,
         "FeedbackSurveysEnabled": false,
         "BrowserGuestModeEnabled": true,
-        "EnableFeatures": [
-          "MiddleClickAutoscroll",
-        ],
       }
     '';
     environment.systemPackages = with pkgs; [

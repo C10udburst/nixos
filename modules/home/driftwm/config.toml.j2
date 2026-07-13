@@ -22,6 +22,11 @@ accel_profile = "adaptive"
 [mouse.on-canvas]
 "right" = "spawn noctalia-shell ipc call launcher toggle"
 
+[gestures.on-window]
+"3-finger-doubletap-swipe" = "pan-viewport"
+"alt+3-finger-doubletap-swipe" = "move-window"
+"ctrl+alt+3-finger-doubletap-swipe" = "resize-window"
+
 [navigation.edge_pan]
 zone = 100
 cursor_pan = false
@@ -49,11 +54,16 @@ border_color_focused = "#{{ base0E }}"
 shadow = true
 font = "{{ font }}"
 
+[output.outline]
+color = "#{{ base0E }}"
+thickness = 2
+
 [xwayland]
 enabled = true
 path = "{{ xwayland_satellite_path }}"
 
 [keybindings]
+"mod+tab" = "toggle cursor edge-pan"
 "mod+space" = "spawn noctalia-shell ipc call launcher toggle"
 "mod+return" = "spawn noctalia-shell ipc call launcher toggle"
 "ctrl+alt+t" = "exec kitty"

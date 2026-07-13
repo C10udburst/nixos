@@ -3,6 +3,7 @@
   adminUsers = ["cloudburst"];
 
   sambaPath = "";
+  mobile = true;
 
   # Modules to enable across NixOS and Home Manager
   driftwm = {

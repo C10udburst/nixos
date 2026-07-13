@@ -18,6 +18,7 @@ with lib; let
       font = config.stylix.fonts.monospace.name or "JetBrainsMono Nerd Font";
       extracmds = cfg.extracmds;
       xwayland_satellite_path = "${lib.getExe pkgs.xwayland-satellite}";
+      mobile = config.hostSettings.mobile or false;
     };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
