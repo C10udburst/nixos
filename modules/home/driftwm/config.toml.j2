@@ -19,11 +19,18 @@ num_lock = true
 accel_speed = 0.1
 accel_profile = "adaptive"
 
+[input.trackpad]
+accel_speed = 0.1
+click_method = "button_areas"
+
+[cursor]
+inactive_opacity = 0.25
+
 [mouse.on-canvas]
 "right" = "spawn noctalia-shell ipc call launcher toggle"
 
 [gestures.on-window]
-"3-finger-doubletap-swipe" = "pan-viewport"
+"3-finger-doubletap-swipe" = "none"
 "alt+3-finger-doubletap-swipe" = "move-window"
 "ctrl+alt+3-finger-doubletap-swipe" = "resize-window"
 
@@ -38,10 +45,13 @@ distance = 20
 centers = true
 corners = true
 
+[zoom]
+trackpad_speed = 1.2
+
 [background]
 type = "shader"
 path = "~/.config/driftwm/background.glsl"
-cache_shader = true
+animate_fps = 24
 
 [decorations]
 title_bar_height = 30
