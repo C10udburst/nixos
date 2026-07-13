@@ -29,11 +29,18 @@ inactive_opacity = 0.25
 [mouse.on-canvas]
 "right" = "spawn noctalia-shell ipc call launcher toggle"
 
+[mouse.anywhere]
+"ctrl+trackpad-scroll" = "pan-viewport"
+
+[gestures]
+swipe_threshold = 6
+
 [gestures.on-window]
 "3-finger-doubletap-swipe" = "none"
 "alt+3-finger-doubletap-swipe" = "move-window"
 "ctrl+alt+3-finger-doubletap-swipe" = "resize-window"
-"3-finger-tap" = "toggle-cursor-pan"
+"ctrl+2-finger-pinch-in" = "zoom-in"
+"ctrl+2-finger-pinch-out" = "zoom-out"
 
 [navigation.edge_pan]
 zone = 100
