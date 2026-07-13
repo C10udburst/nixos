@@ -157,7 +157,8 @@ in {
     # Automatically run the board installation service
     systemd.user.services.arduino-setup = {
       description = "Automatically install selected Arduino cores";
-      wantedBy = ["graphical-session.target"];
+      wantedBy = ["default.target"];
+      wants = ["network-online.target"];
       after = ["network-online.target"];
       serviceConfig = {
         Type = "oneshot";

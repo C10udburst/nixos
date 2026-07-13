@@ -79,7 +79,7 @@
     ++ pythonExtensions
     ++ lib.optionals isLatex [exts.james-yu.latex-workshop]
     ++ lib.optionals isTypst [exts.myriad-dreamin.tinymist]
-    ++ lib.optionals isArduino [exts.platformio.platformio-ide]
+    ++ lib.optionals isArduino [exts.platformio.platformio-ide exts.ms-vscode.cpptools]
     ++ lib.optionals isThreed [exts.appliedengdesign.vscode-gcode-syntax]
     ++ lib.optionals isLlm [exts.kaiwood.tauren];
   fhsVscode = pkgs.vscode.fhsWithPackages (p:
