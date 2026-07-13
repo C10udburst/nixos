@@ -30,10 +30,10 @@ in {
   # MSI Embedded Controller (EC) support
   boot.extraModulePackages = [config.boot.kernelPackages.msi-ec];
   boot.kernelModules = ["msi-ec"];
-  boot.kernelParams = [
-    "ec_sys.write_support=1"
-    "msi-ec.firmware=16U7EMS1.106"
-  ];
+  boot.kernelParams = ["ec_sys.write_support=1"];
+  boot.extraModprobeConfig = ''
+    options msi-ec force_id="16U7EMS1" debug=1
+  '';
 
   networking.hostName = "cloudburst-laptop";
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.

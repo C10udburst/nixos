@@ -19,9 +19,9 @@ in {
       sshfs
     ];
 
-    # Mountpoint for SMB brix0.taile505b.ts.net/data
+    # Mountpoint for SMB brix0/data
     fileSystems."/mnt/brix0" = {
-      device = "//brix0.taile505b.ts.net/data";
+      device = "//brix0/data";
       fsType = "cifs";
       options = [
         "x-systemd.automount"
@@ -37,7 +37,7 @@ in {
 
     # Mountpoint for SMB cloudburst-desktop/dane
     fileSystems."/mnt/dane" = lib.mkIf (config.networking.hostName != "cloudburst-desktop") {
-      device = "//cloudburst-desktop.taile505b.ts.net/dane";
+      device = "//cloudburst-desktop/dane";
       fsType = "cifs";
       options = [
         "x-systemd.automount"

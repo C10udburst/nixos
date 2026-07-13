@@ -24,28 +24,42 @@
   sarif-md = pkgs.writers.writePython3Bin "sarif-md" {} (builtins.readFile ./sarif-md.py);
   ics-merge = pkgs.writers.writePython3Bin "ics-merge" {} (builtins.readFile ./ics-merge.py);
   video8mb = pkgs.writers.writePython3Bin "video8mb" {} (builtins.readFile ./video8mb.py);
+
+  desktop-kickoff = pkgs.writeShellScriptBin "desktop-kickoff" (builtins.readFile ./desktop-kickoff.sh);
+  desktop-kickoff-launcher = pkgs.makeDesktopItem {
+    name = "desktop-kickoff";
+    desktopName = "Cloudburst Desktop Kickoff";
+    exec = "desktop-kickoff";
+    icon = "kde";
+    terminal = false;
+  };
 in {
   options.systemSettings.scripts = {
     enable = lib.mkEnableOption "Enable custom scripts module (including gh-origin-mod, datauri, serial, www, extract, gcode-bounds, beamer-clean, sarif-md, ics-merge, video8mb, nx, rofi, nix-py)";
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [
-      gh-origin-mod
-      datauri
-      serial
-      www
-      extract
-      gcode-bounds
-      beamer-clean
-      sarif-md
-      ics-merge
-      video8mb
-      nx
-      noctalia-dmenu
-      rofi
-      palette
-      nix-py
-    ];
+    environment.systemPackages =
+      [
+        gh-origin-mod
+        datauri
+        serial
+        www
+        extract
+        gcode-bounds
+        beamer-clean
+        sarif-md
+        ics-merge
+        video8mb
+        nx
+        noctalia-dmenu
+        rofi
+        palette
+        nix-py
+      ]
+      ++ lib.optionals (config.networking.hostName != "cloudburst-desktop") [
+        desktop-kickoff
+        desktop-kickoff-launcher
+      ];
   };
 }
