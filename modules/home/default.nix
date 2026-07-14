@@ -11,13 +11,13 @@
     ./jetbrains.nix
     ./llm.nix
     ./plasma.nix
+    ./ranger
     ./shell.nix
     ./starship.nix
     ./ulauncher.nix
     ./user.nix
     ./vencord.nix
     ./vscode.nix
-    ./ranger.nix
   ];
 
   options.hostSettings = lib.mkOption {

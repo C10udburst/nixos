@@ -26,8 +26,6 @@
       };
       extraConfig = ''
         default_linemode devicons
-        map ma mount_archive
-        map ua unmount_archive
         map xb binwalk_extract
       '';
       plugins = [
@@ -53,12 +51,12 @@
     };
 
     xdg.configFile."ranger/scope.sh" = {
-      source = ./ranger/scope.sh;
+      source = ./scope.sh;
       executable = true;
     };
 
     xdg.configFile."ranger/commands.py" = {
-      source = ./ranger/commands.py;
+      source = ./commands.py;
     };
 
     programs.bash.initExtra = ''

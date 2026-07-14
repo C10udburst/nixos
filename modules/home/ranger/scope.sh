@@ -152,6 +152,12 @@ handle_mime() {
                 readelf -WCa "${FILE_PATH}" && exit 5
             fi
             ;;
+
+        application/x-openscad)
+            if command -v openscad &>/dev/null; then
+                openscad -o "${IMAGE_CACHE_PATH}" --imgsize="${DEFAULT_SIZE%x*},${DEFAULT_SIZE#*x}" --projection=ortho --viewall --colorscheme=Tomorrow --render -- "${FILE_PATH}" && exit 6
+            fi
+            ;;
     esac
 }
 
@@ -164,7 +170,7 @@ handle_fallback() {
         echo '----- Hex Dump (hexyl) -----'
         hexyl --border none --color always --length 1024 -- "${FILE_PATH}" && exit 5
     fi
-    
+
     echo '----- File Type Classification -----'
     file --dereference --brief -- "${FILE_PATH}" && exit 5
 }

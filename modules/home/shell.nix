@@ -32,6 +32,7 @@ in {
         "cd.." = "cd ..";
         "-" = "cd -";
         strace-pick = "kitty sudo strace -p $(ps aux | awk '{print $2, $11}' | noctalia-dmenu | awk '{print $1}') -e trace=read -s 10000";
+        icat = "kitty +kitten icat";
       }
       // (lib.listToAttrs (
         map (i: {
