@@ -47,6 +47,7 @@ in {
       plasma-browser-integration
       khelpcenter
       gwenview
+      qrca
     ];
   };
 }

@@ -47,7 +47,8 @@ in {
       ++ lib.optionals cfg.rust [rustc cargo]
       ++ lib.optionals cfg.go [go]
       ++ lib.optionals cfg.node [nodejs pnpm]
-      ++ lib.optionals cfg.kotlin [kotlin];
+      ++ lib.optionals cfg.kotlin [kotlin]
+      ++ lib.optionals config.systemSettings.java.enable [pkgs.gradle];
 
     boot.kernel.sysctl."kernel.yama.ptrace_scope" = 0;
   };
