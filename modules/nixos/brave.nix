@@ -33,7 +33,7 @@ in {
           "pl-PL",
           "en-US"
         ],
-        "BraveRewardsDisabled": true,fun flags?
+        "BraveRewardsDisabled": true,
         "BraveWalletDisabled": true,
         "BraveVPNDisabled": true,
         "BraveAIChatEnabled": false,
