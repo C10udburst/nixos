@@ -8,6 +8,20 @@
 in {
   options.systemSettings.brave = {
     enable = lib.mkEnableOption "Enable brave group policies";
+    flags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [
+        "brave-history-embeddings@1"
+        "brave-origin@1"
+        "brave-tree-tab@1"
+        "containers@1"
+        "enable-parallel-downloading@1"
+        "enable-quic@1"
+        "middle-button-autoscroll@1"
+        "smooth-scrolling@1"
+      ];
+      description = "List of Brave flags (experiments) to enable declaratively";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -19,7 +33,7 @@ in {
           "pl-PL",
           "en-US"
         ],
-        "BraveRewardsDisabled": true,
+        "BraveRewardsDisabled": true,fun flags?
         "BraveWalletDisabled": true,
         "BraveVPNDisabled": true,
         "BraveAIChatEnabled": false,
@@ -54,5 +68,20 @@ in {
         ];
       })
     ];
+
+    systemd.user.services.brave-flags = {
+      description = "Set Brave flags declaratively";
+      wantedBy = ["default.target"];
+      script = ''
+        STATE_FILE="$HOME/.config/BraveSoftware/Brave-Browser/Local State"
+        mkdir -p "$(dirname "$STATE_FILE")"
+        if [ ! -f "$STATE_FILE" ]; then
+          echo "{}" > "$STATE_FILE"
+        fi
+        ${pkgs.jq}/bin/jq '.browser.enabled_labs_experiments = $flags' \
+          --argjson flags '${builtins.toJSON cfg.flags}' \
+          "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
+      '';
+    };
   };
 }

@@ -52,5 +52,5 @@
   # Home-Manager-only modules
   git = true;
   ulauncher = false;
-  vencord = false;
+  vencord = true;
 }
