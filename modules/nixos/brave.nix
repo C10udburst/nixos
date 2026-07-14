@@ -45,7 +45,9 @@ in {
         commandLineArgs = [
           "--allow-insecure-localhost"
           "--ozone-platform-hint=wayland"
-          "--enable-features=WaylandWindowDecorations"
+          "--enable-features=Vulkan,WaylandWindowDecorations"
+          "--enable-unsafe-webgpu"
+          "--ignore-gpu-blocklist"
           "--force-device-scale-factor=0.9"
           "--password-store=basic"
         ];
