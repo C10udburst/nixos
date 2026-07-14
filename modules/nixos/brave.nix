@@ -5,18 +5,6 @@
   ...
 }: let
   cfg = config.systemSettings.brave;
-  brave-override = pkgs.brave.override {
-    commandLineArgs = [
-      "--allow-insecure-localhost"
-      "--ozone-platform=x11"
-      "--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
-      "--use-angle=vulkan"
-      "--use-vulkan"
-      "--ignore-gpu-blocklist"
-      "--force-device-scale-factor=0.9"
-      "--password-store=basic"
-    ];
-  };
 in {
   options.systemSettings.brave = {
     enable = lib.mkEnableOption "Enable brave group policies";
@@ -49,21 +37,21 @@ in {
         "SafeBrowsingDeepScanningEnabled": false,
         "AlternateErrorPagesEnabled": false,
         "FeedbackSurveysEnabled": false,
-        "BrowserGuestModeEnabled": true,
+        "BrowserGuestModeEnabled": true
       }
     '';
     environment.systemPackages = with pkgs; [
-      (symlinkJoin {
-        name = "brave";
-        paths = [brave-override];
-        nativeBuildInputs = [makeWrapper];
-        postBuild = ''
-          rm $out/bin/brave
-          makeWrapper ${brave-override}/bin/brave $out/bin/brave \
-            --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [vulkan-loader]}" \
-            --set VK_DRIVER_FILES "/run/opengl-driver/share/vulkan/icd.d" \
-            --set VK_ICD_FILENAMES "/run/opengl-driver/share/vulkan/icd.d"
-        '';
+      (brave.override {
+        commandLineArgs = [
+          "--allow-insecure-localhost"
+          "--ozone-platform=x11"
+          "--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
+          "--use-angle=vulkan"
+          "--use-vulkan"
+          "--ignore-gpu-blocklist"
+          "--force-device-scale-factor=0.9"
+          "--password-store=basic"
+        ];
       })
     ];
   };

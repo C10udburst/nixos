@@ -42,7 +42,13 @@
     expat
     libxml2
     libpng
+    vulkan-loader
   ];
+
+  environment.sessionVariables = {
+    VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d";
+    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d";
+  };
 
   systemd.tmpfiles.rules = lib.mkIf config.services.envfs.enable [
     "L+ /usr/local/bin - - - - /usr/bin"
