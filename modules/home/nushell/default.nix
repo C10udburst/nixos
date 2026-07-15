@@ -21,7 +21,7 @@
     ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/adb/adb-completions.nu"
     ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/fastboot/fastboot-completions.nu"
     ++ lib.optional (config.hostSettings.openssh or false) "custom-completions/ssh/ssh-completions.nu"
-    ++ lib.optional (config.hostSettings.java or false) "custom-completions/gradlew/gradle-completions.nu"
+    ++ lib.optional (config.hostSettings.java or false) "custom-completions/gradlew/gradlew-completions.nu"
     ++ lib.optional (config.hostSettings.podman or false) "custom-completions/docker/mod.nu"
     ++ lib.optional (config.hostSettings.typst or false) "custom-completions/typst/typst-completions.nu";
 in {
@@ -38,7 +38,17 @@ in {
     programs.nushell = {
       enable = true;
       package = pkgs.nushell;
-      extraConfig = lib.concatStringsSep "\n" (map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") modules);
+      extraConfig =
+        (lib.concatStringsSep "\n" (map (module: "source ${pkgs.nu_scripts}/share/nu_scripts/${module}") modules))
+        + "\n"
+        + ''
+          ${pkgs.nu_scripts}/share/nu_scripts/modules/prompt/starship.nu
+          $env.config.show_banner = false
+          if 'KITTY_PID' in $env {
+            $env.config.shell_integration = true
+            $env.config.use_kitty_protocol = true
+          }
+        '';
     };
 
     # Enable Starship integration
