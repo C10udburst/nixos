@@ -22,7 +22,7 @@
     ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/fastboot/fastboot-completions.nu"
     ++ lib.optional (config.hostSettings.openssh or false) "custom-completions/ssh/ssh-completions.nu"
     ++ lib.optional (config.hostSettings.java or false) "custom-completions/gradlew/gradlew-completions.nu"
-    ++ lib.optional (config.hostSettings.podman or false) "custom-completions/docker/mod.nu"
+    ++ lib.optional (config.hostSettings.podman or false) "custom-completions/docker/docker-completions.nu"
     ++ lib.optional (config.hostSettings.typst or false) "custom-completions/typst/typst-completions.nu";
 in {
   options.homeSettings.nushell = {
