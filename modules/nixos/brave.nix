@@ -11,6 +11,7 @@ in {
     flags = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [
+        "brave-dark-mode-block@2"
         "brave-history-embeddings@1"
         "brave-origin@1"
         "brave-tree-tab@1"

@@ -14,6 +14,7 @@
     ./ranger
     ./shell.nix
     ./starship.nix
+    ./threed.nix
     ./ulauncher.nix
     ./user.nix
     ./vencord.nix
@@ -90,10 +91,6 @@
             };
           };
           default = {};
-        };
-        threed = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
         };
         vencord.enable = lib.mkOption {type = lib.types.bool;};
       };

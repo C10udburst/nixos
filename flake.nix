@@ -40,6 +40,7 @@
   };
 
   inputs = {
+    # Core
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -86,12 +87,29 @@
     pi-agent.url = "github:lukasl-dev/pi-mono.nix";
     antigravity-nix.url = "github:jacopone/antigravity-nix";
 
+    # ── 3D tools & OpenSCAD libraries ────────────────────────────────────────
     orcaslicer-nanashi-appimage = {
       url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";
       flake = false;
     };
 
-    # Ulauncher Extensions
+    # OpenSCAD libraries — fetched as plain source (flake = false) and
+    # installed declaratively via modules/home/threed.nix into
+    # ~/.local/share/OpenSCAD/libraries/
+    openscad-bosl2 = {
+      url = "github:BelfrySCAD/BOSL2";
+      flake = false;
+    };
+    openscad-constructive = {
+      url = "git+https://codeberg.org/solidboredom/constructive";
+      flake = false;
+    };
+    openscad-round-anything = {
+      url = "github:Irev-Dev/Round-Anything";
+      flake = false;
+    };
+
+    # ── Ulauncher extensions ─────────────────────────────────────────────────
     ulauncher-homepage = {
       url = "github:pucodev/ulauncher-homepage";
       flake = false;
