@@ -11,6 +11,7 @@
     enableBashIntegration = true;
     enableZshIntegration = true;
     enableFishIntegration = true;
+    enableNushellIntegration = true;
     settings = {
       scan_timeout = 120;
       add_newline = false;
@@ -89,7 +90,7 @@
       };
 
       shell = {
-        format = "[ $shell]($style)";
+        format = "[ $indicator]($style)";
         disabled = false;
         bash_indicator = "";
         zsh_indicator = "⚡";

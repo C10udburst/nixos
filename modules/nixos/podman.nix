@@ -58,6 +58,7 @@ in {
     environment.systemPackages = [
       pkgs.docker-compose
       qocker
+      pkgs.distrobox
     ];
 
     systemd.tmpfiles.rules = [

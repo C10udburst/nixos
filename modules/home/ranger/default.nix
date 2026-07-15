@@ -74,7 +74,7 @@
       bind '"\C-o":"ranger\C-m"'
     '';
 
-    programs.zsh.initExtra = ''
+    programs.zsh.initContent = ''
       # Automatically CD into the last open folder on Ranger close
       ranger() {
           local temp_file

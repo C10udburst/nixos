@@ -42,10 +42,8 @@ in {
         (lib.concatStringsSep "\n" (map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") modules))
         + "\n"
         + ''
-          source ${pkgs.nu_scripts}/share/nu_scripts/modules/prompt/starship.nu
           $env.config.show_banner = false
           if 'KITTY_PID' in $env {
-            $env.config.shell_integration = true
             $env.config.use_kitty_protocol = true
           }
         '';
