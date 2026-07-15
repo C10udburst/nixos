@@ -93,9 +93,7 @@
       flake = false;
     };
 
-    # OpenSCAD libraries — fetched as plain source (flake = false) and
-    # installed declaratively via modules/home/threed.nix into
-    # ~/.local/share/OpenSCAD/libraries/
+    # OpenSCAD libraries
     openscad-bosl2 = {
       url = "github:BelfrySCAD/BOSL2";
       flake = false;
@@ -106,6 +104,11 @@
     };
     openscad-round-anything = {
       url = "github:Irev-Dev/Round-Anything";
+      flake = false;
+    };
+    openscad-obiscad = {
+      #https://github.com/Obijuan/obiscad/tree/master/obiscad
+      url = "github:Obijuan/obiscad?dir=obiscad";
       flake = false;
     };
 

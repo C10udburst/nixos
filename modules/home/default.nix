@@ -10,6 +10,7 @@
     ./git.nix
     ./jetbrains.nix
     ./llm.nix
+    ./nushell
     ./plasma.nix
     ./ranger
     ./shell.nix
@@ -160,6 +161,16 @@
       threed = lib.mkDefault (config.hostSettings.threed or false);
       vencord.enable = lib.mkDefault (config.hostSettings.vencord or false);
       associations.enable = lib.mkDefault true;
+      nushell.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.nushell or false)
+        then config.hostSettings.nushell.enable or false
+        else config.hostSettings.nushell or false
+      );
+      nushell.default = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.nushell or false)
+        then config.hostSettings.nushell.default or "none"
+        else "none"
+      );
     };
   };
 }

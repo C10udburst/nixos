@@ -16,7 +16,7 @@ in {
         "..." = "cd ../..";
         py = "python3";
         dc = "cd";
-        cls = "clear";
+        cls = "printf '\033[2J\033[3J\033[1;1H'";
         ll = "eza -la --sort name --group-directories-first --git --smart-group -h --extended --icons -M";
         l = "eza --icons --git --group-directories-first";
         ls = "eza --icons --git --group-directories-first";

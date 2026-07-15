@@ -544,6 +544,24 @@
         "url": "https://codeberg.org/solidboredom/constructive"
       }
     },
+    "openscad-obiscad": {
+      "flake": false,
+      "locked": {
+        "dir": "obiscad",
+        "lastModified": 1547971405,
+        "narHash": "sha256-65iTg5isn1Xl1NEztt8fPyuRsxE7/QhNsCmvf5ta1l8=",
+        "owner": "Obijuan",
+        "repo": "obiscad",
+        "rev": "4cbf0bd08a78e6c0568807e03ac7d6a6ee87551f",
+        "type": "github"
+      },
+      "original": {
+        "dir": "obiscad",
+        "owner": "Obijuan",
+        "repo": "obiscad",
+        "type": "github"
+      }
+    },
     "openscad-round-anything": {
       "flake": false,
       "locked": {
@@ -648,6 +666,7 @@
         "nixpkgs": "nixpkgs_3",
         "openscad-bosl2": "openscad-bosl2",
         "openscad-constructive": "openscad-constructive",
+        "openscad-obiscad": "openscad-obiscad",
         "openscad-round-anything": "openscad-round-anything",
         "orcaslicer-nanashi-appimage": "orcaslicer-nanashi-appimage",
         "peerix": "peerix",

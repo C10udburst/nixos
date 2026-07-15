@@ -25,6 +25,7 @@
     ./main.nix
     ./nettools.nix
     ./nix.nix
+    ./nushell
     ./nvidia.nix
     ./obs.nix
     ./office.nix
@@ -169,6 +170,17 @@
 
       samba.enable = lib.mkDefault (config.hostSettings.sambaPath or "" != "");
       samba.path = lib.mkDefault (config.hostSettings.sambaPath or "");
+
+      nushell.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.nushell or false)
+        then config.hostSettings.nushell.enable or false
+        else config.hostSettings.nushell or false
+      );
+      nushell.default = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.nushell or false)
+        then config.hostSettings.nushell.default or "none"
+        else "none"
+      );
     };
   };
 }
