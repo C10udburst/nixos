@@ -93,5 +93,32 @@
       zle -N ranger-cd-widget
       bindkey '^O' ranger-cd-widget
     '';
+
+    programs.nushell.extraConfig = ''
+      def --env ranger [...args] {
+          let tmp = ($nu.home-dir | path join ".ranger_nushell_dir")
+          if ($tmp | path exists) { rm -f $tmp }
+          if ($args | is-empty) {
+              ^ranger --choosedir=$"($tmp)"
+          } else {
+              ^ranger --choosedir=$"($tmp)" ...$args
+          }
+          if ($tmp | path exists) {
+              let target = (open --raw $tmp | decode utf-8 | str trim)
+              rm -f $tmp
+
+              if ($target != "" and $target != $env.PWD) {
+                  cd $target
+              }
+          }
+      }
+      $env.config.keybindings = ($env.config.keybindings | append {
+          name: open_ranger
+          modifier: control
+          keycode: char_o
+          mode: [emacs, vi_insert, vi_normal]
+          event: [{ send: executehostcommand, cmd: "ranger" }]
+      })
+    '';
   };
 }
