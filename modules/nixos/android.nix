@@ -2,35 +2,11 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.android;
-
-  scrcpy-app = let
-    pythonApp = pkgs.writers.writePython3Bin "scrcpy-app" {
-      libraries = with pkgs.python3Packages; [pyqt6];
-    } (builtins.readFile ./scrcpy-app.py);
-  in
-    pkgs.symlinkJoin {
-      name = "scrcpy-app";
-      paths = [
-        (pkgs.runCommand "scrcpy-app-wrapped" {
-            nativeBuildInputs = [pkgs.makeWrapper];
-          } ''
-            mkdir -p $out/bin
-            makeWrapper ${pythonApp}/bin/scrcpy-app $out/bin/scrcpy-app \
-              --prefix PATH : ${lib.makeBinPath [pkgs.aapt pkgs.android-tools pkgs.scrcpy]}
-          '')
-        (pkgs.makeDesktopItem {
-          name = "scrcpy-app";
-          exec = "scrcpy-app";
-          icon = "phone";
-          comment = "Run Android app on PC via scrcpy";
-          desktopName = "Scrcpy App";
-          categories = ["Utility"];
-        })
-      ];
-    };
+  scrcpy-app = inputs.scrcpy-app-src.defaultPackage.${pkgs.system};
 in {
   options.systemSettings.android = {
     enable = lib.mkEnableOption "Enable Android tools and settings";

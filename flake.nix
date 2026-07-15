@@ -87,6 +87,11 @@
     pi-agent.url = "github:lukasl-dev/pi-mono.nix";
     antigravity-nix.url = "github:jacopone/antigravity-nix";
 
+    scrcpy-app-src = {
+      url = "github:C10udburst/scrcpy-app";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # ── 3D tools & OpenSCAD libraries ────────────────────────────────────────
     orcaslicer-nanashi-appimage = {
       url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";

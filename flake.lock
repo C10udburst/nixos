@@ -672,6 +672,7 @@
         "peerix": "peerix",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager",
+        "scrcpy-app-src": "scrcpy-app-src",
         "stylix": "stylix",
         "ulauncher-bitwarden": "ulauncher-bitwarden",
         "ulauncher-clipboard": "ulauncher-clipboard",
@@ -682,6 +683,26 @@
         "ulauncher-nix": "ulauncher-nix",
         "ulauncher-system": "ulauncher-system",
         "ulauncher-unicode": "ulauncher-unicode"
+      }
+    },
+    "scrcpy-app-src": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784150910,
+        "narHash": "sha256-+uBIJ7uSFkHzaRpxRoIFDqmOEQyyUBg2DFzUfO1kwZI=",
+        "owner": "C10udburst",
+        "repo": "scrcpy-app",
+        "rev": "8cdcb8101052839301d94eaf03269fe15740795c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "C10udburst",
+        "repo": "scrcpy-app",
+        "type": "github"
       }
     },
     "stylix": {
