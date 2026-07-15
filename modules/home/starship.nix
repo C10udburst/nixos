@@ -18,7 +18,7 @@
         segments = [
           {
             bg = "color_orange";
-            content = "$os$username$hostname";
+            content = "$os$shell$username$hostname";
           }
           {
             bg = "color_yellow";
@@ -86,6 +86,18 @@
         symbols = {
           NixOS = " ";
         };
+      };
+
+      shell = {
+        format = "[ $shell]($style)";
+        disabled = false;
+        bash_indicator = "";
+        zsh_indicator = "⚡";
+        fish_indicator = "";
+        nu_indicator = "";
+        powershell_indicator = "";
+        unknown_indicator = "";
+        style = "bg:color_orange fg:color_fg0 bold";
       };
 
       username = {

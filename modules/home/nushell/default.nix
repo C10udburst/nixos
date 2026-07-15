@@ -39,10 +39,10 @@ in {
       enable = true;
       package = pkgs.nushell;
       extraConfig =
-        (lib.concatStringsSep "\n" (map (module: "source ${pkgs.nu_scripts}/share/nu_scripts/${module}") modules))
+        (lib.concatStringsSep "\n" (map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") modules))
         + "\n"
         + ''
-          ${pkgs.nu_scripts}/share/nu_scripts/modules/prompt/starship.nu
+          source ${pkgs.nu_scripts}/share/nu_scripts/modules/prompt/starship.nu
           $env.config.show_banner = false
           if 'KITTY_PID' in $env {
             $env.config.shell_integration = true
