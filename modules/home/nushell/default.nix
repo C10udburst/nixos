@@ -5,22 +5,25 @@
   ...
 }: let
   cfg = config.homeSettings.nushell;
-  customPlugins = import ./plugins.nix {inherit pkgs;};
 
-  # Check if git is enabled
-  gitEnabled = config.homeSettings.git.enable or false;
-
-  # Check if adb/android is enabled
-  adbEnabled =
-    if builtins.isAttrs (config.hostSettings.android or false)
-    then config.hostSettings.android.enable or false
-    else config.hostSettings.android or false;
-
-  # Check if openssh is enabled
-  sshEnabled = config.hostSettings.openssh or false;
-
-  # Check if gradle/kotlin/java is enabled
-  gradleEnabled = (config.hostSettings.java or false) || (config.hostSettings.programming.kotlin or false);
+  modules =
+    [
+      "custom-completions/nix/nix-completions.nu"
+      "modules/nix/nix.nu"
+      "modules/network/ssh.nu"
+      "modules/network/sockets/sockets.nu"
+      "modules/to-json-schema/to-json-schema.nu"
+      "modules/git/git.nu"
+      "modules/wc/wc.nu"
+      "modules/system/mod.nu"
+    ]
+    ++ lib.optional (config.homeSettings.git.enable or false) "custom-completions/git/git-completions.nu"
+    ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/adb/adb-completions.nu"
+    ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/fastboot/fastboot-completions.nu"
+    ++ lib.optional (config.hostSettings.openssh or false) "custom-completions/ssh/ssh-completions.nu"
+    ++ lib.optional (config.hostSettings.java or false) "custom-completions/gradlew/gradle-completions.nu"
+    ++ lib.optional (config.hostSettings.podman or false) "custom-completions/docker/mod.nu"
+    ++ lib.optional (config.hostSettings.typst or false) "custom-completions/typst/typst-completions.nu";
 in {
   options.homeSettings.nushell = {
     enable = lib.mkEnableOption "Enable Nushell configuration";
@@ -35,33 +38,7 @@ in {
     programs.nushell = {
       enable = true;
       package = pkgs.nushell;
-
-      plugins = [
-        #customPlugins.nu_plugin_dbus
-        # customPlugins.nu_plugin_net
-        # #customPlugins.nu_plugin_gstat
-        # customPlugins.nu_plugin_units
-        # customPlugins.nu_plugin_vec
-        # customPlugins.nu_plugin_ws
-        # customPlugins.nu_plugin_x509
-        # customPlugins.nu_plugin_regex
-        # customPlugins.nu_plugin_terminal_qr
-        # customPlugins.nu_plugin_plotters
-        # customPlugins.nu_plugin_json_path
-        # #customPlugins.nu_plugin_hashes
-        # #customPlugins.nu_plugin_format_pcap
-        # customPlugins.nu_plugin_dns
-      ];
-
-      # Configure completions using nu_scripts
-      extraConfig = ''
-        # Load completions from nu_scripts
-        use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/nix/nix-completions.nu *
-        ${lib.optionalString gitEnabled "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/git/git-completions.nu *"}
-        ${lib.optionalString adbEnabled "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/adb/adb-completions.nu *"}
-        ${lib.optionalString sshEnabled "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/ssh/ssh-completions.nu *"}
-        ${lib.optionalString gradleEnabled "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/gradle/gradle-completions.nu *"}
-      '';
+      extraConfig = lib.concatStringsSep "\n" (map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") modules);
     };
 
     # Enable Starship integration
