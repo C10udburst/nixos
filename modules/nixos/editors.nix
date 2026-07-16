@@ -12,7 +12,15 @@ in {
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      gimp3-with-plugins
+      (pkgs.gimp3-with-plugins.override {
+        plugins = with pkgs.gimp3Plugins; [
+          #gimpPlugins.fourier
+          #gimpPlugins.gmic
+          gimpPlugins.resynthesizer
+          #gimpPlugins.waveletSharpen
+          #gimpPlugins.lqrPlugin
+        ];
+      })
       inkscape
       kdePackages.kdenlive
       audacity
