@@ -1,6 +1,5 @@
 {
   description = "Nixos config flake";
-  release = "26.05";
 
   outputs = {
     self,
@@ -77,7 +76,6 @@
 
     driftwm-noctalia = {
       url = "github:youssefvdel/driftwm-noctalia";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     stylix = {
