@@ -13,6 +13,10 @@
   jetbrains = false;
   llm = true;
   plasma = true;
+  nushell = {
+    enable = true;
+    default = "term";
+  };
 
   # NixOS-only modules
   android = {

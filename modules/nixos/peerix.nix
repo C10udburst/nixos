@@ -15,7 +15,7 @@ in {
     enable = lib.mkEnableOption "p2p local network caching with peerix";
     publicKey = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "cloudburst-peerix-1:3um3wQmzMu2JmlzxlEsxP9/OEkqRuNrs7bAFy9iDBoQ=";
+      default = "localhost:3um3wQmzMu2JmlzxlEsxP9/OEkqRuNrs7bAFy9iDBoQ=";
       description = "The public key to sign the derivations with.";
     };
     privateKeyFile = lib.mkOption {
