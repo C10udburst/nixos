@@ -60,6 +60,6 @@ in {
     });
 
     security.polkit.enable = true;
-    security.polkit.enablePkexecWrapper = true;
+    #security.polkit.enablePkexecWrapper = true;
   };
 }

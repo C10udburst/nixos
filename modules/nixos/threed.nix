@@ -82,7 +82,8 @@ in {
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       blender
-      orcaslicer-nanashi
+      orcaslicer-nanashi # TODO: currently crashes on slicing, needs investigation
+      orca-slicer
       openscad
       freecad
     ];

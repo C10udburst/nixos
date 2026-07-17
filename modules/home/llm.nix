@@ -15,6 +15,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    programs.pi-coding-agent.enable = true;
+    programs.pi.coding-agent.enable = true;
   };
 }
