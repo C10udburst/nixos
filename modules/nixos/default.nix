@@ -11,7 +11,6 @@
     ./brave.nix
     ./driftwm.nix
     ./editors.nix
-    ./flatpak.nix
     ./fonts.nix
     ./fuse.nix
     ./greetd.nix
@@ -160,7 +159,6 @@
       zram.enable = lib.mkDefault (config.hostSettings.zram or false);
       kvm.enable = lib.mkDefault (config.hostSettings.kvm or false);
       brave.enable = lib.mkDefault (config.hostSettings.brave or false);
-      flatpak.enable = lib.mkDefault (config.hostSettings.flatpak or false);
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
       waydroid.enable = lib.mkDefault (config.hostSettings.waydroid or false);
 

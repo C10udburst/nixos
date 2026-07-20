@@ -27,7 +27,6 @@
   brave = true;
   editors = false;
   nvidia = true;
-  flatpak = true;
   fuse = true;
   greetd = true;
   java = true;

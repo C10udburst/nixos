@@ -10,7 +10,6 @@ in {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
-    inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.nixos-hardware.nixosModules.msi-gl65-10SDR-492
     ../../modules/nixos
   ];

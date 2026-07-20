@@ -46,6 +46,11 @@ in {
           if 'KITTY_PID' in $env {
             $env.config.use_kitty_protocol = true
           }
+          # Wrap ssh so the remote sees TERM=xterm instead of xterm-kitty.
+          # scp/sftp/rsync call the binary directly and bypass this wrapper.
+          def --wrapped ssh [...args: string] {
+            with-env { TERM: "xterm" } { ^ssh ...$args }
+          }
         '';
     };
 

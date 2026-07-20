@@ -10,7 +10,6 @@ in {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
-    inputs.nix-flatpak.nixosModules.nix-flatpak
     ../../modules/nixos
   ];
 

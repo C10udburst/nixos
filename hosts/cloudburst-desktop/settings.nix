@@ -29,7 +29,6 @@
   appimage = true;
   brave = true;
   editors = true;
-  flatpak = true;
   fuse = true;
   greetd = true;
   java = true;
