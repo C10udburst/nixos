@@ -42,6 +42,17 @@
           --prefix QT_PLUGIN_PATH : "${pkgs.qt5.qtbase.bin}/${pkgs.qt5.qtbase.qtPluginPrefix}" \
           --prefix QT_PLUGIN_PATH : "${pkgs.qt5.qtwayland.bin}/${pkgs.qt5.qtbase.qtPluginPrefix}"
       '';
+
+      # application .desktop entry
+      desktopItem = pkgs.makeDesktopItem {
+        name = "qocker";
+        exec = "qocker";
+        icon = "qocker";
+        comment = "Qt-based GUI for Podman container management";
+        desktopName = "Qocker";
+        genericName = "Podman GUI";
+        categories = ["System" "Utility"];
+      };
     };
 in {
   options.systemSettings.podman = {
