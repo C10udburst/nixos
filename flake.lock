@@ -616,11 +616,11 @@
         "organizeer-bin": "organizeer-bin"
       },
       "locked": {
-        "lastModified": 1784645556,
-        "narHash": "sha256-lx3Yq/onF+mEba1XGkaYgPI4IAFIbkbAeYml7CD+KH0=",
+        "lastModified": 1784647870,
+        "narHash": "sha256-6JK7X2Cy/BINheLbMA7VNxdV0yoM26vTYqX7qbejvds=",
         "ref": "refs/heads/master",
-        "rev": "4dc5f6d60de82a8c89b3331c184eb2051ef55f38",
-        "revCount": 132,
+        "rev": "08863d2771a9c4f671250e40809fca19f5b51c00",
+        "revCount": 133,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },

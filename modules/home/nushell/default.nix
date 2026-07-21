@@ -7,6 +7,7 @@
   cfg = config.homeSettings.nushell;
 
   plotScript = pkgs.writeText "plot.py" (builtins.readFile ./plot.py);
+  pdScript = pkgs.writeText "pd.py" (builtins.readFile ./pd.py);
 
   modules =
     [
@@ -74,6 +75,26 @@ in {
                 $data | get $col_y
               }
               $x_vals | wrap x | merge ($y_vals | wrap y) | to json | python3 ${plotScript} x y
+            }
+          }
+          # Run a pandas transformation on the piped table.
+          # `df` (DataFrame) and `pd` (pandas module) are pre-bound.
+          # Mutate `df` in-place or assign to `result` for the output value.
+          # Use --columns (-c) to select specific columns from the resulting DataFrame.
+          #
+          # Examples:
+          #   ps | pd "df['mb'] = df.mem / 1024**2"
+          #   open data.csv | pd "df = df.groupby('host').sum().reset_index()" --columns [host bytes]
+          #   open data.csv | pd "result = df.describe()"
+          def pd [
+            script: string,
+            --columns (-c): list<string> = []
+          ] {
+            let data = $in
+            if ($columns | is-empty) {
+              $data | to json | python3 ${pdScript} $script | from json
+            } else {
+              $data | to json | python3 ${pdScript} $script ...$columns | from json
             }
           }
         '';
