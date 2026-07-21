@@ -61,20 +61,22 @@ in {
             col_y?: any
           ] {
             let data = $in
+            let x_label = if ($col_x | describe) == "closure" { "x" } else { $col_x }
             let x_vals = if ($col_x | describe) == "closure" {
               $data | each { |row| $row | do $col_x }
             } else {
               $data | get $col_x
             }
             if $col_y == null {
-              $x_vals | wrap x | to json | python3 ${plotScript} x
+              $x_vals | wrap $x_label | to json | python3 ${plotScript} $x_label
             } else {
+              let y_label = if ($col_y | describe) == "closure" { "y" } else { $col_y }
               let y_vals = if ($col_y | describe) == "closure" {
                 $data | each { |row| $row | do $col_y }
               } else {
                 $data | get $col_y
               }
-              $x_vals | wrap x | merge ($y_vals | wrap y) | to json | python3 ${plotScript} x y
+              $x_vals | wrap $x_label | merge ($y_vals | wrap $y_label) | to json | python3 ${plotScript} $x_label $y_label
             }
           }
           # Run a pandas transformation on the piped table.
