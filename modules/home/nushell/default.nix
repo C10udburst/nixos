@@ -6,6 +6,8 @@
 }: let
   cfg = config.homeSettings.nushell;
 
+  plotScript = pkgs.writeText "plot.py" (builtins.readFile ./plot.py);
+
   modules =
     [
       "custom-completions/nix/nix-completions.nu"
@@ -50,6 +52,29 @@ in {
           # scp/sftp/rsync call the binary directly and bypass this wrapper.
           def --wrapped ssh [...args: string] {
             with-env { TERM: "xterm" } { ^ssh ...$args }
+          }
+          # col_x / col_y accept either a column name (string) or a closure
+          # that maps each row to a scalar value, e.g.: plot {$in.mem / $in.virtual}
+          def plot [
+            col_x: any,
+            col_y?: any
+          ] {
+            let data = $in
+            let x_vals = if ($col_x | describe) == "closure" {
+              $data | each { |row| $row | do $col_x }
+            } else {
+              $data | get $col_x
+            }
+            if $col_y == null {
+              $x_vals | wrap x | to json | python3 ${plotScript} x
+            } else {
+              let y_vals = if ($col_y | describe) == "closure" {
+                $data | each { |row| $row | do $col_y }
+              } else {
+                $data | get $col_y
+              }
+              $x_vals | wrap x | merge ($y_vals | wrap y) | to json | python3 ${plotScript} x y
+            }
           }
         '';
     };
