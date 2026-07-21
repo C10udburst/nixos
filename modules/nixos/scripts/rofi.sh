@@ -260,9 +260,7 @@ for h in sorted(hosts):
 
         selected=$(echo "$hosts" | noctalia-dmenu "${extra_args[@]}")
         if [[ -n "$selected" ]]; then
-            if command -v kitty &>/dev/null; then
-                kitty -e ssh "$selected" &
-            elif command -v konsole &>/dev/null; then
+            if command -v konsole &>/dev/null; then
                 konsole -e ssh "$selected" &
             elif command -v alacritty &>/dev/null; then
                 alacritty -e ssh "$selected" &

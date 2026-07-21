@@ -46,14 +46,6 @@ in {
         + "\n"
         + ''
           $env.config.show_banner = false
-          if 'KITTY_PID' in $env {
-            $env.config.use_kitty_protocol = true
-          }
-          # Wrap ssh so the remote sees TERM=xterm instead of xterm-kitty.
-          # scp/sftp/rsync call the binary directly and bypass this wrapper.
-          def --wrapped ssh [...args: string] {
-            with-env { TERM: "xterm" } { ^ssh ...$args }
-          }
           # col_x / col_y accept either a column name (string) or a closure
           # that maps each row to a scalar value, e.g.: plot {$in.mem / $in.virtual}
           def plot [
@@ -104,9 +96,6 @@ in {
 
     # Enable Starship integration
     programs.starship.enableNushellIntegration = true;
-
-    # Replace defaults for kitty and konsole if 'term' or 'all'
-    programs.kitty.settings.shell = lib.mkIf (cfg.default == "term" || cfg.default == "all") "${pkgs.nushell}/bin/nu";
 
     # Configure Konsole (requires plasma-manager config files)
     xdg.dataFile."konsole/Nushell.profile".text = lib.mkIf (cfg.default == "term" || cfg.default == "all") ''

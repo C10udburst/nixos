@@ -13,13 +13,15 @@
       mediainfo
       exiftool
       atool
+      chafa
+      libsixel
     ];
 
     programs.ranger = {
       enable = true;
       settings = {
         preview_images = true;
-        preview_images_method = "kitty";
+        preview_images_method = "sixel";
         vcs_aware = true;
         use_preview_script = true;
         preview_script = "~/.config/ranger/scope.sh";

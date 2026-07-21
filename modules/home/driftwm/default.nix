@@ -44,13 +44,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    programs.kitty = {
-      enable = true;
-
-      settings = {
-        confirm_os_window_close = 0;
-      };
-    };
+    home.packages = [
+      pkgs.kdePackages.konsole
+    ];
 
     xdg.configFile = {
       "qt5ct/qt5ct.conf".text = ''

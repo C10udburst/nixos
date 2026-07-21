@@ -2,6 +2,7 @@
 import sys
 import json
 import base64
+import subprocess
 from io import BytesIO
 from datetime import datetime
 from collections import Counter
@@ -43,17 +44,12 @@ def try_parse_datetime(val):
         return None
 
 
-def serialize_kitty_graphics(image_bytes):
-    """Send a PNG image to the terminal using the Kitty Graphics Protocol."""
-    encoded = base64.b64encode(image_bytes).decode("ascii")
-    chunk_size = 4096
-    sys.stdout.write(f"\033_Ga=T,f=100,m=1;{encoded[:chunk_size]}\033\\")
-    for i in range(chunk_size, len(encoded), chunk_size):
-        chunk = encoded[i : i + chunk_size]
-        m = 1 if i + chunk_size < len(encoded) else 0
-        sys.stdout.write(f"\033_Gm={m};{chunk}\033\\")
-    sys.stdout.write("\n")
-    sys.stdout.flush()
+def serialize_image(image_bytes):
+    """Send a PNG image to the terminal using chafa."""
+    try:
+        subprocess.run(["chafa", "-"], input=image_bytes, check=True)
+    except Exception as e:
+        print(f"Error displaying image: {e}", file=sys.stderr)
 
 
 def main():
@@ -196,7 +192,7 @@ def main():
     plt.close()
     buf.seek(0)
 
-    serialize_kitty_graphics(buf.read())
+    serialize_image(buf.read())
 
 
 if __name__ == "__main__":

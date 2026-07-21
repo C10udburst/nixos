@@ -184,12 +184,12 @@ in {
     xdg.terminal-exec = {
       enable = true;
       settings = {
-        default = ["kitty.desktop"];
+        default = ["org.kde.konsole.desktop"];
       };
     };
 
     home.sessionVariables = {
-      TERMINAL = "kitty";
+      TERMINAL = "konsole";
     };
 
     xdg.configFile."mimeapps.list".force = true;

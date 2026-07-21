@@ -20,6 +20,7 @@
   serial = pkgs.writeShellScriptBin "serial" (builtins.readFile ./serial.sh);
   video8mb = pkgs.writers.writePython3Bin "video8mb" {} (builtins.readFile ./video8mb.py);
   www = pkgs.writeScriptBin "www" (builtins.readFile ./www.py);
+  icat = pkgs.writeShellScriptBin "icat" (builtins.readFile ./icat.sh);
 
   desktop-kickoff = pkgs.writeShellScriptBin "desktop-kickoff" (builtins.readFile ./desktop-kickoff.sh);
   desktop-kickoff-launcher = pkgs.makeDesktopItem {
@@ -52,6 +53,9 @@ in {
         rofi
         palette
         nix-py
+        icat
+        pkgs.chafa
+        pkgs.libsixel
       ]
       ++ lib.optionals (config.networking.hostName != "cloudburst-desktop") [
         desktop-kickoff

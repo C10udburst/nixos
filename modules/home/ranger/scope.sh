@@ -44,7 +44,7 @@ handle_image() {
 
         ## Image
         image/*)
-            # Exit code 7 tells Ranger to display the file directly as an image (using kitty/icat)
+            # Exit code 7 tells Ranger to display the file directly as an image (using sixel/icat)
             exit 7;;
 
         ## Video

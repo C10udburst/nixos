@@ -616,11 +616,11 @@
         "organizeer-bin": "organizeer-bin"
       },
       "locked": {
-        "lastModified": 1784648187,
-        "narHash": "sha256-PSkn2qmF++sV4EVi7WWHt2EvSnA/+Kb6lRg69cJ0CRQ=",
+        "lastModified": 1784651392,
+        "narHash": "sha256-mbThi0ejLsaLpgKNgVBQkssGbHON3PzpqxZ3gBWOoOM=",
         "ref": "refs/heads/master",
-        "rev": "b9ddae73092448d8de2c15d4ca112c271b3f8342",
-        "revCount": 133,
+        "rev": "85041cbd69e4a8aacda8e762389e07135e70d2a9",
+        "revCount": 134,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -632,11 +632,11 @@
     "organizeer-bin": {
       "flake": false,
       "locked": {
-        "lastModified": 1784645756,
-        "narHash": "sha256-QaqnK/d5nK/MIfyhpbydM5nQjW2S6CLon9OcpoZJQF0=",
+        "lastModified": 1784651566,
+        "narHash": "sha256-gng4es2P3sduzua3m4NUa6FRHCUDxXV/BEy4GekdQoo=",
         "ref": "release",
-        "rev": "426afda880f40708c5b6ddc7e0cdc8e7cb89397d",
-        "revCount": 3,
+        "rev": "b518df21c1fe67f61b02105ac708278876834903",
+        "revCount": 4,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
