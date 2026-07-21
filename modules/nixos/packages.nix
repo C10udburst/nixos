@@ -11,7 +11,11 @@ in {
     enable = lib.mkEnableOption "Enable standard system packages";
   };
 
+  imports = [inputs.organizeer.nixosModules.default];
+
   config = lib.mkIf cfg.enable {
+    services.organizeer-daemon.enable = true;
+
     environment.systemPackages = with pkgs;
       [
         eza
