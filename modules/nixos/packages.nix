@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.packages;
@@ -50,6 +51,7 @@ in {
         socat
         libxcb-cursor
         hardinfo2
+        inputs.organizeer.packages.${pkgs.system}.default
       ]
       ++ (
         if config.networking.wireless.enable

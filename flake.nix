@@ -87,6 +87,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    organizeer = {
+      url = "git+ssh://git@github.com/C10udburst/Organizeer.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # ── 3D tools & OpenSCAD libraries ────────────────────────────────────────
     orcaslicer-nanashi-appimage = {
       url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";
