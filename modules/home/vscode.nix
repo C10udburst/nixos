@@ -24,8 +24,6 @@
     ms-vscode-remote.remote-ssh
     # GitHub Codespaces
     github.codespaces
-    # GitHub Pull Requests
-    github.vscode-pull-request-github
     # REST client — always useful
     humao.rest-client
     # Markdown

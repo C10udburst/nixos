@@ -9,6 +9,7 @@
     ./driftwm
     ./git.nix
     ./jetbrains.nix
+    ./konsole
     ./llm.nix
     ./nushell
     ./plasma.nix
@@ -105,6 +106,14 @@
       user.username = lib.mkDefault (config.hostSettings.username or "cloudburst");
       git.enable = lib.mkDefault (config.hostSettings.git or false);
       jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
+      konsole.enable = lib.mkDefault (
+        (config.hostSettings.plasma or false)
+        || (
+          if builtins.isAttrs (config.hostSettings.driftwm or false)
+          then config.hostSettings.driftwm.enable or false
+          else config.hostSettings.driftwm or false
+        )
+      );
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
       driftwm.enable = lib.mkDefault (

@@ -96,19 +96,5 @@ in {
 
     # Enable Starship integration
     programs.starship.enableNushellIntegration = true;
-
-    # Configure Konsole (requires plasma-manager config files)
-    xdg.dataFile."konsole/Nushell.profile".text = lib.mkIf (cfg.default == "term" || cfg.default == "all") ''
-      [General]
-      Command=${pkgs.nushell}/bin/nu
-      Name=Nushell
-      Parent=FALLBACK/
-    '';
-
-    programs.plasma.configFile."konsolerc" = lib.mkIf (cfg.default == "term" || cfg.default == "all") {
-      "Desktop Entry" = {
-        DefaultProfile = "Nushell.profile";
-      };
-    };
   };
 }

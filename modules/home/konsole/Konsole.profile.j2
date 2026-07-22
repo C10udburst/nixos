@@ -1,0 +1,28 @@
+[General]
+Name={{ name }}
+Parent={{ parent }}
+{% if command -%}
+Command={{ command }}
+{% endif -%}
+InheritContainerContext={{ inherit_container_context }}
+
+[Appearance]
+ColorScheme={{ color_scheme }}
+Font={{ font }}
+WordMode={{ word_mode }}
+BorderWhenActive={{ border_when_active }}
+FocusBorderColor={{ focus_border_color }}
+
+[Cursor Options]
+CursorShape={{ cursor_shape }}
+
+[Terminal Features]
+BlinkingCursorEnabled={{ blinking_cursor_enabled }}
+AnimatingCursorEnabled={{ animating_cursor_enabled }}
+LineNumbers={{ line_numbers }}
+TrimLeadingSpacesInSelectedText={{ trim_leading_spaces }}
+TrimTrailingSpacesInSelectedText={{ trim_trailing_spaces }}
+UrlHintsModifiers={{ url_hints_modifiers }}
+
+[Interaction Options]
+UnderlineFilesEnabled={{ underline_files_enabled }}
