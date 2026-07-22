@@ -66,7 +66,7 @@
     };
 
     driftwm = {
-      url = "github:malbiruk/driftwm";
+      url = "github:malbiruk/driftwm?ref=satellite-226";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
