@@ -4,25 +4,25 @@ Parent={{ parent }}
 {% if command -%}
 Command={{ command }}
 {% endif -%}
-InheritContainerContext={{ inherit_container_context }}
+InheritContainerContext=true
 
 [Appearance]
 ColorScheme={{ color_scheme }}
 Font={{ font }}
-WordMode={{ word_mode }}
-BorderWhenActive={{ border_when_active }}
-FocusBorderColor={{ focus_border_color }}
+WordMode=true
+BorderWhenActive=true
+FocusBorderColor={{ hex2dec(accent) }}
 
 [Cursor Options]
-CursorShape={{ cursor_shape }}
+CursorShape=1
 
 [Terminal Features]
-BlinkingCursorEnabled={{ blinking_cursor_enabled }}
-AnimatingCursorEnabled={{ animating_cursor_enabled }}
-LineNumbers={{ line_numbers }}
-TrimLeadingSpacesInSelectedText={{ trim_leading_spaces }}
-TrimTrailingSpacesInSelectedText={{ trim_trailing_spaces }}
-UrlHintsModifiers={{ url_hints_modifiers }}
+BlinkingCursorEnabled=true
+AnimatingCursorEnabled=true
+LineNumbers=1
+TrimLeadingSpacesInSelectedText=true
+TrimTrailingSpacesInSelectedText=true
+UrlHintsModifiers=67108864
 
 [Interaction Options]
-UnderlineFilesEnabled={{ underline_files_enabled }}
+UnderlineFilesEnabled=true

@@ -18,6 +18,9 @@
 
   # Core extensions always installed
   coreExtensions = with exts; [
+    # Add Gitignore command
+    codezombiech.gitignore
+
     # Remote Repositories
     ms-vscode.remote-repositories
     # Remote - SSH

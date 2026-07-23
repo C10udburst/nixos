@@ -36,7 +36,8 @@ in {
       ++ lib.optionals cfg.dev [
         jadx
         (androidenv.composeAndroidPackages {
-          platformVersions = ["35"];
+          platformVersions = ["35" "36"];
+          buildToolsVersions = ["35.0.0"];
         }).androidsdk
       ];
   };

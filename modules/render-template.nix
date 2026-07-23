@@ -20,6 +20,13 @@
           b = int(hex_str[4:6], 16) / 255.0
           return f'vec3({r:.3f}, {g:.3f}, {b:.3f})'
 
+      def hex2dec(hex_str):
+          hex_str = hex_str.lstrip('#')
+          r = int(hex_str[0:2], 16)
+          g = int(hex_str[2:4], 16)
+          b = int(hex_str[4:6], 16)
+          return f'{r},{g},{b}'
+
       with open('$jsonDataPath') as f:
           data = json.load(f)
 
@@ -27,6 +34,7 @@
           tmpl = Template(f.read())
 
       tmpl.globals['to_rgb_vec3'] = to_rgb_vec3
+      tmpl.globals['hex2dec'] = hex2dec
 
       with open('$out', 'w') as f:
           f.write(tmpl.render(**data))
