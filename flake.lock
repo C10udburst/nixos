@@ -6,11 +6,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784187957,
-        "narHash": "sha256-Gy9JIkPCiVfZsxXm1YGlELihpM5otVn9Fxs1fBwMj4g=",
+        "lastModified": 1784965343,
+        "narHash": "sha256-hropwB+0KUXoFhAtAaHo5TefpJll6l2AZ46cqDDeFbI=",
         "owner": "jacopone",
         "repo": "antigravity-nix",
-        "rev": "3fcc09ec2f8cada7fc2e5ea6de1e8a70c6a207bf",
+        "rev": "60fec0afe78d223e3259e862233649d00bf1d634",
         "type": "github"
       },
       "original": {
@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784806872,
-        "narHash": "sha256-EPE6OS1RhdZi9uPHK9s6s2kxGMOA9VfPXtM2yE580uY=",
+        "lastModified": 1784975730,
+        "narHash": "sha256-sjvuS8RBCntcfabmOV5Qd/S+ejtyT/38MDEVjXqezRU=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "45910c8f2a5c83a4335ea7d43a834d900329058d",
+        "rev": "21a593f362ed8026870b83bb16debd1c02ed2545",
         "type": "github"
       },
       "original": {
@@ -320,11 +320,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783740085,
-        "narHash": "sha256-qajyHfZY29G2oEQk+uHxmsJcRoBUBXP9maTpFlwP/dI=",
+        "lastModified": 1784350909,
+        "narHash": "sha256-ZWyzLbS1yKUTeFJLmdVuWNnHttL333/ldJbEE+KzCrM=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "3cd22efe6471dc7365c822bd9ad73a21e55f38fb",
+        "rev": "4ce190229c73d44536caa7072f6308fb2d8feeb3",
         "type": "github"
       },
       "original": {
@@ -356,11 +356,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784258287,
-        "narHash": "sha256-2Ai6HVy7Jw/p0G39/um1rHjlFc5ViYBbvdYkHXu7pY8=",
+        "lastModified": 1784949765,
+        "narHash": "sha256-MB+0noLfsYMoMsBkyG5CKYZmSk7dSXendvvjfQFUiPw=",
         "owner": "nix-community",
         "repo": "nix-vscode-extensions",
-        "rev": "19b832a9aa28a60f70a2a1b63fcfd1d0a02da072",
+        "rev": "242a696abba55b45d577b5292e90b597284f5f85",
         "type": "github"
       },
       "original": {
@@ -374,11 +374,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1784100666,
-        "narHash": "sha256-HF/mrw5NYQfKFZgkfV2h1UL5/E3ccfsE2XJ1AbbLLJ0=",
+        "lastModified": 1784723954,
+        "narHash": "sha256-1CfD8ZUjCkTgjsneLZ/lxCHhgDfqxxE7/GX0MmsgiqA=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "fccfa9031a85b78a437f2f153c1f6449f3bc3185",
+        "rev": "a017f5b72210026af5b3ac5949f08d94380a6fbd",
         "type": "github"
       },
       "original": {
@@ -435,11 +435,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1784160687,
-        "narHash": "sha256-iYL/bixrb6FlHFu/gIuBYzq6c6lM5AAXsXNSWXtIgQc=",
+        "lastModified": 1784856561,
+        "narHash": "sha256-J+Bx1Z6Oeoj2FgnBhRMKyUhhtDoOpTgXYaVLZpDjW4A=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "4382ed2b7a6839d4280a9b386db49cbc5907414d",
+        "rev": "597283ad8aa0b331c788e97c4c262d58877074ef",
         "type": "github"
       },
       "original": {
@@ -598,7 +598,7 @@
     "orcaslicer-nanashi-appimage": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-Hl7cmRz+KriehDTExmWv52JBX4mH3+8XVJEaxEmrZqY=",
+        "narHash": "sha256-LtrW9lcii8FMwwMcFQ41yslzrGQ6wBgjWxYWbfLIp2M=",
         "type": "file",
         "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       },
@@ -616,11 +616,11 @@
         "organizeer-bin": "organizeer-bin"
       },
       "locked": {
-        "lastModified": 1784651392,
-        "narHash": "sha256-mbThi0ejLsaLpgKNgVBQkssGbHON3PzpqxZ3gBWOoOM=",
+        "lastModified": 1785000139,
+        "narHash": "sha256-xrcXF6SuF8IAzZw3pnXeqPy6kRII61I3nYlb2wkZNf0=",
         "ref": "refs/heads/master",
-        "rev": "85041cbd69e4a8aacda8e762389e07135e70d2a9",
-        "revCount": 134,
+        "rev": "2dbeed0b3ded83b31c1571442255fe2cd4d6988e",
+        "revCount": 138,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -632,11 +632,11 @@
     "organizeer-bin": {
       "flake": false,
       "locked": {
-        "lastModified": 1784651566,
-        "narHash": "sha256-gng4es2P3sduzua3m4NUa6FRHCUDxXV/BEy4GekdQoo=",
+        "lastModified": 1784997071,
+        "narHash": "sha256-4DE1PInjcrqEvIMf6eaDZVFTZj+HymM/4WBepxtuBF0=",
         "ref": "release",
-        "rev": "b518df21c1fe67f61b02105ac708278876834903",
-        "revCount": 4,
+        "rev": "4caf276a5ced4cb298cedb0310462420597515f3",
+        "revCount": 5,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -674,11 +674,11 @@
         "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1784240453,
-        "narHash": "sha256-2lzUIQmuII9ArYPnalw7r7KZncx1Rd9BAs03Rrbfh3k=",
+        "lastModified": 1784984457,
+        "narHash": "sha256-y7jv+RTP0TkcJaDm7/D2xIFF9JDWKc6g5L3X3EUu3Eo=",
         "owner": "lukasl-dev",
         "repo": "pi.nix",
-        "rev": "c7c239531726a0239eb0cdd387d2a2becdbf1b52",
+        "rev": "fd2c62853f66a5803dae621769570f1165e59b80",
         "type": "github"
       },
       "original": {
