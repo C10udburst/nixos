@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784975730,
-        "narHash": "sha256-sjvuS8RBCntcfabmOV5Qd/S+ejtyT/38MDEVjXqezRU=",
+        "lastModified": 1785065785,
+        "narHash": "sha256-K7tkDh89hgU90TJWLz9oKD+tH/+r6WG9IjHtcJLAfPE=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "21a593f362ed8026870b83bb16debd1c02ed2545",
+        "rev": "678a4442f66787070c3aebdc50c3578f1cff0766",
         "type": "github"
       },
       "original": {
@@ -616,11 +616,11 @@
         "organizeer-bin": "organizeer-bin"
       },
       "locked": {
-        "lastModified": 1785000139,
-        "narHash": "sha256-xrcXF6SuF8IAzZw3pnXeqPy6kRII61I3nYlb2wkZNf0=",
+        "lastModified": 1785066019,
+        "narHash": "sha256-3jwmyE5HYYiSRuDY+Y1vB+mZeM+MxhMkMIFuM5k3Q4g=",
         "ref": "refs/heads/master",
-        "rev": "2dbeed0b3ded83b31c1571442255fe2cd4d6988e",
-        "revCount": 138,
+        "rev": "e8037102be6aaa553a353ff2e084872ac46189ad",
+        "revCount": 140,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -632,11 +632,11 @@
     "organizeer-bin": {
       "flake": false,
       "locked": {
-        "lastModified": 1784997071,
-        "narHash": "sha256-4DE1PInjcrqEvIMf6eaDZVFTZj+HymM/4WBepxtuBF0=",
+        "lastModified": 1785066401,
+        "narHash": "sha256-Yx47kMNrKIiBKy9/3TetumLHNxS6tfHMJ2Yy+0E/nak=",
         "ref": "release",
-        "rev": "4caf276a5ced4cb298cedb0310462420597515f3",
-        "revCount": 5,
+        "rev": "ccdd54fd5981dd3e790ef647f5506409664c9aad",
+        "revCount": 6,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
