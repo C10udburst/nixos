@@ -10,12 +10,13 @@
     enable = true;
     extracmds = [
       # sets monitor layout for my dual-monitor setup
-      "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,0"
+      "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,80"
     ];
   };
   jetbrains = true;
   llm = true;
   plasma = true;
+  shell-undo = true;
   nushell = {
     enable = true;
     default = "term";

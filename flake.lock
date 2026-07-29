@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785065785,
-        "narHash": "sha256-K7tkDh89hgU90TJWLz9oKD+tH/+r6WG9IjHtcJLAfPE=",
+        "lastModified": 1785347885,
+        "narHash": "sha256-ZCFBl8LkBIFs9TnuQ0vG10Z5BlWiKG4yoya/KWPLfaQ=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "678a4442f66787070c3aebdc50c3578f1cff0766",
+        "rev": "cf86e0270e6409b853a27be820026f0f70d5c5bd",
         "type": "github"
       },
       "original": {
@@ -729,6 +729,7 @@
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager",
         "scrcpy-app-src": "scrcpy-app-src",
+        "shell-undo": "shell-undo",
         "stylix": "stylix",
         "ulauncher-bitwarden": "ulauncher-bitwarden",
         "ulauncher-clipboard": "ulauncher-clipboard",
@@ -758,6 +759,26 @@
       "original": {
         "owner": "C10udburst",
         "repo": "scrcpy-app",
+        "type": "github"
+      }
+    },
+    "shell-undo": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785335713,
+        "narHash": "sha256-p6t6W6C8D6Jt0kuAB1sbACIFxvCRlYNHcBIagjKgmMY=",
+        "owner": "edaywalid",
+        "repo": "undo",
+        "rev": "68ad7413c82809c89e3fafc296db544a1b385b53",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edaywalid",
+        "repo": "undo",
         "type": "github"
       }
     },

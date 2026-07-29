@@ -104,7 +104,10 @@
       typst
       typstyle
     ])
-    ++ [p.nixd]);
+    ++ [
+      p.nixd
+      p.nixfmt
+    ]);
 
   ephemeralVscode = pkgs.symlinkJoin {
     name = "code";

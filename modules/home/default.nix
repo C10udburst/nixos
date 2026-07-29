@@ -38,6 +38,10 @@
         plasma.enable = lib.mkOption {type = lib.types.bool;};
         llm.enable = lib.mkOption {type = lib.types.bool;};
         shell.enable = lib.mkOption {type = lib.types.bool;};
+        shell-undo.enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
         ulauncher.enable = lib.mkOption {type = lib.types.bool;};
         editors.enable = lib.mkOption {type = lib.types.bool;};
         programming = lib.mkOption {
@@ -127,6 +131,7 @@
         else []
       );
       shell.enable = lib.mkDefault true;
+      shell-undo.enable = lib.mkDefault (config.hostSettings.shell-undo or false);
       ulauncher.enable = lib.mkDefault (config.hostSettings.ulauncher or false);
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
       programming.enable = lib.mkDefault (

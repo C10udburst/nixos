@@ -13,6 +13,7 @@
   jetbrains = false;
   llm = false;
   plasma = true;
+  shell-undo = false;
 
   # NixOS-only modules
   android = {

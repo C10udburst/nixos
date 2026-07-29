@@ -82,6 +82,11 @@
     pi-agent.url = "github:lukasl-dev/pi.nix";
     antigravity-nix.url = "github:jacopone/antigravity-nix";
 
+    shell-undo = {
+      url = "github:edaywalid/undo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     scrcpy-app-src = {
       url = "github:C10udburst/scrcpy-app";
       inputs.nixpkgs.follows = "nixpkgs";
