@@ -21,31 +21,51 @@
       "modules/wc/wc.nu"
       "modules/system/mod.nu"
     ]
-    ++ lib.optional (config.homeSettings.git.enable or false) "custom-completions/git/git-completions.nu"
-    ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/adb/adb-completions.nu"
-    ++ lib.optional (config.hostSettings.android.enable or false) "custom-completions/fastboot/fastboot-completions.nu"
+    ++ lib.optional (
+      config.homeSettings.git.enable or false
+    ) "custom-completions/git/git-completions.nu"
+    ++ lib.optional (
+      config.hostSettings.android.enable or false
+    ) "custom-completions/adb/adb-completions.nu"
+    ++ lib.optional (
+      config.hostSettings.android.enable or false
+    ) "custom-completions/fastboot/fastboot-completions.nu"
     ++ lib.optional (config.hostSettings.openssh or false) "custom-completions/ssh/ssh-completions.nu"
-    ++ lib.optional (config.hostSettings.java or false) "custom-completions/gradlew/gradlew-completions.nu"
-    ++ lib.optional (config.hostSettings.podman or false) "custom-completions/docker/docker-completions.nu"
-    ++ lib.optional (config.hostSettings.typst or false) "custom-completions/typst/typst-completions.nu";
+    ++ lib.optional (
+      config.hostSettings.java or false
+    ) "custom-completions/gradlew/gradlew-completions.nu"
+    ++ lib.optional (
+      config.hostSettings.podman or false
+    ) "custom-completions/docker/docker-completions.nu"
+    ++ lib.optional (
+      config.hostSettings.typst or false
+    ) "custom-completions/typst/typst-completions.nu";
 in {
   options.homeSettings.nushell = {
     enable = lib.mkEnableOption "Enable Nushell configuration";
     default = lib.mkOption {
-      type = lib.types.enum ["all" "term" "none"];
+      type = lib.types.enum [
+        "all"
+        "term"
+        "none"
+      ];
       default = "none";
       description = "Default shell strategy: 'all' to change login shell, 'term' to replace default shell for terminal emulators only, or 'none'.";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = lib.optional config.homeSettings.shell-undo.enable inputs.shell-undo.packages.${pkgs.system}.default;
+    home.packages =
+      lib.optional config.homeSettings.shell-undo.enable
+      inputs.shell-undo.packages.${pkgs.system}.default;
 
     programs.nushell = {
       enable = true;
       package = pkgs.nushell;
       extraConfig =
-        (lib.concatStringsSep "\n" (map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") modules))
+        (lib.concatStringsSep "\n" (
+          map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") modules
+        ))
         + "\n"
         + ''
           $env.config.show_banner = false
@@ -98,6 +118,14 @@ in {
         + lib.optionalString config.homeSettings.shell-undo.enable ''
           # Custom hook for shell-undo
           let undo_lib = "${inputs.shell-undo.packages.${pkgs.system}.default}/lib/undo/libundo.so"
+
+          # Override built-ins with external commands so LD_PRELOAD applies
+          alias rm = ^rm
+          alias cp = ^cp
+          alias mv = ^mv
+          alias touch = ^touch
+          alias mkdir = ^mkdir
+          alias mktemp = ^mktemp
 
           $env.config = ($env.config | default {} hooks)
           $env.config.hooks = ($env.config.hooks | default [] pre_execution)
