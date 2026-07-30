@@ -102,7 +102,7 @@ in {
           $env.config = ($env.config | default {} hooks)
           $env.config.hooks = ($env.config.hooks | default [] pre_execution)
           $env.config.hooks.pre_execution = ($env.config.hooks.pre_execution | append {||
-              let cmd = (commandline get | str trim)
+              let cmd = (commandline | str trim)
               if ($cmd | is-empty) or ($cmd | str starts-with "undo") { return }
 
               let xdg_data = (if "XDG_DATA_HOME" in $env { $env.XDG_DATA_HOME } else { $"($env.HOME)/.local/share" })
@@ -127,10 +127,10 @@ in {
               let preloads = (if $old_preload == "__undo_unset__" or $old_preload == "" {
                   []
               } else {
-                  $old_preload | split row ":" | filter { |x| not ($x | str ends-with "libundo.so") }
+                  $old_preload | split row ":" | where { |x| not ($x | str ends-with "libundo.so") }
               })
 
-              let new_preload = ([$undo_lib] | concat $preloads | str join ":")
+              let new_preload = ([$undo_lib] | append $preloads | str join ":")
 
               load-env {
                   UNDO_SESSION: $dir
