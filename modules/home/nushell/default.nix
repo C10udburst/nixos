@@ -133,38 +133,19 @@ in {
               let cmd = (commandline | str trim)
               if ($cmd | is-empty) or ($cmd | str starts-with "undo") { return }
 
-              let xdg_data = (if "XDG_DATA_HOME" in $env { $env.XDG_DATA_HOME } else { $"($env.HOME)/.local/share" })
-              let data_dir = (if "UNDO_DATA_DIR" in $env { $env.UNDO_DATA_DIR } else { $"($xdg_data)/undo" })
-              let sessions_dir = $"($data_dir)/sessions"
-
-              # Ensure directories exist
-              mkdir $sessions_dir
-
-              # Generate session ID using nanoseconds timestamp
-              let id = (date now | into int | into string)
-              let dir = $"($sessions_dir)/($id)"
-              mkdir $"($dir)/data"
-
+              let dir = ($env.UNDO_DATA_DIR? | default $"($env.HOME)/.local/share/undo" | path join "sessions" (date now | into int | into string))
+              mkdir -p $"($dir)/data"
               $cmd | save -f $"($dir)/cmd"
               $nu.pid | save -f $"($dir)/pid"
 
-              # Save current LD_PRELOAD
-              let old_preload = (if "LD_PRELOAD" in $env { $env.LD_PRELOAD } else { "__undo_unset__" })
-
-              # Clean other libundo.so from LD_PRELOAD if exists
-              let preloads = (if $old_preload == "__undo_unset__" or $old_preload == "" {
-                  []
-              } else {
-                  $old_preload | split row ":" | where { |x| not ($x | str ends-with "libundo.so") }
-              })
-
-              let new_preload = ([$undo_lib] | append $preloads | str join ":")
+              let old_preload = $env.LD_PRELOAD? | default ""
+              let preloads = ($old_preload | split row ":" | where { not ($in | str ends-with "libundo.so") and ($in != "") })
 
               load-env {
                   UNDO_SESSION: $dir
                   _undo_session: $dir
                   _undo_saved_preload: $old_preload
-                  LD_PRELOAD: $new_preload
+                  LD_PRELOAD: ([$undo_lib] | append $preloads | str join ":")
                   UNDO_HOOK: "nushell"
               }
           })
@@ -174,37 +155,11 @@ in {
               if not ("_undo_session" in $env) { return }
               let dir = $env._undo_session
 
-              # Restore LD_PRELOAD
-              let saved_preload = $env._undo_saved_preload
-              if $saved_preload == "__undo_unset__" or $saved_preload == "" {
-                  hide-env LD_PRELOAD
-              } else {
-                  load-env { LD_PRELOAD: $saved_preload }
-              }
+              if $env._undo_saved_preload == "" { hide-env LD_PRELOAD } else { load-env { LD_PRELOAD: $env._undo_saved_preload } }
+              hide-env UNDO_SESSION _undo_session _undo_saved_preload
 
-              hide-env UNDO_SESSION
-              hide-env _undo_session
-              hide-env _undo_saved_preload
-
-              # Mark session as done
               "" | save -f $"($dir)/done"
-
-              # Prune
-              if (which undo | is-empty) {
-                  # Fallback manual prune
-                  let undo_keep = (if "UNDO_KEEP" in $env { $env.UNDO_KEEP | into int } else { 30 })
-                  let xdg_data = (if "XDG_DATA_HOME" in $env { $env.XDG_DATA_HOME } else { $"($env.HOME)/.local/share" })
-                  let data_dir = (if "UNDO_DATA_DIR" in $env { $env.UNDO_DATA_DIR } else { $"($xdg_data)/undo" })
-                  let sessions_dir = $"($data_dir)/sessions"
-
-                  let sessions = (ls $sessions_dir | sort-by name | reverse)
-                  if ($sessions | length) > $undo_keep {
-                      $sessions | skip $undo_keep | each { |s| rm -rf $s.name }
-                  }
-              } else {
-                  # Run undo gc --auto in background/silent
-                  do -i { undo gc --auto }
-              }
+              do -i { undo gc --auto }
           })
         '';
     };
