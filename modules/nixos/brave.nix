@@ -20,6 +20,7 @@ in {
         "enable-quic@1"
         "middle-button-autoscroll@1"
         "smooth-scrolling@1"
+        "ignore-gpu-blocklist@1"
       ];
       description = "List of Brave flags (experiments) to enable declaratively";
     };
@@ -59,9 +60,10 @@ in {
       (brave.override {
         commandLineArgs = [
           "--allow-insecure-localhost"
-          "--ozone-platform=x11"
-          "--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
-          "--use-angle=vulkan"
+          "--ozone-platform=wayland"
+          "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
+          "--use-angle=gl"
+          "--user-gl=angle"
           "--use-vulkan"
           "--ignore-gpu-blocklist"
           "--force-device-scale-factor=0.9"

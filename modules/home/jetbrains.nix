@@ -42,9 +42,13 @@ in {
       jetbra-netfilter
     ];
 
-    home.file.".config/JetBrains/IntelliJIdea2026.1/idea.vmoptions".source = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
-    home.file.".config/JetBrains/IntelliJIdea2026.1/idea64.vmoptions".source = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
-    home.file.".config/JetBrains/PyCharm2026.1/pycharm.vmoptions".source = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
-    home.file.".config/JetBrains/PyCharm2026.1/pycharm64.vmoptions".source = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
+    #home.file.".config/JetBrains/IntelliJIdea2026.1/idea.vmoptions".source = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
+    #home.file.".config/JetBrains/IntelliJIdea2026.1/idea64.vmoptions".source = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
+    #home.file.".config/JetBrains/PyCharm2026.1/pycharm.vmoptions".source = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
+    #home.file.".config/JetBrains/PyCharm2026.1/pycharm64.vmoptions".source = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
+    home.sessionVariables = {
+      IDEA_VM_OPTIONS = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
+      PYCHARM_VM_OPTIONS = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
+    };
   };
 }

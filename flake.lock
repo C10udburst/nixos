@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785347885,
-        "narHash": "sha256-ZCFBl8LkBIFs9TnuQ0vG10Z5BlWiKG4yoya/KWPLfaQ=",
+        "lastModified": 1785675923,
+        "narHash": "sha256-/N/0iuysHwtnrJqaSjI9+Cfx5cl2R7gWdxq0L6snacM=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "cf86e0270e6409b853a27be820026f0f70d5c5bd",
+        "rev": "ae6987f6b0ab4835b8cf259b12a35cfc24ba0f21",
         "type": "github"
       },
       "original": {
@@ -598,7 +598,7 @@
     "orcaslicer-nanashi-appimage": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-LtrW9lcii8FMwwMcFQ41yslzrGQ6wBgjWxYWbfLIp2M=",
+        "narHash": "sha256-HTgu0Y5UY05ES87JM2x74YK7byrwMRmWeBeLRzpF9IA=",
         "type": "file",
         "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       },
@@ -674,11 +674,11 @@
         "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1784984457,
-        "narHash": "sha256-y7jv+RTP0TkcJaDm7/D2xIFF9JDWKc6g5L3X3EUu3Eo=",
+        "lastModified": 1785653290,
+        "narHash": "sha256-+sG7fJerw5vCul+zVaqyfZP6xiNKhpZFjEWR4clk4c0=",
         "owner": "lukasl-dev",
         "repo": "pi.nix",
-        "rev": "fd2c62853f66a5803dae621769570f1165e59b80",
+        "rev": "4b156132cfdda12cfdac9faf461f5df9290fc880",
         "type": "github"
       },
       "original": {
