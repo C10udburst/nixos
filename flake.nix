@@ -97,6 +97,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    gitr-appimage = {
+      url = "https://github.com/islandspan-solutions/gitr/releases/download/v0.4.17/gitr-x86_64.AppImage";
+      flake = false;
+    };
+
     # ── 3D tools & OpenSCAD libraries ────────────────────────────────────────
     orcaslicer-nanashi-appimage = {
       url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";
@@ -117,7 +122,6 @@
       flake = false;
     };
     openscad-obiscad = {
-      #https://github.com/Obijuan/obiscad/tree/master/obiscad
       url = "github:Obijuan/obiscad?dir=obiscad";
       flake = false;
     };

@@ -40,7 +40,9 @@
   packages = true;
   pipewire = true;
   podman = false;
-  programming = false;
+  programming = {
+    enable = true;
+  };
   python = true;
   scripts = true;
   tailscale = true;

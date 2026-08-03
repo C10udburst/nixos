@@ -21,6 +21,10 @@ in {
         "middle-button-autoscroll@1"
         "smooth-scrolling@1"
         "ignore-gpu-blocklist@1"
+        "brave-round-time-stamps@1"
+        "brave-web-bluetooth-api@1"
+        "brave-rounded-corners-by-default@1"
+        "brave-request-otr-tab@1"
       ];
       description = "List of Brave flags (experiments) to enable declaratively";
     };

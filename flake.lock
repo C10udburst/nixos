@@ -296,6 +296,18 @@
         "type": "github"
       }
     },
+    "gitr-appimage": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-tYaY6gsfZD2cRexVkd6jj350yXbxYUc+Py8FqtTcS88=",
+        "type": "file",
+        "url": "https://github.com/islandspan-solutions/gitr/releases/download/v0.4.17/gitr-x86_64.AppImage"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/islandspan-solutions/gitr/releases/download/v0.4.17/gitr-x86_64.AppImage"
+      }
+    },
     "gnome-shell": {
       "flake": false,
       "locked": {
@@ -715,6 +727,7 @@
         "antigravity-nix": "antigravity-nix",
         "driftwm": "driftwm",
         "driftwm-noctalia": "driftwm-noctalia",
+        "gitr-appimage": "gitr-appimage",
         "home-manager": "home-manager",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",

@@ -2,9 +2,24 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.programming;
+  gitr = pkgs.appimageTools.wrapType2 {
+    pname = "gitr";
+    version = "v0.4.17";
+    src = inputs.gitr-appimage;
+    extraPkgs = pkgs:
+      with pkgs; [
+        gtk3
+        openssl
+        libxkbcommon
+        fontconfig
+        xorg.libxcb
+        fuse
+      ];
+  };
 in {
   options.systemSettings.programming = {
     enable = lib.mkEnableOption "Enable programming toolchain (shared tools + per-language flags)";
@@ -42,7 +57,7 @@ in {
         imhex
         gdb
         gcc
-        qgit
+        gitr
       ]
       ++ lib.optionals cfg.rust [rustc cargo]
       ++ lib.optionals cfg.go [go]

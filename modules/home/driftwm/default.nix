@@ -19,6 +19,14 @@ with lib; let
       extracmds = cfg.extracmds;
       xwayland_satellite_path = "${lib.getExe pkgs.xwayland-satellite}";
       mobile = config.hostSettings.mobile or false;
+      extra_bindings = concatStringsSep "\n" (
+        flatten (
+          map (i: [
+            "\"mod+${toString i}\" = \"go-to-bookmark area-${toString i}\""
+            "\"mod+shift+${toString i}\" = \"set-bookmark area-${toString i}\""
+          ]) (range 0 9)
+        )
+      );
     };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
