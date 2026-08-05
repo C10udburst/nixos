@@ -19,7 +19,7 @@
     ./threed.nix
     ./ulauncher.nix
     ./user.nix
-    ./vencord.nix
+    ./social.nix
     ./vscode.nix
   ];
 
@@ -98,7 +98,7 @@
           };
           default = {};
         };
-        vencord.enable = lib.mkOption {type = lib.types.bool;};
+        social.enable = lib.mkOption {type = lib.types.bool;};
       };
     };
     default = {};
@@ -173,7 +173,7 @@
         else ["arduino"]
       );
       threed = lib.mkDefault (config.hostSettings.threed or false);
-      vencord.enable = lib.mkDefault (config.hostSettings.vencord or false);
+      social.enable = lib.mkDefault (config.hostSettings.social or false);
       associations.enable = lib.mkDefault true;
       nushell.enable = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.nushell or false)

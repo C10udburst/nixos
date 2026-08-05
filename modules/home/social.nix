@@ -1,15 +1,21 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
-  cfg = config.homeSettings.vencord;
+  cfg = config.homeSettings.social;
 in {
-  options.homeSettings.vencord = {
-    enable = lib.mkEnableOption "Enable Vencord Discord client";
+  options.homeSettings.social = {
+    enable = lib.mkEnableOption "Enable social messaging apps (Vesktop, Telegram, Signal)";
   };
 
   config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      telegram-desktop
+      signal-desktop
+    ];
+
     programs.vesktop = {
       enable = true;
 

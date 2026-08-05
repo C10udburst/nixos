@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
   config = lib.mkIf (config.hostSettings.utils or false) {
@@ -33,21 +34,11 @@
       plugins = [
         {
           name = "ranger_devicons";
-          src = pkgs.fetchFromGitHub {
-            owner = "alexanderjeurissen";
-            repo = "ranger_devicons";
-            rev = "1bcaff0366a9d345313dc5af14002cfdcddabb82";
-            sha256 = "1c01w16hbv6qjsa506m6wvhjy1qgalclq15qx67962xqahlsmxda";
-          };
+          src = inputs.ranger-devicons;
         }
         {
           name = "ranger-archives";
-          src = pkgs.fetchFromGitHub {
-            owner = "maximtrp";
-            repo = "ranger-archives";
-            rev = "0b1cfa9a77412c3b51da5b1b213c672227f9fbb4";
-            sha256 = "1hzv3ykh94r6gd7px5d509j8yavgdn512sgmsb5f7ys6m7q7whhw";
-          };
+          src = inputs.ranger-archives;
         }
       ];
     };

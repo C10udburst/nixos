@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785675923,
-        "narHash": "sha256-/N/0iuysHwtnrJqaSjI9+Cfx5cl2R7gWdxq0L6snacM=",
+        "lastModified": 1785927046,
+        "narHash": "sha256-1nmysvJ0QqfzBHUVN4qNTyR0hy3SOFuZSq08TVBOyv0=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "ae6987f6b0ab4835b8cf259b12a35cfc24ba0f21",
+        "rev": "0598f6dd00f96cedca5df13f1ef48771b2ce6f00",
         "type": "github"
       },
       "original": {
@@ -610,7 +610,7 @@
     "orcaslicer-nanashi-appimage": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-HTgu0Y5UY05ES87JM2x74YK7byrwMRmWeBeLRzpF9IA=",
+        "narHash": "sha256-7J8llvc/rzjeL8iW76o1BN4cin/PGmRkqOLnxWL9cDI=",
         "type": "file",
         "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       },
@@ -628,11 +628,11 @@
         "organizeer-bin": "organizeer-bin"
       },
       "locked": {
-        "lastModified": 1785066019,
-        "narHash": "sha256-3jwmyE5HYYiSRuDY+Y1vB+mZeM+MxhMkMIFuM5k3Q4g=",
+        "lastModified": 1785950202,
+        "narHash": "sha256-tDeKQ4E8hrE8XltZAH7O4ipDUVTt4U9UJTvGQVDEFZE=",
         "ref": "refs/heads/master",
-        "rev": "e8037102be6aaa553a353ff2e084872ac46189ad",
-        "revCount": 140,
+        "rev": "3a5a79bd693ff412ce9ddb7e620dc530540fc4c4",
+        "revCount": 141,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -644,11 +644,11 @@
     "organizeer-bin": {
       "flake": false,
       "locked": {
-        "lastModified": 1785066401,
-        "narHash": "sha256-Yx47kMNrKIiBKy9/3TetumLHNxS6tfHMJ2Yy+0E/nak=",
+        "lastModified": 1785950534,
+        "narHash": "sha256-5hV4lusHDp/BzspvbhWMyZoaNDfrkfhqe9/1df13K9Y=",
         "ref": "release",
-        "rev": "ccdd54fd5981dd3e790ef647f5506409664c9aad",
-        "revCount": 6,
+        "rev": "d3c5a96013e0a4a242165ba91e8c93f01e03edf5",
+        "revCount": 7,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -722,6 +722,40 @@
         "type": "github"
       }
     },
+    "ranger-archives": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758366477,
+        "narHash": "sha256-HEJ+8KlG++PK0vVpEYptbyuPZAKllX5PeyaTBKcf+8M=",
+        "owner": "maximtrp",
+        "repo": "ranger-archives",
+        "rev": "0b1cfa9a77412c3b51da5b1b213c672227f9fbb4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maximtrp",
+        "repo": "ranger-archives",
+        "rev": "0b1cfa9a77412c3b51da5b1b213c672227f9fbb4",
+        "type": "github"
+      }
+    },
+    "ranger-devicons": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1749128401,
+        "narHash": "sha256-qvWqKVS4C5OO6bgETBlVDwcv4eamGlCUltjsBU3gAbA=",
+        "owner": "alexanderjeurissen",
+        "repo": "ranger_devicons",
+        "rev": "1bcaff0366a9d345313dc5af14002cfdcddabb82",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alexanderjeurissen",
+        "repo": "ranger_devicons",
+        "rev": "1bcaff0366a9d345313dc5af14002cfdcddabb82",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "antigravity-nix": "antigravity-nix",
@@ -741,6 +775,8 @@
         "peerix": "peerix",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager",
+        "ranger-archives": "ranger-archives",
+        "ranger-devicons": "ranger-devicons",
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
         "stylix": "stylix",
