@@ -6,11 +6,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784965343,
-        "narHash": "sha256-hropwB+0KUXoFhAtAaHo5TefpJll6l2AZ46cqDDeFbI=",
+        "lastModified": 1786088053,
+        "narHash": "sha256-aBgz98Ib3FHYk9QIEhRQzyCxYxzf6BkV5tifS7T0IH8=",
         "owner": "jacopone",
         "repo": "antigravity-nix",
-        "rev": "60fec0afe78d223e3259e862233649d00bf1d634",
+        "rev": "0972a3578715dad156713151d90eaeaa9f860eed",
         "type": "github"
       },
       "original": {
@@ -296,7 +296,7 @@
         "type": "github"
       }
     },
-    "gitr-appimage": {
+    "gitr": {
       "flake": false,
       "locked": {
         "narHash": "sha256-tYaY6gsfZD2cRexVkd6jj350yXbxYUc+Py8FqtTcS88=",
@@ -368,11 +368,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784949765,
-        "narHash": "sha256-MB+0noLfsYMoMsBkyG5CKYZmSk7dSXendvvjfQFUiPw=",
+        "lastModified": 1786328173,
+        "narHash": "sha256-ghZYtP08BstfBD3keiUHM5KupIRY3+YS+naBsFPtGzc=",
         "owner": "nix-community",
         "repo": "nix-vscode-extensions",
-        "rev": "242a696abba55b45d577b5292e90b597284f5f85",
+        "rev": "f5911382d78f7d739197702509b83d790d592cea",
         "type": "github"
       },
       "original": {
@@ -544,11 +544,11 @@
     "openscad-bosl2": {
       "flake": false,
       "locked": {
-        "lastModified": 1784064269,
-        "narHash": "sha256-J0dkeHYlh2UFiAwubVvV8gx03RJ1BPBfqkn6Y4qUEVI=",
+        "lastModified": 1786351682,
+        "narHash": "sha256-ErSJxw1hLlnyUQCXBChwBrN9kS6+l4KXYvu9bBO1m6w=",
         "owner": "BelfrySCAD",
         "repo": "BOSL2",
-        "rev": "afe82db884ee4409aa76ecfcfbbf54d446964af1",
+        "rev": "92d697c2856de2fed93a33e858068589cefc2898",
         "type": "github"
       },
       "original": {
@@ -607,10 +607,10 @@
         "type": "github"
       }
     },
-    "orcaslicer-nanashi-appimage": {
+    "orcaslicer-nanashi": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-7J8llvc/rzjeL8iW76o1BN4cin/PGmRkqOLnxWL9cDI=",
+        "narHash": "sha256-bJs8i84/oaLbDBRM0o6YUsBGcDdS2uOeRM/BoiTPlRI=",
         "type": "file",
         "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       },
@@ -628,11 +628,11 @@
         "organizeer-bin": "organizeer-bin"
       },
       "locked": {
-        "lastModified": 1785950202,
-        "narHash": "sha256-tDeKQ4E8hrE8XltZAH7O4ipDUVTt4U9UJTvGQVDEFZE=",
+        "lastModified": 1786368632,
+        "narHash": "sha256-Y3kvl4IEmokvaRabU/W812x9UvGsQ9OxRGlMUzXM8W8=",
         "ref": "refs/heads/master",
-        "rev": "3a5a79bd693ff412ce9ddb7e620dc530540fc4c4",
-        "revCount": 141,
+        "rev": "2c5c24117081848616e4296a8a04c5507901ad86",
+        "revCount": 142,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -644,11 +644,11 @@
     "organizeer-bin": {
       "flake": false,
       "locked": {
-        "lastModified": 1785950534,
-        "narHash": "sha256-5hV4lusHDp/BzspvbhWMyZoaNDfrkfhqe9/1df13K9Y=",
+        "lastModified": 1786368828,
+        "narHash": "sha256-aXaaolTFQ1B9HSlGBXQQg5VP9LXh84oGTktXzOZmdjc=",
         "ref": "release",
-        "rev": "d3c5a96013e0a4a242165ba91e8c93f01e03edf5",
-        "revCount": 7,
+        "rev": "9bcbf199b5c0128ca14410301b600a632876df79",
+        "revCount": 8,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
@@ -686,11 +686,11 @@
         "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1785653290,
-        "narHash": "sha256-+sG7fJerw5vCul+zVaqyfZP6xiNKhpZFjEWR4clk4c0=",
+        "lastModified": 1786340852,
+        "narHash": "sha256-+TLBzIxn77lg0cmX0aDFfamBv7db74LxuIjmDgX04pw=",
         "owner": "lukasl-dev",
         "repo": "pi.nix",
-        "rev": "4b156132cfdda12cfdac9faf461f5df9290fc880",
+        "rev": "344e6ef05f6c3405e7ebb68b5aef592b0f3f9391",
         "type": "github"
       },
       "original": {
@@ -761,7 +761,7 @@
         "antigravity-nix": "antigravity-nix",
         "driftwm": "driftwm",
         "driftwm-noctalia": "driftwm-noctalia",
-        "gitr-appimage": "gitr-appimage",
+        "gitr": "gitr",
         "home-manager": "home-manager",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",
@@ -770,7 +770,7 @@
         "openscad-constructive": "openscad-constructive",
         "openscad-obiscad": "openscad-obiscad",
         "openscad-round-anything": "openscad-round-anything",
-        "orcaslicer-nanashi-appimage": "orcaslicer-nanashi-appimage",
+        "orcaslicer-nanashi": "orcaslicer-nanashi",
         "organizeer": "organizeer",
         "peerix": "peerix",
         "pi-agent": "pi-agent",
@@ -818,11 +818,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785335713,
-        "narHash": "sha256-p6t6W6C8D6Jt0kuAB1sbACIFxvCRlYNHcBIagjKgmMY=",
+        "lastModified": 1786355935,
+        "narHash": "sha256-I/lR05R1sx+VyQ6uVyx6BIRcF8K6T1WPOBI1Zo1dCNs=",
         "owner": "edaywalid",
         "repo": "undo",
-        "rev": "68ad7413c82809c89e3fafc296db544a1b385b53",
+        "rev": "513536e2a4218b9f7ad22f16ceb88ab6c2e89292",
         "type": "github"
       },
       "original": {

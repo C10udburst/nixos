@@ -47,7 +47,7 @@
   orcaslicer-nanashi = let
     pname = "orcaslicer-nanashi";
     version = "nightly";
-    src = inputs.orcaslicer-nanashi-appimage;
+    src = inputs.orcaslicer-nanashi;
     appimageContents = pkgs.appimageTools.extractType2 {
       inherit pname version src;
     };
@@ -58,12 +58,20 @@
       comment = "3D Slicer for 3D Printers";
       desktopName = "OrcaSlicer (Nanashi)";
       genericName = "3D Slicer";
-      categories = ["3DGraphics" "Education"];
+      categories = [
+        "3DGraphics"
+        "Education"
+      ];
     };
   in
     pkgs.appimageTools.wrapType2 {
       inherit pname version src;
-      extraPkgs = pkgs: (appimageLibs pkgs) ++ [pkgs.webkitgtk_4_1 pkgs.libsoup_3];
+      extraPkgs = pkgs:
+        (appimageLibs pkgs)
+        ++ [
+          pkgs.webkitgtk_4_1
+          pkgs.libsoup_3
+        ];
       extraInstallCommands = ''
         # Copy desktop file
         mkdir -p $out/share/applications

@@ -9,7 +9,7 @@
   gitr = pkgs.appimageTools.wrapType2 {
     pname = "gitr";
     version = "v0.4.17";
-    src = inputs.gitr-appimage;
+    src = inputs.gitr;
     extraPkgs = pkgs:
       with pkgs; [
         gtk3
@@ -59,9 +59,15 @@ in {
         gcc
         gitr
       ]
-      ++ lib.optionals cfg.rust [rustc cargo]
+      ++ lib.optionals cfg.rust [
+        rustc
+        cargo
+      ]
       ++ lib.optionals cfg.go [go]
-      ++ lib.optionals cfg.node [nodejs pnpm]
+      ++ lib.optionals cfg.node [
+        nodejs
+        pnpm
+      ]
       ++ lib.optionals cfg.kotlin [kotlin]
       ++ lib.optionals config.systemSettings.java.enable [pkgs.gradle];
 
