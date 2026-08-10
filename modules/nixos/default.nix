@@ -43,6 +43,7 @@
     ./threed.nix
     ./typst.nix
     ./users.nix
+    ./usbip.nix
     ./utils.nix
     ./waydroid.nix
     ./waypipe.nix
@@ -165,6 +166,7 @@
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
 
       nvidia.enable = lib.mkDefault (config.hostSettings.nvidia or false);
+      usbip.enable = lib.mkDefault (config.hostSettings.usbip or false);
 
       samba.enable = lib.mkDefault (config.hostSettings.sambaPath or "" != "");
       samba.path = lib.mkDefault (config.hostSettings.sambaPath or "");

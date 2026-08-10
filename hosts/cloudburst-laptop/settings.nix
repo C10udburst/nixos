@@ -50,6 +50,7 @@
   threed = false;
   typst = false;
   utils = true;
+  usbip = true;
   waydroid = false;
   waypipe = true;
   weston-rdp = false;
