@@ -3,7 +3,7 @@ autostart = [
 {% for cmd in extracmds %}
   "{{ cmd }}",
 {% endfor %}
-  "while true; do noctalia-shell; sleep 1; done"
+  "while true; do noctalia; sleep 1; done"
 ]
 window_placement = "auto"
 
@@ -27,7 +27,7 @@ click_method = "button_areas"
 inactive_opacity = 0.25
 
 [mouse.on-canvas]
-"right" = "spawn noctalia-shell ipc call launcher toggle"
+"right" = "spawn noctalia msg panel-toggle launcher"
 
 [mouse.anywhere]
 "ctrl+alt+trackpad-scroll" = "pan-viewport"
@@ -88,16 +88,16 @@ enabled = true
 path = "{{ xwayland_satellite_path }}"
 
 [keybindings]
-"mod+tab" = "spawn noctalia-shell ipc call launcher windows"
-"mod+space" = "spawn noctalia-shell ipc call launcher toggle"
-"mod+return" = "spawn noctalia-shell ipc call launcher toggle"
-"mod+n" = "spawn noctalia-shell ipc call notifications toggleHistory"
-"mod+v" = "spawn noctalia-shell ipc call launcher clipboard"
-"mod+period" = "spawn noctalia-shell ipc call launcher emoji"
-"mod+escape" = "spawn noctalia-shell ipc call sessionMenu toggle"
-"mod+f11" = "spawn noctalia-shell ipc call bar toggle"
-"mod+l" = "spawn noctalia-shell ipc call lockScreen lock"
-"mod+r" = "spawn noctalia-shell ipc call controlCenter toggle"
+"mod+tab" = 'spawn noctalia msg panel-toggle launcher "/win"'
+"mod+space" = 'spawn noctalia msg panel-toggle launcher'
+"mod+return" = 'spawn noctalia msg panel-toggle launcher'
+"mod+n" = 'spawn noctalia msg notifications toggleHistory'
+"mod+v" = 'spawn noctalia msg panel-toggle clipboard'
+"mod+period" = 'spawn noctalia msg panel-toggle launcher "/emo"'
+"mod+escape" = 'spawn noctalia msg panel-toggle session'
+"mod+f11" = 'spawn noctalia msg bar toggle'
+"mod+l" = 'spawn noctalia msg lockScreen lock'
+"mod+r" = 'spawn noctalia msg panel-toggle control-center'
 
 "ctrl+alt+t" = "exec konsole"
 "ctrl+shift+escape" = "exec plasma-systemmonitor"
@@ -108,8 +108,8 @@ path = "{{ xwayland_satellite_path }}"
 
 "XF86AudioRaiseVolume" = "spawn pamixer -i 5"
 "XF86AudioLowerVolume" = "spawn pamixer -d 5"
-"XF86MonBrightnessUp" = "spawn noctalia-shell ipc call brightness increase"
-"XF86MonBrightnessDown" = "spawn noctalia-shell ipc call brightness decrease"
+"XF86MonBrightnessUp" = "spawn noctalia msg brightness increase"
+"XF86MonBrightnessDown" = "spawn noctalia msg brightness decrease"
 "XF86AudioMute" = "spawn pamixer -t"
 
 "alt+f4" = "close-window"

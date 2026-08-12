@@ -25,6 +25,7 @@
     "https://cache.nixos-cuda.org"
     "https://hyprland.cachix.org"
     "https://numtide.cachix.org"
+    "https://noctalia.cachix.org"
   ];
 
   nix.settings.extra-trusted-public-keys = [
@@ -32,6 +33,7 @@
     "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
     "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
     "numtide.cachix.org-1:psk1bDfU1UhVfiVNyPCxyhR+FtmpNkamWT0DwIK+jic="
+    "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
   ];
 
   nix.gc = {

@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 with lib; let
@@ -15,7 +14,7 @@ with lib; let
   templateData =
     cleanColors
     // {
-      font = config.stylix.fonts.monospace.name or "JetBrainsMono Nerd Font";
+      font = config.stylix.fonts.monospace.name or "monospace";
       extracmds = cfg.extracmds;
       xwayland_satellite_path = "${lib.getExe pkgs.xwayland-satellite}";
       mobile = config.hostSettings.mobile or false;
@@ -31,15 +30,9 @@ with lib; let
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
   renderedShader = renderJinja2 "background.glsl" ./background.glsl.j2 templateData;
-  renderedNoctalia = renderJinja2 "noctalia.json" ./noctalia.json.j2 (
-    templateData
-    // {
-      volume_sfx_path = "${pkgs.kdePackages.ocean-sound-theme}/share/sounds/ocean/stereo/audio-volume-change.oga";
-    }
-  );
 in {
   imports = [
-    inputs.driftwm-noctalia.homeModules.default
+    ./noctalia.nix
   ];
 
   options.homeSettings.driftwm = {
@@ -65,17 +58,20 @@ in {
         [Appearance]
         icon_theme=breeze-dark
       '';
+      "driftwm/background.glsl".source = renderedShader;
+      "driftwm/config.toml".source = renderedConfig;
+      "xdg-desktop-portal/driftwm-portals.conf".text = ''
+        [preferred]
+        default=kde
+        org.freedesktop.impl.portal.ScreenCast=wlr
+        org.freedesktop.impl.portal.Screenshot=wlr
+      '';
     };
 
     home.sessionVariables = {
       #QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
       QT_QPA_PLATFORM = "wayland;xcb";
       QS_ICON_THEME = "breeze-dark";
-    };
-
-    programs.noctalia-shell = {
-      enable = true;
-      settings = mkForce renderedNoctalia;
     };
 
     systemd.user.services.driftwm = {
@@ -95,14 +91,5 @@ in {
         ExecStart = "${pkgs.driftwm}/bin/driftwm --backend udev";
       };
     };
-
-    xdg.configFile."driftwm/background.glsl".source = renderedShader;
-    xdg.configFile."driftwm/config.toml".source = renderedConfig;
-    xdg.configFile."xdg-desktop-portal/driftwm-portals.conf".text = ''
-      [preferred]
-      default=kde
-      org.freedesktop.impl.portal.ScreenCast=wlr
-      org.freedesktop.impl.portal.Screenshot=wlr
-    '';
   };
 }

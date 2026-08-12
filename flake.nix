@@ -70,8 +70,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    driftwm-noctalia = {
-      url = "github:youssefvdel/driftwm-noctalia";
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    noctalia-community-plugins = {
+      url = "github:noctalia-dev/community-plugins";
+      flake = false;
     };
 
     stylix = {

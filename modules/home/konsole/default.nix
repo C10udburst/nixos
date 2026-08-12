@@ -12,7 +12,7 @@
 
   colorscheme = renderJinja2 "Base16-Stylix.colorscheme" ./Base16-Stylix.colorscheme.j2 cleanColors;
 
-  fontName = config.stylix.fonts.monospace.name or "JetBrainsMono Nerd Font";
+  fontName = config.stylix.fonts.monospace.name or "monospace";
   fontSize = toString (config.stylix.fonts.sizes.terminal or 11);
   fontValue = "${fontName},${fontSize},-1,5,50,0,0,0,0,0";
 
