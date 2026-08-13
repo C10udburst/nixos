@@ -26,7 +26,6 @@ in {
       pkgs.pamixer
       pkgs.kdePackages.dolphin
       pkgs.xwayland-satellite
-      pkgs.kdePackages.polkit-kde-agent-1
 
       # Qt / SVG icon support
       pkgs.libsForQt5.qtsvg
@@ -56,23 +55,13 @@ in {
       enableDefaultPath = false;
     };
 
-    systemd.user.services.polkit-kde-agent = {
-      description = "Polkit KDE Authentication Agent";
-      wantedBy = ["graphical-session.target"];
-      wants = ["graphical-session.target"];
-      after = ["graphical-session.target"];
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
-        Restart = "on-failure";
-        RestartSec = 1;
-      };
-    };
-
     services.displayManager.sessionPackages = [
-      (pkgs.runCommand "driftwm-session" {
+      (
+        pkgs.runCommand "driftwm-session"
+        {
           passthru.providedSessions = ["driftwm"];
-        } ''
+        }
+        ''
           mkdir -p $out/share/wayland-sessions
           cat <<EOF > $out/share/wayland-sessions/driftwm.desktop
           [Desktop Entry]
@@ -82,7 +71,8 @@ in {
           Type=Application
           DesktopNames=driftwm
           EOF
-        '')
+        ''
+      )
     ];
   };
 }

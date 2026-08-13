@@ -7,15 +7,25 @@
 }:
 with lib; let
   mobile = config.hostSettings.mobile or false;
+  hasDocker = config.hostSettings.docker or false;
+  hasTailscale = config.hostSettings.tailscale or false;
+  hostname = config.networking.hostName or "cloudburst";
+  colors = config.lib.stylix.colors.withHashtag;
 
   pluginMap = {
     audio-switcher = "blackbartblues/audio-switcher";
     battery-threshold = "damian-ds7/battery-threshold";
+    cat = "dotnetrob/cat";
+    drive-health = "gustav0ar/drive-health";
     eyecare = "apex077/eyecare";
     hassio = "pozzoo/hassio";
+    hotspot = "cleboost/hotspot";
     lid-guard = "8bury/lid-guard";
+    mini-docker = "8bury/mini-docker";
     nix-monitor = "avivbintangaringga/nix-monitor";
     phone-connect = "icefish/phone-connect";
+    portctl = "rxtsel/portctl";
+    procmon = "weinguyen/procmon";
     screen-toolkit = "alexander/screen-toolkit";
     tailscale = "davemhammer/tailscale";
     udiskie = "aristides/udiskie";
@@ -24,12 +34,16 @@ with lib; let
 
   basePluginNames = [
     "audio-switcher"
+    "cat"
+    "drive-health"
     "eyecare"
     "hassio"
+    "hotspot"
     "nix-monitor"
     "phone-connect"
+    "portctl"
+    "procmon"
     "screen-toolkit"
-    "tailscale"
     "udiskie"
     "web-launcher"
   ];
@@ -39,8 +53,11 @@ with lib; let
     "lid-guard"
   ];
 
-  selectedPluginNames = basePluginNames ++ batteryPluginNames;
+  dockerPluginNames = optionals hasDocker ["mini-docker"];
+  tailscalePluginNames = optionals hasTailscale ["tailscale"];
 
+  selectedPluginNames =
+    basePluginNames ++ batteryPluginNames ++ dockerPluginNames ++ tailscalePluginNames;
   enabledPluginIds = map (name: pluginMap.${name}) selectedPluginNames;
 in {
   imports = [
@@ -48,34 +65,136 @@ in {
   ];
 
   config = {
+    home.packages = with pkgs; [
+      udiskie
+      smartmontools
+      ddcutil
+      linux-wifi-hotspot
+      wl-screenrec
+      tesseract
+    ];
+
+    xdg.configFile."noctalia/palettes/Stylix.json".text = builtins.toJSON {
+      dark = {
+        mPrimary = colors.base0D;
+        mOnPrimary = colors.base00;
+        mSecondary = colors.base0E;
+        mOnSecondary = colors.base00;
+        mTertiary = colors.base0C;
+        mOnTertiary = colors.base00;
+        mError = colors.base08;
+        mOnError = colors.base00;
+        mSurface = colors.base00;
+        mOnSurface = colors.base05;
+        mSurfaceVariant = colors.base01;
+        mOnSurfaceVariant = colors.base05;
+        mOutline = colors.base03;
+        mShadow = colors.base00;
+        mHover = colors.base02;
+        mOnHover = colors.base05;
+
+        terminal = {
+          background = colors.base00;
+          foreground = colors.base05;
+          cursor = colors.base05;
+          cursorText = colors.base00;
+          selectionBg = colors.base02;
+          selectionFg = colors.base05;
+          normal = {
+            black = colors.base00;
+            red = colors.base08;
+            green = colors.base0B;
+            yellow = colors.base0A;
+            blue = colors.base0D;
+            magenta = colors.base0E;
+            cyan = colors.base0C;
+            white = colors.base05;
+          };
+          bright = {
+            black = colors.base03;
+            red = colors.base08;
+            green = colors.base0B;
+            yellow = colors.base0A;
+            blue = colors.base0D;
+            magenta = colors.base0E;
+            cyan = colors.base0C;
+            white = colors.base07;
+          };
+        };
+      };
+    };
+
     programs.noctalia = {
       enable = true;
       settings = {
         shell = {
+          setup_wizard_enabled = false;
           font_family = config.stylix.fonts.monospace.name or "monospace";
           polkit_agent = true;
           password_style = "random";
+          panel_anchor_bar = "main";
+          screen_time_enabled = true;
+          settings_window_translucent = true;
+          launcher.providers.windows.global = true;
+          panel = {
+            transparency_mode = "glass";
+            control_center_placement = "floating";
+            open_near_click_control_center = true;
+            session_placement = "floating";
+            floating_offset = 16;
+          };
+          session.actions = [
+            {
+              action = "lock";
+              shortcut = "1";
+            }
+            {
+              action = "logout";
+              command = "driftwm msg action quit";
+              shortcut = "2";
+            }
+            {
+              action = "lock_and_suspend";
+              shortcut = "3";
+            }
+            {
+              action = "reboot";
+              shortcut = "4";
+            }
+            {
+              action = "shutdown";
+              shortcut = "5";
+              variant = "destructive";
+            }
+          ];
         };
+
         wallpaper.enabled = false;
         weather.enabled = true;
         location.auto_locate = true;
-        widget = {
-          driftwm = {
-            type = "custom_button";
-            glyph = "zoom-scan";
-            scroll_repeat = "steps";
-            action = {
-              scroll_up = "driftwm msg action zoom-in";
-              scroll_down = "driftwm msg action zoom-out";
-              left = "driftwm msg action zoom-to-fit";
-              middle = "driftwm msg action home-toggle";
-              right = "driftwm msg action zoom-reset";
-            };
-          };
-          battery = {
-            display_mode = "graphic";
+        desktop_widgets.enabled = false;
+        nightlight.enabled = true;
+
+        theme = {
+          mode = config.stylix.polarity or "dark";
+          source = "custom";
+          custom_palette = "Stylix";
+          pure_black_dark = false;
+          templates = {
+            enable_builtin_templates = false;
+            enable_community_templates = false;
           };
         };
+
+        dock = {
+          auto_hide = true;
+          background_opacity = 0.5;
+          enabled = true;
+          icon_size = 32;
+          launcher_position = "start";
+          show_dots = true;
+        };
+
         idle = {
           behavior_order =
             if mobile
@@ -85,55 +204,187 @@ in {
               "suspend"
             ]
             else ["screen-off"];
+          behavior = {
+            screen-off.enabled = true;
+            lock.enabled = mobile;
+            suspend.enabled = mobile;
+          };
         };
-        idle.behavior.screen-off.enabled = true;
-        idle.behavior.lock.enabled = mobile;
-        idle.behavior.suspend.enabled = mobile;
+
         audio = {
           enable_overdrive = true;
           enable_sounds = true;
+          sound_volume = 0.75;
         };
+
         brightness = {
           enable_ddcutil = true;
           sync_all_monitors = true;
           minimum_brightness = 0.1;
         };
+
+        calendar = {
+          enabled = true;
+          account = {
+            polish_holiday = {
+              name = "Święta w Polsce";
+              server_url = "https://calendar.google.com/calendar/ical/pl.polish%23holiday%40group.v.calendar.google.com/public/basic.ics";
+              type = "ics";
+            };
+          };
+        };
+
+        control_center = {
+          sidebar = "full";
+          calendar.show_week_numbers = true;
+          shortcuts = [
+            {type = "wifi";}
+            {type = "bluetooth";}
+            {type = "caffeine";}
+            {type = "nightlight";}
+            {type = "microphone";}
+            {type = "notification";}
+          ];
+        };
+
         bar = {
           order = ["main"];
           main = {
+            background_opacity = 0.75;
+            margin_edge = 3;
+            reserve_space = false;
+            thickness = 36;
+
             start = [
               "launcher"
               "clock"
-              "sysmon"
-              "media"
-              "audio_visualizer"
+              "weather"
+              "group:sysmon_group"
+              "group:media_group"
+              "hassio_status"
             ];
             center = [
-              "driftwm"
+              "group:window_session"
+              "lock_keys"
               "active_window"
               "clipboard"
-              "notifications"
+              "group:notifications_group"
             ];
             end =
               [
                 "tray"
-                "privacy"
+                "group:storage_privacy"
+              ]
+              ++ optionals mobile ["group:battery_group"]
+              ++ [
+                "group:network_group"
+                "group:system_controls"
+                "control-center"
+              ];
+
+            capsule_group =
+              [
+                {
+                  id = "system_controls";
+                  accordion = false;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "brightness"
+                    "volume"
+                    "bluetooth"
+                  ];
+                }
+                {
+                  id = "network_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members =
+                    [
+                      "network"
+                    ]
+                    ++ (optionals hasTailscale ["tailscale_status"])
+                    ++ [
+                      "hotspot_toggle"
+                    ];
+                }
+                {
+                  id = "storage_privacy";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "privacy"
+                    "udiskie_status"
+                    "drive_summary"
+                  ];
+                }
+                {
+                  id = "window_session";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "driftwm"
+                    "screen_toolkit"
+                    "session"
+                  ];
+                }
+                {
+                  id = "media_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "audio_visualizer"
+                    "media"
+                  ];
+                }
+                {
+                  id = "notifications_group";
+                  accordion = true;
+                  accordion_direction = "start";
+                  enabled = true;
+                  members = [
+                    "notifications"
+                    "nix-monitor"
+                    "phone_bar"
+                  ];
+                }
+                {
+                  id = "sysmon_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members =
+                    [
+                      "cat_widget"
+                      "procmon_widget"
+                      "portctl_indicator"
+                    ]
+                    ++ optionals hasDocker ["mini-docker"];
+                }
               ]
               ++ optionals mobile [
-                "battery"
-                "caffeine"
-              ]
-              ++ optionals (config.hostSettings.tailscale or false) [
-                (pluginMap.tailscale + ":status")
-              ]
-              ++ [
-                "brightness"
-                "volume"
-                "bluetooth"
-                "control-center"
+                {
+                  id = "battery_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "battery"
+                    "battery-threshold"
+                  ];
+                }
               ];
           };
         };
+
+        notification = {
+          history_retention_hours = 64;
+        };
+
         plugins = {
           enabled = enabledPluginIds;
           source = [
@@ -144,6 +395,99 @@ in {
             }
           ];
         };
+
+        plugin_settings = with pluginMap;
+          {
+            "${screen-toolkit}" = {
+              panel_placement = "attached";
+              result_placement = "attached";
+              selected-ocr-lang = "eng+pl";
+            };
+            "${udiskie}".manager_open_near_click = true;
+            "${nix-monitor}".branch = "nixos-${lib.trivial.release}";
+            "${hotspot}" = {
+              ssid = hostname;
+            };
+            "${drive-health}".drives_placement = "attached";
+            "${phone-connect}".details_placement = "floating";
+            "${hassio}" = {
+              entity_manager_open_near_click = true;
+              entity_manager_placement = "attached";
+            };
+            "${procmon}".panel_placement = "attached";
+            "${web-launcher}".notify = false;
+          }
+          // optionalAttrs mobile {
+            "${battery-threshold}".panel_placement = "attached";
+          }
+          // optionalAttrs hasDocker {
+            "${mini-docker}".manager_placement = "attached";
+          }
+          // optionalAttrs hasTailscale {
+            "${tailscale}".manager_placement = "attached";
+          };
+
+        widget = with pluginMap;
+          {
+            audio_visualizer.mirrored = false;
+            clock = {
+              format = "{:%H:%M:%S %a, %d.%m}";
+              vertical_format = "{:%H:%M}";
+            };
+            driftwm = {
+              type = "custom_button";
+              glyph = "zoom-scan";
+              scroll_repeat = "steps";
+              actions = {
+                scroll_up = "exec driftwm msg action zoom-in";
+                scroll_down = "exec driftwm msg action zoom-out";
+                left = "exec driftwm msg action zoom-to-fit";
+                middle = "exec driftwm msg action home-toggle";
+                right = "exec driftwm msg action zoom-reset";
+              };
+            };
+            lock_keys = {
+              hide_when_off = true;
+              show_scroll_lock = true;
+            };
+            media = {
+              hide_when_no_media = true;
+              title_scroll = "on_hover";
+            };
+            weather.show_condition = false;
+
+            # Renamed plugin widgets
+            phone_bar.type = "${phone-connect}:bar";
+            cat_widget = {
+              show_cpu_percent = true;
+              type = "${cat}:cat";
+              actions = {
+                middle = "exec plasma-systemmonitor";
+                right = "panel-toggle control-center system";
+              };
+            };
+            portctl_indicator.type = "${portctl}:indicator";
+            nix-monitor = {
+              show_text = false;
+              type = "${nix-monitor}:nix-monitor";
+            };
+            udiskie_status.type = "${udiskie}:status";
+            hassio_status.type = "${hassio}:status";
+            drive_summary.type = "${drive-health}:summary";
+            hotspot_toggle.type = "${hotspot}:toggle";
+            screen_toolkit.type = "${screen-toolkit}:widget";
+            procmon_widget.type = "${procmon}:widget";
+          }
+          // optionalAttrs mobile {
+            battery.display_mode = "graphic";
+            battery-threshold.type = "${battery-threshold}:battery-threshold";
+          }
+          // optionalAttrs hasDocker {
+            mini-docker.type = "${mini-docker}:mini-docker";
+          }
+          // optionalAttrs hasTailscale {
+            tailscale_status.type = "${tailscale}:status";
+          };
       };
     };
   };
