@@ -7,9 +7,11 @@
   renderUtils = import ../render-template.nix {inherit pkgs config lib;};
   renderedSvg = renderUtils.renderJinja2 "wallpaper.svg" ./wallpaper.svg.j2 renderUtils.cleanColors;
   renderedPng =
-    pkgs.runCommand "wallpaper.png" {
+    pkgs.runCommand "wallpaper.png"
+    {
       nativeBuildInputs = [pkgs.librsvg];
-    } ''
+    }
+    ''
       rsvg-convert -o "$out" "${renderedSvg}"
     '';
 in {
@@ -26,7 +28,7 @@ in {
     enable = true;
     polarity = "dark";
     image = renderedPng;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest-dark-medium.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/atelier-estuary.yaml";
     fonts = {
       monospace = {
         package = pkgs.nerd-fonts.jetbrains-mono;
