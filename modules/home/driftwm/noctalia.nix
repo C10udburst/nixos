@@ -7,7 +7,7 @@
 }:
 with lib; let
   mobile = config.hostSettings.mobile or false;
-  hasDocker = config.hostSettings.docker or false;
+  hasDocker = config.hostSettings.podman or false;
   hasTailscale = config.hostSettings.tailscale or false;
   hostname = config.networking.hostName or "cloudburst";
   colors = config.lib.stylix.colors.withHashtag;
@@ -129,6 +129,7 @@ in {
       settings = {
         shell = {
           setup_wizard_enabled = false;
+          corner_radius_scale = 2.0;
           font_family = config.stylix.fonts.monospace.name or "monospace";
           polkit_agent = true;
           password_style = "random";
@@ -137,7 +138,8 @@ in {
           settings_window_translucent = true;
           launcher.providers.windows.global = true;
           panel = {
-            transparency_mode = "glass";
+            session_position = "center";
+            transparency_mode = "solid";
             control_center_placement = "floating";
             open_near_click_control_center = true;
             session_placement = "floating";
@@ -242,7 +244,7 @@ in {
             {type = "bluetooth";}
             {type = "caffeine";}
             {type = "nightlight";}
-            {type = "microphone";}
+            {type = "mic_mute";}
             {type = "notification";}
           ];
         };
@@ -250,6 +252,7 @@ in {
         bar = {
           order = ["main"];
           main = {
+            radius = 24;
             background_opacity = 0.75;
             margin_edge = 3;
             reserve_space = false;
@@ -404,7 +407,11 @@ in {
               selected-ocr-lang = "eng+pl";
             };
             "${udiskie}".manager_open_near_click = true;
-            "${nix-monitor}".branch = "nixos-${lib.trivial.release}";
+            "${nix-monitor}" = {
+              branch = "nixos-${lib.trivial.release}";
+              show_update_available_notification = false;
+              update_command = "~/nixos/upgrade";
+            };
             "${hotspot}" = {
               ssid = hostname;
             };
