@@ -162,5 +162,10 @@
       url = "github:maximtrp/ranger-archives";
       flake = false;
     };
+
+    isw = {
+      url = "github:YoyPa/isw";
+      flake = false;
+    };
   };
 }

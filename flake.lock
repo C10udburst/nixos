@@ -327,6 +327,22 @@
         "type": "github"
       }
     },
+    "isw": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1582745508,
+        "narHash": "sha256-HN3egLX08CC9SLxldpCj5KHSiyV1F3HeR5NXk68NXY0=",
+        "owner": "YoyPa",
+        "repo": "isw",
+        "rev": "7c88670504ecd4462b1825a55bdb0be2944dfe94",
+        "type": "github"
+      },
+      "original": {
+        "owner": "YoyPa",
+        "repo": "isw",
+        "type": "github"
+      }
+    },
     "jail-nix": {
       "locked": {
         "lastModified": 1776230864,
@@ -754,6 +770,7 @@
         "driftwm": "driftwm",
         "gitr": "gitr",
         "home-manager": "home-manager",
+        "isw": "isw",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",

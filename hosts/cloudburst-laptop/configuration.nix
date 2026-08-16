@@ -7,14 +7,11 @@
 }: let
   hostSettings = import ./settings.nix;
 
-  isw = pkgs.stdenv.mkDerivation rec {
+  isw = pkgs.stdenv.mkDerivation {
     pname = "isw";
-    version = "1.10";
+    version = "latest";
 
-    src = pkgs.fetchurl {
-      url = "https://github.com/YoyPa/isw/archive/${version}.tar.gz";
-      sha256 = "6ffc707ad735a88454b77ed168de6c32aacd590499346587544c69895928a578";
-    };
+    src = inputs.isw;
 
     nativeBuildInputs = [pkgs.makeWrapper];
     buildInputs = [pkgs.python3];
