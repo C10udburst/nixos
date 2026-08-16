@@ -494,6 +494,19 @@
         "type": "github"
       }
     },
+    "noctalia-driftwm": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786889799,
+        "narHash": "sha256-PnybFPZJsQpCKWvUQDr86sr7m9roentJhoK3XYrZimo=",
+        "path": "/home/cloudburst/Projekty/noctalia-v5/driftwm",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/cloudburst/Projekty/noctalia-v5/driftwm",
+        "type": "path"
+      }
+    },
     "nur": {
       "inputs": {
         "flake-parts": [
@@ -713,7 +726,6 @@
       "original": {
         "owner": "maximtrp",
         "repo": "ranger-archives",
-        "rev": "0b1cfa9a77412c3b51da5b1b213c672227f9fbb4",
         "type": "github"
       }
     },
@@ -730,7 +742,6 @@
       "original": {
         "owner": "alexanderjeurissen",
         "repo": "ranger_devicons",
-        "rev": "1bcaff0366a9d345313dc5af14002cfdcddabb82",
         "type": "github"
       }
     },
@@ -745,6 +756,7 @@
         "nixpkgs": "nixpkgs_3",
         "noctalia": "noctalia",
         "noctalia-community-plugins": "noctalia-community-plugins",
+        "noctalia-driftwm": "noctalia-driftwm",
         "openscad-bosl2": "openscad-bosl2",
         "openscad-constructive": "openscad-constructive",
         "openscad-obiscad": "openscad-obiscad",

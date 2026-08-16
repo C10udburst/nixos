@@ -80,6 +80,11 @@
       flake = false;
     };
 
+    noctalia-driftwm = {
+      url = "path:/home/cloudburst/Projekty/noctalia-v5/driftwm";
+      flake = false;
+    };
+
     stylix = {
       url = "github:nix-community/stylix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -133,12 +138,12 @@
     };
 
     ranger-devicons = {
-      url = "github:alexanderjeurissen/ranger_devicons/1bcaff0366a9d345313dc5af14002cfdcddabb82";
+      url = "github:alexanderjeurissen/ranger_devicons";
       flake = false;
     };
 
     ranger-archives = {
-      url = "github:maximtrp/ranger-archives/0b1cfa9a77412c3b51da5b1b213c672227f9fbb4";
+      url = "github:maximtrp/ranger-archives";
       flake = false;
     };
   };

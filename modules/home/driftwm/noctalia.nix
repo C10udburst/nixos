@@ -16,6 +16,7 @@ with lib; let
     audio-switcher = "blackbartblues/audio-switcher";
     battery-threshold = "damian-ds7/battery-threshold";
     cat = "dotnetrob/cat";
+    driftwm = "cloudburst/driftwm";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
     hotspot = "cleboost/hotspot";
@@ -34,6 +35,7 @@ with lib; let
   basePluginNames = [
     "audio-switcher"
     "cat"
+    "driftwm"
     "drive-health"
     "hassio"
     "hotspot"
@@ -399,6 +401,11 @@ in {
               kind = "path";
               location = "${inputs.noctalia-community-plugins}";
             }
+            {
+              name = "driftwm";
+              kind = "path";
+              location = "${inputs.noctalia-driftwm}";
+            }
           ];
         };
 
@@ -445,16 +452,8 @@ in {
               vertical_format = "{:%H:%M}";
             };
             driftwm = {
-              type = "custom_button";
-              glyph = "zoom-scan";
-              scroll_repeat = "steps";
-              actions = {
-                scroll_up = "exec driftwm msg action zoom-in";
-                scroll_down = "exec driftwm msg action zoom-out";
-                left = "exec driftwm msg action zoom-to-fit";
-                middle = "exec driftwm msg action home-toggle";
-                right = "exec driftwm msg action zoom-reset";
-              };
+              type = "${driftwm}:widget";
+              middle = "exec driftwm msg action home-toggle";
             };
             lock_keys = {
               hide_when_off = true;

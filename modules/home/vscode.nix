@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }: let
   cfg = config.homeSettings;
@@ -46,33 +45,37 @@
     jnoortheen.nix-ide
   ];
 
-  programmingExtensions = lib.optionals isProgramming (with exts;
-    [
-      wholroyd.jinja
-      jock.svg
-    ]
-    ++ lib.optionals (cfg.programming.rust or false) [
-      rust-lang.rust-analyzer
-    ]
-    ++ lib.optionals (cfg.programming.go or false) [
-      golang.go
-    ]
-    ++ lib.optionals (cfg.programming.kotlin or false) [
-      mathiasfrohlich.kotlin
-    ]);
+  programmingExtensions = lib.optionals isProgramming (
+    with exts;
+      [
+        wholroyd.jinja
+        jock.svg
+      ]
+      ++ lib.optionals (cfg.programming.rust or false) [
+        rust-lang.rust-analyzer
+      ]
+      ++ lib.optionals (cfg.programming.go or false) [
+        golang.go
+      ]
+      ++ lib.optionals (cfg.programming.kotlin or false) [
+        mathiasfrohlich.kotlin
+      ]
+  );
 
   # Python extensions
-  pythonExtensions = lib.optionals isPython (with exts; [
-    ms-python.python
-    ms-python.vscode-pylance
-    ms-python.debugpy
-    ms-python.black-formatter
-    ms-python.isort
-    ms-toolsai.jupyter
-    ms-toolsai.jupyter-renderers
-    ms-toolsai.vscode-jupyter-cell-tags
-    ms-toolsai.vscode-jupyter-slideshow
-  ]);
+  pythonExtensions = lib.optionals isPython (
+    with exts; [
+      ms-python.python
+      ms-python.vscode-pylance
+      ms-python.debugpy
+      ms-python.black-formatter
+      ms-python.isort
+      ms-toolsai.jupyter
+      ms-toolsai.jupyter-renderers
+      ms-toolsai.vscode-jupyter-cell-tags
+      ms-toolsai.vscode-jupyter-slideshow
+    ]
+  );
 
   allExtensions =
     coreExtensions
@@ -80,34 +83,45 @@
     ++ pythonExtensions
     ++ lib.optionals isLatex [exts.james-yu.latex-workshop]
     ++ lib.optionals isTypst [exts.myriad-dreamin.tinymist]
-    ++ lib.optionals isArduino [exts.platformio.platformio-ide pkgs.vscode-extensions.ms-vscode.cpptools]
+    ++ lib.optionals isArduino [
+      exts.platformio.platformio-ide
+      pkgs.vscode-extensions.ms-vscode.cpptools
+    ]
     ++ lib.optionals isThreed [exts.appliedengdesign.vscode-gcode-syntax]
     ++ lib.optionals isLlm [exts.kaiwood.tauren];
-  fhsVscode = pkgs.vscode.fhsWithPackages (p:
-    lib.optionals isProgramming (with p;
-      [
-        cargo
-        rustc
-        rust-analyzer
+  fhsVscode = pkgs.vscode.fhsWithPackages (
+    p:
+      lib.optionals isProgramming (
+        with p;
+          [
+            cargo
+            rustc
+            rust-analyzer
+          ]
+          ++ lib.optionals (cfg.programming.go or false) [
+            go
+            gopls
+          ]
+      )
+      ++ lib.optionals isPython (
+        with p; [
+          python3
+          python3Packages.ipykernel
+          black
+          isort
+        ]
+      )
+      ++ lib.optionals isTypst (
+        with p; [
+          typst
+          typstyle
+        ]
+      )
+      ++ [
+        p.nixd
+        p.nixfmt
       ]
-      ++ lib.optionals (cfg.programming.go or false) [
-        go
-        gopls
-      ])
-    ++ lib.optionals isPython (with p; [
-      python3
-      python3Packages.ipykernel
-      black
-      isort
-    ])
-    ++ lib.optionals isTypst (with p; [
-      typst
-      typstyle
-    ])
-    ++ [
-      p.nixd
-      p.nixfmt
-    ]);
+  );
 
   ephemeralVscode = pkgs.symlinkJoin {
     name = "code";
@@ -171,6 +185,10 @@ in {
         extensions = allExtensions;
 
         userSettings = {
+          "files.associations" = {
+            "*.luau" = "lua";
+          };
+
           # ── Security & Trust ──────────────────────────────────────────────────
           "security.workspace.trust.enabled" = false;
 
