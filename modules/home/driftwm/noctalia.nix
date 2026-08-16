@@ -416,7 +416,10 @@ in {
               result_placement = "attached";
               selected-ocr-lang = "eng+pl";
             };
-            "${udiskie}".manager_open_near_click = true;
+            "${udiskie}" = {
+              manager_open_near_click = true;
+              file_manager_cmd = "dolphin";
+            };
             "${nix-monitor}" = {
               branch = "nixos-${lib.trivial.release}";
               show_update_available_notification = false;
@@ -453,7 +456,6 @@ in {
             };
             driftwm = {
               type = "${driftwm}:widget";
-              middle = "exec driftwm msg action home-toggle";
             };
             lock_keys = {
               hide_when_off = true;

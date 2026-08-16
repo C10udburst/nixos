@@ -16,7 +16,7 @@
         openssl
         libxkbcommon
         fontconfig
-        xorg.libxcb
+        libxcb
         fuse
       ];
   };
