@@ -11,6 +11,7 @@ in {
     ./undo.nix
     ./modules.nix
     ./scripts.nix
+    ./wrappers.nix
   ];
 
   options.homeSettings.nushell = {
@@ -32,15 +33,6 @@ in {
       package = pkgs.nushell;
       extraConfig = ''
         $env.config.show_banner = false
-
-        # Parsed system mount command if no arguments, otherwise normal mount
-        def mount [...args: string] {
-          if ($args | is-empty) {
-            ^mount | parse "{device} on {path} type {type} {args}"
-          } else {
-            ^mount ...$args
-          }
-        }
       '';
     };
 

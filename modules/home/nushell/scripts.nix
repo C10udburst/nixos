@@ -8,11 +8,17 @@
 
   plotScript = pkgs.writeText "plot.py" (builtins.readFile ./plot.py);
   pdScript = pkgs.writeText "pd.py" (builtins.readFile ./pd.py);
+  gridviewScript = pkgs.writeText "gridview.py" (builtins.readFile ./gridview.py);
 in {
   config = lib.mkIf cfg.enable {
     programs.nushell.extraConfig = ''
-      # col_x / col_y accept either a column name (string) or a closure
-      # that maps each row to a scalar value, e.g.: plot {$in.mem / $in.virtual}
+      def gridview [] {
+        let input = $in
+        if ($input | is-empty) { return }
+
+        $input | to json | python3 ${gridviewScript}
+      }
+
       def plot [
         col_x: any,
         col_y?: any
