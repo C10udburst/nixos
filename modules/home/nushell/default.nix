@@ -36,6 +36,11 @@ in {
       '';
     };
 
+    programs.carapace = {
+      enable = true;
+      enableNushellIntegration = true;
+    };
+
     # Enable Starship integration
     programs.starship.enableNushellIntegration = true;
   };
