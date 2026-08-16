@@ -81,7 +81,7 @@
     };
 
     noctalia-driftwm = {
-      url = "path:/home/cloudburst/Projekty/noctalia-v5/driftwm";
+      url = "github:C10udburst/noctalia-v5";
       flake = false;
     };
 
