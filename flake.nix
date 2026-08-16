@@ -132,44 +132,6 @@
       flake = false;
     };
 
-    # ── Ulauncher extensions ─────────────────────────────────────────────────
-    ulauncher-homepage = {
-      url = "github:pucodev/ulauncher-homepage";
-      flake = false;
-    };
-    ulauncher-emoji = {
-      url = "github:ulauncher/ulauncher-emoji";
-      flake = false;
-    };
-    ulauncher-clipboard = {
-      url = "github:friday/ulauncher-clipboard";
-      flake = false;
-    };
-    ulauncher-system = {
-      url = "github:iboyperson/ulauncher-system";
-      flake = false;
-    };
-    ulauncher-bitwarden = {
-      url = "github:kbialek/ulauncher-bitwarden";
-      flake = false;
-    };
-    ulauncher-homeassistant = {
-      url = "github:qcasey/ulauncher-homeassistant";
-      flake = false;
-    };
-    ulauncher-unicode = {
-      url = "github:zensoup/ulauncher-unicode";
-      flake = false;
-    };
-    ulauncher-google-ai-mode = {
-      url = "github:khurrambhutto/ulauncher-google-ai-mode";
-      flake = false;
-    };
-    ulauncher-nix = {
-      url = "github:daste745/ulauncher-nix";
-      flake = false;
-    };
-
     ranger-devicons = {
       url = "github:alexanderjeurissen/ranger_devicons/1bcaff0366a9d345313dc5af14002cfdcddabb82";
       flake = false;

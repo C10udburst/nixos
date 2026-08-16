@@ -12,7 +12,6 @@
   gh-origin-mod = pkgs.writeShellScriptBin "gh-origin-mod" (builtins.readFile ./gh-origin-mod.sh);
   ics-merge = pkgs.writers.writePython3Bin "ics-merge" {} (builtins.readFile ./ics-merge.py);
   nix-py = pkgs.writeShellScriptBin "nix-py" (builtins.readFile ./nix-py.sh);
-  noctalia-dmenu = pkgs.writeShellScriptBin "noctalia-dmenu" (builtins.readFile ./noctalia-dmenu.sh);
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ./nx.sh);
   palette = pkgs.writeShellScriptBin "palette" (builtins.readFile ./palette.sh);
   rofi = pkgs.writeShellScriptBin "rofi" (builtins.readFile ./rofi.sh);
@@ -49,7 +48,6 @@ in {
         ics-merge
         video8mb
         nx
-        noctalia-dmenu
         rofi
         palette
         nix-py

@@ -25,6 +25,8 @@ in {
       pkgs.playerctl
       pkgs.pamixer
       pkgs.kdePackages.dolphin
+      pkgs.kdePackages.konsole
+      pkgs.kdePackages.plasma-systemmonitor
       pkgs.xwayland-satellite
 
       # Qt / SVG icon support

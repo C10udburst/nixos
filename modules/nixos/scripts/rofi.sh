@@ -89,15 +89,7 @@ if [[ "$DMENU_MODE" == "true" ]]; then
     if [[ -n "$PROMPT" ]]; then
         extra_args+=("-p" "$PROMPT")
     fi
-    if [[ "$ONLY_MATCH" == "false" ]]; then
-        extra_args+=("-c")
-    fi
-    if [[ "$FORMAT" == "index" ]]; then
-        extra_args+=("-F" "index")
-    else
-        extra_args+=("-F" "plain")
-    fi
-    exec noctalia-dmenu "${extra_args[@]}"
+    exec noctalia dmenu "${extra_args[@]}"
 fi
 
 case "$SHOW_MODE" in
@@ -147,11 +139,8 @@ for name, cmd in apps.items():
         else
             extra_args+=("-p" "drun")
         fi
-        if [[ "$ONLY_MATCH" == "false" ]]; then
-            extra_args+=("-c")
-        fi
 
-        selected=$(echo "$names" | noctalia-dmenu "${extra_args[@]}")
+        selected=$(echo "$names" | noctalia dmenu "${extra_args[@]}")
         if [[ -n "$selected" ]]; then
             exec_cmd=$(echo "$apps_list" | awk -F'\t' -v sel="$selected" '$1 == sel {print $2}')
             if [[ -n "$exec_cmd" ]]; then
@@ -184,11 +173,8 @@ for e in sorted(execs):
         else
             extra_args+=("-p" "run")
         fi
-        if [[ "$ONLY_MATCH" == "false" ]]; then
-            extra_args+=("-c")
-        fi
 
-        selected=$(echo "$execs" | noctalia-dmenu "${extra_args[@]}")
+        selected=$(echo "$execs" | noctalia dmenu "${extra_args[@]}")
         if [[ -n "$selected" ]]; then
             eval "$selected &"
         fi
@@ -212,7 +198,7 @@ for e in sorted(execs):
             extra_args+=("-p" "window")
         fi
 
-        selected=$(echo "$window_list" | noctalia-dmenu "${extra_args[@]}")
+        selected=$(echo "$window_list" | noctalia dmenu "${extra_args[@]}")
         if [[ -n "$selected" && "$selected" != "(no windows open)" ]]; then
             app_id=$(echo "$selected" | cut -d':' -f1)
             driftwm msg focus "$app_id"
@@ -258,7 +244,7 @@ for h in sorted(hosts):
             extra_args+=("-p" "ssh")
         fi
 
-        selected=$(echo "$hosts" | noctalia-dmenu "${extra_args[@]}")
+        selected=$(echo "$hosts" | noctalia dmenu "${extra_args[@]}")
         if [[ -n "$selected" ]]; then
             if command -v konsole &>/dev/null; then
                 konsole -e ssh "$selected" &
@@ -280,7 +266,7 @@ for h in sorted(hosts):
             items=$(printf "..\n"; find "$current_dir" -maxdepth 1 -mindepth 1 -printf "%y\t%P\n" 2>/dev/null | sort -t$'\t' -k2 | awk -F'\t' '{ if ($1 == "d") print $2 "/"; else print $2 }')
             extra_args=()
             extra_args+=("-p" "filebrowser: $(basename "$current_dir")")
-            selected=$(echo "$items" | noctalia-dmenu "${extra_args[@]}")
+            selected=$(echo "$items" | noctalia dmenu "${extra_args[@]}")
             if [[ -z "$selected" ]]; then
                 break
             fi
@@ -326,7 +312,7 @@ for b in bindings:
             extra_args+=("-p" "keys")
         fi
 
-        selected=$(echo "$names" | noctalia-dmenu "${extra_args[@]}")
+        selected=$(echo "$names" | noctalia dmenu "${extra_args[@]}")
         if [[ -n "$selected" ]]; then
             action=$(echo "$keys_list" | awk -F'\t' -v sel="$selected" '$1 == sel {print $2}')
             if [[ -n "$action" ]]; then

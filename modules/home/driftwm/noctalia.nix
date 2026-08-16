@@ -17,7 +17,6 @@ with lib; let
     battery-threshold = "damian-ds7/battery-threshold";
     cat = "dotnetrob/cat";
     drive-health = "gustav0ar/drive-health";
-    eyecare = "apex077/eyecare";
     hassio = "pozzoo/hassio";
     hotspot = "cleboost/hotspot";
     lid-guard = "8bury/lid-guard";
@@ -36,7 +35,6 @@ with lib; let
     "audio-switcher"
     "cat"
     "drive-health"
-    "eyecare"
     "hassio"
     "hotspot"
     "nix-monitor"
@@ -186,6 +184,11 @@ in {
             enable_builtin_templates = false;
             enable_community_templates = false;
           };
+        };
+
+        lockscreen = {
+          blurred_desktop = true;
+          allow_empty_password = false;
         };
 
         dock = {

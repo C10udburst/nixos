@@ -50,6 +50,5 @@
 
   # Home-Manager-only modules
   git = true;
-  ulauncher = false;
   social = false;
 }

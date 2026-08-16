@@ -6,6 +6,36 @@
   ...
 }: let
   hostSettings = import ./settings.nix;
+
+  isw = pkgs.stdenv.mkDerivation rec {
+    pname = "isw";
+    version = "1.10";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/YoyPa/isw/archive/${version}.tar.gz";
+      sha256 = "6ffc707ad735a88454b77ed168de6c32aacd590499346587544c69895928a578";
+    };
+
+    nativeBuildInputs = [pkgs.makeWrapper];
+    buildInputs = [pkgs.python3];
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 isw $out/bin/isw
+      patchShebangs $out/bin/isw
+      wrapProgram $out/bin/isw \
+        --prefix PATH : ${lib.makeBinPath [pkgs.coreutils]}
+      install -Dm644 etc/isw.conf $out/etc/isw.conf
+      install -Dm644 usr/lib/systemd/system/isw@.service $out/lib/systemd/system/isw@.service
+      runHook postInstall
+    '';
+
+    postFixup = ''
+      substituteInPlace $out/lib/systemd/system/isw@.service \
+        --replace "/usr/bin/isw" "$out/bin/isw" \
+        --replace "/usr/bin/sleep" "${pkgs.coreutils}/bin/sleep"
+    '';
+  };
 in {
   imports = [
     ./hardware-configuration.nix
@@ -21,9 +51,21 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 2;
 
+  # Load ec_sys kernel module with write support for MSI fan control (isw)
+  boot.kernelModules = ["ec_sys"];
+  boot.kernelParams = ["ec_sys.write_support=1"];
+
   networking.hostName = "cloudburst-laptop";
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
+
+  environment.systemPackages = [
+    isw
+  ];
+
+  environment.etc."isw.conf".source = "${isw}/etc/isw.conf";
+
+  systemd.packages = [isw];
 
   home-manager = {
     backupFileExtension = "hm-backup";

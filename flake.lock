@@ -6,11 +6,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1786088053,
-        "narHash": "sha256-aBgz98Ib3FHYk9QIEhRQzyCxYxzf6BkV5tifS7T0IH8=",
+        "lastModified": 1786692934,
+        "narHash": "sha256-Q/EnXs2DIsnNEJUAFvciUfbIIQFplpSvQbt+TzFH72M=",
         "owner": "jacopone",
         "repo": "antigravity-nix",
-        "rev": "0972a3578715dad156713151d90eaeaa9f860eed",
+        "rev": "74a882096b8360da285b8d99d2f3bef97eb7f789",
         "type": "github"
       },
       "original": {
@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785927046,
-        "narHash": "sha256-1nmysvJ0QqfzBHUVN4qNTyR0hy3SOFuZSq08TVBOyv0=",
+        "lastModified": 1786663827,
+        "narHash": "sha256-xvLhtc30jPUlElPEUpM8niU2e/ll2vZHmG2BNEZLflg=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "0598f6dd00f96cedca5df13f1ef48771b2ce6f00",
+        "rev": "6bd2480337c9530891a07167fbd28418d0bfbe49",
         "type": "github"
       },
       "original": {
@@ -481,11 +481,11 @@
     "noctalia-community-plugins": {
       "flake": false,
       "locked": {
-        "lastModified": 1786542565,
-        "narHash": "sha256-P4zNmHMdu/SbBVoo0h1nlTCw+so12FIteTjDWmGvgB0=",
+        "lastModified": 1786801535,
+        "narHash": "sha256-rKT7LCVKVMW9lxBNlWeh/eaQIsQuUxLLs5e5/oU73wM=",
         "owner": "noctalia-dev",
         "repo": "community-plugins",
-        "rev": "a4ae9c8ab42793af76676795f775508faa36ed6e",
+        "rev": "0732cf41b484893691f6be172045d8b8d25009c1",
         "type": "github"
       },
       "original": {
@@ -588,7 +588,7 @@
     "orcaslicer-nanashi": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-bJs8i84/oaLbDBRM0o6YUsBGcDdS2uOeRM/BoiTPlRI=",
+        "narHash": "sha256-lx54saCk0/AV4U2rJ21Gck1eBMoagDep8PbXqqy2olA=",
         "type": "file",
         "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       },
@@ -758,16 +758,7 @@
         "ranger-devicons": "ranger-devicons",
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
-        "stylix": "stylix",
-        "ulauncher-bitwarden": "ulauncher-bitwarden",
-        "ulauncher-clipboard": "ulauncher-clipboard",
-        "ulauncher-emoji": "ulauncher-emoji",
-        "ulauncher-google-ai-mode": "ulauncher-google-ai-mode",
-        "ulauncher-homeassistant": "ulauncher-homeassistant",
-        "ulauncher-homepage": "ulauncher-homepage",
-        "ulauncher-nix": "ulauncher-nix",
-        "ulauncher-system": "ulauncher-system",
-        "ulauncher-unicode": "ulauncher-unicode"
+        "stylix": "stylix"
       }
     },
     "scrcpy-app-src": {
@@ -987,150 +978,6 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "ulauncher-bitwarden": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1715150112,
-        "narHash": "sha256-nsI1G+eoHTSaoVISBNoYmfGkC7Vvggy57UAHq3zfqGs=",
-        "owner": "kbialek",
-        "repo": "ulauncher-bitwarden",
-        "rev": "a57acb3394ba2d1aaefc743b5bff819a9eb8d619",
-        "type": "github"
-      },
-      "original": {
-        "owner": "kbialek",
-        "repo": "ulauncher-bitwarden",
-        "type": "github"
-      }
-    },
-    "ulauncher-clipboard": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1756236979,
-        "narHash": "sha256-YdubcKzeAeqSurcb0QkjrKVaeqY0MqqVZEHjcusVF+Y=",
-        "owner": "friday",
-        "repo": "ulauncher-clipboard",
-        "rev": "eeac93468259aa758cc886de64421eb83a7c6bf3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "friday",
-        "repo": "ulauncher-clipboard",
-        "type": "github"
-      }
-    },
-    "ulauncher-emoji": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1759637243,
-        "narHash": "sha256-DFOm8R5gP6rfvzYvGJAaBTRa6GGd1fyP+RShNR44aPA=",
-        "owner": "ulauncher",
-        "repo": "ulauncher-emoji",
-        "rev": "195d167ea0cfdbb2169906b5acaac8097db84767",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ulauncher",
-        "repo": "ulauncher-emoji",
-        "type": "github"
-      }
-    },
-    "ulauncher-google-ai-mode": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1757323572,
-        "narHash": "sha256-HPiPbhvwbydWppS6q/n1SELarb70wyxbEXt2OO/Frqc=",
-        "owner": "khurrambhutto",
-        "repo": "ulauncher-google-ai-mode",
-        "rev": "a5543af5117b2a20123c8e739ba08a4fbf51f0ce",
-        "type": "github"
-      },
-      "original": {
-        "owner": "khurrambhutto",
-        "repo": "ulauncher-google-ai-mode",
-        "type": "github"
-      }
-    },
-    "ulauncher-homeassistant": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1759681828,
-        "narHash": "sha256-kNkiaWynKjuls7o781Oz2aemBUVU+GUsennlypT7Qf4=",
-        "owner": "qcasey",
-        "repo": "ulauncher-homeassistant",
-        "rev": "c95900ca46737f93e55844007a685ddb50bb6f1b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "qcasey",
-        "repo": "ulauncher-homeassistant",
-        "type": "github"
-      }
-    },
-    "ulauncher-homepage": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1767559273,
-        "narHash": "sha256-fZ3rn64mLRs+Z62x+J3SKc5xOGD7zGbYohVp9r68C8c=",
-        "owner": "pucodev",
-        "repo": "ulauncher-homepage",
-        "rev": "2a0b949f947b3ed6e7abecd28b1f2b63883e3629",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pucodev",
-        "repo": "ulauncher-homepage",
-        "type": "github"
-      }
-    },
-    "ulauncher-nix": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1777458494,
-        "narHash": "sha256-aRf5dFpMjQJHLxrcFfXyabThX4hYRPm9Nmg9QsYO7Xs=",
-        "owner": "daste745",
-        "repo": "ulauncher-nix",
-        "rev": "7147fc103707245bbe2733733e4d5274835a0d0e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "daste745",
-        "repo": "ulauncher-nix",
-        "type": "github"
-      }
-    },
-    "ulauncher-system": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1699980800,
-        "narHash": "sha256-joaR6B84XTSOoZ/YXFF0UkSHEECVXI3yRtx2M0DrzkU=",
-        "owner": "iboyperson",
-        "repo": "ulauncher-system",
-        "rev": "7dedd992709fa2297735cddf852404144d4da47c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "iboyperson",
-        "repo": "ulauncher-system",
-        "type": "github"
-      }
-    },
-    "ulauncher-unicode": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1562828011,
-        "narHash": "sha256-g1uY6YUNUkxyMEqBAwW4p+Uevs7uj3VPX2baDPst3ro=",
-        "owner": "zensoup",
-        "repo": "ulauncher-unicode",
-        "rev": "0ad36c00a888e687b4bfbf76f266f1000040b337",
-        "type": "github"
-      },
-      "original": {
-        "owner": "zensoup",
-        "repo": "ulauncher-unicode",
         "type": "github"
       }
     }
