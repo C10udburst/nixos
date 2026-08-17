@@ -173,7 +173,7 @@
     '';
   };
 in {
-  config = {
+  config = lib.mkIf (cfg.vscode.enable or true) {
     stylix.targets.vscode.enable = true;
 
     programs.vscode = {

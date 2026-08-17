@@ -3,6 +3,9 @@ autostart = [
 {% for cmd in extracmds %}
   "{{ cmd }}",
 {% endfor %}
+{% if touchscreen %}
+  "auto-rotate",
+{% endif %}
   "while true; do noctalia; sleep 1; done"
 ]
 window_placement = "auto"
@@ -66,7 +69,12 @@ fit_padding = 24.0
 [background]
 type = "shader"
 path = "~/.config/driftwm/background.glsl"
-animate_fps = 24
+animate_fps = {% if slow %}15{% else %}24{% endif %}
+
+{% if slow %}
+[effects]
+blur_radius = 0
+{% endif %}
 
 [decorations]
 title_bar_height = 30
@@ -141,3 +149,13 @@ decoration = "server"
 app_id = "waydroid.*"
 decoration = "server"
 
+{% if touchscreen %}
+[[window_rules]]
+app_id = "wvkbd"
+pinned_to_screen = true
+{% endif %}
+
+[input.touch]
+enable = true
+
+{{ extra_config }}

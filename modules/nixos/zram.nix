@@ -12,21 +12,29 @@ in {
   config = lib.mkIf cfg.enable {
     zramSwap = {
       enable = true;
-      memoryPercent = 25;
-      priority = 100;
+      memoryPercent = lib.mkDefault (
+        if config.hostSettings.slow or false
+        then 100
+        else 50
+      );
+      priority = lib.mkDefault 100;
     };
 
     swapDevices = [
       {
         device = "/var/swapfile";
-        size = 8192; # Rozmiar w megabajtach (8 GB)
-        priority = 10; # Niższy priorytet - używany dopiero po zapełnieniu ZRAM
+        size = 8192;
+        priority = 10;
       }
     ];
 
     boot.kernel.sysctl = {
-      "vm.swappiness" = 150;
-      "vm.watermark_boost_factor" = 0; # Opcjonalne: zapobiega nagłemu zrzucaniu pamięci na zram
+      "vm.swappiness" = lib.mkDefault (
+        if config.hostSettings.slow or false
+        then 180
+        else 150
+      );
+      "vm.watermark_boost_factor" = 0;
     };
   };
 }

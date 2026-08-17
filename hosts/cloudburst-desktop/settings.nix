@@ -4,6 +4,8 @@
 
   sambaPath = "/mnt/dane";
   mobile = false;
+  touchscreen = false;
+  slow = false;
 
   # Modules to enable across NixOS and Home Manager
   driftwm = {
@@ -14,6 +16,7 @@
     ];
   };
   jetbrains = true;
+  vscode = true;
   llm = true;
   plasma = true;
   shell-undo = true;

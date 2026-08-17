@@ -21,6 +21,19 @@
   www = pkgs.writeScriptBin "www" (builtins.readFile ./www.py);
   icat = pkgs.writeShellScriptBin "icat" (builtins.readFile ./icat.sh);
 
+  auto-rotate = pkgs.writeShellApplication {
+    name = "auto-rotate";
+    runtimeInputs = [
+      pkgs.wlr-randr
+      pkgs.iio-sensor-proxy
+      pkgs.gnugrep
+      pkgs.gawk
+      pkgs.systemd
+      pkgs.coreutils
+    ];
+    text = builtins.readFile ./auto-rotate.sh;
+  };
+
   desktop-kickoff = pkgs.writeShellScriptBin "desktop-kickoff" (builtins.readFile ./desktop-kickoff.sh);
   desktop-kickoff-launcher = pkgs.makeDesktopItem {
     name = "desktop-kickoff";
@@ -34,9 +47,12 @@ in {
     enable = lib.mkEnableOption "Enable custom scripts module";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = {
     environment.systemPackages =
       [
+        auto-rotate
+      ]
+      ++ lib.optionals cfg.enable [
         gh-origin-mod
         datauri
         serial

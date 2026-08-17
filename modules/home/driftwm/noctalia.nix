@@ -5,12 +5,17 @@
   inputs,
   ...
 }:
-with lib; let
+with lib;
+let
   mobile = config.hostSettings.mobile or false;
+  touchscreen = config.hostSettings.touchscreen or false;
+  slow = config.hostSettings.slow or false;
   hasDocker = config.hostSettings.podman or false;
   hasTailscale = config.hostSettings.tailscale or false;
   hostname = config.networking.hostName or "cloudburst";
   colors = config.lib.stylix.colors.withHashtag;
+  stylixColors = config.lib.stylix.colors;
+  wvkbdCmd = "${pkgs.wvkbd}/bin/wvkbd-mobintl -L 240 --bg ${stylixColors.base00} --fg ${stylixColors.base01} --fg-sp ${stylixColors.base02} --press ${stylixColors.base0D} --press-sp ${stylixColors.base0E} --text ${stylixColors.base05} --text-sp ${stylixColors.base07}";
 
   pluginMap = {
     audio-switcher = "blackbartblues/audio-switcher";
@@ -19,7 +24,6 @@ with lib; let
     driftwm = "cloudburst/driftwm";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
-    hotspot = "cleboost/hotspot";
     lid-guard = "8bury/lid-guard";
     mini-docker = "8bury/mini-docker";
     nix-monitor = "avivbintangaringga/nix-monitor";
@@ -32,13 +36,22 @@ with lib; let
     web-launcher = "yocraft/web-launcher";
   };
 
-  basePluginNames = [
+  disabledSlowPlugins = [
+    "udiskie"
+    "procmon"
+    "portctl"
+    "drive-health"
+    "nix-monitor"
+    "screen-toolkit"
+    "lid-guard"
+  ];
+
+  rawBasePluginNames = [
     "audio-switcher"
     "cat"
     "driftwm"
     "drive-health"
     "hassio"
-    "hotspot"
     "nix-monitor"
     "phone-connect"
     "portctl"
@@ -48,31 +61,37 @@ with lib; let
     "web-launcher"
   ];
 
+  basePluginNames = filter (name: !(slow && elem name disabledSlowPlugins)) rawBasePluginNames;
+
   batteryPluginNames = optionals mobile [
     "battery-threshold"
     "lid-guard"
   ];
 
-  dockerPluginNames = optionals hasDocker ["mini-docker"];
-  tailscalePluginNames = optionals hasTailscale ["tailscale"];
+  dockerPluginNames = optionals (hasDocker && !slow) [ "mini-docker" ];
+  tailscalePluginNames = optionals hasTailscale [ "tailscale" ];
 
   selectedPluginNames =
     basePluginNames ++ batteryPluginNames ++ dockerPluginNames ++ tailscalePluginNames;
   enabledPluginIds = map (name: pluginMap.${name}) selectedPluginNames;
-in {
+in
+{
   imports = [
     inputs.noctalia.homeModules.default
   ];
 
   config = {
-    home.packages = with pkgs; [
-      udiskie
-      smartmontools
-      ddcutil
-      linux-wifi-hotspot
-      wl-screenrec
-      tesseract
-    ];
+    home.packages =
+      with pkgs;
+      [
+        ddcutil
+        wl-screenrec
+        tesseract
+      ]
+      ++ (optionals (!slow) [
+        udiskie
+        smartmontools
+      ]);
 
     xdg.configFile."noctalia/palettes/Stylix.json".text = builtins.toJSON {
       dark = {
@@ -204,13 +223,14 @@ in {
 
         idle = {
           behavior_order =
-            if mobile
-            then [
-              "lock"
-              "screen-off"
-              "suspend"
-            ]
-            else ["screen-off"];
+            if mobile then
+              [
+                "lock"
+                "screen-off"
+                "suspend"
+              ]
+            else
+              [ "screen-off" ];
           behavior = {
             screen-off.enabled = true;
             lock.enabled = mobile;
@@ -245,17 +265,17 @@ in {
           sidebar = "full";
           calendar.show_week_numbers = true;
           shortcuts = [
-            {type = "wifi";}
-            {type = "bluetooth";}
-            {type = "caffeine";}
-            {type = "nightlight";}
-            {type = "mic_mute";}
-            {type = "notification";}
+            { type = "wifi"; }
+            { type = "bluetooth"; }
+            { type = "caffeine"; }
+            { type = "nightlight"; }
+            { type = "mic_mute"; }
+            { type = "notification"; }
           ];
         };
 
         bar = {
-          order = ["main"];
+          order = [ "main" ];
           main = {
             radius = 24;
             background_opacity = 0.75;
@@ -267,125 +287,130 @@ in {
               "launcher"
               "clock"
               "weather"
-              "group:sysmon_group"
+            ]
+            ++ optionals (!slow) [ "group:sysmon_group" ]
+            ++ [
               "group:media_group"
               "hassio_status"
             ];
             center = [
               "group:window_session"
+            ]
+            ++ optionals touchscreen [ "wvkbd_toggle" ]
+            ++ [
               "lock_keys"
               "active_window"
               "clipboard"
               "group:notifications_group"
             ];
-            end =
-              [
-                "tray"
-                "group:storage_privacy"
-              ]
-              ++ optionals mobile ["group:battery_group"]
-              ++ [
-                "group:network_group"
-                "group:system_controls"
-                "control-center"
-              ];
+            end = [
+              "tray"
+              "group:storage_privacy"
+            ]
+            ++ optionals mobile [ "group:battery_group" ]
+            ++ [
+              "group:network_group"
+              "group:system_controls"
+              "control-center"
+            ];
 
-            capsule_group =
-              [
-                {
-                  id = "system_controls";
-                  accordion = false;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members = [
-                    "brightness"
-                    "volume"
-                    "bluetooth"
-                  ];
-                }
-                {
-                  id = "network_group";
-                  accordion = true;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members =
-                    [
-                      "network"
-                    ]
-                    ++ (optionals hasTailscale ["tailscale_status"])
-                    ++ [
-                      "hotspot_toggle"
-                    ];
-                }
-                {
-                  id = "storage_privacy";
-                  accordion = true;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members = [
-                    "privacy"
-                    "udiskie_status"
-                    "drive_summary"
-                  ];
-                }
-                {
-                  id = "window_session";
-                  accordion = true;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members = [
-                    "driftwm"
-                    "screen_toolkit"
-                    "session"
-                  ];
-                }
-                {
-                  id = "media_group";
-                  accordion = true;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members = [
-                    "audio_visualizer"
-                    "media"
-                  ];
-                }
-                {
-                  id = "notifications_group";
-                  accordion = true;
-                  accordion_direction = "start";
-                  enabled = true;
-                  members = [
-                    "notifications"
-                    "nix-monitor"
-                    "phone_bar"
-                  ];
-                }
-                {
-                  id = "sysmon_group";
-                  accordion = true;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members =
-                    [
-                      "cat_widget"
-                      "procmon_widget"
-                      "portctl_indicator"
-                    ]
-                    ++ optionals hasDocker ["mini-docker"];
-                }
-              ]
-              ++ optionals mobile [
-                {
-                  id = "battery_group";
-                  accordion = true;
-                  accordion_direction = "end";
-                  enabled = true;
-                  members = [
-                    "battery"
-                    "battery-threshold"
-                  ];
-                }
-              ];
+            capsule_group = [
+              {
+                id = "system_controls";
+                accordion = false;
+                accordion_direction = "end";
+                enabled = true;
+                members = [
+                  "brightness"
+                  "volume"
+                  "bluetooth"
+                ];
+              }
+              {
+                id = "network_group";
+                accordion = true;
+                accordion_direction = "end";
+                enabled = true;
+                members = [
+                  "network"
+                ]
+                ++ (optionals hasTailscale [ "tailscale_status" ]);
+              }
+              {
+                id = "storage_privacy";
+                accordion = true;
+                accordion_direction = "end";
+                enabled = true;
+                members = [
+                  "privacy"
+                ]
+                ++ (optionals (!slow) [
+                  "udiskie_status"
+                  "drive_summary"
+                ]);
+              }
+              {
+                id = "window_session";
+                accordion = true;
+                accordion_direction = "end";
+                enabled = true;
+                members = [
+                  "driftwm"
+                ]
+                ++ (optionals (!slow) [ "screen_toolkit" ])
+                ++ [
+                  "session"
+                ];
+              }
+              {
+                id = "media_group";
+                accordion = true;
+                accordion_direction = "end";
+                enabled = true;
+                members = (optionals (!slow) [ "audio_visualizer" ]) ++ [
+                  "media"
+                ];
+              }
+              {
+                id = "notifications_group";
+                accordion = true;
+                accordion_direction = "start";
+                enabled = true;
+                members = [
+                  "notifications"
+                ]
+                ++ (optionals (!slow) [ "nix-monitor" ])
+                ++ [
+                  "phone_bar"
+                ];
+              }
+              {
+                id = "sysmon_group";
+                accordion = true;
+                accordion_direction = "end";
+                enabled = !slow;
+                members = [
+                  "cat_widget"
+                ]
+                ++ (optionals (!slow) [
+                  "procmon_widget"
+                  "portctl_indicator"
+                ])
+                ++ optionals (hasDocker && !slow) [ "mini-docker" ];
+              }
+            ]
+            ++ optionals mobile [
+              {
+                id = "battery_group";
+                accordion = true;
+                accordion_direction = "end";
+                enabled = true;
+                members = [
+                  "battery"
+                  "battery-threshold"
+                ];
+              }
+            ];
           };
         };
 
@@ -409,7 +434,8 @@ in {
           ];
         };
 
-        plugin_settings = with pluginMap;
+        plugin_settings =
+          with pluginMap;
           {
             "${screen-toolkit}" = {
               panel_placement = "attached";
@@ -424,9 +450,6 @@ in {
               branch = "nixos-${lib.trivial.release}";
               show_update_available_notification = false;
               update_command = "~/nixos/upgrade";
-            };
-            "${hotspot}" = {
-              ssid = hostname;
             };
             "${drive-health}".drives_placement = "attached";
             "${phone-connect}".details_placement = "floating";
@@ -447,7 +470,8 @@ in {
             "${tailscale}".manager_placement = "attached";
           };
 
-        widget = with pluginMap;
+        widget =
+          with pluginMap;
           {
             audio_visualizer.mirrored = false;
             clock = {
@@ -485,7 +509,6 @@ in {
             udiskie_status.type = "${udiskie}:status";
             hassio_status.type = "${hassio}:status";
             drive_summary.type = "${drive-health}:summary";
-            hotspot_toggle.type = "${hotspot}:toggle";
             screen_toolkit.type = "${screen-toolkit}:widget";
             procmon_widget.type = "${procmon}:widget";
           }
@@ -498,6 +521,14 @@ in {
           }
           // optionalAttrs hasTailscale {
             tailscale_status.type = "${tailscale}:status";
+          }
+          // optionalAttrs touchscreen {
+            wvkbd_toggle = {
+              type = "custom_button";
+              glyph = "keyboard";
+              tooltip = "On-Screen Keyboard";
+              command = "pkill wvkbd-mobintl || ${wvkbdCmd}";
+            };
           };
       };
     };

@@ -13,11 +13,14 @@ in {
   config = lib.mkIf cfg.enable {
     programs.fuse.userAllowOther = true;
 
-    environment.systemPackages = with pkgs; [
-      cifs-utils
-      adbfs-rootless
-      sshfs
-    ];
+    environment.systemPackages = with pkgs;
+      [
+        cifs-utils
+        sshfs
+      ]
+      ++ lib.optionals config.systemSettings.android.enable [
+        adbfs-rootless
+      ];
 
     # Mountpoint for SMB brix0/data
     fileSystems."/mnt/brix0" = {

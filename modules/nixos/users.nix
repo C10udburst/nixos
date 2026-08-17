@@ -50,7 +50,12 @@ in {
           then ["wireshark"]
           else []
         )
-        ++ ["video" "audio" "render" "i2c"];
+        ++ [
+          "video"
+          "audio"
+          "render"
+          "i2c"
+        ];
       packages = with pkgs; [
         kdePackages.kate
       ];

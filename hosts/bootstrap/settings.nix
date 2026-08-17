@@ -4,6 +4,8 @@
 
   sambaPath = "";
   mobile = false;
+  touchscreen = false;
+  slow = false;
 
   # Modules to enable across NixOS and Home Manager
   driftwm = {
@@ -11,6 +13,7 @@
     extracmds = [];
   };
   jetbrains = false;
+  vscode = false;
   llm = false;
   plasma = true;
   shell-undo = false;

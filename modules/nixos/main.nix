@@ -4,6 +4,8 @@
   ...
 }: let
 in {
+  documentation.nixos.enable = false;
+
   hardware.i2c.enable = true;
   services.udev.extraRules = ''
     KERNEL=="cec*", SUBSYSTEM=="cec", MODE="0660", GROUP="video"

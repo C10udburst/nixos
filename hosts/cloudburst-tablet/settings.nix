@@ -1,22 +1,23 @@
 {
   username = "cloudburst";
-  adminUsers = ["cloudburst"];
+  adminUsers = [ "cloudburst" ];
 
   sambaPath = "";
   mobile = true;
-  touchscreen = false;
-  slow = false;
+  touchscreen = true;
+  slow = true;
 
   # Modules to enable across NixOS and Home Manager
   driftwm = {
     enable = true;
-    extracmds = [];
+    extracmds = [ ];
   };
   jetbrains = false;
-  vscode = true;
-  llm = true;
-  plasma = true;
-  shell-undo = true;
+  vscode = false;
+  llm = false;
+  plasma = false;
+  shell-undo = false;
+
   nushell = {
     enable = true;
     default = "term";
@@ -24,36 +25,32 @@
 
   # NixOS-only modules
   android = {
-    enable = true;
+    enable = false;
     dev = false;
   };
-  appimage = true;
+  appimage = false;
   brave = true;
   editors = false;
-  nvidia = true;
   fuse = true;
   greetd = true;
-  java = true;
+  java = false;
   kvm = false;
   latex = false;
-  nettools = true;
+  nettools = false;
   obs = false;
-  office = true;
+  office = false;
   openssh = true;
-  packages = true;
+  packages = false;
   pipewire = true;
   podman = false;
-  programming = {
-    enable = true;
-  };
-  python = true;
-  scripts = true;
+  programming = false;
+  python = false;
+  scripts = false;
   tailscale = true;
-  peerix = true;
+  peerix = false;
   threed = false;
   typst = false;
-  utils = true;
-  usbip = true;
+  utils = false;
   waydroid = false;
   waypipe = true;
   weston-rdp = false;
@@ -61,5 +58,5 @@
 
   # Home-Manager-only modules
   git = true;
-  social = true;
+  social = false;
 }

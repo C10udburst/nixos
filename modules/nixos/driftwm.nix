@@ -15,26 +15,30 @@ in {
     systemd.packages = [
       pkgs.driftwm
     ];
-    environment.systemPackages = [
-      pkgs.driftwm
-      pkgs.grim
-      pkgs.slurp
-      pkgs.wlroots
-      pkgs.wlr-randr
-      pkgs.wl-clipboard
-      pkgs.playerctl
-      pkgs.pamixer
-      pkgs.kdePackages.dolphin
-      pkgs.kdePackages.konsole
-      pkgs.kdePackages.plasma-systemmonitor
-      pkgs.xwayland-satellite
+    environment.systemPackages =
+      [
+        pkgs.driftwm
+        pkgs.grim
+        pkgs.slurp
+        pkgs.wlroots
+        pkgs.wlr-randr
+        pkgs.wl-clipboard
+        pkgs.playerctl
+        pkgs.pamixer
+        pkgs.kdePackages.dolphin
+        pkgs.kdePackages.konsole
+        pkgs.kdePackages.plasma-systemmonitor
+        pkgs.xwayland-satellite
 
-      # Qt / SVG icon support
-      pkgs.libsForQt5.qtsvg
-      pkgs.kdePackages.qtsvg
-      pkgs.libsForQt5.qt5ct
-      pkgs.kdePackages.qt6ct
-    ];
+        # Qt / SVG icon support
+        pkgs.libsForQt5.qtsvg
+        pkgs.kdePackages.qtsvg
+        pkgs.libsForQt5.qt5ct
+        pkgs.kdePackages.qt6ct
+      ]
+      ++ lib.optionals (config.hostSettings.touchscreen or false) [
+        pkgs.wvkbd
+      ];
 
     security.pam.services.swaylock = lib.mkDefault {};
     services.graphical-desktop.enable = lib.mkDefault true;

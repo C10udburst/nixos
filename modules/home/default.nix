@@ -37,7 +37,11 @@
         plasma.enable = lib.mkOption {type = lib.types.bool;};
         llm.enable = lib.mkOption {type = lib.types.bool;};
         shell.enable = lib.mkOption {type = lib.types.bool;};
-        shell-undo.enable = lib.mkOption {
+        touchscreen = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
+        slow = lib.mkOption {
           type = lib.types.bool;
           default = false;
         };
@@ -97,6 +101,11 @@
           default = {};
         };
         social.enable = lib.mkOption {type = lib.types.bool;};
+        vscode.enable = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Enable VS Code editor";
+        };
       };
     };
     default = {};
@@ -107,6 +116,11 @@
     homeSettings = {
       user.username = lib.mkDefault (config.hostSettings.username or "cloudburst");
       git.enable = lib.mkDefault (config.hostSettings.git or false);
+      vscode.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.vscode or true)
+        then config.hostSettings.vscode.enable or true
+        else config.hostSettings.vscode or true
+      );
       jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
       konsole.enable = lib.mkDefault (
         (config.hostSettings.plasma or false)
@@ -128,7 +142,14 @@
         then config.hostSettings.driftwm.extracmds or []
         else []
       );
+      driftwm.extraConfig = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.driftwm or false)
+        then config.hostSettings.driftwm.extraConfig or ""
+        else ""
+      );
       shell.enable = lib.mkDefault true;
+      touchscreen = lib.mkDefault (config.hostSettings.touchscreen or false);
+      slow = lib.mkDefault (config.hostSettings.slow or false);
       shell-undo.enable = lib.mkDefault (config.hostSettings.shell-undo or false);
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
       programming.enable = lib.mkDefault (

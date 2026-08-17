@@ -58,6 +58,8 @@ with lib; let
     '';
   };
 
+  isSlow = config.homeSettings.slow or false;
+
   # 1. Haruna (movies, audio) - parse and filter for video/audio
   harunaMimes = filterAttrs (name: value: hasPrefix "video/" name || hasPrefix "audio/" name) (associatePackage pkgs.haruna);
 
@@ -65,7 +67,10 @@ with lib; let
   nomacsMimes = filterAttrs (name: value: hasPrefix "image/" name) (associatePackage pkgs.nomacs);
 
   # 3. Mayo (CAD formats) - parse all MIME types from custom desktop file
-  mayoMimes = associatePackage mayoCustom;
+  mayoMimes =
+    if !isSlow
+    then (associatePackage mayoCustom)
+    else {};
 
   # 4. Brave browser default types
   braveMimes = {
@@ -135,16 +140,18 @@ with lib; let
   ) (associatePackage pkgs.kdePackages.okular);
 
   # Merge all defaults (with VSCode and others added as secondary/primary accordingly)
-  mergedDefaults = foldl' recursiveUpdate {} [
-    okularMimes
-    harunaMimes
-    nomacsMimes
-    mayoMimes
-    braveMimes
-    dolphinMimes
-    vscodeMimes
-    kdeConnectMimes
-  ];
+  mergedDefaults = foldl' recursiveUpdate {} (
+    [
+      okularMimes
+      harunaMimes
+      nomacsMimes
+      braveMimes
+      dolphinMimes
+      kdeConnectMimes
+    ]
+    ++ lib.optionals (!isSlow) [mayoMimes]
+    ++ lib.optionals (config.homeSettings.vscode.enable or true) [vscodeMimes]
+  );
 in {
   options.homeSettings.associations = {
     enable = mkOption {
@@ -156,11 +163,12 @@ in {
 
   config = mkIf cfg.enable {
     # Install requested packages
-    home.packages = [
-      pkgs.nomacs
-      mayoCustom
-      pkgs.kdePackages.okular
-    ];
+    home.packages =
+      [
+        pkgs.nomacs
+        pkgs.kdePackages.okular
+      ]
+      ++ lib.optionals (!isSlow) [mayoCustom];
 
     # Ensure STEP files are recognized as model/step instead of text/plain
     home.file.".local/share/mime/packages/step.xml".text = ''
@@ -200,7 +208,7 @@ in {
       defaultApplications = mergedDefaults;
 
       # Setup VSCode as a secondary file browser option for Dolphin
-      associations.added = {
+      associations.added = lib.optionalAttrs (config.homeSettings.vscode.enable or true) {
         "inode/directory" = ["code.desktop"];
       };
     };

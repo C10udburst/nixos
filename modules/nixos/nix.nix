@@ -19,6 +19,7 @@
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.trusted-users = ["root" "@wheel"];
 
   nix.settings.extra-substituters = [
     "https://nix-community.cachix.org"
@@ -38,8 +39,19 @@
 
   nix.gc = {
     automatic = true;
+    dates = lib.mkDefault (
+      if config.hostSettings.slow or false
+      then "daily"
+      else "weekly"
+    );
+    options = lib.mkDefault (
+      if config.hostSettings.slow or false
+      then "--delete-older-than 3d"
+      else "--delete-older-than 7d"
+    );
   };
 
-  nix.optimise.automatic = false;
+  nix.optimise.automatic = lib.mkDefault (config.hostSettings.slow or false);
+  nix.settings.auto-optimise-store = lib.mkDefault (config.hostSettings.slow or false);
   nix.settings.warn-dirty = false;
 }
