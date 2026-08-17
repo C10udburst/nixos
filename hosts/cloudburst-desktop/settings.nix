@@ -34,7 +34,9 @@
   brave = true;
   editors = true;
   fuse = true;
-  greetd = true;
+  greetd = {
+    autologin = false;
+  };
   java = true;
   kvm = true;
   latex = true;

@@ -87,7 +87,22 @@
       );
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
-      greetd.enable = lib.mkDefault (config.hostSettings.greetd or false);
+      greetd.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.greetd or false) then
+          config.hostSettings.greetd.enable or true
+        else if (config.hostSettings ? greetd) then
+          true
+        else
+          false
+      );
+      greetd.autologin = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.greetd or false) then
+          config.hostSettings.greetd.autologin or false
+        else if builtins.isBool (config.hostSettings.greetd or false) then
+          config.hostSettings.greetd
+        else
+          false
+      );
       driftwm.enable = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.driftwm or false) then
           config.hostSettings.driftwm.enable or false

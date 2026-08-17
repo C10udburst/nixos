@@ -7,6 +7,22 @@
 let
   cfg = config.systemSettings.greetd;
 
+  defaultUser =
+    if config.hostSettings ? username then
+      config.hostSettings.username
+    else if (config.systemSettings.users or [ ]) != [ ] then
+      builtins.head config.systemSettings.users
+    else
+      "cloudburst";
+
+  autologinCommand =
+    if config.systemSettings.driftwm.enable or false then
+      "${pkgs.driftwm}/bin/driftwm-session"
+    else if config.systemSettings.plasma.enable or false then
+      "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland"
+    else
+      "${pkgs.driftwm}/bin/driftwm-session";
+
   westonIni = pkgs.writeText "weston.ini" ''
     [core]
     shell=kiosk-shell.so
@@ -25,7 +41,12 @@ let
 in
 {
   options.systemSettings.greetd = {
-    enable = lib.mkEnableOption "Enable greetd with ReGreet display manager";
+    enable = lib.mkEnableOption "Enable greetd display manager";
+    autologin = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable autologin to default session (driftwm or plasma)";
+    };
   };
 
   config = lib.mkMerge [
@@ -33,10 +54,17 @@ in
       services.greetd = {
         enable = true;
         settings = {
-          default_session = {
-            command = lib.mkForce "${pkgs.coreutils}/bin/env GSK_RENDERER=ngl ${pkgs.weston}/bin/weston --config=${westonIni} -- ${greetdSessionScript}";
-            user = "greeter";
-          };
+          default_session =
+            if cfg.autologin then
+              {
+                command = autologinCommand;
+                user = defaultUser;
+              }
+            else
+              {
+                command = lib.mkForce "${pkgs.coreutils}/bin/env GSK_RENDERER=ngl ${pkgs.weston}/bin/weston --config=${westonIni} -- ${greetdSessionScript}";
+                user = "greeter";
+              };
         };
       };
 
@@ -46,7 +74,7 @@ in
       };
 
       programs.regreet = {
-        enable = true;
+        enable = !cfg.autologin;
         settings = {
           widget.clock = {
             format = "%a %H:%M";
@@ -63,12 +91,6 @@ in
 
       systemd.services.greetd.environment = {
         GSK_RENDERER = "ngl";
-      };
-    })
-    (lib.mkIf (!cfg.enable) {
-      services.displayManager.sddm = {
-        enable = true;
-        wayland.enable = true;
       };
     })
   ];

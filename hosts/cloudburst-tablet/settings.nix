@@ -32,7 +32,9 @@
   brave = true;
   editors = false;
   fuse = true;
-  greetd = true;
+  greetd = {
+    autologin = true;
+  };
   java = false;
   kvm = false;
   latex = false;

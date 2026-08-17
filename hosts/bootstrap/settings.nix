@@ -27,7 +27,9 @@
   brave = true;
   editors = false;
   fuse = false;
-  greetd = true;
+  greetd = {
+    autologin = false;
+  };
   java = false;
   kvm = false;
   latex = false;

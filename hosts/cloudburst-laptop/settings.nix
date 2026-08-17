@@ -32,7 +32,9 @@
   editors = false;
   nvidia = true;
   fuse = true;
-  greetd = true;
+  greetd = {
+    autologin = false;
+  };
   java = true;
   kvm = false;
   latex = false;

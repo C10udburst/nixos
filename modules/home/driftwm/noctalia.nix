@@ -15,7 +15,7 @@ let
   hostname = config.networking.hostName or "cloudburst";
   colors = config.lib.stylix.colors.withHashtag;
   stylixColors = config.lib.stylix.colors;
-  wvkbdCmd = "${pkgs.wvkbd}/bin/wvkbd-mobintl -L 240 --bg ${stylixColors.base00} --fg ${stylixColors.base01} --fg-sp ${stylixColors.base02} --press ${stylixColors.base0D} --press-sp ${stylixColors.base0E} --text ${stylixColors.base05} --text-sp ${stylixColors.base07}";
+  wvkbdCmd = "${pkgs.wvkbd}/bin/wvkbd-mobintl -L 280 -H 300 -R 16 -l fullwide --landscape-layers fullwide --bg ${stylixColors.base00} --fg ${stylixColors.base01} --fg-sp ${stylixColors.base02} --press ${stylixColors.base0D} --press-sp ${stylixColors.base0E} --text ${stylixColors.base05} --text-sp ${stylixColors.base07}";
 
   pluginMap = {
     audio-switcher = "blackbartblues/audio-switcher";
@@ -88,6 +88,9 @@ in
         wl-screenrec
         tesseract
       ]
+      ++ (optionals mobile [
+        upower
+      ])
       ++ (optionals (!slow) [
         udiskie
         smartmontools
