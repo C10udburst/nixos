@@ -42,7 +42,7 @@
   obs = false;
   office = false;
   openssh = true;
-  packages = false;
+  packages = true;
   pipewire = true;
   podman = false;
   programming = false;
