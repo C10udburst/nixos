@@ -5,8 +5,7 @@
   inputs,
   ...
 }:
-with lib;
-let
+with lib; let
   mobile = config.hostSettings.mobile or false;
   touchscreen = config.hostSettings.touchscreen or false;
   slow = config.hostSettings.slow or false;
@@ -68,21 +67,19 @@ let
     "lid-guard"
   ];
 
-  dockerPluginNames = optionals (hasDocker && !slow) [ "mini-docker" ];
-  tailscalePluginNames = optionals hasTailscale [ "tailscale" ];
+  dockerPluginNames = optionals (hasDocker && !slow) ["mini-docker"];
+  tailscalePluginNames = optionals hasTailscale ["tailscale"];
 
   selectedPluginNames =
     basePluginNames ++ batteryPluginNames ++ dockerPluginNames ++ tailscalePluginNames;
   enabledPluginIds = map (name: pluginMap.${name}) selectedPluginNames;
-in
-{
+in {
   imports = [
     inputs.noctalia.homeModules.default
   ];
 
   config = {
-    home.packages =
-      with pkgs;
+    home.packages = with pkgs;
       [
         ddcutil
         wl-screenrec
@@ -226,14 +223,13 @@ in
 
         idle = {
           behavior_order =
-            if mobile then
-              [
-                "lock"
-                "screen-off"
-                "suspend"
-              ]
-            else
-              [ "screen-off" ];
+            if mobile
+            then [
+              "lock"
+              "screen-off"
+              "suspend"
+            ]
+            else ["screen-off"];
           behavior = {
             screen-off.enabled = true;
             lock.enabled = mobile;
@@ -268,17 +264,17 @@ in
           sidebar = "full";
           calendar.show_week_numbers = true;
           shortcuts = [
-            { type = "wifi"; }
-            { type = "bluetooth"; }
-            { type = "caffeine"; }
-            { type = "nightlight"; }
-            { type = "mic_mute"; }
-            { type = "notification"; }
+            {type = "wifi";}
+            {type = "bluetooth";}
+            {type = "caffeine";}
+            {type = "nightlight";}
+            {type = "mic_mute";}
+            {type = "notification";}
           ];
         };
 
         bar = {
-          order = [ "main" ];
+          order = ["main"];
           main = {
             radius = 24;
             background_opacity = 0.75;
@@ -286,134 +282,145 @@ in
             reserve_space = false;
             thickness = 36;
 
-            start = [
-              "launcher"
-              "clock"
-              "weather"
-            ]
-            ++ optionals (!slow) [ "group:sysmon_group" ]
-            ++ [
-              "group:media_group"
-              "hassio_status"
-            ];
-            center = [
-              "group:window_session"
-            ]
-            ++ optionals touchscreen [ "wvkbd_toggle" ]
-            ++ [
-              "lock_keys"
-              "active_window"
-              "clipboard"
-              "group:notifications_group"
-            ];
-            end = [
-              "tray"
-              "group:storage_privacy"
-            ]
-            ++ optionals mobile [ "group:battery_group" ]
-            ++ [
-              "group:network_group"
-              "group:system_controls"
-              "control-center"
-            ];
+            start =
+              [
+                "launcher"
+                "clock"
+                "weather"
+              ]
+              ++ optionals (!slow) ["group:sysmon_group"]
+              ++ [
+                "group:media_group"
+                "hassio_status"
+              ];
+            center =
+              [
+                "group:window_session"
+              ]
+              ++ optionals touchscreen ["wvkbd_toggle"]
+              ++ [
+                "lock_keys"
+                "active_window"
+                "clipboard"
+                "group:notifications_group"
+              ];
+            end =
+              [
+                "tray"
+                "group:storage_privacy"
+              ]
+              ++ optionals mobile ["group:battery_group"]
+              ++ [
+                "group:network_group"
+                "group:system_controls"
+                "control-center"
+              ];
 
-            capsule_group = [
-              {
-                id = "system_controls";
-                accordion = false;
-                accordion_direction = "end";
-                enabled = true;
-                members = [
-                  "brightness"
-                  "volume"
-                  "bluetooth"
-                ];
-              }
-              {
-                id = "network_group";
-                accordion = true;
-                accordion_direction = "end";
-                enabled = true;
-                members = [
-                  "network"
-                ]
-                ++ (optionals hasTailscale [ "tailscale_status" ]);
-              }
-              {
-                id = "storage_privacy";
-                accordion = true;
-                accordion_direction = "end";
-                enabled = true;
-                members = [
-                  "privacy"
-                ]
-                ++ (optionals (!slow) [
-                  "udiskie_status"
-                  "drive_summary"
-                ]);
-              }
-              {
-                id = "window_session";
-                accordion = true;
-                accordion_direction = "end";
-                enabled = true;
-                members = [
-                  "driftwm"
-                ]
-                ++ (optionals (!slow) [ "screen_toolkit" ])
-                ++ [
-                  "session"
-                ];
-              }
-              {
-                id = "media_group";
-                accordion = true;
-                accordion_direction = "end";
-                enabled = true;
-                members = (optionals (!slow) [ "audio_visualizer" ]) ++ [
-                  "media"
-                ];
-              }
-              {
-                id = "notifications_group";
-                accordion = true;
-                accordion_direction = "start";
-                enabled = true;
-                members = [
-                  "notifications"
-                ]
-                ++ (optionals (!slow) [ "nix-monitor" ])
-                ++ [
-                  "phone_bar"
-                ];
-              }
-              {
-                id = "sysmon_group";
-                accordion = true;
-                accordion_direction = "end";
-                enabled = !slow;
-                members = [
-                  "cat_widget"
-                ]
-                ++ (optionals (!slow) [
-                  "procmon_widget"
-                  "portctl_indicator"
-                ])
-                ++ optionals (hasDocker && !slow) [ "mini-docker" ];
-              }
-            ]
-            ++ optionals mobile [
-              {
-                id = "battery_group";
-                accordion = true;
-                accordion_direction = "end";
-                enabled = true;
-                members = [
-                  "battery"
-                  "battery-threshold"
-                ];
-              }
-            ];
+            capsule_group =
+              [
+                {
+                  id = "system_controls";
+                  accordion = false;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "brightness"
+                    "volume"
+                    "bluetooth"
+                  ];
+                }
+                {
+                  id = "network_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members =
+                    [
+                      "network"
+                    ]
+                    ++ (optionals hasTailscale ["tailscale_status"]);
+                }
+                {
+                  id = "storage_privacy";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members =
+                    [
+                      "privacy"
+                    ]
+                    ++ (optionals (!slow) [
+                      "udiskie_status"
+                      "drive_summary"
+                    ]);
+                }
+                {
+                  id = "window_session";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members =
+                    [
+                      "driftwm"
+                    ]
+                    ++ (optionals (!slow) ["screen_toolkit"])
+                    ++ [
+                      "session"
+                    ];
+                }
+                {
+                  id = "media_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members =
+                    (optionals (!slow) ["audio_visualizer"])
+                    ++ [
+                      "media"
+                    ];
+                }
+                {
+                  id = "notifications_group";
+                  accordion = true;
+                  accordion_direction = "start";
+                  enabled = true;
+                  members =
+                    [
+                      "notifications"
+                    ]
+                    ++ (optionals (!slow) ["nix-monitor"])
+                    ++ [
+                      "phone_bar"
+                    ];
+                }
+                {
+                  id = "sysmon_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = !slow;
+                  members =
+                    [
+                      "cat_widget"
+                    ]
+                    ++ (optionals (!slow) [
+                      "procmon_widget"
+                      "portctl_indicator"
+                    ])
+                    ++ optionals (hasDocker && !slow) ["mini-docker"];
+                }
+              ]
+              ++ optionals mobile [
+                {
+                  id = "battery_group";
+                  accordion = true;
+                  accordion_direction = "end";
+                  enabled = true;
+                  members = [
+                    "battery"
+                    "battery-threshold"
+                  ];
+                }
+              ];
           };
         };
 
@@ -437,8 +444,7 @@ in
           ];
         };
 
-        plugin_settings =
-          with pluginMap;
+        plugin_settings = with pluginMap;
           {
             "${screen-toolkit}" = {
               panel_placement = "attached";
@@ -473,8 +479,7 @@ in
             "${tailscale}".manager_placement = "attached";
           };
 
-        widget =
-          with pluginMap;
+        widget = with pluginMap;
           {
             audio_visualizer.mirrored = false;
             clock = {

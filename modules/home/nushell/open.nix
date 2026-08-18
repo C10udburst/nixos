@@ -26,7 +26,10 @@
   in ''
     alias nu-open = open
 
-    def "open-custom" [path: any, ...rest] {
+    def --wrapped "open-custom" [path: any, ...rest] {
+        if ($rest | length) > 0 {
+            return (nu-open $path ...$rest)
+        }
         let path_str = ($path | into string)
         if ($path | path exists) {
             ${mkIfs (builtins.attrNames openMap)}
@@ -36,7 +39,7 @@
 
     def --wrapped open [path?: any, ...rest] {
         let input = $in
-        if $path == null {
+        if $path == null
             if ($input | describe) == "string" {
                 open-custom $input ...$rest
             } else {

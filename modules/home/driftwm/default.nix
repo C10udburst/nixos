@@ -4,36 +4,36 @@
   pkgs,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.homeSettings.driftwm;
 
-  renderUtils = import ../../render-template.nix { inherit pkgs config lib; };
+  renderUtils = import ../../render-template.nix {inherit pkgs config lib;};
   renderJinja2 = renderUtils.renderJinja2;
   cleanColors = renderUtils.cleanColors;
 
-  templateData = cleanColors // {
-    font = config.stylix.fonts.monospace.name or "monospace";
-    extracmds = cfg.extracmds;
-    xwayland_satellite_path = "${lib.getExe pkgs.xwayland-satellite}";
-    mobile = config.hostSettings.mobile or false;
-    touchscreen = config.hostSettings.touchscreen or false;
-    slow = config.hostSettings.slow or false;
-    extra_config = cfg.extraConfig;
-    extra_bindings = concatStringsSep "\n" (
-      flatten (
-        map (i: [
-          "\"mod+${toString i}\" = \"go-to-bookmark area-${toString i}\""
-          "\"mod+shift+${toString i}\" = \"set-bookmark area-${toString i}\""
-        ]) (range 0 9)
-      )
-    );
-  };
+  templateData =
+    cleanColors
+    // {
+      font = config.stylix.fonts.monospace.name or "monospace";
+      extracmds = cfg.extracmds;
+      xwayland_satellite_path = "${lib.getExe pkgs.xwayland-satellite}";
+      mobile = config.hostSettings.mobile or false;
+      touchscreen = config.hostSettings.touchscreen or false;
+      slow = config.hostSettings.slow or false;
+      extra_config = cfg.extraConfig;
+      extra_bindings = concatStringsSep "\n" (
+        flatten (
+          map (i: [
+            "\"mod+${toString i}\" = \"go-to-bookmark area-${toString i}\""
+            "\"mod+shift+${toString i}\" = \"set-bookmark area-${toString i}\""
+          ]) (range 0 9)
+        )
+      );
+    };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
   renderedShader = renderJinja2 "background.glsl" ./background.glsl.j2 templateData;
-in
-{
+in {
   imports = [
     ./noctalia.nix
   ];
@@ -42,7 +42,7 @@ in
     enable = mkEnableOption "driftwm";
     extracmds = mkOption {
       type = types.listOf types.str;
-      default = [ ];
+      default = [];
       description = "Extra commands to run on startup";
     };
     extraConfig = mkOption {
@@ -53,14 +53,15 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = [
-      pkgs.kdePackages.konsole
-    ]
-    ++ optionals (config.hostSettings.touchscreen or false) [
-      pkgs.wvkbd
-      pkgs.wlr-randr
-      pkgs.iio-sensor-proxy
-    ];
+    home.packages =
+      [
+        pkgs.kdePackages.konsole
+      ]
+      ++ optionals (config.hostSettings.touchscreen or false) [
+        pkgs.wvkbd
+        pkgs.wlr-randr
+        pkgs.iio-sensor-proxy
+      ];
 
     xdg.configFile = {
       "qt5ct/qt5ct.conf".text = ''

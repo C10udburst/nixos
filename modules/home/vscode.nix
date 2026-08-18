@@ -3,14 +3,13 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.homeSettings;
   isProgramming = cfg.programming.enable or false;
   isPython = cfg.python or false;
   isLatex = cfg.latex or false;
   isTypst = cfg.typst or false;
-  isArduino = (cfg.arduino or { }).enable or false;
+  isArduino = (cfg.arduino or {}).enable or false;
   isThreed = cfg.threed or false;
   isLlm = cfg.llm.enable or false;
 
@@ -48,25 +47,24 @@ let
 
   programmingExtensions = lib.optionals isProgramming (
     with exts;
-    [
-      wholroyd.jinja
-      jock.svg
-    ]
-    ++ lib.optionals (cfg.programming.rust or false) [
-      rust-lang.rust-analyzer
-    ]
-    ++ lib.optionals (cfg.programming.go or false) [
-      golang.go
-    ]
-    ++ lib.optionals (cfg.programming.kotlin or false) [
-      mathiasfrohlich.kotlin
-    ]
+      [
+        wholroyd.jinja
+        jock.svg
+      ]
+      ++ lib.optionals (cfg.programming.rust or false) [
+        rust-lang.rust-analyzer
+      ]
+      ++ lib.optionals (cfg.programming.go or false) [
+        golang.go
+      ]
+      ++ lib.optionals (cfg.programming.kotlin or false) [
+        mathiasfrohlich.kotlin
+      ]
   );
 
   # Python extensions
   pythonExtensions = lib.optionals isPython (
-    with exts;
-    [
+    with exts; [
       ms-python.python
       ms-python.vscode-pylance
       ms-python.debugpy
@@ -83,54 +81,52 @@ let
     coreExtensions
     ++ programmingExtensions
     ++ pythonExtensions
-    ++ lib.optionals isLatex [ exts.james-yu.latex-workshop ]
-    ++ lib.optionals isTypst [ exts.myriad-dreamin.tinymist ]
+    ++ lib.optionals isLatex [exts.james-yu.latex-workshop]
+    ++ lib.optionals isTypst [exts.myriad-dreamin.tinymist]
     ++ lib.optionals isArduino [
       exts.platformio.platformio-ide
       pkgs.vscode-extensions.ms-vscode.cpptools
     ]
-    ++ lib.optionals isThreed [ exts.appliedengdesign.vscode-gcode-syntax ]
-    ++ lib.optionals isLlm [ exts.kaiwood.tauren ];
+    ++ lib.optionals isThreed [exts.appliedengdesign.vscode-gcode-syntax]
+    ++ lib.optionals isLlm [exts.kaiwood.tauren];
   fhsVscode = pkgs.vscode.fhsWithPackages (
     p:
-    lib.optionals isProgramming (
-      with p;
-      [
-        cargo
-        rustc
-        rust-analyzer
+      lib.optionals isProgramming (
+        with p;
+          [
+            cargo
+            rustc
+            rust-analyzer
+          ]
+          ++ lib.optionals (cfg.programming.go or false) [
+            go
+            gopls
+          ]
+      )
+      ++ lib.optionals isPython (
+        with p; [
+          python3
+          python3Packages.ipykernel
+          black
+          isort
+        ]
+      )
+      ++ lib.optionals isTypst (
+        with p; [
+          typst
+          typstyle
+        ]
+      )
+      ++ [
+        p.nixd
+        p.nixfmt
       ]
-      ++ lib.optionals (cfg.programming.go or false) [
-        go
-        gopls
-      ]
-    )
-    ++ lib.optionals isPython (
-      with p;
-      [
-        python3
-        python3Packages.ipykernel
-        black
-        isort
-      ]
-    )
-    ++ lib.optionals isTypst (
-      with p;
-      [
-        typst
-        typstyle
-      ]
-    )
-    ++ [
-      p.nixd
-      p.nixfmt
-    ]
   );
 
   ephemeralVscode = pkgs.symlinkJoin {
     name = "code";
-    paths = [ fhsVscode ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
+    paths = [fhsVscode];
+    nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
       rm $out/bin/code
       makeWrapper ${fhsVscode}/bin/code $out/bin/code \
@@ -177,8 +173,7 @@ let
         --add-flags '--enable-features=UseOzonePlatform --ozone-platform=wayland'
     '';
   };
-in
-{
+in {
   config = lib.mkIf (cfg.vscode.enable or true) {
     stylix.targets.vscode.enable = true;
 
@@ -274,7 +269,7 @@ in
           "window.zoomLevel" = 0;
 
           # ── Colorize ──────────────────────────────────────────────────────────
-          "colorize.include" = [ "**/*" ];
+          "colorize.include" = ["**/*"];
           "colorize.decoration_type" = "background";
         };
       };

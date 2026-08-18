@@ -3,25 +3,22 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.systemSettings.greetd;
 
   defaultUser =
-    if config.hostSettings ? username then
-      config.hostSettings.username
-    else if (config.systemSettings.users or [ ]) != [ ] then
-      builtins.head config.systemSettings.users
-    else
-      "cloudburst";
+    if config.hostSettings ? username
+    then config.hostSettings.username
+    else if (config.systemSettings.users or []) != []
+    then builtins.head config.systemSettings.users
+    else "cloudburst";
 
   autologinCommand =
-    if config.systemSettings.driftwm.enable or false then
-      "${pkgs.driftwm}/bin/driftwm-session"
-    else if config.systemSettings.plasma.enable or false then
-      "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland"
-    else
-      "${pkgs.driftwm}/bin/driftwm-session";
+    if config.systemSettings.driftwm.enable or false
+    then "${pkgs.driftwm}/bin/driftwm-session"
+    else if config.systemSettings.plasma.enable or false
+    then "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland"
+    else "${pkgs.driftwm}/bin/driftwm-session";
 
   westonIni = pkgs.writeText "weston.ini" ''
     [core]
@@ -38,8 +35,7 @@ let
     ${lib.optionalString (config.systemSettings.touchscreen.enable or false) "auto-rotate &"}
     exec ${config.programs.regreet.package}/bin/regreet
   '';
-in
-{
+in {
   options.systemSettings.greetd = {
     enable = lib.mkEnableOption "Enable greetd display manager";
     autologin = lib.mkOption {
@@ -55,16 +51,15 @@ in
         enable = true;
         settings = {
           default_session =
-            if cfg.autologin then
-              {
-                command = autologinCommand;
-                user = defaultUser;
-              }
-            else
-              {
-                command = lib.mkForce "${pkgs.coreutils}/bin/env GSK_RENDERER=ngl ${pkgs.weston}/bin/weston --config=${westonIni} -- ${greetdSessionScript}";
-                user = "greeter";
-              };
+            if cfg.autologin
+            then {
+              command = autologinCommand;
+              user = defaultUser;
+            }
+            else {
+              command = lib.mkForce "${pkgs.coreutils}/bin/env GSK_RENDERER=ngl ${pkgs.weston}/bin/weston --config=${westonIni} -- ${greetdSessionScript}";
+              user = "greeter";
+            };
         };
       };
 

@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   imports = [
     ./android.nix
     ./appimage.nix
@@ -54,7 +53,7 @@
 
   options.hostSettings = lib.mkOption {
     type = lib.types.attrs;
-    default = { };
+    default = {};
     description = "Loaded host settings from settings.nix";
   };
 
@@ -66,48 +65,45 @@
   config = {
     systemSettings = {
       users = lib.mkDefault (
-        if config.hostSettings ? username then [ config.hostSettings.username ] else [ ]
+        if config.hostSettings ? username
+        then [config.hostSettings.username]
+        else []
       );
-      adminUsers = lib.mkDefault (config.hostSettings.adminUsers or [ ]);
+      adminUsers = lib.mkDefault (config.hostSettings.adminUsers or []);
 
       touchscreen.enable = lib.mkDefault (config.hostSettings.touchscreen or false);
       slow.enable = lib.mkDefault (config.hostSettings.slow or false);
 
       android.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.android or false) then
-          config.hostSettings.android.enable or false
-        else
-          config.hostSettings.android or false
+        if builtins.isAttrs (config.hostSettings.android or false)
+        then config.hostSettings.android.enable or false
+        else config.hostSettings.android or false
       );
       android.dev = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.android or false) then
-          config.hostSettings.android.dev or false
-        else
-          false
+        if builtins.isAttrs (config.hostSettings.android or false)
+        then config.hostSettings.android.dev or false
+        else false
       );
       llm.enable = lib.mkDefault (config.hostSettings.llm or false);
       plasma.enable = lib.mkDefault (config.hostSettings.plasma or false);
       greetd.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.greetd or false) then
-          config.hostSettings.greetd.enable or true
-        else if (config.hostSettings ? greetd) then
-          true
-        else
-          false
+        if builtins.isAttrs (config.hostSettings.greetd or false)
+        then config.hostSettings.greetd.enable or true
+        else if (config.hostSettings ? greetd)
+        then true
+        else false
       );
       greetd.autologin = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.greetd or false) then
-          config.hostSettings.greetd.autologin or false
-        else if builtins.isBool (config.hostSettings.greetd or false) then
-          config.hostSettings.greetd
-        else
-          false
+        if builtins.isAttrs (config.hostSettings.greetd or false)
+        then config.hostSettings.greetd.autologin or false
+        else if builtins.isBool (config.hostSettings.greetd or false)
+        then config.hostSettings.greetd
+        else false
       );
       driftwm.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.driftwm or false) then
-          config.hostSettings.driftwm.enable or false
-        else
-          config.hostSettings.driftwm or false
+        if builtins.isAttrs (config.hostSettings.driftwm or false)
+        then config.hostSettings.driftwm.enable or false
+        else config.hostSettings.driftwm or false
       );
       pipewire.enable = lib.mkDefault (config.hostSettings.pipewire or false);
       openssh.enable = lib.mkDefault (config.hostSettings.openssh or false);
@@ -116,47 +112,40 @@
       python.enable = lib.mkDefault (config.hostSettings.python or false);
 
       programming.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.programming or false) then
-          config.hostSettings.programming.enable or false
-        else
-          config.hostSettings.programming or false
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.enable or false
+        else config.hostSettings.programming or false
       );
       programming.rust = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.programming or false) then
-          config.hostSettings.programming.rust or true
-        else
-          true
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.rust or true
+        else true
       );
       programming.go = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.programming or false) then
-          config.hostSettings.programming.go or true
-        else
-          true
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.go or true
+        else true
       );
       programming.node = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.programming or false) then
-          config.hostSettings.programming.node or true
-        else
-          true
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.node or true
+        else true
       );
       programming.kotlin = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.programming or false) then
-          config.hostSettings.programming.kotlin or true
-        else
-          true
+        if builtins.isAttrs (config.hostSettings.programming or false)
+        then config.hostSettings.programming.kotlin or true
+        else true
       );
 
       arduino.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.arduino or false) then
-          config.hostSettings.arduino.enable or false
-        else
-          config.hostSettings.arduino or false
+        if builtins.isAttrs (config.hostSettings.arduino or false)
+        then config.hostSettings.arduino.enable or false
+        else config.hostSettings.arduino or false
       );
       arduino.boards = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.arduino or false) then
-          config.hostSettings.arduino.boards or [ "arduino" ]
-        else
-          [ "arduino" ]
+        if builtins.isAttrs (config.hostSettings.arduino or false)
+        then config.hostSettings.arduino.boards or ["arduino"]
+        else ["arduino"]
       );
 
       java.enable = lib.mkDefault (config.hostSettings.java or false);
@@ -165,22 +154,19 @@
       tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
       peerix.enable = lib.mkDefault (config.hostSettings.peerix or false);
       weston-rdp.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.weston-rdp or false) then
-          config.hostSettings.weston-rdp.enable or false
-        else
-          config.hostSettings.weston-rdp or false
+        if builtins.isAttrs (config.hostSettings.weston-rdp or false)
+        then config.hostSettings.weston-rdp.enable or false
+        else config.hostSettings.weston-rdp or false
       );
       weston-rdp.user = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.weston-rdp or false) then
-          config.hostSettings.weston-rdp.user or config.hostSettings.username or "cloudburst"
-        else
-          config.hostSettings.username or "cloudburst"
+        if builtins.isAttrs (config.hostSettings.weston-rdp or false)
+        then config.hostSettings.weston-rdp.user or config.hostSettings.username or "cloudburst"
+        else config.hostSettings.username or "cloudburst"
       );
       weston-rdp.windowManager = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.weston-rdp or false) then
-          config.hostSettings.weston-rdp.windowManager or "${pkgs.driftwm}/bin/driftwm"
-        else
-          "${pkgs.driftwm}/bin/driftwm"
+        if builtins.isAttrs (config.hostSettings.weston-rdp or false)
+        then config.hostSettings.weston-rdp.windowManager or "${pkgs.driftwm}/bin/driftwm"
+        else "${pkgs.driftwm}/bin/driftwm"
       );
 
       editors.enable = lib.mkDefault (config.hostSettings.editors or false);
@@ -207,16 +193,14 @@
       samba.path = lib.mkDefault (config.hostSettings.sambaPath or "");
 
       nushell.enable = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.nushell or false) then
-          config.hostSettings.nushell.enable or false
-        else
-          config.hostSettings.nushell or false
+        if builtins.isAttrs (config.hostSettings.nushell or false)
+        then config.hostSettings.nushell.enable or false
+        else config.hostSettings.nushell or false
       );
       nushell.default = lib.mkDefault (
-        if builtins.isAttrs (config.hostSettings.nushell or false) then
-          config.hostSettings.nushell.default or "none"
-        else
-          "none"
+        if builtins.isAttrs (config.hostSettings.nushell or false)
+        then config.hostSettings.nushell.default or "none"
+        else "none"
       );
     };
   };
