@@ -1,6 +1,6 @@
 {
   username = "cloudburst";
-  adminUsers = [ "cloudburst" ];
+  adminUsers = ["cloudburst"];
 
   sambaPath = "";
   mobile = true;
@@ -10,7 +10,7 @@
   # Modules to enable across NixOS and Home Manager
   driftwm = {
     enable = true;
-    extracmds = [ ];
+    extracmds = [];
   };
   jetbrains = false;
   vscode = true;

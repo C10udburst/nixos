@@ -481,11 +481,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786566000,
-        "narHash": "sha256-JOcHQWCcYsPq0bOP42UdV4f42nvlip7sh3vuxvSpEUM=",
+        "lastModified": 1787369379,
+        "narHash": "sha256-1WUdzP3Y9l95gRhn8muREP0UJu8PmvzEHmdIyfaYRac=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "cd06851db4f40ab61d219a903518a1ca03fc3db3",
+        "rev": "7fd9f7bfa9604022b9de311b30a3da0c2c4415de",
         "type": "github"
       },
       "original": {
@@ -615,18 +615,6 @@
         "owner": "Irev-Dev",
         "repo": "Round-Anything",
         "type": "github"
-      }
-    },
-    "orcaslicer-nanashi": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-lx54saCk0/AV4U2rJ21Gck1eBMoagDep8PbXqqy2olA=",
-        "type": "file",
-        "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
-      },
-      "original": {
-        "type": "file",
-        "url": "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage"
       }
     },
     "organizeer": {
@@ -781,7 +769,6 @@
         "openscad-constructive": "openscad-constructive",
         "openscad-obiscad": "openscad-obiscad",
         "openscad-round-anything": "openscad-round-anything",
-        "orcaslicer-nanashi": "orcaslicer-nanashi",
         "organizeer": "organizeer",
         "peerix": "peerix",
         "pi-agent": "pi-agent",

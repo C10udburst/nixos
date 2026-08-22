@@ -1,6 +1,6 @@
 {
   username = "cloudburst";
-  adminUsers = [ "cloudburst" ];
+  adminUsers = ["cloudburst"];
 
   sambaPath = "/mnt/dane";
   mobile = false;

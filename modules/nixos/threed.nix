@@ -2,95 +2,17 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }: let
   cfg = config.systemSettings.threed;
-
-  # Common libraries needed by graphical AppImages (Qt/GTK) on NixOS
-  appimageLibs = pkgs:
-    with pkgs; [
-      qt5.qtbase
-      qt5.qtwayland
-      libxcb
-      libxkbfile
-      libxkbcommon
-      libx11
-      libxcursor
-      libxext
-      libxfixes
-      libxi
-      libxrandr
-      libxrender
-      libxtst
-      libxcb-wm
-      libxcb-image
-      libxcb-keysyms
-      libxcb-render-util
-      libGL
-      libGLU
-      dbus
-      fontconfig
-      freetype
-      glib
-      gtk3
-      pango
-      cairo
-      atk
-      gdk-pixbuf
-      libsecret
-      libunwind
-      libusb1
-      libglvnd
-    ];
-
-  orcaslicer-nanashi = let
-    pname = "orcaslicer-nanashi";
-    version = "nightly";
-    src = inputs.orcaslicer-nanashi;
-    appimageContents = pkgs.appimageTools.extractType2 {
-      inherit pname version src;
-    };
-    desktopItem = pkgs.makeDesktopItem {
-      name = "orcaslicer-nanashi";
-      exec = "orcaslicer-nanashi";
-      icon = "orcaslicer-nanashi";
-      comment = "3D Slicer for 3D Printers";
-      desktopName = "OrcaSlicer (Nanashi)";
-      genericName = "3D Slicer";
-      categories = [
-        "3DGraphics"
-        "Education"
-      ];
-    };
-  in
-    pkgs.appimageTools.wrapType2 {
-      inherit pname version src;
-      extraPkgs = pkgs:
-        (appimageLibs pkgs)
-        ++ [
-          pkgs.webkitgtk_4_1
-          pkgs.libsoup_3
-        ];
-      extraInstallCommands = ''
-        # Copy desktop file
-        mkdir -p $out/share/applications
-        cp ${desktopItem}/share/applications/* $out/share/applications/
-
-        # Copy icon
-        mkdir -p $out/share/icons/hicolor/128x128/apps
-        find ${appimageContents} -maxdepth 1 -name "*.png" -exec cp {} $out/share/icons/hicolor/128x128/apps/orcaslicer-nanashi.png \;
-      '';
-    };
 in {
   options.systemSettings.threed = {
-    enable = lib.mkEnableOption "Enable 3D modeling and slicing tools (Blender, custom OrcaSlicer)";
+    enable = lib.mkEnableOption "Enable 3D modeling and slicing tools (Blender, OrcaSlicer, OpenSCAD, FreeCAD)";
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       blender
-      orcaslicer-nanashi # TODO: currently crashes on slicing, needs investigation
       orca-slicer
       openscad
       freecad

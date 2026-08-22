@@ -130,10 +130,6 @@
     };
 
     # ── 3D tools & OpenSCAD libraries ────────────────────────────────────────
-    orcaslicer-nanashi = {
-      url = "https://github.com/NanashiTheNameless/OrcaSlicer/releases/download/Nightly-Rolling/OrcaSlicer_Linux_AppImage_Ubuntu2404_nightly.AppImage";
-      flake = false;
-    };
 
     # OpenSCAD libraries
     openscad-bosl2 = {
