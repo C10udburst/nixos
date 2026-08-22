@@ -13,6 +13,7 @@
     ./editors.nix
     ./fonts.nix
     ./fuse.nix
+    ./gaming.nix
     ./greetd.nix
     ./java.nix
     ./jetbrains.nix
@@ -182,6 +183,7 @@
       kvm.enable = lib.mkDefault (config.hostSettings.kvm or false);
       brave.enable = lib.mkDefault (config.hostSettings.brave or false);
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
+      gaming.enable = lib.mkDefault (config.hostSettings.gaming or false);
       waydroid.enable = lib.mkDefault (config.hostSettings.waydroid or false);
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);

@@ -39,7 +39,7 @@
 
     def --wrapped open [path?: any, ...rest] {
         let input = $in
-        if $path == null
+        if $path == null {
             if ($input | describe) == "string" {
                 open-custom $input ...$rest
             } else {

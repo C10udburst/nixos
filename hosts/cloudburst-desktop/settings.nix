@@ -1,6 +1,6 @@
 {
   username = "cloudburst";
-  adminUsers = ["cloudburst"];
+  adminUsers = [ "cloudburst" ];
 
   sambaPath = "/mnt/dane";
   mobile = false;
@@ -56,7 +56,12 @@
   };
   arduino = {
     enable = true;
-    boards = ["arduino" "esp32" "digispark" "esp8266"];
+    boards = [
+      "arduino"
+      "esp32"
+      "digispark"
+      "esp8266"
+    ];
   };
   python = true;
   scripts = true;
