@@ -16,6 +16,20 @@ in {
   hostSettings = hostSettings;
 
   hardware.enableRedistributableFirmware = true;
+  nixpkgs.config.allowUnfree = true;
+
+  boot.kernelModules = [
+    "hci_uart"
+    "btintel"
+    "btrtl"
+  ];
+
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+  security.rtkit.enable = true;
+
   boot.initrd.availableKernelModules = [
     "mmc_block"
     "sdhci"

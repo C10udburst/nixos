@@ -6,7 +6,7 @@
   cfg = config.homeSettings.nushell;
 
   openMap = {
-    "^.*flake\\.nix$" = "nix eval --json --file $path inputs | from json";
+    "^.*flake\\.nix$" = "nix eval --json --file $path_str inputs | from json";
   };
 
   nushellOpenOverride = let
@@ -27,14 +27,15 @@
     alias nu-open = open
 
     def --wrapped "open-custom" [path: any, ...rest] {
+        let expanded = ($path | path expand)
         if ($rest | length) > 0 {
-            return (nu-open $path ...$rest)
+            return (nu-open $expanded ...$rest)
         }
-        let path_str = ($path | into string)
-        if ($path | path exists) {
+        let path_str = ($expanded | into string)
+        if ($expanded | path exists) {
             ${mkIfs (builtins.attrNames openMap)}
         }
-        nu-open $path ...$rest
+        nu-open $expanded ...$rest
     }
 
     def --wrapped open [path?: any, ...rest] {

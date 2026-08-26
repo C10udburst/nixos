@@ -278,7 +278,7 @@ in {
           main = {
             radius = 24;
             background_opacity = 0.75;
-            margin_edge = 10;
+            margin_ends = 10;
             reserve_space = false;
             thickness = 36;
             scale = 1.5;
