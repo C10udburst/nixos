@@ -6,12 +6,7 @@
 }: let
   cfg = config.systemSettings.brave;
   isSlow = config.hostSettings.slow or false;
-  effectiveFlags =
-    cfg.flags
-    ++ lib.optionals isSlow [
-      "disable-process-reuse@2"
-      "automatic-tab-discarding@1"
-    ];
+  effectiveFlags = cfg.flags;
 in {
   options.systemSettings.brave = {
     enable = lib.mkEnableOption "Enable brave group policies";
@@ -87,9 +82,6 @@ in {
           ]
           ++ lib.optionals isSlow [
             "--enable-low-end-device-mode"
-            "--single-process"
-            "--enable-media-suspend"
-            "--renderer-process-limit=4"
           ];
       })
     ];
