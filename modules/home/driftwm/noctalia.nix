@@ -535,7 +535,9 @@ in {
               type = "custom_button";
               glyph = "keyboard";
               tooltip = "On-Screen Keyboard";
-              command = "pkill wvkbd-mobintl || ${wvkbdCmd}";
+              actions = {
+                left = "pkill wvkbd-mobintl || ${wvkbdCmd}";
+              };
             };
           };
       };

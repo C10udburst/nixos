@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787050672,
-        "narHash": "sha256-xnv+cYn0xmdj1Ob+iR/4yoCRclMHX9AGv4/pYyCKXq8=",
+        "lastModified": 1787733946,
+        "narHash": "sha256-TOp92viYpZTAazbP621N7w8X2eO6he+5D2Q5YmXtAF8=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "061c71177016d407ed615b02a16a21c92b029abe",
+        "rev": "2d4adee63c6b786e56137ce478ecb5cda2945e85",
         "type": "github"
       },
       "original": {
@@ -148,22 +148,6 @@
       "original": {
         "owner": "rafaelmardojai",
         "repo": "firefox-gnome-theme",
-        "type": "github"
-      }
-    },
-    "flake-compat": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1627913399,
-        "narHash": "sha256-hY8g6H2KFL8ownSiFeMOjwPC8P0ueXpCVEbxgda3pko=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "12c64ca55c1014cdc1b16ed5a804aa8576601ff2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
         "type": "github"
       }
     },
@@ -246,21 +230,6 @@
         "type": "github"
       }
     },
-    "flake-utils_3": {
-      "locked": {
-        "lastModified": 1634851050,
-        "narHash": "sha256-N83GlSGPJJdcqhUxSCS/WwW5pksYf3VP1M13cDRTSVA=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "c91f3de5adaf1de973b797ef7485e441a65b8935",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
     "fromYaml": {
       "flake": false,
       "locked": {
@@ -280,13 +249,13 @@
     "gitr": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-tYaY6gsfZD2cRexVkd6jj350yXbxYUc+Py8FqtTcS88=",
+        "narHash": "sha256-qmP+gonpYGPkrvnylrXe5VXtMfsVH4YVvyhgx43IFnQ=",
         "type": "file",
-        "url": "https://github.com/islandspan-solutions/gitr/releases/download/v0.4.17/gitr-x86_64.AppImage"
+        "url": "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage"
       },
       "original": {
         "type": "file",
-        "url": "https://github.com/islandspan-solutions/gitr/releases/download/v0.4.17/gitr-x86_64.AppImage"
+        "url": "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage"
       }
     },
     "gnome-shell": {
@@ -365,11 +334,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786328173,
-        "narHash": "sha256-ghZYtP08BstfBD3keiUHM5KupIRY3+YS+naBsFPtGzc=",
+        "lastModified": 1787708809,
+        "narHash": "sha256-g8nkh08udC9gGpHnSb10+yjaw7Ie3bxCz2VmDy1XjRM=",
         "owner": "nix-community",
         "repo": "nix-vscode-extensions",
-        "rev": "f5911382d78f7d739197702509b83d790d592cea",
+        "rev": "60132c95fbfebfc9db33217b4eca3b921ff98d38",
         "type": "github"
       },
       "original": {
@@ -444,22 +413,6 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1636886446,
-        "narHash": "sha256-4xsVM2H8CG3d/3V+GqDDLDOmb3kdrugbqKVyrg8Q/zc=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "5cb226a06c49f7a2d02863d0b5786a310599df6b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "5cb226a06c49f7a2d02863d0b5786a310599df6b",
-        "type": "github"
-      }
-    },
-    "nixpkgs_5": {
-      "locked": {
         "lastModified": 1773646010,
         "narHash": "sha256-iYrs97hS7p5u4lQzuNWzuALGIOdkPXvjz7bviiBjUu8=",
         "owner": "nixos",
@@ -481,11 +434,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787369379,
-        "narHash": "sha256-1WUdzP3Y9l95gRhn8muREP0UJu8PmvzEHmdIyfaYRac=",
+        "lastModified": 1787707249,
+        "narHash": "sha256-dEMIC0E/hGt4TggQaW6Ljv86IM77qnZEhMg4QG4plrw=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "7fd9f7bfa9604022b9de311b30a3da0c2c4415de",
+        "rev": "994638f14f2e9406ec1219492eed10430b9f1f45",
         "type": "github"
       },
       "original": {
@@ -497,11 +450,11 @@
     "noctalia-community-plugins": {
       "flake": false,
       "locked": {
-        "lastModified": 1786801535,
-        "narHash": "sha256-rKT7LCVKVMW9lxBNlWeh/eaQIsQuUxLLs5e5/oU73wM=",
+        "lastModified": 1787697081,
+        "narHash": "sha256-8kP/12i7bnjyYpYCbFlf9qLcrFPQPNeHCzCVTLzbVUE=",
         "owner": "noctalia-dev",
         "repo": "community-plugins",
-        "rev": "0732cf41b484893691f6be172045d8b8d25009c1",
+        "rev": "c21cd9c0469d1fee609cccf7263a233c38d5d446",
         "type": "github"
       },
       "original": {
@@ -656,31 +609,11 @@
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       }
     },
-    "peerix": {
-      "inputs": {
-        "flake-compat": "flake-compat",
-        "flake-utils": "flake-utils_3",
-        "nixpkgs": "nixpkgs_4"
-      },
-      "locked": {
-        "lastModified": 1661429880,
-        "narHash": "sha256-7/m468XZW82O7KhDtRdQ7RnPsh83+tA8N4U0FncFo1U=",
-        "owner": "cid-chan",
-        "repo": "peerix",
-        "rev": "32cd1b098b83c90726848bd6726f74e72c557abb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "cid-chan",
-        "repo": "peerix",
-        "type": "github"
-      }
-    },
     "pi-agent": {
       "inputs": {
         "bun2nix": "bun2nix",
         "jail-nix": "jail-nix",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_4",
         "systems": "systems_3"
       },
       "locked": {
@@ -770,7 +703,6 @@
         "openscad-obiscad": "openscad-obiscad",
         "openscad-round-anything": "openscad-round-anything",
         "organizeer": "organizeer",
-        "peerix": "peerix",
         "pi-agent": "pi-agent",
         "plasma-manager": "plasma-manager",
         "ranger-archives": "ranger-archives",

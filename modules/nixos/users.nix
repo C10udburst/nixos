@@ -36,11 +36,6 @@ in {
           else []
         )
         ++ (
-          if (config.virtualisation.podman.enable or false)
-          then ["podman"]
-          else []
-        )
-        ++ (
           if (config.virtualisation.libvirtd.enable or false)
           then ["libvirtd"]
           else []

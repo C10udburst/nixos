@@ -5,6 +5,13 @@
   ...
 }: let
   cfg = config.systemSettings.brave;
+  isSlow = config.hostSettings.slow or false;
+  effectiveFlags =
+    cfg.flags
+    ++ lib.optionals isSlow [
+      "disable-process-reuse@2"
+      "automatic-tab-discarding@1"
+    ];
 in {
   options.systemSettings.brave = {
     enable = lib.mkEnableOption "Enable brave group policies";
@@ -31,48 +38,59 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    environment.etc."brave/policies/managed/GroupPolicy.json".text = ''
+    environment.etc."brave/policies/managed/GroupPolicy.json".text = builtins.toJSON (
       {
-        "PasswordManagerEnabled": false,
-        "SpellcheckEnabled": true,
-        "SpellcheckLanguage": [
-          "pl-PL",
+        PasswordManagerEnabled = false;
+        SpellcheckEnabled = true;
+        SpellcheckLanguage = [
+          "pl-PL"
           "en-US"
-        ],
-        "BraveRewardsDisabled": true,
-        "BraveWalletDisabled": true,
-        "BraveVPNDisabled": true,
-        "BraveAIChatEnabled": false,
-        "BraveNewsDisabled": true,
-        "BraveTalkDisabled": true,
-        "BraveSpeedreaderEnabled": true,
-        "BraveP3AEnabled": false,
-        "BraveStatsPingEnabled": false,
-        "BraveWebDiscoveryEnabled": false,
-        "PasswordSharingEnabled": false,
-        "PasswordLeakDetectionEnabled": false,
-        "ExtensionManifestV2Availability": 2,
-        "SafeBrowsingExtendedReportingEnabled": false,
-        "SafeBrowsingSurveysEnabled": false,
-        "SafeBrowsingDeepScanningEnabled": false,
-        "AlternateErrorPagesEnabled": false,
-        "FeedbackSurveysEnabled": false,
-        "BrowserGuestModeEnabled": true
+        ];
+        BraveRewardsDisabled = true;
+        BraveWalletDisabled = true;
+        BraveVPNDisabled = true;
+        BraveAIChatEnabled = false;
+        BraveNewsDisabled = true;
+        BraveTalkDisabled = true;
+        BraveSpeedreaderEnabled = true;
+        BraveP3AEnabled = false;
+        BraveStatsPingEnabled = false;
+        BraveWebDiscoveryEnabled = false;
+        PasswordSharingEnabled = false;
+        PasswordLeakDetectionEnabled = false;
+        ExtensionManifestV2Availability = 2;
+        SafeBrowsingExtendedReportingEnabled = false;
+        SafeBrowsingSurveysEnabled = false;
+        SafeBrowsingDeepScanningEnabled = false;
+        AlternateErrorPagesEnabled = false;
+        FeedbackSurveysEnabled = false;
+        BrowserGuestModeEnabled = true;
       }
-    '';
+      // lib.optionalAttrs isSlow {
+        HighEfficiencyModeEnabled = true;
+        MemorySaverModeSavings = "MAXIMUM";
+      }
+    );
     environment.systemPackages = with pkgs; [
       (brave.override {
-        commandLineArgs = [
-          "--allow-insecure-localhost"
-          "--ozone-platform=wayland"
-          "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
-          "--use-angle=gl"
-          "--user-gl=angle"
-          "--use-vulkan"
-          "--ignore-gpu-blocklist"
-          "--force-device-scale-factor=0.9"
-          "--password-store=basic"
-        ];
+        commandLineArgs =
+          [
+            "--allow-insecure-localhost"
+            "--ozone-platform=wayland"
+            "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
+            "--use-angle=gl"
+            "--user-gl=angle"
+            "--use-vulkan"
+            "--ignore-gpu-blocklist"
+            "--force-device-scale-factor=0.9"
+            "--password-store=basic"
+          ]
+          ++ lib.optionals isSlow [
+            "--enable-low-end-device-mode"
+            "--single-process"
+            "--enable-media-suspend"
+            "--renderer-process-limit=4"
+          ];
       })
     ];
 
@@ -86,7 +104,7 @@ in {
           echo "{}" > "$STATE_FILE"
         fi
         ${pkgs.jq}/bin/jq '.browser.enabled_labs_experiments = $flags' \
-          --argjson flags '${builtins.toJSON cfg.flags}' \
+          --argjson flags '${builtins.toJSON effectiveFlags}' \
           "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
       '';
     };

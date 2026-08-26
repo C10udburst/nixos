@@ -66,7 +66,6 @@
   python = true;
   scripts = true;
   tailscale = true;
-  peerix = true;
   threed = true;
   typst = true;
   utils = true;

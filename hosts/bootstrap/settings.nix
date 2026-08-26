@@ -44,7 +44,6 @@
   python = true;
   scripts = false;
   tailscale = false;
-  peerix = true;
   threed = false;
   typst = false;
   utils = true;

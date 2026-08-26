@@ -25,13 +25,12 @@
     ./main.nix
     ./nettools.nix
     ./nix.nix
-    ./nushell
+    ./nushell.nix
     ./nvidia.nix
     ./obs.nix
     ./office.nix
     ./openssh.nix
     ./packages.nix
-    ./peerix.nix
     ./pipewire.nix
     ./plasma.nix
     ./podman.nix
@@ -153,7 +152,6 @@
       jetbrains.enable = lib.mkDefault (config.hostSettings.jetbrains or false);
       utils.enable = lib.mkDefault (config.hostSettings.utils or false);
       tailscale.enable = lib.mkDefault (config.hostSettings.tailscale or false);
-      peerix.enable = lib.mkDefault (config.hostSettings.peerix or false);
       weston-rdp.enable = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.weston-rdp or false)
         then config.hostSettings.weston-rdp.enable or false

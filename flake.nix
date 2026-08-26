@@ -65,11 +65,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    peerix = {
-      url = "github:cid-chan/peerix";
-      inputs.nixpkgs.url = "github:NixOS/nixpkgs/5cb226a06c49f7a2d02863d0b5786a310599df6b";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -125,7 +120,7 @@
     };
 
     gitr = {
-      url = "https://github.com/islandspan-solutions/gitr/releases/download/v0.4.17/gitr-x86_64.AppImage";
+      url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";
       flake = false;
     };
 
