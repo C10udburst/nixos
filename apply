@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# A rebuild script that commits on a successful build
+# A rebuild script that commits on a successful build across local and remote hosts
 set -e
 
 # cd to your config dir
-pushd ~/nixos/
+pushd ~/nixos/ > /dev/null
 
 # Autoformat your nix files
 alejandra . &>/dev/null ||
@@ -15,30 +15,89 @@ alejandra . &>/dev/null ||
 
 git add .
 
-echo "NixOS Rebuilding..."
-
-# Prompt for sudo password upfront so the prompt isn't hidden by redirection
-sudo -v
-
-# Rebuild, output simplified errors, log trackebacks, if boot/b in argv boot instead of switch
-if [[ "$@" == *"boot"* || "$@" == *"b"* ]]; then
-  sudo nixos-rebuild boot --flake . 2>&1 | tee nixos-switch.log | nom
+# Parse action (1st arg)
+ACTION="switch"
+if [[ "$1" == "boot" || "$1" == "b" ]]; then
+  ACTION="boot"
+  shift
+elif [[ "$1" == "switch" || "$1" == "s" ]]; then
+  ACTION="switch"
+  shift
+elif [[ "$1" == "test" || "$1" == "t" ]]; then
+  ACTION="test"
+  shift
 else
-  sudo nixos-rebuild switch --flake . 2>&1 | tee nixos-switch.log | nom
+  ACTION="boot"
 fi
-[ ${PIPESTATUS[0]} -eq 0 ] || (grep --color error nixos-switch.log && exit 1)
 
-# Get current generation metadata
-current=$(nixos-rebuild list-generations --json | jq '.[] | select (.current == true) | "\(.generation)"')
+# Get local hostname
+LOCAL_HOST=$(hostname)
 
-# get hostname for commit message
-hostname=$(hostname)
+# Parse target hosts (2nd and further args)
+if [ $# -eq 0 ]; then
+  TARGETS=("$LOCAL_HOST")
+else
+  TARGETS=("$@")
+fi
 
-# Commit all changes with the generation metadata
-git commit -am "${hostname}:${current}"
+COMMIT_ENTRIES=()
+
+for TARGET in "${TARGETS[@]}"; do
+  # Determine if target is local or remote
+  if [[ "$TARGET" == "localhost" || "$TARGET" == "127.0.0.1" || "$TARGET" == "$LOCAL_HOST" ]]; then
+    FLAKE_HOST="$LOCAL_HOST"
+    IS_LOCAL=true
+  else
+    FLAKE_HOST="$TARGET"
+    IS_LOCAL=false
+  fi
+
+  echo "NixOS Rebuilding host '$FLAKE_HOST' with action '$ACTION'..."
+
+  if [ "$IS_LOCAL" = true ]; then
+    # Prompt for sudo password upfront for local rebuild
+    sudo -v
+    sudo nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" 2>&1 | tee nixos-switch.log | nom
+    BUILD_STATUS=${PIPESTATUS[0]}
+    if [ $BUILD_STATUS -ne 0 ]; then
+      grep --color error nixos-switch.log || true
+      exit 1
+    fi
+
+    # Get current generation metadata locally
+    GEN=$(nixos-rebuild list-generations --json | jq -r '.[] | select (.current == true) | .generation')
+  else
+    nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" --target-host "$FLAKE_HOST" --sudo --ask-sudo-password 2>&1 | tee nixos-switch.log | nom
+    BUILD_STATUS=${PIPESTATUS[0]}
+    if [ $BUILD_STATUS -ne 0 ]; then
+      grep --color error nixos-switch.log || true
+      exit 1
+    fi
+
+    # Fetch current generation metadata from remote host via SSH
+    GEN=$(ssh "$FLAKE_HOST" "nixos-rebuild list-generations --json" 2>/dev/null | jq -r '.[] | select (.current == true) | .generation')
+    if [ -z "$GEN" ] || [ "$GEN" = "null" ]; then
+      echo "Warning: Could not retrieve generation metadata from remote host $FLAKE_HOST"
+      GEN="unknown"
+    fi
+  fi
+
+  COMMIT_ENTRIES+=("${FLAKE_HOST}:${GEN}")
+done
+
+# Commit all changes with generation metadata for each host
+COMMIT_MSG="${COMMIT_ENTRIES[*]}"
+
+if git diff --quiet && git diff --staged --quiet; then
+  echo "No git changes to commit."
+else
+  git commit -m "$COMMIT_MSG"
+  echo "Committed: $COMMIT_MSG"
+fi
 
 # Back to where you were
-popd
+popd > /dev/null
 
 # Notify all OK!
-notify-send -e "NixOS Rebuilt OK!" --icon=system-software-update
+notify-send -e "NixOS Rebuilt OK!" "${COMMIT_ENTRIES[*]}" --icon=system-software-update || true
+

@@ -9,9 +9,9 @@ with lib; let
   mobile = config.hostSettings.mobile or false;
   touchscreen = config.hostSettings.touchscreen or false;
   slow = config.hostSettings.slow or false;
+  compactMode = mobile && touchscreen;
   hasDocker = config.hostSettings.podman or false;
   hasTailscale = config.hostSettings.tailscale or false;
-  hostname = config.networking.hostName or "cloudburst";
   colors = config.lib.stylix.colors.withHashtag;
   stylixColors = config.lib.stylix.colors;
   wvkbdCmd = "${pkgs.wvkbd}/bin/wvkbd-mobintl -L 280 -H 300 -R 16 -l fullwide --landscape-layers fullwide --bg ${stylixColors.base00} --fg ${stylixColors.base01} --fg-sp ${stylixColors.base02} --press ${stylixColors.base0D} --press-sp ${stylixColors.base0E} --text ${stylixColors.base05} --text-sp ${stylixColors.base07}";
@@ -278,37 +278,54 @@ in {
           main = {
             radius = 24;
             background_opacity = 0.75;
-            margin_edge = 3;
+            margin_edge = 10;
             reserve_space = false;
             thickness = 36;
+            scale = 1.5;
+            compact = compactMode;
 
             start =
               [
                 "launcher"
                 "clock"
-                "weather"
               ]
+              ++ optionals (!compactMode) ["weather"]
               ++ optionals (!slow) ["group:sysmon_group"]
+              ++ optionals (!compactMode) ["group:media_group"]
               ++ [
-                "group:media_group"
                 "hassio_status"
               ];
             center =
-              [
-                "group:window_session"
-              ]
-              ++ optionals touchscreen ["wvkbd_toggle"]
-              ++ [
-                "lock_keys"
-                "active_window"
-                "clipboard"
-                "group:notifications_group"
-              ];
+              if compactMode
+              then
+                [
+                  "driftwm"
+                ]
+                ++ optionals (!slow) ["screen_toolkit"]
+                ++ [
+                  "session"
+                ]
+                ++ optionals touchscreen ["wvkbd_toggle"]
+                ++ [
+                  "clipboard"
+                  "group:notifications_group"
+                ]
+              else
+                [
+                  "group:window_session"
+                ]
+                ++ optionals touchscreen ["wvkbd_toggle"]
+                ++ [
+                  "lock_keys"
+                  "active_window"
+                  "clipboard"
+                  "group:notifications_group"
+                ];
             end =
               [
                 "tray"
-                "group:storage_privacy"
               ]
+              ++ optionals (!compactMode) ["group:storage_privacy"]
               ++ optionals mobile ["group:battery_group"]
               ++ [
                 "group:network_group"
@@ -483,8 +500,14 @@ in {
           {
             audio_visualizer.mirrored = false;
             clock = {
-              format = "{:%H:%M:%S %a, %d.%m}";
+              format =
+                if compactMode
+                then "{:%H:%M:%S %d.%m}"
+                else "{:%H:%M:%S %a, %d.%m}";
               vertical_format = "{:%H:%M}";
+            };
+            network = {
+              show_label = !compactMode;
             };
             driftwm = {
               type = "${driftwm}:widget";
@@ -536,7 +559,7 @@ in {
               glyph = "keyboard";
               tooltip = "On-Screen Keyboard";
               actions = {
-                left = "pkill wvkbd-mobintl || ${wvkbdCmd}";
+                left = "exec pkill wvkbd-mobintl || ${wvkbdCmd}";
               };
             };
           };
