@@ -38,6 +38,7 @@ in {
       zbar
       ranger
       kimsay
+      jless
     ];
   };
 }

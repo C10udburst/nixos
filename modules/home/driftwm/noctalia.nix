@@ -73,6 +73,10 @@ with lib; let
   selectedPluginNames =
     basePluginNames ++ batteryPluginNames ++ dockerPluginNames ++ tailscalePluginNames;
   enabledPluginIds = map (name: pluginMap.${name}) selectedPluginNames;
+
+  wvkbdPackage = pkgs.writeShellScriptBin "wvkbd" ''
+    ${wvkbdCmd} "$@"
+  '';
 in {
   imports = [
     inputs.noctalia.homeModules.default
@@ -84,6 +88,7 @@ in {
         ddcutil
         wl-screenrec
         tesseract
+        wvkbdPackage
       ]
       ++ (optionals mobile [
         upower
@@ -213,10 +218,13 @@ in {
         };
 
         dock = {
-          auto_hide = true;
+          auto_hide = false;
+          cross_axis_padding = 4;
+          main_axis_padding = 4;
+          item_spacing = 4;
           background_opacity = 0.5;
           enabled = true;
-          icon_size = 32;
+          icon_size = 28;
           launcher_position = "start";
           show_dots = true;
         };
@@ -278,10 +286,16 @@ in {
           main = {
             radius = 24;
             background_opacity = 0.75;
-            margin_ends = 10;
+            margin_ends =
+              if compactMode
+              then 10
+              else 100;
             reserve_space = false;
             thickness = 36;
-            scale = 1.5;
+            scale =
+              if compactMode
+              then 1.5
+              else 1.0;
             compact = compactMode;
 
             start =
@@ -559,7 +573,7 @@ in {
               glyph = "keyboard";
               tooltip = "On-Screen Keyboard";
               actions = {
-                left = "exec pkill wvkbd-mobintl || ${wvkbdCmd}";
+                left = "exec pkill wvkbd-mobintl || wvkbd";
               };
             };
           };

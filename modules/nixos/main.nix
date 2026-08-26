@@ -4,7 +4,7 @@
   ...
 }: let
 in {
-  documentation.nixos.enable = false;
+  documentation.enable = false;
 
   hardware.i2c.enable = true;
   services.upower.enable = lib.mkDefault true;

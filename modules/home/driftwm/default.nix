@@ -63,15 +63,10 @@ in {
         pkgs.iio-sensor-proxy
       ];
 
+    qt.qt5ctSettings.Appearance.icon_theme = "breeze-dark";
+    qt.qt6ctSettings.Appearance.icon_theme = "breeze-dark";
+
     xdg.configFile = {
-      "qt5ct/qt5ct.conf".text = ''
-        [Appearance]
-        icon_theme=breeze-dark
-      '';
-      "qt6ct/qt6ct.conf".text = ''
-        [Appearance]
-        icon_theme=breeze-dark
-      '';
       "driftwm/background.glsl".source = renderedShader;
       "driftwm/config.toml".source = renderedConfig;
       "xdg-desktop-portal/driftwm-portals.conf".text = ''

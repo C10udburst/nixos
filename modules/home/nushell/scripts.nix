@@ -19,6 +19,13 @@ in {
         $input | to json | python3 ${gridviewScript}
       }
 
+      def treeview [] {
+        let input = $in
+        if ($input | is-empty) { return }
+
+        $input | to json | jless -N
+      }
+
       def plot [
         col_x: any,
         col_y?: any
