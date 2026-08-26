@@ -18,8 +18,14 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = ["nix-command" "flakes"];
-  nix.settings.trusted-users = ["root" "@wheel"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  nix.settings.trusted-users = [
+    "root"
+    "@wheel"
+  ];
 
   nix.settings.extra-substituters = [
     "https://nix-community.cachix.org"

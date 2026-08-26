@@ -40,10 +40,10 @@ else
   TARGETS=("$@")
 fi
 
-# --- NOWA SEKCJA: Pobranie hasła raz dla wszystkich urządzeń ---
+# --- Pobranie hasła raz dla wszystkich urządzeń ---
 echo -n "[sudo] Password for all hosts: "
 read -rs PASSWORD
-echo "" # Nowa linia po ukrytym wpisywaniu
+echo ""
 
 COMMIT_ENTRIES=()
 
@@ -60,6 +60,7 @@ for TARGET in "${TARGETS[@]}"; do
   echo "NixOS Rebuilding host '$FLAKE_HOST' with action '$ACTION'..."
 
   if [ "$IS_LOCAL" = true ]; then
+    # Odświeżenie lokalnego sudo przy użyciu zapisanego hasła
     echo "$PASSWORD" | sudo -S -v &>/dev/null
 
     sudo nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" 2>&1 | tee nixos-switch.log | nom
@@ -69,15 +70,21 @@ for TARGET in "${TARGETS[@]}"; do
       exit 1
     fi
 
+    # Get current generation metadata locally
     GEN=$(nixos-rebuild list-generations --json | jq -r '.[] | select (.current == true) | .generation')
   else
-    echo "$PASSWORD" | nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" --target-host "$FLAKE_HOST" --sudo --tty 2>&1 | tee nixos-switch.log | nom
+    # ZDALNA PRZEBUDOWA:
+    # Budowanie odbywa się lokalnie na obecnej maszynie, a wynik przesylany jest na zdalny host.
+    export NIX_SSHOPTS="-t -o StrictHostKeyChecking=accept-new"
+
+    echo "$PASSWORD" | nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" --target-host "$FLAKE_HOST" --sudo 2>&1 | tee nixos-switch.log | nom
     BUILD_STATUS=${PIPESTATUS[0]}
     if [ $BUILD_STATUS -ne 0 ]; then
       grep --color error nixos-switch.log || true
       exit 1
     fi
 
+    # Pobranie metadanych ze zdalnego hosta
     GEN=$(echo "$PASSWORD" | ssh -t "$FLAKE_HOST" "sudo -S nixos-rebuild list-generations --json" 2>/dev/null | jq -r '.[] | select (.current == true) | .generation')
     if [ -z "$GEN" ] || [ "$GEN" = "null" ]; then
       echo "Warning: Could not retrieve generation metadata from remote host $FLAKE_HOST"

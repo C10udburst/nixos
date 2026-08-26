@@ -12,8 +12,10 @@ in {
     description = "Enable 3D home-manager configuration (OpenSCAD libraries etc.)";
   };
 
-  config = lib.mkIf cfg {
-    xdg.dataFile = {
+  config = {
+    stylix.targets.blender.enable = cfg;
+
+    xdg.dataFile = lib.mkIf cfg {
       "OpenSCAD/libraries/BOSL2".source = inputs.openscad-bosl2;
       "OpenSCAD/libraries/constructive".source = inputs.openscad-constructive;
       "OpenSCAD/libraries/Round-Anything".source = inputs.openscad-round-anything;

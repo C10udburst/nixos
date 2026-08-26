@@ -87,13 +87,13 @@ in {
       [
         ddcutil
         wl-screenrec
-        tesseract
-        wvkbdPackage
       ]
+      ++ (optionals touchscreen [wvkbdPackage])
       ++ (optionals mobile [
         upower
       ])
       ++ (optionals (!slow) [
+        tesseract
         udiskie
         smartmontools
       ]);
