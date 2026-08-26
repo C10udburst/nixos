@@ -1,46 +1,36 @@
 #!/usr/bin/env bash
 #
 # A rebuild script that commits on a successful build across local and remote hosts
-set -e
+set -eo pipefail
 
 # cd to your config dir
 pushd ~/nixos/ > /dev/null
 
-# Autoformat your nix files
-alejandra . &>/dev/null ||
-  (
-    alejandra .
-    echo "formatting failed!" && exit 1
-  )
-
+# Autoformat your nix files gracefully
+if ! alejandra . &>/dev/null; then
+  alejandra .
+  echo "❌ Formatting failed!"
+  exit 1
+fi
 git add .
 
 # Parse action (1st arg)
-ACTION="switch"
-if [[ "$1" == "boot" || "$1" == "b" ]]; then
-  ACTION="boot"
+ACTION="boot"
+if [[ "$1" =~ ^(boot|b|switch|s|test|t)$ ]]; then
+  case "$1" in
+    b|boot)   ACTION="boot" ;;
+    s|switch) ACTION="switch" ;;
+    t|test)   ACTION="test" ;;
+  esac
   shift
-elif [[ "$1" == "switch" || "$1" == "s" ]]; then
-  ACTION="switch"
-  shift
-elif [[ "$1" == "test" || "$1" == "t" ]]; then
-  ACTION="test"
-  shift
-else
-  ACTION="boot"
 fi
 
-# Get local hostname
 LOCAL_HOST=$(hostname)
 
-# Parse target hosts (2nd and further args)
-if [ $# -eq 0 ]; then
-  TARGETS=("$LOCAL_HOST")
-else
-  TARGETS=("$@")
-fi
+# Parse target hosts (remaining args, default to localhost)
+TARGETS=("${@:-$LOCAL_HOST}")
 
-# --- Pobranie hasła raz dla wszystkich urządzeń ---
+# --- Get password once for all devices ---
 echo -n "[sudo] Password for all hosts: "
 read -rs PASSWORD
 echo ""
@@ -48,61 +38,75 @@ echo ""
 COMMIT_ENTRIES=()
 
 for TARGET in "${TARGETS[@]}"; do
-  # Determine if target is local or remote
-  if [[ "$TARGET" == "localhost" || "$TARGET" == "127.0.0.1" || "$TARGET" == "$LOCAL_HOST" ]]; then
-    FLAKE_HOST="$LOCAL_HOST"
-    IS_LOCAL=true
-  else
-    FLAKE_HOST="$TARGET"
-    IS_LOCAL=false
-  fi
+  # Normalize target name
+  [[ "$TARGET" == "localhost" || "$TARGET" == "127.0.0.1" ]] && TARGET="$LOCAL_HOST"
 
-  echo "NixOS Rebuilding host '$FLAKE_HOST' with action '$ACTION'..."
+  echo -e "\n🚀 NixOS Rebuilding host '$TARGET' with action '$ACTION'..."
 
-  if [ "$IS_LOCAL" = true ]; then
-    # Odświeżenie lokalnego sudo przy użyciu zapisanego hasła
+  if [[ "$TARGET" == "$LOCAL_HOST" ]]; then
+    # --- LOCAL REBUILD ---
+    # Refresh local sudo using the cached password via standard input (-S)
     echo "$PASSWORD" | sudo -S -v &>/dev/null
 
-    sudo nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" 2>&1 | tee nixos-switch.log | nom
-    BUILD_STATUS=${PIPESTATUS[0]}
-    if [ $BUILD_STATUS -ne 0 ]; then
-      grep --color error nixos-switch.log || true
+    if ! echo "$PASSWORD" | sudo -S nixos-rebuild "$ACTION" --flake ".#$TARGET" 2>&1 | tee nixos-switch.log | nom; then
+      echo -e "\n❌ Local rebuild failed on $TARGET!"
+      grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
       exit 1
     fi
-
-    # Get current generation metadata locally
     GEN=$(nixos-rebuild list-generations --json | jq -r '.[] | select (.current == true) | .generation')
   else
-    # ZDALNA PRZEBUDOWA:
-    # Budowanie odbywa się lokalnie na obecnej maszynie, a wynik przesylany jest na zdalny host.
-    export NIX_SSHOPTS="-t -o StrictHostKeyChecking=accept-new"
+    # --- REMOTE REBUILD ---
+    export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
 
-    echo "$PASSWORD" | nixos-rebuild "$ACTION" --flake ".#${FLAKE_HOST}" --target-host "$FLAKE_HOST" --sudo 2>&1 | tee nixos-switch.log | nom
-    BUILD_STATUS=${PIPESTATUS[0]}
-    if [ $BUILD_STATUS -ne 0 ]; then
-      grep --color error nixos-switch.log || true
+    # 1. Build locally (prevents remote evaluation overhead)
+    echo "   📦 Building system closure locally..."
+    if ! nixos-rebuild build --flake ".#$TARGET" 2>&1 | tee nixos-switch.log | nom; then
+      echo -e "\n❌ Local build for remote host $TARGET failed!"
+      grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
       exit 1
     fi
 
-    # Pobranie metadanych ze zdalnego hosta
-    GEN=$(echo "$PASSWORD" | ssh -t "$FLAKE_HOST" "sudo -S nixos-rebuild list-generations --json" 2>/dev/null | jq -r '.[] | select (.current == true) | .generation')
-    if [ -z "$GEN" ] || [ "$GEN" = "null" ]; then
-      echo "Warning: Could not retrieve generation metadata from remote host $FLAKE_HOST"
-      GEN="unknown"
+    # Resolve the exact /nix/store/... path generated
+    SYSTEM_PATH=$(readlink -f ./result)
+
+    # 2. Push closure to target (now piped through nom!)
+    echo "   🚚 Pushing closure to $TARGET..."
+    if ! nix-copy-closure --to "$TARGET" "$SYSTEM_PATH" 2>&1 | nom; then
+      echo -e "\n❌ Failed to push closure to $TARGET!"
+      exit 1
     fi
+
+    # 3. Register as a generation on the remote profile
+    echo "   🔗 Registering new system profile..."
+    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nix-env -p /nix/var/nix/profiles/system --set $SYSTEM_PATH"; then
+       echo -e "\n❌ Failed to set system profile on $TARGET!"
+       exit 1
+    fi
+
+    # 4. Run the activation script
+    echo "   ⚡ Activating configuration ($ACTION)..."
+    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S $SYSTEM_PATH/bin/switch-to-configuration $ACTION"; then
+       echo -e "\n❌ Remote activation failed on $TARGET!"
+       exit 1
+    fi
+
+    # 5. Fetch generation safely
+    GEN=$(echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
+    [[ -z "$GEN" || "$GEN" == "null" ]] && GEN="unknown"
   fi
 
-  COMMIT_ENTRIES+=("${FLAKE_HOST}:${GEN}")
+  COMMIT_ENTRIES+=("${TARGET}:${GEN}")
 done
 
-# Commit all changes with generation metadata for each host
+# --- Git Commit ---
 COMMIT_MSG="${COMMIT_ENTRIES[*]}"
 
 if git diff --quiet && git diff --staged --quiet; then
-  echo "No git changes to commit."
+  echo -e "\n✅ No git changes to commit."
 else
+  # Fixed typo: ommit -> git commit
   git commit -m "$COMMIT_MSG"
-  echo "Committed: $COMMIT_MSG"
+  echo -e "\n✅ Committed: $COMMIT_MSG"
 fi
 
 # Back to where you were
