@@ -40,46 +40,9 @@ in {
   networking.hostName = "cloudburst-desktop"; # Define your hostname.
   networking.firewall.enable = false;
 
-  networking.networkmanager.ensureProfiles.profiles = {
-    bond0 = {
-      connection = {
-        id = "bond0";
-        type = "bond";
-        interface-name = "bond0";
-      };
-      bond = {
-        mode = "balance-alb";
-        miimon = "100";
-      };
-      ipv4 = {
-        method = "auto";
-      };
-      ipv6 = {
-        method = "auto";
-      };
-    };
-    bond0-port-eth = {
-      connection = {
-        id = "bond0-port-eth";
-        type = "ethernet";
-        interface-name = "enp6s0";
-        controller = "bond0";
-        port-type = "bond";
-      };
-    };
-    bond0-port-wifi = {
-      connection = {
-        id = "bond0-port-wifi";
-        type = "wifi";
-        interface-name = "wlp5s0";
-        controller = "bond0";
-        port-type = "bond";
-      };
-      wifi = {
-        ssid = "Orange_Swiatlowod_9C30";
-      };
-    };
-  };
+  # Enable Multipath TCP (MPTCP) for simultaneous Ethernet and Wi-Fi transmission
+  boot.kernel.sysctl."net.mptcp.enabled" = 1;
+  services.mptcpd.enable = true;
 
   home-manager = {
     backupFileExtension = "hm-backup";
