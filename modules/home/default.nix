@@ -20,6 +20,7 @@
     ./user.nix
     ./social.nix
     ./vscode.nix
+    ./wine.nix
   ];
 
   options.hostSettings = lib.mkOption {
@@ -105,6 +106,9 @@
           type = lib.types.bool;
           default = true;
           description = "Enable VS Code editor";
+        };
+        wine.enable = lib.mkOption {
+          type = lib.types.bool;
         };
       };
     };
@@ -192,6 +196,11 @@
       );
       threed = lib.mkDefault (config.hostSettings.threed or false);
       social.enable = lib.mkDefault (config.hostSettings.social or false);
+      wine.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.wine or false)
+        then config.hostSettings.wine.enable or false
+        else config.hostSettings.wine or false
+      );
       associations.enable = lib.mkDefault true;
       nushell.enable = lib.mkDefault (
         if builtins.isAttrs (config.hostSettings.nushell or false)

@@ -20,6 +20,7 @@
   llm = true;
   plasma = true;
   shell-undo = true;
+  wine = true;
   nushell = {
     enable = true;
     default = "term";

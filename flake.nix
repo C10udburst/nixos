@@ -158,5 +158,10 @@
       url = "github:YoyPa/isw";
       flake = false;
     };
+
+    tailcat = {
+      url = "github:tailscale/tailcat";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }

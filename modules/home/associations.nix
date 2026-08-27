@@ -139,6 +139,14 @@ with lib; let
       && name != "image/tiff"
   ) (associatePackage pkgs.kdePackages.okular);
 
+  # Wine Windows Executables
+  wineMimes = {
+    "application/x-ms-dos-executable" = ["wine.desktop"];
+    "application/x-msi" = ["wine.desktop"];
+    "application/x-ms-shortcut" = ["wine.desktop"];
+    "application/x-bat" = ["wine.desktop"];
+  };
+
   # Merge all defaults (with VSCode and others added as secondary/primary accordingly)
   mergedDefaults = foldl' recursiveUpdate {} (
     [
@@ -151,6 +159,7 @@ with lib; let
     ]
     ++ lib.optionals (!isSlow) [mayoMimes]
     ++ lib.optionals (config.homeSettings.vscode.enable or true) [vscodeMimes]
+    ++ lib.optionals (config.homeSettings.wine.enable or false) [wineMimes]
   );
 in {
   options.homeSettings.associations = {

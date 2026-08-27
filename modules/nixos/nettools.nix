@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.nettools;
@@ -23,6 +24,7 @@ in {
       lsof
       wakeonlan
       inetutils
+      inputs.tailcat.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     programs.wireshark.enable = true;

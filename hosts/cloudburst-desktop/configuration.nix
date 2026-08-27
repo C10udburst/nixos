@@ -41,6 +41,17 @@ in {
   networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
 
+  networking.bonds.bond0 = {
+    interfaces = [
+      "enp6s0"
+      "wlp5s0"
+    ];
+    driverOptions = {
+      mode = "balance-alb";
+      miimon = "100";
+    };
+  };
+
   home-manager = {
     backupFileExtension = "hm-backup";
     extraSpecialArgs = {inherit inputs;};

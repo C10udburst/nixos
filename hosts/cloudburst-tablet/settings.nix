@@ -17,6 +17,7 @@
   llm = false;
   plasma = false;
   shell-undo = false;
+  wine = false;
 
   nushell = {
     enable = true;

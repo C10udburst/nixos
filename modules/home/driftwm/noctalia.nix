@@ -23,11 +23,8 @@ with lib; let
     driftwm = "cloudburst/driftwm";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
-    lid-guard = "8bury/lid-guard";
     mini-docker = "8bury/mini-docker";
-    nix-monitor = "avivbintangaringga/nix-monitor";
     phone-connect = "icefish/phone-connect";
-    portctl = "rxtsel/portctl";
     procmon = "weinguyen/procmon";
     screen-toolkit = "alexander/screen-toolkit";
     tailscale = "davemhammer/tailscale";
@@ -37,12 +34,9 @@ with lib; let
 
   disabledSlowPlugins = [
     "udiskie"
-    "procmon"
-    "portctl"
     "drive-health"
-    "nix-monitor"
     "screen-toolkit"
-    "lid-guard"
+    "phone-connect"
   ];
 
   rawBasePluginNames = [
@@ -51,9 +45,7 @@ with lib; let
     "driftwm"
     "drive-health"
     "hassio"
-    "nix-monitor"
     "phone-connect"
-    "portctl"
     "procmon"
     "screen-toolkit"
     "udiskie"
@@ -64,7 +56,6 @@ with lib; let
 
   batteryPluginNames = optionals mobile [
     "battery-threshold"
-    "lid-guard"
   ];
 
   dockerPluginNames = optionals (hasDocker && !slow) ["mini-docker"];
@@ -96,6 +87,8 @@ in {
         tesseract
         udiskie
         smartmontools
+        kdePackages.kdeconnect-kde
+        sshfs
       ]);
 
     xdg.configFile."noctalia/palettes/Stylix.json".text = builtins.toJSON {
@@ -290,7 +283,7 @@ in {
               if compactMode
               then 10
               else 100;
-            reserve_space = false;
+            reserve_space = true;
             thickness = 36;
             scale =
               if compactMode
@@ -299,16 +292,24 @@ in {
             compact = compactMode;
 
             start =
-              [
+              if compactMode
+              then [
                 "launcher"
                 "clock"
-              ]
-              ++ optionals (!compactMode) ["weather"]
-              ++ optionals (!slow) ["group:sysmon_group"]
-              ++ optionals (!compactMode) ["group:media_group"]
-              ++ [
+                "procmon_widget"
                 "hassio_status"
-              ];
+              ]
+              else
+                [
+                  "launcher"
+                  "clock"
+                  "weather"
+                ]
+                ++ optionals (!slow) ["group:sysmon_group"]
+                ++ [
+                  "group:media_group"
+                  "hassio_status"
+                ];
             center =
               if compactMode
               then
@@ -419,10 +420,9 @@ in {
                     [
                       "notifications"
                     ]
-                    ++ (optionals (!slow) ["nix-monitor"])
-                    ++ [
+                    ++ (optionals (!slow) [
                       "phone_bar"
-                    ];
+                    ]);
                 }
                 {
                   id = "sysmon_group";
@@ -435,7 +435,6 @@ in {
                     ]
                     ++ (optionals (!slow) [
                       "procmon_widget"
-                      "portctl_indicator"
                     ])
                     ++ optionals (hasDocker && !slow) ["mini-docker"];
                 }
@@ -486,13 +485,8 @@ in {
               manager_open_near_click = true;
               file_manager_cmd = "dolphin";
             };
-            "${nix-monitor}" = {
-              branch = "nixos-${lib.trivial.release}";
-              show_update_available_notification = false;
-              update_command = "~/nixos/upgrade";
-            };
             "${drive-health}".drives_placement = "attached";
-            "${phone-connect}".details_placement = "floating";
+            "${phone-connect}".panel_placement = "floating";
             "${hassio}" = {
               entity_manager_open_near_click = true;
               entity_manager_placement = "attached";
@@ -545,11 +539,6 @@ in {
                 middle = "exec plasma-systemmonitor";
                 right = "panel-toggle control-center system";
               };
-            };
-            portctl_indicator.type = "${portctl}:indicator";
-            nix-monitor = {
-              show_text = false;
-              type = "${nix-monitor}:nix-monitor";
             };
             udiskie_status.type = "${udiskie}:status";
             hassio_status.type = "${hassio}:status";

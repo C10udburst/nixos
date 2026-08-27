@@ -19,8 +19,8 @@ in {
   nixpkgs.config.allowUnfree = true;
 
   boot.kernelModules = [
+    "r8723bs"
     "hci_uart"
-    "btintel"
     "btrtl"
   ];
 
@@ -66,7 +66,7 @@ in {
     device = "nodev";
     forcei686 = true;
     extraGrubInstallArgs = ["--target=i386-efi"];
-    configurationLimit = 5;
+    configurationLimit = 1;
   };
   boot.loader.efi.canTouchEfiVariables = false;
 

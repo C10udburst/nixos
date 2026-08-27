@@ -17,6 +17,7 @@
   llm = false;
   plasma = true;
   shell-undo = false;
+  wine = false;
 
   # NixOS-only modules
   android = {

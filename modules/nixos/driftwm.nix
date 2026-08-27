@@ -11,6 +11,9 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    # Enable KDE Connect service and firewall rules (disabled on slow devices)
+    programs.kdeconnect.enable = lib.mkDefault (!(config.hostSettings.slow or false));
+
     # Expose systemd units from driftwm package
     systemd.packages = [
       pkgs.driftwm
@@ -35,6 +38,10 @@ in {
         pkgs.kdePackages.qtsvg
         pkgs.libsForQt5.qt5ct
         pkgs.kdePackages.qt6ct
+      ]
+      ++ lib.optionals (!(config.hostSettings.slow or false)) [
+        pkgs.kdePackages.kdeconnect-kde
+        pkgs.sshfs
       ]
       ++ lib.optionals (config.hostSettings.touchscreen or false) [
         pkgs.wvkbd

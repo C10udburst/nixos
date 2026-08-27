@@ -48,6 +48,7 @@
     ./waydroid.nix
     ./waypipe.nix
     ./weston-rdp.nix
+    ./wine.nix
     ./zram.nix
   ];
 
@@ -187,6 +188,11 @@
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
 
       nvidia.enable = lib.mkDefault (config.hostSettings.nvidia or false);
+      wine.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.wine or false)
+        then config.hostSettings.wine.enable or false
+        else config.hostSettings.wine or false
+      );
       usbip.enable = lib.mkDefault (config.hostSettings.usbip or false);
 
       samba.enable = lib.mkDefault (config.hostSettings.sambaPath or "" != "");

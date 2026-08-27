@@ -17,6 +17,7 @@
   llm = true;
   plasma = true;
   shell-undo = true;
+  wine = true;
   nushell = {
     enable = true;
     default = "term";
@@ -30,7 +31,7 @@
   gaming = true;
   appimage = true;
   brave = true;
-  editors = false;
+  editors = true;
   nvidia = true;
   fuse = true;
   greetd = {
