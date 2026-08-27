@@ -14,7 +14,7 @@ in {
     hardware.graphics.enable32Bit = lib.mkDefault true;
 
     environment.systemPackages = with pkgs; [
-      wine-staging
+      wineWow64Packages.full
       winetricks
       zenity
       cabextract

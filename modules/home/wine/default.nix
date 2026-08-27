@@ -18,17 +18,19 @@
 
     WINEPREFIX="''${WINEPREFIX:-$HOME/.wine}"
     export WINEPREFIX
+    WINEARCH="''${WINEARCH:-win64}"
+    export WINEARCH
 
     INIT_MARKER="$WINEPREFIX/.compat_installed"
 
     if [ ! -f "$INIT_MARKER" ]; then
       echo "Initializing Wine prefix in $WINEPREFIX..."
       mkdir -p "$WINEPREFIX"
-      ${pkgs.wine-staging}/bin/wineserver -k || true
-      ${pkgs.wine-staging}/bin/wineboot -u || true
+      ${pkgs.wineWow64Packages.full}/bin/wineserver -k || true
+      ${pkgs.wineWow64Packages.full}/bin/wineboot -u || true
 
       echo "Installing compatibility runtimes (vcredists, DirectX, DXVK, corefonts, etc.)..."
-      PATH="${pkgs.wine-staging}/bin:${pkgs.winetricks}/bin:${pkgs.cabextract}/bin:${pkgs.p7zip}/bin:${pkgs.unzip}/bin:${pkgs.zenity}/bin:$PATH" \
+      PATH="${pkgs.wineWow64Packages.full}/bin:${pkgs.winetricks}/bin:${pkgs.cabextract}/bin:${pkgs.p7zip}/bin:${pkgs.unzip}/bin:${pkgs.zenity}/bin:$PATH" \
         ${pkgs.winetricks}/bin/winetricks -q --unattended \
           vcrun2015_2022 \
           vcrun2013 \
@@ -51,7 +53,7 @@
 
     # Apply Stylix theme colors to Wine registry
     echo "Applying Stylix theme to Wine registry..."
-    ${pkgs.wine-staging}/bin/wine regedit /s "${themeReg}" || true
+    ${pkgs.wineWow64Packages.full}/bin/wine regedit /s "${themeReg}" || true
 
     mkdir -p "$WINEPREFIX/dosdevices"
     rm -f "$WINEPREFIX/dosdevices/d::"
@@ -72,11 +74,13 @@
   wineRunnerScript = pkgs.writeShellScriptBin "wine-runner" ''
     set -euo pipefail
     unset LD_PRELOAD
+    export WINEPREFIX="''${WINEPREFIX:-$HOME/.wine}"
+    export WINEARCH="''${WINEARCH:-win64}"
 
     ${wineInitScript}/bin/wine-init
 
     if [ $# -gt 0 ]; then
-      exec ${pkgs.wine-staging}/bin/wine start /unix "$@"
+      exec ${pkgs.wineWow64Packages.full}/bin/wine start /unix "$@"
     fi
   '';
 in {
