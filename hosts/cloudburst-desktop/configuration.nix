@@ -38,17 +38,46 @@ in {
   boot.supportedFilesystems = ["ntfs"];
 
   networking.hostName = "cloudburst-desktop"; # Define your hostname.
-  networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
 
-  networking.bonds.bond0 = {
-    interfaces = [
-      "enp6s0"
-      "wlp5s0"
-    ];
-    driverOptions = {
-      mode = "balance-alb";
-      miimon = "100";
+  networking.networkmanager.ensureProfiles.profiles = {
+    bond0 = {
+      connection = {
+        id = "bond0";
+        type = "bond";
+        interface-name = "bond0";
+      };
+      bond = {
+        mode = "balance-alb";
+        miimon = "100";
+      };
+      ipv4 = {
+        method = "auto";
+      };
+      ipv6 = {
+        method = "auto";
+      };
+    };
+    bond0-port-eth = {
+      connection = {
+        id = "bond0-port-eth";
+        type = "ethernet";
+        interface-name = "enp6s0";
+        controller = "bond0";
+        port-type = "bond";
+      };
+    };
+    bond0-port-wifi = {
+      connection = {
+        id = "bond0-port-wifi";
+        type = "wifi";
+        interface-name = "wlp5s0";
+        controller = "bond0";
+        port-type = "bond";
+      };
+      wifi = {
+        ssid = "Orange_Swiatlowod_9C30";
+      };
     };
   };
 

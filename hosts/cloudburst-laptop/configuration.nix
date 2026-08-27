@@ -53,7 +53,6 @@ in {
   boot.kernelParams = ["ec_sys.write_support=1"];
 
   networking.hostName = "cloudburst-laptop";
-  networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
   networking.firewall.enable = false;
 
   environment.systemPackages = [
