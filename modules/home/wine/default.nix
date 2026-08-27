@@ -24,6 +24,7 @@
     if [ ! -f "$INIT_MARKER" ]; then
       echo "Initializing Wine prefix in $WINEPREFIX..."
       mkdir -p "$WINEPREFIX"
+      ${pkgs.wine-staging}/bin/wineserver -k || true
       ${pkgs.wine-staging}/bin/wineboot -u || true
 
       echo "Installing compatibility runtimes (vcredists, DirectX, DXVK, corefonts, etc.)..."
@@ -50,7 +51,7 @@
 
     # Apply Stylix theme colors to Wine registry
     echo "Applying Stylix theme to Wine registry..."
-    ${pkgs.wine-staging}/bin/wine64 regedit /s "${themeReg}" || true
+    ${pkgs.wine-staging}/bin/wine regedit /s "${themeReg}" || true
 
     mkdir -p "$WINEPREFIX/dosdevices"
     rm -f "$WINEPREFIX/dosdevices/d::"
@@ -75,7 +76,7 @@
     ${wineInitScript}/bin/wine-init
 
     if [ $# -gt 0 ]; then
-      exec ${pkgs.wine-staging}/bin/wine64 start /unix "$@"
+      exec ${pkgs.wine-staging}/bin/wine start /unix "$@"
     fi
   '';
 in {
