@@ -27,6 +27,13 @@
           b = int(hex_str[4:6], 16)
           return f'{r},{g},{b}'
 
+      def hex2dec_space(hex_str):
+          hex_str = hex_str.lstrip('#')
+          r = int(hex_str[0:2], 16)
+          g = int(hex_str[2:4], 16)
+          b = int(hex_str[4:6], 16)
+          return f'{r} {g} {b}'
+
       with open('$jsonDataPath') as f:
           data = json.load(f)
 
@@ -35,6 +42,7 @@
 
       tmpl.globals['to_rgb_vec3'] = to_rgb_vec3
       tmpl.globals['hex2dec'] = hex2dec
+      tmpl.globals['hex2dec_space'] = hex2dec_space
 
       with open('$out', 'w') as f:
           f.write(tmpl.render(**data))

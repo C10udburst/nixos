@@ -20,7 +20,7 @@
     ./user.nix
     ./social.nix
     ./vscode.nix
-    ./wine.nix
+    ./wine
   ];
 
   options.hostSettings = lib.mkOption {

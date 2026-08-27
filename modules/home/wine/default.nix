@@ -6,8 +6,15 @@
 }: let
   cfg = config.homeSettings.wine;
 
+  renderUtils = import ../../render-template.nix {inherit pkgs config lib;};
+  renderJinja2 = renderUtils.renderJinja2;
+  cleanColors = renderUtils.cleanColors;
+
+  themeReg = renderJinja2 "wine-theme.reg" ./theme.reg.j2 cleanColors;
+
   wineInitScript = pkgs.writeShellScriptBin "wine-init" ''
     set -euo pipefail
+    unset LD_PRELOAD
 
     WINEPREFIX="''${WINEPREFIX:-$HOME/.wine}"
     export WINEPREFIX
@@ -17,29 +24,36 @@
     if [ ! -f "$INIT_MARKER" ]; then
       echo "Initializing Wine prefix in $WINEPREFIX..."
       mkdir -p "$WINEPREFIX"
-      WINEDLLOVERRIDES="mscoree,mshtml=" ${pkgs.wineWow64Packages.full}/bin/wineboot -u || true
+      ${pkgs.wine-staging}/bin/wineboot -u || true
 
-      echo "Installing compatibility runtimes (vcredists, corefonts, etc.)..."
-      PATH="${pkgs.wineWow64Packages.full}/bin:${pkgs.winetricks}/bin:${pkgs.cabextract}/bin:${pkgs.p7zip}/bin:${pkgs.unzip}/bin:${pkgs.zenity}/bin:$PATH" \
+      echo "Installing compatibility runtimes (vcredists, DirectX, DXVK, corefonts, etc.)..."
+      PATH="${pkgs.wine-staging}/bin:${pkgs.winetricks}/bin:${pkgs.cabextract}/bin:${pkgs.p7zip}/bin:${pkgs.unzip}/bin:${pkgs.zenity}/bin:$PATH" \
         ${pkgs.winetricks}/bin/winetricks -q --unattended \
-          vcrun2022 \
+          vcrun2015_2022 \
           vcrun2013 \
           vcrun2012 \
           vcrun2010 \
           vcrun2008 \
-          corefonts \
-          fontsmooth=rgb \
-          msxml6 \
-          msxml3 \
-          gdiplus \
-          atmlib \
           d3dx9 \
-          d3dcompiler_47 || true
+          d3dcompiler_43 \
+          d3dcompiler_47 \
+          dxvk \
+          gdiplus \
+          msxml3 \
+          msxml6 \
+          atmlib \
+          corefonts \
+          fontsmooth=rgb || true
 
       touch "$INIT_MARKER"
     fi
 
+    # Apply Stylix theme colors to Wine registry
+    echo "Applying Stylix theme to Wine registry..."
+    ${pkgs.wine-staging}/bin/wine regedit /s "${themeReg}" || true
+
     mkdir -p "$WINEPREFIX/dosdevices"
+    rm -f "$WINEPREFIX/dosdevices/d::"
 
     # Check if /mnt/dane is currently mounted without triggering systemd automount
     FSTYPE=$(${pkgs.util-linux}/bin/findmnt -rn -o FSTYPE /mnt/dane 2>/dev/null || true)
@@ -56,11 +70,12 @@
 
   wineRunnerScript = pkgs.writeShellScriptBin "wine-runner" ''
     set -euo pipefail
+    unset LD_PRELOAD
 
     ${wineInitScript}/bin/wine-init
 
     if [ $# -gt 0 ]; then
-      exec ${pkgs.wineWow64Packages.full}/bin/wine start /unix "$@"
+      exec ${pkgs.wine-staging}/bin/wine start /unix "$@"
     fi
   '';
 in {
