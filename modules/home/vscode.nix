@@ -50,6 +50,7 @@
       [
         wholroyd.jinja
         jock.svg
+        slevesque.shader
       ]
       ++ lib.optionals (cfg.programming.rust or false) [
         rust-lang.rust-analyzer
