@@ -226,17 +226,22 @@ in {
 
         idle = {
           behavior_order =
-            if mobile
+            if (mobile && !slow)
             then [
               "lock"
               "screen-off"
               "suspend"
             ]
+            else if mobile
+            then [
+              "lock"
+              "screen-off"
+            ]
             else ["screen-off"];
           behavior = {
             screen-off.enabled = true;
             lock.enabled = mobile;
-            suspend.enabled = mobile;
+            suspend.enabled = mobile && !slow;
           };
         };
 

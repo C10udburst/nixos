@@ -15,7 +15,7 @@ if [ -S "$LOCAL_PULSE" ]; then
         -o StreamLocalBindUnlink=yes \
         -R "${REMOTE_PULSE}:${LOCAL_PULSE}" \
         "$HOST" \
-        PULSE_SERVER="unix:${REMOTE_PULSE}" plasmawindowed org.kde.plasma.kickoff
+        env PULSE_SERVER="unix:${REMOTE_PULSE}" plasmawindowed org.kde.plasma.kickoff
 else
     exec waypipe ssh "$HOST" plasmawindowed org.kde.plasma.kickoff
 fi

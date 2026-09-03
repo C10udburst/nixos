@@ -49,7 +49,16 @@ in {
   boot.kernelParams = [
     "fbcon=rotate:1"
     "intel_idle.max_cstate=1"
+    "processor.max_cstate=1"
+    "i915.enable_psr=0"
+    "i915.enable_dc=0"
   ];
+
+  # Disable systemd suspend/hibernate to prevent Bay Trail sleep lockups
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
   hardware.sensor.iio.enable = true;
 
   # Accelerometer rotation mount matrix for Lenovo IdeaPad Miix 300
