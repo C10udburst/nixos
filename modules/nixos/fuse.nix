@@ -61,22 +61,5 @@ in {
         "credentials=/etc/nixos/smb-secrets"
       ];
     };
-
-    systemd.mounts = [
-      {
-        what = "//brix0/data";
-        where = "/mnt/brix0";
-        mountConfig = {
-          ExecStartPre = "${pkgs.bash}/bin/bash -c '${pkgs.coreutils}/bin/timeout 1 ${pkgs.bash}/bin/bash -c \"echo > /dev/tcp/brix0/445\" 2>/dev/null'";
-        };
-      }
-      (lib.mkIf (config.networking.hostName != "cloudburst-desktop") {
-        what = "//cloudburst-desktop/dane";
-        where = "/mnt/dane";
-        mountConfig = {
-          ExecStartPre = "${pkgs.bash}/bin/bash -c '${pkgs.coreutils}/bin/timeout 1 ${pkgs.bash}/bin/bash -c \"echo > /dev/tcp/cloudburst-desktop/445\" 2>/dev/null'";
-        };
-      })
-    ];
   };
 }
