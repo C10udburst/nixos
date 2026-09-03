@@ -14,6 +14,7 @@ with lib; let
   templateData =
     cleanColors
     // {
+      wallpaper = "${config.stylix.image}";
       font = config.stylix.fonts.monospace.name or "monospace";
       extracmds = cfg.extracmds;
       xwayland_satellite_path = "${lib.getExe pkgs.xwayland-satellite}";
@@ -32,7 +33,6 @@ with lib; let
     };
 
   renderedConfig = renderJinja2 "config.toml" ./config.toml.j2 templateData;
-  renderedShader = renderJinja2 "background.glsl" ./background.glsl.j2 templateData;
 in {
   imports = [
     ./noctalia.nix
@@ -67,7 +67,7 @@ in {
     qt.qt6ctSettings.Appearance.icon_theme = "breeze-dark";
 
     xdg.configFile = {
-      "driftwm/background.glsl".source = renderedShader;
+      "driftwm/background.glsl".source = ./wallpaper.glsl;
       "driftwm/config.toml".source = renderedConfig;
       "xdg-desktop-portal/driftwm-portals.conf".text = ''
         [preferred]

@@ -21,6 +21,8 @@ with lib; let
     battery-threshold = "damian-ds7/battery-threshold";
     cat = "dotnetrob/cat";
     driftwm = "cloudburst/driftwm";
+    driftwm-windows = "cloudburst/driftwm-windows";
+    unicode = "cloudburst/unicode";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
     mini-docker = "8bury/mini-docker";

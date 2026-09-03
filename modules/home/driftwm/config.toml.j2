@@ -75,6 +75,7 @@ fit_padding = 24.0
 [background]
 type = "shader"
 path = "~/.config/driftwm/background.glsl"
+texture = "{{ wallpaper }}"
 animate_fps = {% if slow %}10{% else %}24{% endif %}
 
 {% if slow %}
@@ -102,12 +103,13 @@ enabled = true
 path = "{{ xwayland_satellite_path }}"
 
 [keybindings]
-"mod+tab" = 'spawn noctalia msg panel-toggle launcher "/win "'
+"mod+tab" = 'spawn noctalia msg panel-toggle launcher "/wind "'
 "mod+space" = 'spawn noctalia msg panel-toggle launcher'
 "mod+return" = 'spawn noctalia msg panel-toggle launcher'
 "mod+n" = 'spawn noctalia msg notifications toggleHistory'
 "mod+v" = 'spawn noctalia msg panel-toggle clipboard'
 "mod+period" = 'spawn noctalia msg panel-toggle launcher "/emo "'
+"mod+alt+period" = 'spawn noctalia msg panel-toggle launcher "/uni "'
 "mod+escape" = 'spawn noctalia msg panel-toggle session'
 "mod+f11" = 'spawn noctalia msg bar-toggle main'
 "mod+l" = 'spawn noctalia msg session lock'
@@ -143,7 +145,6 @@ path = "{{ xwayland_satellite_path }}"
 
 {{ extra_bindings }}
 
-# Cosmic settings: hide winit window helper and apply fixed window size
 [[window_rules]]
 title = "winit window"
 widget = true
@@ -160,9 +161,9 @@ decoration = "server"
 [[window_rules]]
 app_id = "wvkbd"
 pinned_to_screen = true
-{% endif %}
 
 [input.touch]
 enable = true
+{% endif %}
 
 {{ extra_config }}

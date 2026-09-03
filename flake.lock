@@ -484,11 +484,11 @@
     "noctalia-driftwm": {
       "flake": false,
       "locked": {
-        "lastModified": 1786889829,
-        "narHash": "sha256-FfC/bVc5U7dr7gM0vm3ovJ41LJ6Ljf0XUcPs4h1IWok=",
+        "lastModified": 1788461327,
+        "narHash": "sha256-1A54b6V5LkpS5BbPwPSpsCWcm9EPINvZzEzIT/wYkvk=",
         "owner": "C10udburst",
         "repo": "noctalia-v5",
-        "rev": "28f7001ffdc6208b6d75e47442f65d1872175d25",
+        "rev": "d12f10ae5192bdd60f0d8b78eb5b90ac5390a381",
         "type": "github"
       },
       "original": {
