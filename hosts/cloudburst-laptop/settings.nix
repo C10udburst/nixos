@@ -16,7 +16,7 @@
   vscode = true;
   llm = true;
   plasma = true;
-  shell-undo = true;
+  shell-undo = false;
   wine = true;
   nushell = {
     enable = true;

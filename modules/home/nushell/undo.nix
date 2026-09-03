@@ -28,7 +28,8 @@ in {
       $env.config.hooks = ($env.config.hooks | default [] pre_execution)
       $env.config.hooks.pre_execution = ($env.config.hooks.pre_execution | append {||
           let cmd = (commandline | str trim)
-          if ($cmd | is-empty) or ($cmd | str starts-with "undo") { return }
+          let ignored_prefixes = ["undo" "distrobox" "podman" "docker" "flatpak"]
+          if ($cmd | is-empty) or ($ignored_prefixes | any {|p| $cmd | str starts-with $p }) { return }
 
           let dir = ($env.UNDO_DATA_DIR? | default $"($env.HOME)/.local/share/undo" | path join "sessions" (date now | into int | into string))
           mkdir -p $"($dir)/data"
@@ -52,7 +53,14 @@ in {
           if not ("_undo_session" in $env) { return }
           let dir = $env._undo_session
 
-          if $env._undo_saved_preload == "" { hide-env LD_PRELOAD } else { load-env { LD_PRELOAD: $env._undo_saved_preload } }
+          if "LD_PRELOAD" in $env {
+              let remaining = ($env.LD_PRELOAD | split row ":" | where { not ($in | str ends-with "libundo.so") and ($in != "") })
+              if ($remaining | is-empty) {
+                  hide-env LD_PRELOAD
+              } else {
+                  load-env { LD_PRELOAD: ($remaining | str join ":") }
+              }
+          }
           hide-env UNDO_SESSION _undo_session _undo_saved_preload
 
           "" | save -f $"($dir)/done"

@@ -16,11 +16,14 @@ git add .
 
 # Parse action (1st arg)
 ACTION="boot"
-if [[ "$1" =~ ^(boot|b|switch|s|test|t)$ ]]; then
+DO_REBOOT=false
+DISPLAY_ACTION="boot"
+if [[ "$1" =~ ^(boot|b|reboot|r|switch|s|test|t)$ ]]; then
   case "$1" in
-    b|boot)   ACTION="boot" ;;
-    s|switch) ACTION="switch" ;;
-    t|test)   ACTION="test" ;;
+    b|boot)   ACTION="boot"; DISPLAY_ACTION="boot" ;;
+    r|reboot) ACTION="boot"; DISPLAY_ACTION="reboot"; DO_REBOOT=true ;;
+    s|switch) ACTION="switch"; DISPLAY_ACTION="switch" ;;
+    t|test)   ACTION="test"; DISPLAY_ACTION="test" ;;
   esac
   shift
 fi
@@ -36,12 +39,13 @@ read -rs PASSWORD
 echo ""
 
 COMMIT_ENTRIES=()
+REBOOT_LOCAL=false
 
 for TARGET in "${TARGETS[@]}"; do
   # Normalize target name
   [[ "$TARGET" == "localhost" || "$TARGET" == "127.0.0.1" ]] && TARGET="$LOCAL_HOST"
 
-  echo -e "\n🚀 NixOS Rebuilding host '$TARGET' with action '$ACTION'..."
+  echo -e "\n🚀 NixOS Rebuilding host '$TARGET' with action '$DISPLAY_ACTION'..."
 
   if [[ "$TARGET" == "$LOCAL_HOST" ]]; then
     # --- LOCAL REBUILD ---
@@ -54,6 +58,9 @@ for TARGET in "${TARGETS[@]}"; do
       exit 1
     fi
     GEN=$(nixos-rebuild list-generations --json | jq -r '.[] | select (.current == true) | .generation')
+    if [[ "$DO_REBOOT" == true ]]; then
+      REBOOT_LOCAL=true
+    fi
   else
     # --- REMOTE REBUILD ---
     export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
@@ -93,6 +100,11 @@ for TARGET in "${TARGETS[@]}"; do
     # 5. Fetch generation safely
     GEN=$(echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
     [[ -z "$GEN" || "$GEN" == "null" ]] && GEN="unknown"
+
+    if [[ "$DO_REBOOT" == true ]]; then
+      echo "   🔄 Rebooting remote host '$TARGET'..."
+      echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S reboot" &>/dev/null || true
+    fi
   fi
 
   COMMIT_ENTRIES+=("${TARGET}:${GEN}")
@@ -114,3 +126,8 @@ popd > /dev/null
 
 # Notify all OK!
 notify-send -e "NixOS Rebuilt OK!" "${COMMIT_ENTRIES[*]}" --icon=system-software-update || true
+
+if [[ "$REBOOT_LOCAL" == true ]]; then
+  echo -e "\n🔄 Rebooting local host '$LOCAL_HOST'..."
+  echo "$PASSWORD" | sudo -S reboot
+fi

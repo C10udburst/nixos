@@ -49,7 +49,9 @@ in {
   boot.loader.timeout = 2;
 
   # Load ec_sys kernel module with write support for MSI fan control (isw)
-  boot.kernelModules = ["ec_sys"];
+  # and msi-ec out-of-tree kernel module for MSI Embedded Controller support
+  boot.extraModulePackages = [config.boot.kernelPackages.msi-ec];
+  boot.kernelModules = ["ec_sys" "msi-ec"];
   boot.kernelParams = ["ec_sys.write_support=1"];
 
   networking.hostName = "cloudburst-laptop";

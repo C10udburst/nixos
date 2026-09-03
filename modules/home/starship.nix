@@ -13,6 +13,7 @@
     enableFishIntegration = true;
     enableNushellIntegration = true;
     settings = {
+      disable_cursor_position_query = true;
       scan_timeout = 120;
       add_newline = false;
       format = let
