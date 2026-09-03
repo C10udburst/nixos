@@ -46,14 +46,14 @@
   openssh = true;
   packages = true;
   pipewire = true;
-  podman = false;
+  podman = true;
   programming = {
     enable = true;
   };
   python = true;
   scripts = true;
   tailscale = true;
-  threed = false;
+  threed = true;
   typst = false;
   utils = true;
   usbip = true;

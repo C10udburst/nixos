@@ -49,7 +49,7 @@ in {
 
   config = {
     environment.systemPackages =
-      [
+      lib.optionals (config.systemSettings.touchscreen.enable or false) [
         auto-rotate
       ]
       ++ lib.optionals cfg.enable [
