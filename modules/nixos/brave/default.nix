@@ -2,13 +2,14 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.brave;
   isSlow = config.hostSettings.slow or false;
   effectiveFlags = cfg.flags;
 
-  icons = import ./icons.nix {inherit pkgs;};
+  icons = inputs.webicons.packages.${pkgs.system};
   apps = import ./apps.nix {inherit config lib pkgs icons;};
 in {
   options.systemSettings.brave = {

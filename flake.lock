@@ -728,7 +728,8 @@
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
         "stylix": "stylix",
-        "tailcat": "tailcat"
+        "tailcat": "tailcat",
+        "webicons": "webicons"
       }
     },
     "scrcpy-app-src": {
@@ -984,6 +985,26 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "webicons": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788556791,
+        "narHash": "sha256-XDGoJrpfjjxN8/OneGscBeBtCgsDA6ib8LPOSvaw4Ig=",
+        "owner": "C10udburst",
+        "repo": "webicons-nix",
+        "rev": "d5c0b3dee638c8fe1c4f3d3a7eff01f106696735",
+        "type": "github"
+      },
+      "original": {
+        "owner": "C10udburst",
+        "repo": "webicons-nix",
         "type": "github"
       }
     }

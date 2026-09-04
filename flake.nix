@@ -163,5 +163,10 @@
       url = "github:tailscale/tailcat";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    webicons = {
+      url = "github:C10udburst/webicons-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }
