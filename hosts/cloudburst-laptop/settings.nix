@@ -62,6 +62,7 @@
   weylus = true;
   weston-rdp = false;
   zram = true;
+  vulnix = true;
 
   # Home-Manager-only modules
   git = true;

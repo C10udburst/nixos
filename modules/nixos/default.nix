@@ -8,7 +8,7 @@
     ./android.nix
     ./appimage.nix
     ./arduino.nix
-    ./brave.nix
+    ./brave
     ./driftwm.nix
     ./editors.nix
     ./fonts.nix
@@ -45,6 +45,7 @@
     ./users.nix
     ./usbip.nix
     ./utils.nix
+    ./vulnix.nix
     ./waydroid.nix
     ./waypipe.nix
     ./weston-rdp.nix
@@ -181,10 +182,25 @@
       obs.enable = lib.mkDefault (config.hostSettings.obs or false);
       zram.enable = lib.mkDefault (config.hostSettings.zram or false);
       kvm.enable = lib.mkDefault (config.hostSettings.kvm or false);
-      brave.enable = lib.mkDefault (config.hostSettings.brave or false);
+      brave.enable = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.brave or false)
+        then config.hostSettings.brave.enable or true
+        else config.hostSettings.brave or false
+      );
+      brave.webapps = lib.mkDefault (
+        if builtins.isAttrs (config.hostSettings.brave or false)
+        then config.hostSettings.brave.webapps or []
+        else []
+      );
+      brave.flags =
+        lib.mkIf (
+          builtins.isAttrs (config.hostSettings.brave or false) && (config.hostSettings.brave ? flags)
+        )
+        config.hostSettings.brave.flags;
       scripts.enable = lib.mkDefault (config.hostSettings.scripts or false);
       gaming.enable = lib.mkDefault (config.hostSettings.gaming or false);
       waydroid.enable = lib.mkDefault (config.hostSettings.waydroid or false);
+      vulnix.enable = lib.mkDefault (config.hostSettings.vulnix or false);
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
       weylus.enable = lib.mkDefault (config.hostSettings.weylus or false);

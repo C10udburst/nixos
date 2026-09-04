@@ -77,6 +77,7 @@
   weston-rdp = false;
   zram = true;
   nvidia = false;
+  vulnix = true;
 
   # Home-Manager-only modules
   git = true;

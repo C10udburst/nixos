@@ -7,9 +7,12 @@
   cfg = config.systemSettings.brave;
   isSlow = config.hostSettings.slow or false;
   effectiveFlags = cfg.flags;
+
+  icons = import ./icons.nix {inherit pkgs;};
+  apps = import ./apps.nix {inherit config lib pkgs icons;};
 in {
   options.systemSettings.brave = {
-    enable = lib.mkEnableOption "Enable brave group policies";
+    enable = lib.mkEnableOption "Enable brave group policies and webapps";
     flags = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [
@@ -29,6 +32,11 @@ in {
         "brave-request-otr-tab@1"
       ];
       description = "List of Brave flags (experiments) to enable declaratively";
+    };
+    webapps = lib.mkOption {
+      type = lib.types.listOf lib.types.unspecified;
+      default = [];
+      description = "List of webapps to create desktop items for (can be URLs or webApp attrsets)";
     };
   };
 
@@ -66,25 +74,28 @@ in {
         MemorySaverModeSavings = "MAXIMUM";
       }
     );
-    environment.systemPackages = with pkgs; [
-      (brave.override {
-        commandLineArgs =
-          [
-            "--allow-insecure-localhost"
-            "--ozone-platform=wayland"
-            "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
-            "--use-angle=gl"
-            "--user-gl=angle"
-            "--use-vulkan"
-            "--ignore-gpu-blocklist"
-            "--force-device-scale-factor=0.9"
-            "--password-store=basic"
-          ]
-          ++ lib.optionals isSlow [
-            "--enable-low-end-device-mode"
-          ];
-      })
-    ];
+
+    environment.systemPackages =
+      [
+        (pkgs.brave.override {
+          commandLineArgs =
+            [
+              "--allow-insecure-localhost"
+              "--ozone-platform=wayland"
+              "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
+              "--use-angle=gl"
+              "--user-gl=angle"
+              "--use-vulkan"
+              "--ignore-gpu-blocklist"
+              "--force-device-scale-factor=0.9"
+              "--password-store=basic"
+            ]
+            ++ lib.optionals isSlow [
+              "--enable-low-end-device-mode"
+            ];
+        })
+      ]
+      ++ apps.allDesktopItems;
 
     systemd.user.services.brave-flags = {
       description = "Set Brave flags declaratively";
