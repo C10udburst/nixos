@@ -40,8 +40,10 @@
     runtimeInputs = [
       pkgs.wlr-randr
       pkgs.gnugrep
+      pkgs.gnused
       pkgs.gawk
       pkgs.coreutils
+      pkgs.systemd
       pkgs.kmod
     ];
     text = builtins.readFile ./weylus-screen.sh;
