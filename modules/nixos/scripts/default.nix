@@ -35,6 +35,17 @@
   };
 
   desktop-kickoff = pkgs.writeShellScriptBin "desktop-kickoff" (builtins.readFile ./desktop-kickoff.sh);
+  weylus-screen = pkgs.writeShellApplication {
+    name = "weylus-screen";
+    runtimeInputs = [
+      pkgs.wlr-randr
+      pkgs.gnugrep
+      pkgs.gawk
+      pkgs.coreutils
+      pkgs.kmod
+    ];
+    text = builtins.readFile ./weylus-screen.sh;
+  };
   desktop-kickoff-launcher = pkgs.makeDesktopItem {
     name = "desktop-kickoff";
     desktopName = "Desktop Kickoff";
@@ -51,6 +62,9 @@ in {
     environment.systemPackages =
       lib.optionals (config.systemSettings.touchscreen.enable or false) [
         auto-rotate
+      ]
+      ++ lib.optionals (config.systemSettings.weylus.enable or false) [
+        weylus-screen
       ]
       ++ lib.optionals cfg.enable [
         gh-origin-mod

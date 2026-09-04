@@ -48,6 +48,7 @@
     ./waydroid.nix
     ./waypipe.nix
     ./weston-rdp.nix
+    ./weylus.nix
     ./wine.nix
     ./zram.nix
   ];
@@ -186,6 +187,7 @@
       waydroid.enable = lib.mkDefault (config.hostSettings.waydroid or false);
 
       waypipe.enable = lib.mkDefault (config.hostSettings.waypipe or false);
+      weylus.enable = lib.mkDefault (config.hostSettings.weylus or false);
 
       nvidia.enable = lib.mkDefault (config.hostSettings.nvidia or false);
       wine.enable = lib.mkDefault (

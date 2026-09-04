@@ -73,6 +73,7 @@
   usbip = true;
   waydroid = true;
   waypipe = true;
+  weylus = true;
   weston-rdp = false;
   zram = true;
   nvidia = false;
