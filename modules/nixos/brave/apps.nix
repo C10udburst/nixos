@@ -25,6 +25,15 @@
       if size != ""
       then " --window-size=${size}"
       else "";
+    withoutProto = lib.last (builtins.split "://" url);
+    urlParts = builtins.filter (x: builtins.isString x && x != "") (builtins.split "/" withoutProto);
+    host = builtins.head urlParts;
+    pathParts = builtins.tail urlParts;
+    pathStr =
+      if pathParts == []
+      then "__"
+      else "_" + (lib.concatStringsSep "_" pathParts);
+    wmClass = "brave-" + host + pathStr + "-Default";
   in
     pkgs.makeDesktopItem {
       name = "webapp-${sanitizedName}";
@@ -34,6 +43,7 @@
         if icon != ""
         then icon
         else "brave-browser";
+      startupWMClass = wmClass;
       terminal = false;
       type = "Application";
       inherit categories;
