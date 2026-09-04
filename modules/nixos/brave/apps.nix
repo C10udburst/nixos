@@ -194,6 +194,48 @@
           "Chat"
         ];
       })
+      (webApp {
+        name = "Spotify";
+        url = "https://open.spotify.com";
+        icon = icons.spotify;
+        size = "1200,800";
+        categories = [
+          "AudioVideo"
+          "Audio"
+          "Music"
+        ];
+      })
+      (webApp {
+        name = "YouTube Music";
+        url = "https://music.youtube.com";
+        icon = icons.youtube-music;
+        size = "1200,800";
+        categories = [
+          "AudioVideo"
+          "Audio"
+          "Music"
+        ];
+      })
+      (webApp {
+        name = "XTB xStation 5";
+        url = "https://xstation5.xtb.com/";
+        icon = icons.xtb;
+        size = "1280,850";
+        categories = [
+          "Office"
+          "Finance"
+        ];
+      })
+      (webApp {
+        name = "Tailscale Console";
+        url = "https://console.tailscale.com/";
+        icon = icons.tailscale;
+        size = "1200,800";
+        categories = [
+          "Network"
+          "Utility"
+        ];
+      })
     ]
     ++ lib.optionals (!config.systemSettings.office.enable) googleWebSuite
     ++ lib.optionals (!isVscodeEnabled) [

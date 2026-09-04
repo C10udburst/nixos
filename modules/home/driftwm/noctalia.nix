@@ -31,7 +31,6 @@ with lib; let
     screen-toolkit = "alexander/screen-toolkit";
     tailscale = "davemhammer/tailscale";
     udiskie = "aristides/udiskie";
-    web-launcher = "yocraft/web-launcher";
   };
 
   disabledSlowPlugins = [
@@ -45,13 +44,14 @@ with lib; let
     "audio-switcher"
     "cat"
     "driftwm"
+    "driftwm-windows"
+    "unicode"
     "drive-health"
     "hassio"
     "phone-connect"
     "procmon"
     "screen-toolkit"
     "udiskie"
-    "web-launcher"
   ];
 
   basePluginNames = filter (name: !(slow && elem name disabledSlowPlugins)) rawBasePluginNames;
@@ -499,7 +499,6 @@ in {
               entity_manager_placement = "attached";
             };
             "${procmon}".panel_placement = "attached";
-            "${web-launcher}".notify = false;
           }
           // optionalAttrs mobile {
             "${battery-threshold}".panel_placement = "attached";

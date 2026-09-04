@@ -995,11 +995,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788556791,
-        "narHash": "sha256-XDGoJrpfjjxN8/OneGscBeBtCgsDA6ib8LPOSvaw4Ig=",
+        "lastModified": 1788561324,
+        "narHash": "sha256-D/AgZjnjcq5gKACS8hRou6aMni5bcSOB26B7wGiIlbs=",
         "owner": "C10udburst",
         "repo": "webicons-nix",
-        "rev": "d5c0b3dee638c8fe1c4f3d3a7eff01f106696735",
+        "rev": "096aa7d9e6485d47d3e63287e72126ef0d1771fc",
         "type": "github"
       },
       "original": {
