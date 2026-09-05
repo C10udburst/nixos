@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   inputs,
   ...
 }: {
@@ -60,4 +61,8 @@
   nix.optimise.automatic = lib.mkDefault (config.hostSettings.slow or false);
   nix.settings.auto-optimise-store = lib.mkDefault (config.hostSettings.slow or false);
   nix.settings.warn-dirty = false;
+
+  environment.systemPackages = [
+    pkgs.nix-index
+  ];
 }
