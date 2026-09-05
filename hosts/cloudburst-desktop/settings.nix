@@ -78,6 +78,7 @@
   zram = true;
   nvidia = false;
   vulnix = true;
+  nix-index = true;
 
   # Home-Manager-only modules
   git = true;

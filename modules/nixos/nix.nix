@@ -62,7 +62,7 @@
   nix.settings.auto-optimise-store = lib.mkDefault (config.hostSettings.slow or false);
   nix.settings.warn-dirty = false;
 
-  environment.systemPackages = [
+  environment.systemPackages = lib.optionals (config.hostSettings.nix-index or false) [
     pkgs.nix-index
   ];
 }

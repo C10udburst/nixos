@@ -12,6 +12,7 @@ with lib; let
   compactMode = mobile && touchscreen;
   hasDocker = config.hostSettings.podman or false;
   hasTailscale = config.hostSettings.tailscale or false;
+  hasNixIndex = config.hostSettings.nix-index or false;
   colors = config.lib.stylix.colors.withHashtag;
   stylixColors = config.lib.stylix.colors;
   wvkbdCmd = "${pkgs.wvkbd}/bin/wvkbd-mobintl -L 280 -H 300 -R 16 -l fullwide --landscape-layers fullwide --bg ${stylixColors.base00} --fg ${stylixColors.base01} --fg-sp ${stylixColors.base02} --press ${stylixColors.base0D} --press-sp ${stylixColors.base0E} --text ${stylixColors.base05} --text-sp ${stylixColors.base07}";
@@ -23,6 +24,7 @@ with lib; let
     driftwm = "cloudburst/driftwm";
     driftwm-windows = "cloudburst/driftwm-windows";
     unicode = "cloudburst/unicode";
+    cloudburst-nix = "cloudburst/nix";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
     mini-docker = "8bury/mini-docker";
@@ -62,9 +64,14 @@ with lib; let
 
   dockerPluginNames = optionals (hasDocker && !slow) ["mini-docker"];
   tailscalePluginNames = optionals hasTailscale ["tailscale"];
+  nixIndexPluginNames = optionals hasNixIndex ["cloudburst-nix"];
 
   selectedPluginNames =
-    basePluginNames ++ batteryPluginNames ++ dockerPluginNames ++ tailscalePluginNames;
+    basePluginNames
+    ++ batteryPluginNames
+    ++ dockerPluginNames
+    ++ tailscalePluginNames
+    ++ nixIndexPluginNames;
   enabledPluginIds = map (name: pluginMap.${name}) selectedPluginNames;
 
   wvkbdPackage = pkgs.writeShellScriptBin "wvkbd" ''
@@ -474,9 +481,9 @@ in {
               location = "${inputs.noctalia-community-plugins}";
             }
             {
-              name = "driftwm";
+              name = "cloudburst";
               kind = "path";
-              location = "${inputs.noctalia-driftwm}";
+              location = "${inputs.noctalia-cloudburst}";
             }
           ];
         };

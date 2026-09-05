@@ -91,7 +91,7 @@
       flake = false;
     };
 
-    noctalia-driftwm = {
+    noctalia-cloudburst = {
       url = "github:C10udburst/noctalia-v5";
       flake = false;
     };

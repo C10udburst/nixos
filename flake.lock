@@ -481,14 +481,14 @@
         "type": "github"
       }
     },
-    "noctalia-driftwm": {
+    "noctalia-cloudburst": {
       "flake": false,
       "locked": {
-        "lastModified": 1788461327,
-        "narHash": "sha256-1A54b6V5LkpS5BbPwPSpsCWcm9EPINvZzEzIT/wYkvk=",
+        "lastModified": 1788601809,
+        "narHash": "sha256-pf0grTsIysqrFpL3GfRrfY+YW6QmYggYP8XL2fb03YY=",
         "owner": "C10udburst",
         "repo": "noctalia-v5",
-        "rev": "d12f10ae5192bdd60f0d8b78eb5b90ac5390a381",
+        "rev": "e5e59d1c0345d6da0c0da0931c62e48e2984956f",
         "type": "github"
       },
       "original": {
@@ -715,7 +715,7 @@
         "nixpkgs": "nixpkgs_3",
         "noctalia": "noctalia",
         "noctalia-community-plugins": "noctalia-community-plugins",
-        "noctalia-driftwm": "noctalia-driftwm",
+        "noctalia-cloudburst": "noctalia-cloudburst",
         "openscad-bosl2": "openscad-bosl2",
         "openscad-constructive": "openscad-constructive",
         "openscad-obiscad": "openscad-obiscad",

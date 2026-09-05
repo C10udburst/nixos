@@ -57,6 +57,7 @@
   waypipe = true;
   weston-rdp = false;
   zram = true;
+  nix-index = false;
 
   # Home-Manager-only modules
   git = true;

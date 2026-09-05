@@ -63,6 +63,7 @@
   weston-rdp = false;
   zram = true;
   vulnix = true;
+  nix-index = true;
 
   # Home-Manager-only modules
   git = true;
