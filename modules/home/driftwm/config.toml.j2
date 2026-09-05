@@ -6,7 +6,10 @@ autostart = [
 {% if touchscreen %}
   "auto-rotate",
 {% endif %}
-  "while true; do noctalia; sleep 1; done"
+  "noctalia",
+{% if not slow %}
+  "driftwm-desktop",
+{% endif %}
 ]
 window_placement = "auto"
 
@@ -76,7 +79,7 @@ fit_padding = 24.0
 type = "shader"
 path = "~/.config/driftwm/background.glsl"
 texture = "{{ wallpaper }}"
-animate_fps = {% if slow %}1{% else %}15{% endif %}
+animate_fps = {% if slow %}15{% else %}24{% endif %}
 
 {% if slow %}
 [effects]
@@ -161,6 +164,13 @@ decoration = "server"
 [[window_rules]]
 app_id = "waydroid.*"
 decoration = "server"
+
+{% if not slow %}
+[[window_rules]]
+app_id = "driftwm.desktop"
+widget = true
+decoration = "none"
+{% endif %}
 
 {% if touchscreen %}
 [[window_rules]]

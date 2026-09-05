@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.systemSettings.driftwm;
@@ -40,6 +41,7 @@ in {
         pkgs.kdePackages.qt6ct
       ]
       ++ lib.optionals (!(config.hostSettings.slow or false)) [
+        inputs.driftwm-desktop.packages.${pkgs.stdenv.hostPlatform.system}.default
         pkgs.kdePackages.kdeconnect-kde
         pkgs.sshfs
       ]

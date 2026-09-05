@@ -122,16 +122,37 @@
         ]
       },
       "locked": {
-        "lastModified": 1787737430,
-        "narHash": "sha256-Ma4Wuv8xmsG1s0qHQ6k67XOkzN2hjRl4DwG4St3rnrY=",
+        "lastModified": 1788637408,
+        "narHash": "sha256-iFuyOh0oxSMjI1AvCgilQIyojvOoELJCb14tKwLbSp8=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "3386d5c7e94599d38384b7d4f2218471bd827188",
+        "rev": "53959e045da7dbd7622eef0b0bb688a9b3856ffa",
         "type": "github"
       },
       "original": {
         "owner": "malbiruk",
         "repo": "driftwm",
+        "type": "github"
+      }
+    },
+    "driftwm-desktop": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788642807,
+        "narHash": "sha256-BBn5SF+9yQ9Xq8czGvAdxYV3wf8zhz6mSYk3/sF83ds=",
+        "owner": "C10udburst",
+        "repo": "driftwm-desktop",
+        "rev": "a77f574d0782e19a59b607fd04307e5b5ce420bf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "C10udburst",
+        "repo": "driftwm-desktop",
         "type": "github"
       }
     },
@@ -232,7 +253,25 @@
     },
     "flake-utils_3": {
       "inputs": {
-        "systems": "systems_5"
+        "systems": "systems_3"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_4": {
+      "inputs": {
+        "systems": "systems_6"
       },
       "locked": {
         "lastModified": 1731533236,
@@ -465,22 +504,6 @@
         "type": "github"
       }
     },
-    "noctalia-community-plugins": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788400909,
-        "narHash": "sha256-6UY27mzNNMMPkTYfNh29bx3R1ciy+xVh7c+C2xdeibg=",
-        "owner": "noctalia-dev",
-        "repo": "community-plugins",
-        "rev": "44de90ae6d0ff9aba86ce1bdbc0036e1f148af63",
-        "type": "github"
-      },
-      "original": {
-        "owner": "noctalia-dev",
-        "repo": "community-plugins",
-        "type": "github"
-      }
-    },
     "noctalia-cloudburst": {
       "flake": false,
       "locked": {
@@ -494,6 +517,22 @@
       "original": {
         "owner": "C10udburst",
         "repo": "noctalia-v5",
+        "type": "github"
+      }
+    },
+    "noctalia-community-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788400909,
+        "narHash": "sha256-6UY27mzNNMMPkTYfNh29bx3R1ciy+xVh7c+C2xdeibg=",
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "rev": "44de90ae6d0ff9aba86ce1bdbc0036e1f148af63",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
         "type": "github"
       }
     },
@@ -590,7 +629,7 @@
     },
     "organizeer": {
       "inputs": {
-        "flake-utils": "flake-utils_2",
+        "flake-utils": "flake-utils_3",
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -632,7 +671,7 @@
         "bun2nix": "bun2nix",
         "jail-nix": "jail-nix",
         "nixpkgs": "nixpkgs_4",
-        "systems": "systems_3"
+        "systems": "systems_4"
       },
       "locked": {
         "lastModified": 1788425905,
@@ -707,6 +746,7 @@
       "inputs": {
         "antigravity-nix": "antigravity-nix",
         "driftwm": "driftwm",
+        "driftwm-desktop": "driftwm-desktop",
         "gitr": "gitr",
         "home-manager": "home-manager",
         "isw": "isw",
@@ -714,8 +754,8 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "noctalia": "noctalia",
-        "noctalia-community-plugins": "noctalia-community-plugins",
         "noctalia-cloudburst": "noctalia-cloudburst",
+        "noctalia-community-plugins": "noctalia-community-plugins",
         "openscad-bosl2": "openscad-bosl2",
         "openscad-constructive": "openscad-constructive",
         "openscad-obiscad": "openscad-obiscad",
@@ -785,7 +825,7 @@
           "nixpkgs"
         ],
         "nur": "nur",
-        "systems": "systems_4",
+        "systems": "systems_5",
         "tinted-kitty": "tinted-kitty",
         "tinted-schemes": "tinted-schemes",
         "tinted-tmux": "tinted-tmux",
@@ -881,9 +921,24 @@
         "type": "github"
       }
     },
+    "systems_6": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "tailcat": {
       "inputs": {
-        "flake-utils": "flake-utils_3",
+        "flake-utils": "flake-utils_4",
         "nixpkgs": [
           "nixpkgs"
         ]

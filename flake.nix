@@ -5,7 +5,24 @@
     self,
     nixpkgs,
     ...
-  } @ inputs: {
+  } @ inputs: let
+    systems = ["x86_64-linux" "aarch64-linux"];
+    forEachSystem = nixpkgs.lib.genAttrs systems;
+  in {
+    devShells = forEachSystem (system: {
+      default = nixpkgs.legacyPackages.${system}.mkShell {
+        packages = [inputs.driftwm-desktop.packages.${system}.default];
+      };
+      driftwm-desktop = nixpkgs.legacyPackages.${system}.mkShell {
+        packages = [inputs.driftwm-desktop.packages.${system}.default];
+      };
+    });
+
+    packages = forEachSystem (system: {
+      default = inputs.driftwm-desktop.packages.${system}.default;
+      driftwm-desktop = inputs.driftwm-desktop.packages.${system}.default;
+    });
+
     nixosConfigurations."cloudburst-desktop" = nixpkgs.lib.nixosSystem {
       specialArgs = {inherit inputs;};
       modules = [
@@ -78,6 +95,11 @@
 
     driftwm = {
       url = "github:malbiruk/driftwm";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    driftwm-desktop = {
+      url = "github:C10udburst/driftwm-desktop";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
