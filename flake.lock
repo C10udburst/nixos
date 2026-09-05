@@ -143,11 +143,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788642807,
-        "narHash": "sha256-BBn5SF+9yQ9Xq8czGvAdxYV3wf8zhz6mSYk3/sF83ds=",
+        "lastModified": 1788643948,
+        "narHash": "sha256-7hcapPzAcjhbfbIo5XCME4KEyUBwS4vC9KEBEa4ATuA=",
         "owner": "C10udburst",
         "repo": "driftwm-desktop",
-        "rev": "a77f574d0782e19a59b607fd04307e5b5ce420bf",
+        "rev": "c7c52167e75fea0c629d0cef6d7aad98a2d8a36d",
         "type": "github"
       },
       "original": {

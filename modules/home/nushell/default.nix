@@ -7,7 +7,6 @@
   cfg = config.homeSettings.nushell;
 in {
   imports = [
-    ./open.nix
     ./undo.nix
     ./modules.nix
     ./scripts.nix
