@@ -184,6 +184,15 @@
         ];
       })
       (webApp {
+        name = "Outlook";
+        url = "https://outlook.office.com/mail/";
+        icon = icons.outlook;
+        categories = [
+          "Network"
+          "Email"
+        ];
+      })
+      (webApp {
         name = "WhatsApp Web";
         url = "https://web.whatsapp.com";
         icon = icons.whatsapp;

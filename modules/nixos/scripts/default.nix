@@ -44,7 +44,6 @@
       pkgs.gawk
       pkgs.coreutils
       pkgs.systemd
-      pkgs.kmod
     ];
     text = builtins.readFile ./weylus-screen.sh;
   };

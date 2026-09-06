@@ -39,7 +39,7 @@
     autologin = false;
   };
   java = true;
-  kvm = true;
+  kvm = false;
   latex = true;
   nettools = true;
   obs = true;
