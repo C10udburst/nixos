@@ -34,6 +34,9 @@
         touchscreen = false;
         zram = true;
       };
+      java = {
+        enable = true;
+      };
       locale = {
         enable = true;
         pl = true;
