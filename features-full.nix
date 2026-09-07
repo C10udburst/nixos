@@ -71,7 +71,6 @@
           enable = true;
           extraCliFlags = [];
           extraFlags = [];
-          flags = ["brave-dark-mode-block@2" "brave-history-embeddings@1" "brave-origin@1" "brave-tree-tab@1" "containers@1" "enable-parallel-downloading@1" "enable-quic@1" "middle-button-autoscroll@1" "smooth-scrolling@1" "ignore-gpu-blocklist@1" "brave-round-time-stamps@1" "brave-web-bluetooth-api@1" "brave-rounded-corners-by-default@1" "brave-request-otr-tab@1"];
         };
         editors = {
           enable = true;
