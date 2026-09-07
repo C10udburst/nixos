@@ -6,6 +6,11 @@ set -eo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pushd "$SCRIPT_DIR" > /dev/null
 
+# Firstly generate flake.nix from flake-file.nix
+if [[ -x "./flake" ]]; then
+  ./flake
+fi
+
 # Autoformat nix files gracefully
 if ! alejandra . &>/dev/null; then
   alejandra .

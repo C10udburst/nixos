@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Generates flake.nix from flake-file.nix and dendritic modules
+set -eo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+pushd "$SCRIPT_DIR" > /dev/null
+
+echo "❄️  Generating flake.nix from flake-file.nix..."
+
+GEN_EXPR='
+let
+  flake = builtins.getFlake (toString ./.);
+  ffPath = flake.inputs.flake-file.outPath;
+  pkgs = flake.inputs.nixpkgs.legacyPackages.x86_64-linux;
+  res = import ffPath {
+    inherit pkgs;
+    modules = [ ./flake-file.nix ];
+  };
+in
+  res.flake-file.apps.write-flake pkgs
+'
+
+WRITE_FLAKE=$(nix build --impure --no-link --print-out-paths --expr "$GEN_EXPR")
+"$WRITE_FLAKE/bin/write-flake"
+
+if command -v alejandra &>/dev/null; then
+  alejandra flake.nix &>/dev/null || true
+fi
+
+echo "✅ flake.nix regenerated successfully."
+popd > /dev/null
