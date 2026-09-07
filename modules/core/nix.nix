@@ -28,6 +28,13 @@ in {
       type = lib.types.bool;
       default = false;
     };
+    vulnix = lib.mkOption {
+      type = lib.types.bool;
+      default =
+        if isSlow
+        then false
+        else true;
+    };
   };
 
   config = lib.mkMerge [
@@ -41,6 +48,8 @@ in {
     }
     (lib.mkIf (config.features.core.enable && cfg.enable) {
       nixpkgs.config.allowUnfree = true;
+
+      environment.systemPackages = lib.optionals cfg.vulnix [pkgs.vulnix];
 
       nixpkgs.overlays = [
         (inputs.nix-vscode-extensions.overlays.default or (_: _: {}))

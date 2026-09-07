@@ -25,7 +25,6 @@ in {
       fzf
       hexyl
       binwalk
-      asciinema
       qrencode
       zbar
       jq

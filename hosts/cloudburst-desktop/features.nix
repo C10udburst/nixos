@@ -56,7 +56,6 @@
         };
         python.enable = true;
         arduino.enable = true;
-        threed.enable = true;
         documents = {
           latex = true;
           typst = true;
@@ -66,6 +65,7 @@
           dev = true;
         };
       };
+      threed.enable = true;
     };
 
     compat = {

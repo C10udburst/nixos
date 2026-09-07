@@ -24,8 +24,8 @@ in {
   config = lib.mkIf (config.features.shell.enable && config.features.shell.utils.enable && cfg) {
     environment.systemPackages = with pkgs; [
       fastfetch
-      cowsay
       kimsay
+      asciinema
     ];
   };
 }

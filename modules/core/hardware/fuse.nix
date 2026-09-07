@@ -1,0 +1,60 @@
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.features.core.hardware;
+in {
+  options.features.core.hardware.fuse = lib.mkOption {
+    type = lib.types.bool;
+    default = true;
+  };
+
+  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.fuse) {
+    programs.fuse.userAllowOther = true;
+
+    environment.systemPackages =
+      [
+        pkgs.cifs-utils
+        pkgs.sshfs
+      ]
+      ++ lib.optionals (config.features.gui.dev.android.enable or false) [
+        pkgs.adbfs-rootless
+      ];
+
+    fileSystems = {
+      "/mnt/brix0" = {
+        device = "//brix0/data";
+        fsType = "cifs";
+        options = [
+          "x-systemd.automount"
+          "noauto"
+          "_netdev"
+          "x-systemd.idle-timeout=60"
+          "x-systemd.mount-timeout=2s"
+          "soft"
+          "uid=1000"
+          "gid=100"
+          "credentials=/etc/nixos/smb-secrets"
+        ];
+      };
+
+      "/mnt/dane" = lib.mkIf (config.networking.hostName != "cloudburst-desktop") {
+        device = "//cloudburst-desktop/dane";
+        fsType = "cifs";
+        options = [
+          "x-systemd.automount"
+          "noauto"
+          "_netdev"
+          "x-systemd.idle-timeout=60"
+          "x-systemd.mount-timeout=2s"
+          "soft"
+          "uid=1000"
+          "gid=100"
+          "credentials=/etc/nixos/smb-secrets"
+        ];
+      };
+    };
+  };
+}
