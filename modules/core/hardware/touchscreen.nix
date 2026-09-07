@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.features.core.hardware;
@@ -12,5 +13,6 @@ in {
 
   config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.touchscreen) {
     hardware.sensor.iio.enable = true;
+    environment.systemPackages = [pkgs.iio-sensor-proxy];
   };
 }

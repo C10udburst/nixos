@@ -37,6 +37,8 @@
         tools = {
           enable = false;
           konsole = true;
+          organizeer = true;
+          calc = true;
         };
         viewers.mayo = false;
       };

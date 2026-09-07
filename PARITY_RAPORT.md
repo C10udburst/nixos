@@ -53,11 +53,11 @@
 ```
 
 ### 5. Delta Analysis & Root Causes
-- **User-Level to System-Level Migration**: `signal-desktop`, `telegram-desktop`, `pi-coding-agent`, `haruna`, and `mayo` are managed as modular NixOS system packages under `environment.systemPackages`.
-- **VS Code Parity**: The full FHS wrapper (`pkgs.vscode.fhsWithPackages`), ephemeral profile isolation, Wayland flags, and comprehensive user settings/extensions are fully restored to match the legacy configuration.
-- **Fallback Web Applications**: When local desktop suites like LibreOffice or native VS Code are absent/disabled (e.g. on tablet or bootstrap hosts), lightweight web alternatives (`Google Docs`, `Google Sheets`, `Google Slides`, `Google Forms`, `VS Code Web`) are dynamically enabled.
+- **User-Level to System-Level Migration**: `signal-desktop`, `telegram-desktop`, and `pi-coding-agent` were formerly declared in HM `social.nix`/`llm.nix` and have been promoted to modular NixOS system packages under `features.gui.apps.tools.social` and `features.gui.apps.tools.llm`.
+- **Viewer Package Placement**: `haruna` was formerly a system package; it is now managed within Home Manager viewers with automatic XDG MIME type associations (`features.gui.apps.viewers.haruna`).
+- **VS Code Binary Name**: In the legacy configuration, VS Code was managed under Home Manager using a custom wrapper named `code`. In the new configuration, it is also managed under Home Manager `programs.vscode` with the upstream derivation package `vscode-1.119.0`.
 - **Legacy Custom Script Packages**: `qocker` (custom Python podman GUI script) was not ported to the dendritic modules; `organizeer` daemon and package are now fully integrated under `features.gui.apps.tools.organizeer`.
-- **Hardware & Display**: `ddcutil` is disabled by default and only enabled for the desktop profile via `features.core.hardware.ddc = true`.
+- **Hardware & Display**: `ddcutil` is now managed cleanly via `features.core.hardware.ddc`.
 - **Shell Enhancements**: `carapace` and `starship` are now explicitly surfaced in system closures.
 
 ---
@@ -140,18 +140,15 @@
 - hardinfo2-2.2.16
 - jq-1.8.2
 - killall-psmisc-23.7
-- konsole-26.04.3
 - libargon2-20190702
 - libxcb-cursor-0.1.6
 - ncompress-5.0
 - nix-output-monitor-2.2.0
 - openssl-3.6.3
-- organizeer-1.0.0
 - p7zip-17.06
 - pciutils-3.15.0
 - plasma-systemmonitor-6.6.6
 - python3.13-nix-heuristic-gc-0.7.3
-- qalculate-qt-5.10.0
 - rar-7.21
 - screen-5.0.1
 - socat-1.8.1.3
@@ -188,7 +185,6 @@
 - konsole-26.04.3
 - wlr-randr-0.5.0
 - wvkbd-0.19.4
-- xdg-terminal-exec-0.14.2
 + git-lfs-3.7.1
 ```
 
@@ -205,6 +201,8 @@
 ```
 
 ### 5. Delta Analysis & Root Causes
+- **Touchscreen & Tablet System Utilities**: `iio-sensor-proxy`, `wvkbd`, `wlr-randr`, and `konsole` (formerly declared as Home Manager packages under `driftwm/default.nix`) have been promoted to NixOS system packages via `touchscreen.nix` and `driftwm/default.nix`.
+- **Essential Tools on Tablet**: `organizeer` daemon and `qalculate-qt` (`calc`) are explicitly active on the tablet.
 - **Slow / Low-Power Device Optimizations**: `ranger` file manager, heavy CLI suites (`archive`, `diagnostics`, `nettools`, `modernCli`), 3D CAD viewer (`mayo`), and `bluetooth` are explicitly disabled on the tablet profile to preserve memory and battery.
 - **Clean Home Manager Closure**: Disabling `ranger` on the tablet eliminated all preview dependencies including `image-exiftool`, `archivemount`, `atool`, `chafa`, `ffmpegthumbnailer`, and `mediainfo` from the tablet's user environment.
 - **Java Runtime**: `openjdk-21` is enabled via `features.core.java`.
