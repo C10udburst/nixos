@@ -193,6 +193,16 @@
         ];
       })
       (webApp {
+        name = "Microsoft Teams";
+        url = "https://teams.microsoft.com/v2/";
+        icon = icons.teams;
+        categories = [
+          "Network"
+          "InstantMessaging"
+          "Chat"
+        ];
+      })
+      (webApp {
         name = "WhatsApp Web";
         url = "https://web.whatsapp.com";
         icon = icons.whatsapp;

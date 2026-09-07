@@ -122,11 +122,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788637408,
-        "narHash": "sha256-iFuyOh0oxSMjI1AvCgilQIyojvOoELJCb14tKwLbSp8=",
+        "lastModified": 1788706356,
+        "narHash": "sha256-Aa/kYfzIV+AjPhKP7u5l8BD6m526Jciihg78TK+1K38=",
         "owner": "malbiruk",
         "repo": "driftwm",
-        "rev": "53959e045da7dbd7622eef0b0bb688a9b3856ffa",
+        "rev": "a19a66eabf8e3a851028d6d739761c5471f84fec",
         "type": "github"
       },
       "original": {
@@ -523,11 +523,11 @@
     "noctalia-community-plugins": {
       "flake": false,
       "locked": {
-        "lastModified": 1788400909,
-        "narHash": "sha256-6UY27mzNNMMPkTYfNh29bx3R1ciy+xVh7c+C2xdeibg=",
+        "lastModified": 1788751401,
+        "narHash": "sha256-7jI+SI/FJm/Nn8P3fRYYmYMH3SW6j93ij6fAW690WIo=",
         "owner": "noctalia-dev",
         "repo": "community-plugins",
-        "rev": "44de90ae6d0ff9aba86ce1bdbc0036e1f148af63",
+        "rev": "68a29f57a5857f77cfee602d87a0aa90224bfe36",
         "type": "github"
       },
       "original": {
@@ -1050,11 +1050,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788706196,
-        "narHash": "sha256-KtiliWjfUIPXzH03jPtyU6I3aCdNLBDkyLxQ3MHGS9A=",
+        "lastModified": 1788706686,
+        "narHash": "sha256-ldbFDRu69UPqpMzoLszv50TiE9m0Nm9DKeYTc28hvQQ=",
         "owner": "C10udburst",
         "repo": "webicons-nix",
-        "rev": "e154330e641d501824c126fd3bdfaaa76937c4d0",
+        "rev": "5b947d19d593c9058b6927cf52a699edd61c8601",
         "type": "github"
       },
       "original": {
