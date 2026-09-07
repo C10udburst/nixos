@@ -1,0 +1,13 @@
+- kimsay should be from flake
+- alejandra nix-output-monitor nix-heuristic-gc shouldnt be in modern-cli, they should be in shell.utils.nix, move nix-index here too
+- xdg portal config stuff should be moved to gui.xdg
+- dolphin stuff should be moved to modules/gui/apps/tools/dolphin/default.nix and the non nix files in that folder
+- brave://flags from prev config missing
+- move xstation5, and fetlife db to brave.apps.other
+- move associatePackage to helpers
+- remove associations.nix, move any given association to its specific nix file (eg vscode.nix or mayo.nix)
+- missing editors.images (gimp + inkscape)
+- edit greeter features to be greeter = { regreet=true; autologin=null; } (if both false, normal terminal greeter, if autologin = "driftwm" for example then do that, otherwise greetd with regreet)
+- remove qocker
+-  no arduino.boards. they should be in arduino.nix
+ samba.path**s** not path, t should be an array

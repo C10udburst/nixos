@@ -1,30 +1,32 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
   pkgs,
   lib,
   inputs,
   ...
-}: let
-  hostSettings = import ./settings.nix;
-in {
+}: {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.default
+    ./home-manager.nix
+    ./features.nix
     inputs.nixos-hardware.nixosModules.common-cpu-amd
     inputs.nixos-hardware.nixosModules.common-gpu-amd
-    ../../modules/nixos
   ];
-
-  hostSettings = hostSettings;
 
   fileSystems."/mnt/dane" = {
     device = "/dev/disk/by-uuid/213C801055180E72";
     fsType = "lowntfs-3g";
-    options = ["nofail" "rw" "windows_names" "ignore_case" "dmask=000" "fmask=000" "utf8" "noatime" "allow_other"];
+    options = [
+      "nofail"
+      "rw"
+      "windows_names"
+      "ignore_case"
+      "dmask=000"
+      "fmask=000"
+      "utf8"
+      "noatime"
+      "allow_other"
+    ];
   };
 
   # Bootloader.
@@ -37,23 +39,12 @@ in {
   boot.initrd.kernelModules = ["amdgpu"];
   boot.supportedFilesystems = ["ntfs"];
 
-  networking.hostName = "cloudburst-desktop"; # Define your hostname.
+  networking.hostName = "cloudburst-desktop";
   networking.firewall.enable = false;
 
   # Enable Multipath TCP (MPTCP) for simultaneous Ethernet and Wi-Fi transmission
   boot.kernel.sysctl."net.mptcp.enabled" = 1;
   services.mptcpd.enable = true;
 
-  home-manager = {
-    backupFileExtension = "hm-backup";
-    extraSpecialArgs = {inherit inputs;};
-    users = {
-      "${hostSettings.username}" = import ./home.nix;
-    };
-  };
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken.
   system.stateVersion = "26.05";
 }

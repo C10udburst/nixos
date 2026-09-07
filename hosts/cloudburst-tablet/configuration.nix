@@ -4,16 +4,12 @@
   lib,
   inputs,
   ...
-}: let
-  hostSettings = import ./settings.nix;
-in {
+}: {
   imports = [
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.default
-    ../../modules/nixos
+    ./home-manager.nix
+    ./features.nix
   ];
-
-  hostSettings = hostSettings;
 
   hardware.enableRedistributableFirmware = true;
   nixpkgs.config.allowUnfree = true;
@@ -67,6 +63,7 @@ in {
     sensor:modalias:acpi:SMO8500:*:dmi:bvnLENOVO:*:pvr*300*:*
      ACCEL_MOUNT_MATRIX=0, -1, 0; -1, 0, 0; 0, 0, 1
   '';
+
   boot.loader.systemd-boot.enable = false;
   boot.loader.grub = {
     enable = true;
@@ -80,14 +77,6 @@ in {
   boot.loader.efi.canTouchEfiVariables = false;
 
   networking.hostName = "cloudburst-tablet";
-
-  home-manager = {
-    backupFileExtension = "hm-backup";
-    extraSpecialArgs = {inherit inputs;};
-    users = {
-      "${hostSettings.username}" = import ./home.nix;
-    };
-  };
 
   system.stateVersion = "26.05";
 }

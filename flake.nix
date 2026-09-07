@@ -1,86 +1,14 @@
 {
-  description = "Nixos config flake";
+  description = "NixOS Dendritic Configuration";
 
-  outputs = {
-    self,
-    nixpkgs,
-    ...
-  } @ inputs: let
-    systems = ["x86_64-linux" "aarch64-linux"];
-    forEachSystem = nixpkgs.lib.genAttrs systems;
-  in {
-    devShells = forEachSystem (system: {
-      default = nixpkgs.legacyPackages.${system}.mkShell {
-        packages = [inputs.driftwm-desktop.packages.${system}.default];
-      };
-      driftwm-desktop = nixpkgs.legacyPackages.${system}.mkShell {
-        packages = [inputs.driftwm-desktop.packages.${system}.default];
-      };
-    });
-
-    packages = forEachSystem (system: {
-      default = inputs.driftwm-desktop.packages.${system}.default;
-      driftwm-desktop = inputs.driftwm-desktop.packages.${system}.default;
-    });
-
-    nixosConfigurations."cloudburst-desktop" = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        ./hosts/cloudburst-desktop/configuration.nix
-        inputs.home-manager.nixosModules.home-manager
-        inputs.stylix.nixosModules.stylix
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.cloudburst = {
-            imports = [inputs.plasma-manager.homeModules.plasma-manager];
-          };
-        }
-      ];
-    };
-
-    nixosConfigurations."cloudburst-laptop" = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        ./hosts/cloudburst-laptop/configuration.nix
-        inputs.home-manager.nixosModules.home-manager
-        inputs.stylix.nixosModules.stylix
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.cloudburst = {
-            imports = [inputs.plasma-manager.homeModules.plasma-manager];
-          };
-        }
-      ];
-    };
-
-    nixosConfigurations."cloudburst-tablet" = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        ./hosts/cloudburst-tablet/configuration.nix
-        inputs.home-manager.nixosModules.home-manager
-        inputs.stylix.nixosModules.stylix
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.cloudburst = {
-            imports = [inputs.plasma-manager.homeModules.plasma-manager];
-          };
-        }
-      ];
-    };
-  };
+  outputs = inputs: import ./outputs.nix inputs;
 
   inputs = {
-    # Core
+    # Core & Framework
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
-    nix-vscode-extensions = {
-      url = "github:nix-community/nix-vscode-extensions";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    import-tree.url = "github:denful/import-tree";
+    flake-file.url = "github:vic/flake-file";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -123,6 +51,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     pi-agent.url = "github:lukasl-dev/pi.nix";
     antigravity-nix.url = "github:jacopone/antigravity-nix";
 
@@ -146,21 +79,21 @@
       flake = false;
     };
 
-    # ── 3D tools & OpenSCAD libraries ────────────────────────────────────────
-
-    # OpenSCAD libraries
     openscad-bosl2 = {
       url = "github:BelfrySCAD/BOSL2";
       flake = false;
     };
+
     openscad-constructive = {
       url = "git+https://codeberg.org/solidboredom/constructive";
       flake = false;
     };
+
     openscad-round-anything = {
       url = "github:Irev-Dev/Round-Anything";
       flake = false;
     };
+
     openscad-obiscad = {
       url = "github:Obijuan/obiscad?dir=obiscad";
       flake = false;

@@ -5,8 +5,6 @@
   inputs,
   ...
 }: let
-  hostSettings = import ./settings.nix;
-
   isw = pkgs.stdenv.mkDerivation {
     pname = "isw";
     version = "latest";
@@ -36,12 +34,10 @@
 in {
   imports = [
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.default
+    ./home-manager.nix
+    ./features.nix
     inputs.nixos-hardware.nixosModules.msi-gl65-10SDR-492
-    ../../modules/nixos
   ];
-
-  hostSettings = hostSettings;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -51,7 +47,10 @@ in {
   # Load ec_sys kernel module with write support for MSI fan control (isw)
   # and msi-ec out-of-tree kernel module for MSI Embedded Controller support
   boot.extraModulePackages = [config.boot.kernelPackages.msi-ec];
-  boot.kernelModules = ["ec_sys" "msi-ec"];
+  boot.kernelModules = [
+    "ec_sys"
+    "msi-ec"
+  ];
   boot.kernelParams = ["ec_sys.write_support=1"];
 
   networking.hostName = "cloudburst-laptop";
@@ -64,14 +63,6 @@ in {
   environment.etc."isw.conf".source = "${isw}/etc/isw.conf";
 
   systemd.packages = [isw];
-
-  home-manager = {
-    backupFileExtension = "hm-backup";
-    extraSpecialArgs = {inherit inputs;};
-    users = {
-      "${hostSettings.username}" = import ./home.nix;
-    };
-  };
 
   system.stateVersion = "26.05";
 }

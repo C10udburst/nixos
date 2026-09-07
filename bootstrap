@@ -66,50 +66,13 @@ else
   echo "Warning: $ETC_HW_PATH not found. Retaining template fallback hardware-configuration.nix."
 fi
 
-# 4. Modify flake.nix to register the new host
-FLAKE_PATH="$REPO_ROOT/flake.nix"
-if [ -f "$FLAKE_PATH" ]; then
-  TEMP_FLAKE=$(mktemp)
-  if awk -v host="$HOSTNAME" '
-    /nixosConfigurations\."cloudburst-desktop"/ {
-      in_block = 1
-    }
-    in_block {
-      depth += gsub(/\{/, "{")
-      depth -= gsub(/\}/, "}")
-      if (depth == 0 && /;/) {
-        print $0
-        print ""
-        print "    nixosConfigurations.\"" host "\" = nixpkgs.lib.nixosSystem {"
-        print "      specialArgs = { inherit inputs; };"
-        print "      modules = ["
-        print "        ./hosts/" host "/configuration.nix"
-        print "        inputs.home-manager.nixosModules.home-manager"
-        print "        inputs.stylix.nixosModules.stylix"
-        print "        {"
-        print "          home-manager.useGlobalPkgs = true;"
-        print "          home-manager.useUserPackages = true;"
-        print "          home-manager.users.cloudburst = {"
-        print "            imports = [ inputs.plasma-manager.homeModules.plasma-manager ];"
-        print "          };"
-        print "        }"
-        print "      ];"
-        print "    };"
-        in_block = 0
-        next
-      }
-    }
-    { print }
-  ' "$FLAKE_PATH" > "$TEMP_FLAKE"; then
-    mv "$TEMP_FLAKE" "$FLAKE_PATH"
-    echo "✓ Registered '$HOSTNAME' in flake.nix under nixosConfigurations"
-  else
-    rm -f "$TEMP_FLAKE"
-    echo "Error modifying flake.nix"
-    exit 1
-  fi
+# 4. Modify outputs.nix to register the new host
+OUTPUTS_PATH="$REPO_ROOT/outputs.nix"
+if [ -f "$OUTPUTS_PATH" ]; then
+  sed -i "/nixosConfigurations = {/a \    $HOSTNAME = mkHost { hostName = \"$HOSTNAME\"; };" "$OUTPUTS_PATH"
+  echo "✓ Registered '$HOSTNAME' in outputs.nix under nixosConfigurations"
 else
-  echo "Error: flake.nix not found at $FLAKE_PATH"
+  echo "Error: outputs.nix not found at $OUTPUTS_PATH"
   exit 1
 fi
 
@@ -123,8 +86,8 @@ fi
 
 # 6. Stage files in Git
 echo "Staging files in Git..."
-if (cd "$REPO_ROOT" && git add "hosts/$HOSTNAME" "flake.nix"); then
-  echo "✓ Staged host configuration directory and flake.nix."
+if (cd "$REPO_ROOT" && git add "hosts/$HOSTNAME" "outputs.nix"); then
+  echo "✓ Staged host configuration directory and outputs.nix."
 else
   echo "Warning: Failed to run git add."
 fi
