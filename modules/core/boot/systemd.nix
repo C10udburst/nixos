@@ -7,10 +7,10 @@
 in {
   options.features.core.boot.systemd = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.core.enable && config.features.core.boot.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.systemd) {
+  config = lib.mkIf cfg.systemd {
     boot.loader.systemd-boot = {
       enable = true;
       extraInstallCommands = ''

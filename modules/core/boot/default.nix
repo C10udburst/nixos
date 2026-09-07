@@ -8,10 +8,7 @@ in {
   options.features.core.boot = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.core.enable
-        then true
-        else false;
+      default = config.features.core.enable && true;
     };
     timeout = lib.mkOption {
       type = lib.types.int;
@@ -19,7 +16,7 @@ in {
     };
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     boot.loader.timeout = cfg.timeout;
   };
 }

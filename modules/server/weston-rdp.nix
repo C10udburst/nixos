@@ -35,7 +35,7 @@ in {
   options.features.server.westonRdp = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = config.features.server.enable && false;
     };
 
     desktop = lib.mkOption {
@@ -52,7 +52,7 @@ in {
     };
   };
 
-  config = lib.mkIf (serverEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [3389];
 
     users.users.${user}.linger = true;

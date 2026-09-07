@@ -8,14 +8,11 @@ in {
   options.features.gui.theme.wallpaper = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if (config.features.gui.enable && config.features.gui.theme.enable)
-        then true
-        else false;
+      default = (config.features.gui.enable && config.features.gui.theme.enable) && true;
     };
   };
 
-  config = lib.mkIf (config.features.gui.enable && config.features.gui.theme.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     stylix.image = ./_wallpaper.jpg;
   };
 }

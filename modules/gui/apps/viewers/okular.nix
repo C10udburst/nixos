@@ -22,10 +22,10 @@
 in {
   options.features.gui.apps.viewers.okular = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = viewersEnabled && true;
   };
 
-  config = lib.mkIf (viewersEnabled && cfg) {
+  config = lib.mkIf cfg {
     home-manager.users.cloudburst = {
       home.packages = [pkgs.kdePackages.okular];
       xdg.mimeApps.defaultApplications = okularMimes;

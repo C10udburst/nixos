@@ -8,10 +8,10 @@
 in {
   options.features.compat.waydroid = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = config.features.compat.enable && false;
   };
 
-  config = lib.mkIf (compatEnabled && cfg) {
+  config = lib.mkIf cfg {
     virtualisation.waydroid.enable = true;
   };
 }

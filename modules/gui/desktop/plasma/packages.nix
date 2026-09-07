@@ -8,10 +8,10 @@
 in {
   options.features.gui.desktop.plasma.packages = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.gui.enable && config.features.gui.desktop.enable && cfg.enable) && true;
   };
 
-  config = lib.mkIf (config.features.gui.enable && config.features.gui.desktop.enable && cfg.enable && cfg.packages) {
+  config = lib.mkIf cfg.packages {
     environment.systemPackages = with pkgs; [
       kdePackages.plasma-systemmonitor
       kdePackages.ksystemlog

@@ -12,7 +12,7 @@ in {
   options.features.gui.dev.android = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = devEnabled && false;
     };
     core = lib.mkOption {
       type = lib.types.bool;
@@ -37,7 +37,7 @@ in {
         };
       };
     }
-    (lib.mkIf (devEnabled && cfg.enable) {
+    (lib.mkIf cfg.enable {
       nixpkgs.config.android_sdk.accept_license = true;
 
       environment.sessionVariables = lib.mkIf cfg.dev {

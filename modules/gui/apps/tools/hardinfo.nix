@@ -12,13 +12,10 @@
 in {
   options.features.gui.apps.tools.hardinfo = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if toolsEnabled
-      then true
-      else false;
+    default = toolsEnabled && true;
   };
 
-  config = lib.mkIf (toolsEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.hardinfo2];
   };
 }

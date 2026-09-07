@@ -7,10 +7,10 @@
 in {
   options.features.core.hardware.pipewire = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.pipewire) {
+  config = lib.mkIf cfg.pipewire {
     services.pulseaudio.enable = false;
     security.rtkit.enable = true;
     services.pipewire = {

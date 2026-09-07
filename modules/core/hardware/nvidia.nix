@@ -8,10 +8,10 @@
 in {
   options.features.core.hardware.nvidia = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && false;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.nvidia) {
+  config = lib.mkIf cfg.nvidia {
     services.xserver.videoDrivers = ["nvidia"];
     hardware.nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.stable;

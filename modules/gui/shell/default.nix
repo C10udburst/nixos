@@ -9,14 +9,11 @@ in {
   options.features.gui.shell = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.gui.enable
-        then true
-        else false;
+      default = config.features.gui.enable && true;
     };
   };
 
-  config = lib.mkIf (config.features.gui.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       libnotify
       zenity

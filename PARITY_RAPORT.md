@@ -201,8 +201,6 @@
 ```
 
 ### 5. Delta Analysis & Root Causes
-- **Touchscreen & Tablet System Utilities**: `iio-sensor-proxy`, `wvkbd`, `wlr-randr`, and `konsole` (formerly declared as Home Manager packages under `driftwm/default.nix`) have been promoted to NixOS system packages via `touchscreen.nix` and `driftwm/default.nix`.
-- **Essential Tools on Tablet**: `organizeer` daemon and `qalculate-qt` (`calc`) are explicitly active on the tablet.
 - **Slow / Low-Power Device Optimizations**: `ranger` file manager, heavy CLI suites (`archive`, `diagnostics`, `nettools`, `modernCli`), 3D CAD viewer (`mayo`), and `bluetooth` are explicitly disabled on the tablet profile to preserve memory and battery.
 - **Clean Home Manager Closure**: Disabling `ranger` on the tablet eliminated all preview dependencies including `image-exiftool`, `archivemount`, `atool`, `chafa`, `ffmpegthumbnailer`, and `mediainfo` from the tablet's user environment.
 - **Java Runtime**: `openjdk-21` is enabled via `features.core.java`.

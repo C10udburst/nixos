@@ -13,7 +13,7 @@ in {
   options.features.gui.apps.tools.net = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = toolsEnabled && false;
     };
   };
 
@@ -24,7 +24,7 @@ in {
     };
   };
 
-  config = lib.mkIf ((toolsEnabled && cfg.enable) || config.features.gui.tools.net.enable) {
+  config = lib.mkIf (cfg.enable || config.features.gui.tools.net.enable) {
     programs.wireshark.enable = true;
     environment.systemPackages = [pkgs.wireshark];
     users.users.cloudburst.extraGroups = ["wireshark"];

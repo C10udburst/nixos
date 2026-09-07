@@ -11,7 +11,7 @@ in {
   options.features.compat.podman = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = config.features.compat.enable && false;
     };
     dockerCompat = lib.mkOption {
       type = lib.types.bool;
@@ -19,7 +19,7 @@ in {
     };
   };
 
-  config = lib.mkIf (compatEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     virtualisation.podman = {
       enable = true;
       dockerCompat = cfg.dockerCompat;

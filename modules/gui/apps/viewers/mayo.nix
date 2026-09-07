@@ -32,10 +32,10 @@
 in {
   options.features.gui.apps.viewers.mayo = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = viewersEnabled && true;
   };
 
-  config = lib.mkIf (viewersEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [mayoCustom];
 
     home-manager.users.cloudburst = {

@@ -10,14 +10,11 @@ in {
   options.features.gui.apps.threed.openscad = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if threedEnabled
-        then true
-        else false;
+      default = threedEnabled && true;
     };
   };
 
-  config = lib.mkIf (threedEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [pkgs.openscad];
   };
 }

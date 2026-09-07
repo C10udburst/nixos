@@ -18,10 +18,10 @@
 in {
   options.features.gui.apps.brave.apps.office = lib.mkOption {
     type = lib.types.bool;
-    default = !isLibreOffice;
+    default = braveEnabled && (!isLibreOffice);
   };
 
-  config = lib.mkIf (braveEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [
       (mkWebApp {
         name = "Google Docs";

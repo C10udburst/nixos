@@ -8,10 +8,10 @@
 in {
   options.features.core.hardware.ddc = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && false;
   };
 
-  config = lib.mkIf (config.features.core.enable && config.features.core.hardware.enable && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.ddcutil];
     hardware.i2c.enable = true;
   };

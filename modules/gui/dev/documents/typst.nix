@@ -12,10 +12,10 @@
 in {
   options.features.gui.dev.documents.typst = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = devEnabled && false;
   };
 
-  config = lib.mkIf (devEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
       typst
       typstyle

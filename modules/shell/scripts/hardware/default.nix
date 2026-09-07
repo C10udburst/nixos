@@ -44,10 +44,7 @@
 in {
   options.features.shell.scripts.hardware = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.shell.enable && config.features.shell.scripts.enable)
-      then true
-      else false;
+    default = (config.features.shell.enable && config.features.shell.scripts.enable) && true;
   };
 
   config = lib.mkMerge [
@@ -59,7 +56,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.shell.enable && config.features.shell.scripts.enable && cfg) {
+    (lib.mkIf cfg {
       environment.systemPackages =
         [
           serial

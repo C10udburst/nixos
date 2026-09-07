@@ -7,10 +7,10 @@
 in {
   options.features.shell.nushell.wrappers = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.shell.enable && config.features.shell.nushell.enable) && true;
   };
 
-  config = lib.mkIf (config.features.shell.enable && cfg.enable && cfg.wrappers) {
+  config = lib.mkIf cfg.wrappers {
     home-manager.users.cloudburst = {
       programs.nushell.extraConfig = ''
         @complete external

@@ -7,10 +7,10 @@
 in {
   options.features.services.weylus = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = config.features.services.enable && false;
   };
 
-  config = lib.mkIf (config.features.services.enable && cfg) {
+  config = lib.mkIf cfg {
     programs.weylus = {
       enable = true;
       openFirewall = true;

@@ -28,10 +28,7 @@
 in {
   options.features.gui.dev.programming.misc = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if devEnabled
-      then true
-      else false;
+    default = devEnabled && true;
   };
 
   config = lib.mkMerge [
@@ -43,7 +40,7 @@ in {
         };
       };
     }
-    (lib.mkIf (devEnabled && cfg) {
+    (lib.mkIf cfg {
       environment.systemPackages = [
         pkgs.sqlitebrowser
         gitr

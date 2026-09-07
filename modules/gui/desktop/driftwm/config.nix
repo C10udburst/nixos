@@ -20,7 +20,7 @@ in {
     };
   };
 
-  config = lib.mkIf (config.features.gui.enable && config.features.gui.desktop.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     home-manager.users.cloudburst = {config, ...}: let
       colors = config.lib.stylix.colors;
       tomlFormat = pkgs.formats.toml {};

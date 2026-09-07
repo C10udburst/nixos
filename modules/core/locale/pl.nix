@@ -7,13 +7,10 @@
 in {
   options.features.core.locale.pl = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.core.enable && config.features.core.locale.enable)
-      then true
-      else false;
+    default = (config.features.core.enable && config.features.core.locale.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && config.features.core.locale.enable && cfg) {
+  config = lib.mkIf cfg {
     time.timeZone = "Europe/Warsaw";
     i18n.defaultLocale = "pl_PL.UTF-8";
     i18n.supportedLocales = [

@@ -13,10 +13,10 @@
 in {
   options.features.gui.apps.tools.social.vesktop = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = socialEnabled && true;
   };
 
-  config = lib.mkIf (socialEnabled && cfg) {
+  config = lib.mkIf cfg {
     home-manager.users.cloudburst = {
       programs.vesktop = {
         enable = true;

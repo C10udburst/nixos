@@ -37,7 +37,7 @@ in {
   options.features.gui.dev.python = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = devEnabled && true;
     };
     dataScience = lib.mkOption {
       type = lib.types.bool;
@@ -53,7 +53,7 @@ in {
     };
   };
 
-  config = lib.mkIf (devEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       pythonPkg
     ];

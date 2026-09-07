@@ -11,10 +11,7 @@ in {
   options.features.gui.desktop.driftwm = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if (config.features.gui.enable && config.features.gui.desktop.enable)
-        then true
-        else false;
+      default = (config.features.gui.enable && config.features.gui.desktop.enable) && true;
     };
   };
 
@@ -31,7 +28,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.gui.enable && config.features.gui.desktop.enable && cfg.enable) {
+    (lib.mkIf cfg.enable {
       programs.kdeconnect.enable = lib.mkDefault (!isSlow);
 
       systemd.packages = [pkgs.driftwm];

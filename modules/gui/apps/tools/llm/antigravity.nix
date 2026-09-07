@@ -14,7 +14,7 @@
 in {
   options.features.gui.apps.tools.llm.antigravity = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = llmEnabled && true;
   };
 
   config = lib.mkMerge [
@@ -23,7 +23,7 @@ in {
         antigravity-nix.url = "github:jacopone/antigravity-nix";
       };
     }
-    (lib.mkIf (llmEnabled && cfg) {
+    (lib.mkIf cfg {
       environment.systemPackages =
         lib.optionals (
           inputs ? antigravity-nix

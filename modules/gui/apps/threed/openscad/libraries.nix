@@ -10,10 +10,7 @@
 in {
   options.features.gui.apps.threed.openscad.libraries = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if openscadEnabled
-      then true
-      else false;
+    default = openscadEnabled && true;
   };
 
   config = lib.mkMerge [
@@ -37,7 +34,7 @@ in {
         };
       };
     }
-    (lib.mkIf (openscadEnabled && cfg) {
+    (lib.mkIf cfg {
       home-manager.users.cloudburst = {
         xdg.dataFile = {
           "OpenSCAD/libraries/BOSL2".source = inputs.openscad-bosl2;

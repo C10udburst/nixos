@@ -11,13 +11,10 @@
 in {
   options.features.shell.scripts.documents = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.shell.enable && config.features.shell.scripts.enable)
-      then true
-      else false;
+    default = (config.features.shell.enable && config.features.shell.scripts.enable) && true;
   };
 
-  config = lib.mkIf (config.features.shell.enable && config.features.shell.scripts.enable && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [
       beamer-clean
       ics-merge

@@ -24,7 +24,7 @@ in {
   options.features.server.samba = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = config.features.server.enable && false;
     };
     paths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -32,7 +32,7 @@ in {
     };
   };
 
-  config = lib.mkIf (serverEnabled && cfg.enable && cfg.paths != []) {
+  config = lib.mkIf (cfg.enable && cfg.paths != []) {
     services.samba = {
       enable = true;
       openFirewall = true;

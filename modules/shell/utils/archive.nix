@@ -9,13 +9,10 @@
 in {
   options.features.shell.utils.archive = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if utilsEnabled
-      then true
-      else false;
+    default = utilsEnabled && true;
   };
 
-  config = lib.mkIf (utilsEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
       zip
       unzip

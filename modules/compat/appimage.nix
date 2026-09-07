@@ -7,10 +7,10 @@
 in {
   options.features.compat.appimage = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = config.features.compat.enable && false;
   };
 
-  config = lib.mkIf (config.features.compat.enable && cfg.appimage) {
+  config = lib.mkIf cfg.appimage {
     programs.appimage = {
       enable = true;
       binfmt = true;

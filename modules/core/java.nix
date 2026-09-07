@@ -9,14 +9,11 @@ in {
   options.features.core.java = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.core.enable
-        then true
-        else false;
+      default = config.features.core.enable && true;
     };
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     programs.java = {
       enable = true;
       package = pkgs.jdk;

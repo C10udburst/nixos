@@ -14,10 +14,10 @@
 in {
   options.features.gui.apps.viewers.haruna = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = viewersEnabled && true;
   };
 
-  config = lib.mkIf (viewersEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.haruna];
 
     home-manager.users.cloudburst = {

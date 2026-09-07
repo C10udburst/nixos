@@ -8,10 +8,10 @@
 in {
   options.features.core.hardware.fuse = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.fuse) {
+  config = lib.mkIf cfg.fuse {
     programs.fuse.userAllowOther = true;
 
     environment.systemPackages =
