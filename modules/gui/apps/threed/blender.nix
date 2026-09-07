@@ -4,11 +4,11 @@
   pkgs,
   ...
 }: let
-  threedEnabled = config.features.gui.enable && config.features.gui.threed.enable;
-  cfg = config.features.gui.threed.blender;
+  threedEnabled = config.features.gui.enable && config.features.gui.apps.threed.enable;
+  cfg = config.features.gui.apps.threed.blender;
   blenderVersion = lib.versions.majorMinor pkgs.blender.version;
 in {
-  options.features.gui.threed.blender = lib.mkOption {
+  options.features.gui.apps.threed.blender = lib.mkOption {
     type = lib.types.bool;
     default =
       if threedEnabled

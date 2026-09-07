@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  options.features.gui.threed = {
+  options.features.gui.apps.threed = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;

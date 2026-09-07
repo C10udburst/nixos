@@ -4,11 +4,11 @@
   inputs,
   ...
 }: let
-  threedEnabled = config.features.gui.enable && config.features.gui.threed.enable;
-  openscadEnabled = threedEnabled && config.features.gui.threed.openscad.enable;
-  cfg = config.features.gui.threed.openscad.libraries;
+  threedEnabled = config.features.gui.enable && config.features.gui.apps.threed.enable;
+  openscadEnabled = threedEnabled && config.features.gui.apps.threed.openscad.enable;
+  cfg = config.features.gui.apps.threed.openscad.libraries;
 in {
-  options.features.gui.threed.openscad.libraries = lib.mkOption {
+  options.features.gui.apps.threed.openscad.libraries = lib.mkOption {
     type = lib.types.bool;
     default =
       if openscadEnabled

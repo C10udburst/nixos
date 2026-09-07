@@ -21,7 +21,10 @@
 
     shell = {
       enable = true;
-      scripts.enable = false;
+      scripts = {
+        enable = false;
+        hardware = true;
+      };
       utils.enable = false;
     };
 
@@ -37,13 +40,15 @@
       apps = {
         brave.enable = true;
         editors = {
-          vscode = false;
-          office.libreoffice = false;
+          enable = false;
         };
         tools = {
-          obs = false;
-          social.enable = false;
-          llm.enable = false;
+          enable = false;
+          nomacs = true;
+          haruna = true;
+          konsole = true;
+          okular = true;
+          dolphin = true;
         };
       };
       dev.enable = false;

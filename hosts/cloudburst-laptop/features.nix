@@ -5,7 +5,6 @@
       hardware = {
         mobile = true;
         nvidia = true;
-        appimage = true;
       };
     };
 
@@ -29,6 +28,7 @@
       };
       apps = {
         brave.enable = true;
+        threed.enable = true;
         editors = {
           vscode = true;
           office = {
@@ -46,11 +46,11 @@
         python.enable = true;
         android.enable = true;
       };
-      threed.enable = true;
     };
 
     compat = {
       enable = true;
+      appimage = true;
       wine = true;
       podman.enable = true;
     };

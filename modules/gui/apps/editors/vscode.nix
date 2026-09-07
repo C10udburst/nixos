@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.features.gui.apps.editors.vscode;
@@ -13,7 +14,7 @@
   isLatex = isDev && (config.features.gui.dev.documents.latex or false);
   isTypst = isDev && (config.features.gui.dev.documents.typst or false);
   isArduino = isDev && (config.features.gui.dev.arduino.enable or false);
-  isThreed = isDev && (config.features.gui.dev.threed.enable or false);
+  isThreed = config.features.gui.apps.threed.enable or false;
 
   exts = pkgs.vscode-marketplace or {};
 
@@ -73,46 +74,60 @@ in {
     default = true;
   };
 
-  config = lib.mkIf (editorsEnabled && cfg) {
-    home-manager.users.cloudburst = {
-      programs.vscode = {
-        enable = true;
-        extensions = coreExtensions;
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        nix-vscode-extensions = {
+          url = "github:nix-community/nix-vscode-extensions";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
       };
+    }
+    (lib.mkIf (editorsEnabled && cfg) {
+      nixpkgs.overlays = [
+        (inputs.nix-vscode-extensions.overlays.default or (_: _: {}))
+      ];
 
-      xdg.mimeApps = {
-        defaultApplications = {
-          "text/javascript" = ["code.desktop"];
-          "application/javascript" = ["code.desktop"];
-          "text/x-python" = ["code.desktop"];
-          "text/x-rust" = ["code.desktop"];
-          "text/x-c" = ["code.desktop"];
-          "text/x-c++" = ["code.desktop"];
-          "text/x-go" = ["code.desktop"];
-          "text/x-java" = ["code.desktop"];
-          "text/plain" = ["code.desktop"];
-          "text/x-shellscript" = ["code.desktop"];
-          "application/json" = ["code.desktop"];
-          "text/markdown" = ["code.desktop"];
-          "text/x-nix" = ["code.desktop"];
-          "text/x-yaml" = ["code.desktop"];
-          "text/x-toml" = ["code.desktop"];
-          "text/x-ini" = ["code.desktop"];
-          "text/x-xml" = ["code.desktop"];
-          "text/x-sql" = ["code.desktop"];
-          "text/x-php" = ["code.desktop"];
-          "text/x-perl" = ["code.desktop"];
-          "text/x-ruby" = ["code.desktop"];
-          "text/x-lua" = ["code.desktop"];
-          "text/x-haskell" = ["code.desktop"];
-          "text/x-scala" = ["code.desktop"];
-          "text/x-kotlin" = ["code.desktop"];
-          "text/x-vb" = ["code.desktop"];
+      home-manager.users.cloudburst = {
+        programs.vscode = {
+          enable = true;
+          extensions = coreExtensions;
         };
-        associations.added = {
-          "inode/directory" = ["code.desktop"];
+
+        xdg.mimeApps = {
+          defaultApplications = {
+            "text/javascript" = ["code.desktop"];
+            "application/javascript" = ["code.desktop"];
+            "text/x-python" = ["code.desktop"];
+            "text/x-rust" = ["code.desktop"];
+            "text/x-c" = ["code.desktop"];
+            "text/x-c++" = ["code.desktop"];
+            "text/x-go" = ["code.desktop"];
+            "text/x-java" = ["code.desktop"];
+            "text/plain" = ["code.desktop"];
+            "text/x-shellscript" = ["code.desktop"];
+            "application/json" = ["code.desktop"];
+            "text/markdown" = ["code.desktop"];
+            "text/x-nix" = ["code.desktop"];
+            "text/x-yaml" = ["code.desktop"];
+            "text/x-toml" = ["code.desktop"];
+            "text/x-ini" = ["code.desktop"];
+            "text/x-xml" = ["code.desktop"];
+            "text/x-sql" = ["code.desktop"];
+            "text/x-php" = ["code.desktop"];
+            "text/x-perl" = ["code.desktop"];
+            "text/x-ruby" = ["code.desktop"];
+            "text/x-lua" = ["code.desktop"];
+            "text/x-haskell" = ["code.desktop"];
+            "text/x-scala" = ["code.desktop"];
+            "text/x-kotlin" = ["code.desktop"];
+            "text/x-vb" = ["code.desktop"];
+          };
+          associations.added = {
+            "inode/directory" = ["code.desktop"];
+          };
         };
       };
-    };
-  };
+    })
+  ];
 }

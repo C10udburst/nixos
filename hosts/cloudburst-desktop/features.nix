@@ -2,9 +2,6 @@
   features = {
     core = {
       enable = true;
-      hardware = {
-        appimage = true;
-      };
     };
 
     services = {
@@ -32,6 +29,7 @@
       };
       apps = {
         brave.enable = true;
+        threed.enable = true;
         editors = {
           vscode = true;
           office = {
@@ -65,11 +63,11 @@
           dev = true;
         };
       };
-      threed.enable = true;
     };
 
     compat = {
       enable = true;
+      appimage = true;
       wine = true;
       waydroid = true;
       podman.enable = true;

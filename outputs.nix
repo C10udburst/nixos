@@ -3,11 +3,6 @@
   nixpkgs,
   ...
 } @ inputs: let
-  systems = [
-    "x86_64-linux"
-    "aarch64-linux"
-  ];
-  forEachSystem = nixpkgs.lib.genAttrs systems;
   importTree = inputs.import-tree or (import ./lib/import-tree.nix);
   dendriticModules = importTree ./modules;
 
@@ -35,20 +30,6 @@
       ];
     };
 in {
-  devShells = forEachSystem (system: {
-    default = nixpkgs.legacyPackages.${system}.mkShell {
-      packages = [inputs.driftwm-desktop.packages.${system}.default];
-    };
-    driftwm-desktop = nixpkgs.legacyPackages.${system}.mkShell {
-      packages = [inputs.driftwm-desktop.packages.${system}.default];
-    };
-  });
-
-  packages = forEachSystem (system: {
-    default = inputs.driftwm-desktop.packages.${system}.default;
-    driftwm-desktop = inputs.driftwm-desktop.packages.${system}.default;
-  });
-
   nixosConfigurations = {
     cloudburst-desktop = mkHost {hostName = "cloudburst-desktop";};
     cloudburst-laptop = mkHost {hostName = "cloudburst-laptop";};
