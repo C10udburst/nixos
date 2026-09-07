@@ -19,9 +19,10 @@ This document visualizes the complete file tree of the proposed dendritic archit
 ├── lib/                            # Dendritic core engine
 │   ├── default.nix                 # Library entry point
 │   ├── node.nix                    # mkDendriticNode: types.coercedTo bool, parent gating & canonical defaults
-│   ├── helpers/
-│   │   ├── jinja.nix
-│   └── dispatcher.nix              # Collector & injector for nixos and home-manager modules
+│   ├── import-tree.nix             # Directory traversal & auto-discovery helper
+│   └── helpers/
+│       ├── associations.nix        # Decentralized MIME type helper (associatePackage)
+│       └── jinja.nix               # Jinja2 template rendering helper
 │
 ├── hosts/                          # Machine configurations (4-file standard structure)
 │   ├── cloudburst-desktop/
@@ -113,11 +114,13 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   └── utils/                  # Command-line packages split by profile
     │       ├── default.nix         # Utils master aggregator
     │       ├── modern-cli.nix      # bat, fd, ripgrep, procs, dust, fzf, hexyl, binwalk, qrencode, zbar, jless
+    │       ├── nix.nix             # alejandra, nix-output-monitor, nix-heuristic-gc, nix-index
     │       ├── fun.nix             # kimsay, asciinema
     │       └── nettools.nix        # nmap, traceroute, dig, mptcpd
     │
     ├── gui/                        # Graphical user environment
-    │   ├── default.nix             # GUI umbrella module
+    │   ├── default.nix             # GUI umbrella module & MIME defaults
+    │   ├── xdg.nix                 # XDG desktop portals & integration
     │   ├── desktop/
     │   │   ├── default.nix         # Desktop compositor selector
     │   │   ├── plasma/
@@ -129,7 +132,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │       ├── noctalia.nix    # Noctalia desktop shell & status bar plugins
     │   │       └── _wallpaper.glsl # Co-located shader wallpaper
     │   ├── greeter/
-    │   │   └── greetd.nix          # Greetd / tuigreet display manager & autologin
+    │   │   └── default.nix         # Greeter module (ReGreet & autologin)
     │   ├── theme/
     │   │   ├── default.nix         # Master theme aggregator
     │   │   ├── core.nix            # Stylix core palette & Base16 engine
@@ -140,41 +143,47 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   ├── default.nix         # Desktop applications aggregator
     │   │   ├── brave/
     │   │   │   ├── default.nix     # Core Brave browser, system flags & enterprise policies
+    │   │   │   ├── _mkwebapp.nix   # WebApp generator helper
     │   │   │   └── apps/
     │   │   │       ├── default.nix # WebApps umbrella module
     │   │   │       ├── office.nix  # Google Docs, Sheets, SiYuan Notes
-    │   │   │       ├── media.nix   # Immich Photos, Fetlife DB
+    │   │   │       ├── media.nix   # Immich Photos
     │   │   │       ├── homelab.nix # Home Assistant, Wealthfolio
-    │   │   │       └── social.nix  # Web messenger fallbacks (Messenger)
+    │   │   │       ├── social.nix  # Web messenger fallbacks (Messenger)
+    │   │   │       └── other.nix   # XTB xStation 5, Fetlife DB
     │   │   ├── editors/
     │   │   │   ├── default.nix     # Editors umbrella & Neovim fallback
     │   │   │   ├── office/         # Office & document editors
     │   │   │   │   ├── default.nix # Office umbrella module
     │   │   │   │   ├── libreoffice.nix # LibreOffice suite
     │   │   │   │   └── pdf.nix     # PDF tools (pdfgrep, pandoc, karp)
+    │   │   │   ├── images.nix      # GIMP & Inkscape raster/vector editors
     │   │   │   ├── vscode.nix      # VS Code & extension management
     │   │   │   └── jetbrains.nix   # JetBrains IDEs (dynamically enables IDEs for active languages)
     │   │   └── tools/
     │   │       ├── default.nix     # Tools umbrella
     │   │       ├── dolphin/
-    │   │       │   ├── default.nix # Dolphin file manager
+    │   │       │   ├── default.nix     # Dolphin file manager & contextual services
     │   │       │   ├── _dolphinui.xml
-    │   │       │   └── _dolphinrc.ini
-    │   │       ├── konsole/
-    │   │       │   ├── default.nix # Konsole terminal
-    │   │       │   └── _Konsole.profile.j2
+    │   │       │   ├── _dolphinrc.ini
+    │   │       │   ├── _vscode.desktop
+    │   │       │   └── _gitr.desktop
+    │   │       ├── konsole.nix     # Konsole terminal & default terminal association
+    │   │       ├── nomacs.nix      # Nomacs image viewer & MIME associations
+    │   │       ├── haruna.nix      # Haruna video player & MIME associations
+    │   │       ├── okular.nix      # Okular document viewer & PDF MIME associations
+    │   │       ├── mayo.nix        # Mayo 3D CAD viewer & STEP/IGES MIME associations
     │   │       ├── obs.nix         # OBS Studio screen recording & virtual camera
     │   │       ├── social/         # Native messaging desktop applications
     │   │       │   ├── default.nix # Social umbrella module
     │   │       │   ├── vesktop.nix # Discord client with Vencord
     │   │       │   ├── telegram.nix# Telegram Desktop
     │   │       │   └── signal.nix  # Signal Desktop
-    │   │       ├── llm/            # Local LLM & AI agent tooling
-    │   │       │   ├── default.nix # LLM umbrella module
-    │   │       │   ├── antigravity.nix # Google Antigravity IDE & CLI
-    │   │       │   ├── pi.nix      # Pi coding agent
-    │   │       │   └── ollama.nix  # Local Ollama daemon
-    │   │       └── associations.nix# Default application MIME type mappings
+    │   │       └── llm/            # Local LLM & AI agent tooling
+    │   │           ├── default.nix # LLM umbrella module
+    │   │           ├── antigravity.nix # Google Antigravity IDE & CLI
+    │   │           ├── pi.nix      # Pi coding agent
+    │   │           └── ollama.nix  # Local Ollama daemon
     │   └── dev/                    # Developer toolchains & workstation environments
     │       ├── default.nix         # Developer umbrella module
     │       ├── programming/
@@ -215,9 +224,10 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | Legacy Location                                        | New Dendritic Location                     | Notes                                              |
 | :----------------------------------------------------- | :----------------------------------------- | :------------------------------------------------- |
 | `modules/render-template.nix`                          | `lib/helpers/jinja.nix`                    | Shared Jinja2 template rendering helper            |
+| *(new helper)*                                         | `lib/helpers/associations.nix`             | MIME type association helper (`associatePackage`)  |
 | `modules/nixos/nix.nix`                                | `modules/core/nix.nix`                     | Configures flakes, substituters, gc                |
 | `modules/nixos/users.nix` + `modules/home/user.nix`    | `modules/core/users/cloudburst.nix`        | Unified system user + HM state                     |
-| `modules/nixos/locale.nix`                             | `modules/core/locale.nix`                  | Timezone, keymaps, i18n                            |
+| `modules/nixos/locale.nix`                             | `modules/core/locale/pl.nix`               | Timezone, keymaps, i18n                            |
 | `modules/nixos/zram.nix` + `ldfix.nix` + `main.nix`    | `modules/core/hardware.nix`                | Base drivers, zram, ldfix, kernel tweaks          |
 | `modules/nixos/tailscale.nix`                          | `modules/services/tailscale.nix`           | Tailscale VPN daemon & exit node                   |
 | `modules/nixos/weylus.nix`                             | `modules/services/weylus.nix`              | Tablet screen mirror & stylus input                |
@@ -227,19 +237,23 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/home/ranger/*`                                | `modules/shell/ranger/*`                   | Python commands co-located as `_commands.py`       |
 | `modules/home/git.nix`                                 | `modules/shell/git.nix`                    | Git configuration                                  |
 | `modules/nixos/scripts/*`                              | `modules/shell/scripts/<category>/*`       | Split into `media/`, `dev/`, `hardware/`, `documents/` |
-| *(new module)*                                         | `modules/shell/utils/*`                    | Split into `modern-cli.nix`, `fun.nix`, `nettools.nix` |
+| *(new module)*                                         | `modules/shell/utils/*`                    | Split into `modern-cli.nix`, `nix.nix`, `fun.nix`, `nettools.nix` |
 | `modules/nixos/theme.nix` + `wallpaper.jpg`            | `modules/gui/theme/*`                      | Split into `core.nix`, `wallpaper.nix`, `font.nix` |
 | `modules/nixos/driftwm.nix` + `modules/home/driftwm/*` | `modules/gui/desktop/driftwm/*`            | Co-located `_wallpaper.glsl` & `desktop.nix`       |
 | `modules/home/driftwm/noctalia.nix`                    | `modules/gui/desktop/driftwm/noctalia.nix` | Noctalia bar & inputs                              |
 | `modules/nixos/plasma.nix` + `modules/home/plasma.nix` | `modules/gui/desktop/plasma/*`             | Split into `default.nix` and `packages.nix`        |
-| `modules/nixos/greetd.nix`                             | `modules/gui/greeter/greetd.nix`           | Greetd & tuigreet configuration                    |
-| `modules/nixos/brave/default.nix`                      | `modules/gui/apps/brave/default.nix`       | Core browser & enterprise policies                 |
-| `modules/nixos/brave/apps.nix`                         | `modules/gui/apps/brave/apps/*`            | Split into `office.nix`, `media.nix`, `homelab.nix`, `social.nix` |
+| `modules/nixos/greetd.nix`                             | `modules/gui/greeter/default.nix`          | ReGreet & autologin configuration                  |
+| `modules/nixos/brave/default.nix`                      | `modules/gui/apps/brave/default.nix`       | Core browser, system flags & enterprise policies   |
+| `modules/nixos/brave/apps.nix`                         | `modules/gui/apps/brave/apps/*`            | Split into `office.nix`, `media.nix`, `homelab.nix`, `social.nix`, `other.nix` |
 | `modules/home/libreoffice.nix`                         | `modules/gui/apps/editors/office/*`        | Split into `libreoffice.nix` and `pdf.nix`         |
 | `modules/home/vscode.nix`                              | `modules/gui/apps/editors/vscode.nix`      | VS Code + extensions input                         |
 | `modules/nixos/jetbrains.nix` + `home/jetbrains.nix`   | `modules/gui/apps/editors/jetbrains.nix`   | Dynamic JetBrains IDE selection based on dev stack |
-| `modules/home/dolphin/*`                               | `modules/gui/apps/tools/dolphin/*`         | Co-located `_dolphinui.xml`                        |
-| `modules/home/konsole/*`                               | `modules/gui/apps/tools/konsole/*`         | Co-located `_Konsole.profile.j2`                   |
+| `modules/home/dolphin/*`                               | `modules/gui/apps/tools/dolphin/*`         | Dolphin + contextual desktop files & configs       |
+| `modules/home/konsole/*`                               | `modules/gui/apps/tools/konsole.nix`       | Konsole terminal                                   |
+| *(new module)*                                         | `modules/gui/apps/tools/nomacs.nix`        | Nomacs viewer & decentralized MIME associations    |
+| *(new module)*                                         | `modules/gui/apps/tools/haruna.nix`        | Haruna video player & decentralized MIME associations |
+| *(new module)*                                         | `modules/gui/apps/tools/okular.nix`        | Okular document viewer & PDF MIME associations     |
+| *(new module)*                                         | `modules/gui/apps/tools/mayo.nix`          | Mayo CAD viewer & STEP/IGES MIME associations      |
 | `modules/nixos/obs.nix`                                | `modules/gui/apps/tools/obs.nix`           | OBS Studio                                         |
 | `modules/home/social.nix`                              | `modules/gui/apps/tools/social/*`          | Split into `vesktop.nix`, `telegram.nix`, `signal.nix` |
 | *(new module)*                                         | `modules/gui/apps/tools/llm/*`             | Split into `antigravity.nix`, `pi.nix`, `ollama.nix` |
@@ -248,7 +262,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/arduino.nix`                            | `modules/gui/dev/arduino.nix`              | Microcontroller toolchains                         |
 | `modules/nixos/threed.nix` + `home/threed.nix`         | `modules/gui/dev/threed.nix`               | 3D printing & CAD toolchain                        |
 | `modules/nixos/latex.nix` + `typst.nix`                | `modules/gui/dev/documents/*`              | Typesetting tools (`latex.nix`, `typst.nix`)       |
-| `modules/nixos/android.nix`                            | `modules/gui/dev/android.nix`              | Android SDK, adb, udev rules & scrcpy              |
+| `modules/nixos/android.nix`                            | `modules/gui/dev/android.nix`              | Android SDK, udev rules & scrcpy                   |
 | `modules/home/wine/*`                                  | `modules/compat/wine/*`                    | Wine layer with co-located `_theme.reg.j2`         |
 | *(new module)*                                         | `modules/compat/distrobox.nix`             | Distrobox containers                               |
 | *(new module)*                                         | `modules/compat/waydroid.nix`              | Waydroid emulation                                 |
