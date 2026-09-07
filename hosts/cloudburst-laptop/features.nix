@@ -34,12 +34,18 @@
           office = {
             libreoffice = true;
           };
+          media = {
+            images = true;
+            videos = true;
+            audio = true;
+          };
         };
         tools = {
           social.enable = true;
           llm.enable = true;
         };
       };
+      games.enable = true;
       dev = {
         enable = true;
         programming.enable = true;

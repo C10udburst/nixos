@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: let
-  cfg = config.features.gui.apps.tools.mayo;
-  toolsEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable;
+  cfg = config.features.gui.apps.viewers.mayo;
+  viewersEnabled =
+    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.viewers.enable;
   isSlow = config.features.core.hardware.slow or false;
   associatePackage = (import ../../../../lib/helpers/associations.nix {inherit lib;}).associatePackage;
 
@@ -30,12 +30,12 @@
 
   mayoMimes = associatePackage mayoCustom;
 in {
-  options.features.gui.apps.tools.mayo = lib.mkOption {
+  options.features.gui.apps.viewers.mayo = lib.mkOption {
     type = lib.types.bool;
-    default = !isSlow;
+    default = true;
   };
 
-  config = lib.mkIf (toolsEnabled && cfg && !isSlow) {
+  config = lib.mkIf (viewersEnabled && cfg) {
     home-manager.users.cloudburst = {
       home.packages = [mayoCustom];
 

@@ -36,6 +36,11 @@
             libreoffice = true;
           };
           jetbrains.enable = true;
+          media = {
+            images = true;
+            videos = true;
+            audio = true;
+          };
         };
         tools = {
           obs = true;

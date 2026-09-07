@@ -177,22 +177,35 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   │   │   ├── default.nix # Office umbrella module
     │   │   │   │   ├── libreoffice.nix # LibreOffice suite
     │   │   │   │   └── pdf.nix     # PDF tools (pdfgrep, pandoc, karp)
-    │   │   │   ├── images.nix      # GIMP & Inkscape raster/vector editors
+    │   │   │   ├── media/          # Multimedia editing applications
+    │   │   │   │   ├── default.nix # Media umbrella module
+    │   │   │   │   ├── images.nix  # GIMP with plugins, Inkscape, ImageMagick
+    │   │   │   │   ├── videos.nix  # Kdenlive video editor
+    │   │   │   │   └── audio.nix   # Audacity audio editor
     │   │   │   ├── vscode.nix      # VS Code & extension management
     │   │   │   └── jetbrains.nix   # JetBrains IDEs (dynamically enables IDEs for active languages)
+    │   │   ├── viewers/            # Default viewers and file manager
+    │   │   │   ├── default.nix     # Viewers umbrella module
+    │   │   │   ├── dolphin/        # Dolphin file manager & contextual services
+    │   │   │   │   ├── default.nix
+    │   │   │   │   ├── _dolphinui.xml
+    │   │   │   │   ├── _dolphinrc.ini
+    │   │   │   │   ├── _vscode.desktop
+    │   │   │   │   └── _gitr.desktop
+    │   │   │   ├── haruna.nix      # Haruna video player & video MIME associations
+    │   │   │   ├── nomacs.nix      # Nomacs image viewer & image MIME associations
+    │   │   │   ├── okular.nix      # Okular document viewer & PDF MIME associations
+    │   │   │   └── mayo.nix        # Mayo 3D CAD viewer & STEP/IGES MIME associations
+    │   │   ├── games/              # Gaming platforms and launchers
+    │   │   │   ├── default.nix     # Games umbrella module
+    │   │   │   ├── steam.nix       # Steam client and Gamemode
+    │   │   │   ├── epic.nix        # Heroic Games Launcher (Epic Games / GOG)
+    │   │   │   └── misc.nix        # Lutris, MangoHud, ProtonUp-Qt
     │   │   └── tools/
     │   │       ├── default.nix     # Tools umbrella
-    │   │       ├── dolphin/
-    │   │       │   ├── default.nix # Dolphin file manager & contextual services
-    │   │       │   ├── _dolphinui.xml
-    │   │       │   ├── _dolphinrc.ini
-    │   │       │   ├── _vscode.desktop
-    │   │       │   └── _gitr.desktop
+    │   │       ├── calc.nix        # Qalculate-qt calculator
+    │   │       ├── hardinfo.nix    # Hardinfo2 system profiler
     │   │       ├── konsole.nix     # Konsole terminal & default terminal association
-    │   │       ├── nomacs.nix      # Nomacs image viewer & MIME associations
-    │   │       ├── haruna.nix      # Haruna video player & MIME associations
-    │   │       ├── okular.nix      # Okular document viewer & PDF MIME associations
-    │   │       ├── mayo.nix        # Mayo 3D CAD viewer & STEP/IGES MIME associations
     │   │       ├── obs.nix         # OBS Studio screen recording & virtual camera
     │   │       ├── social/         # Native messaging desktop applications
     │   │       │   ├── default.nix # Social umbrella module
@@ -265,15 +278,19 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/greetd.nix`                             | `modules/gui/greeter/*`                    | Split into default.nix, regreet.nix, autogreet.nix |
 | `modules/nixos/brave/default.nix`                      | `modules/gui/apps/brave/default.nix`       | Core browser, system flags & enterprise policies   |
 | `modules/nixos/brave/apps.nix`                         | `modules/gui/apps/brave/apps/*`            | Split into `office.nix`, `media.nix`, `homelab.nix`, `social.nix`, `other.nix` |
+| `modules/nixos/editors.nix`                            | `modules/gui/apps/editors/media/*`         | Split into `images.nix`, `videos.nix`, `audio.nix` |
 | `modules/home/libreoffice.nix`                         | `modules/gui/apps/editors/office/*`        | Split into `libreoffice.nix` and `pdf.nix`         |
 | `modules/home/vscode.nix`                              | `modules/gui/apps/editors/vscode.nix`      | VS Code + extensions input                         |
 | `modules/nixos/jetbrains.nix` + `home/jetbrains.nix`   | `modules/gui/apps/editors/jetbrains.nix`   | Dynamic JetBrains IDE selection based on dev stack |
-| `modules/home/dolphin/*`                               | `modules/gui/apps/tools/dolphin/*`         | Dolphin + contextual desktop files & configs       |
+| `modules/home/dolphin/*`                               | `modules/gui/apps/viewers/dolphin/*`       | Dolphin + contextual desktop files & configs       |
 | `modules/home/konsole/*`                               | `modules/gui/apps/tools/konsole.nix`       | Konsole terminal                                   |
-| *(new module)*                                         | `modules/gui/apps/tools/nomacs.nix`        | Nomacs viewer & decentralized MIME associations    |
-| *(new module)*                                         | `modules/gui/apps/tools/haruna.nix`        | Haruna video player & decentralized MIME associations |
-| *(new module)*                                         | `modules/gui/apps/tools/okular.nix`        | Okular document viewer & PDF MIME associations     |
-| *(new module)*                                         | `modules/gui/apps/tools/mayo.nix`          | Mayo CAD viewer & STEP/IGES MIME associations      |
+| *(new module)*                                         | `modules/gui/apps/viewers/nomacs.nix`      | Nomacs viewer & decentralized MIME associations    |
+| *(new module)*                                         | `modules/gui/apps/viewers/haruna.nix`      | Haruna video player & decentralized MIME associations |
+| *(new module)*                                         | `modules/gui/apps/viewers/okular.nix`      | Okular document viewer & PDF MIME associations     |
+| *(new module)*                                         | `modules/gui/apps/viewers/mayo.nix`        | Mayo CAD viewer & STEP/IGES MIME associations      |
+| `modules/nixos/gaming.nix`                             | `modules/gui/games/*`                      | Split into `steam.nix`, `epic.nix`, `misc.nix`      |
+| *(new module)*                                         | `modules/gui/apps/tools/calc.nix`          | Qalculate-qt calculator                            |
+| *(new module)*                                         | `modules/gui/apps/tools/hardinfo.nix`      | Hardinfo2 system profiler                          |
 | `modules/nixos/obs.nix`                                | `modules/gui/apps/tools/obs.nix`           | OBS Studio                                         |
 | `modules/home/social.nix`                              | `modules/gui/apps/tools/social/*`          | Split into `vesktop.nix`, `telegram.nix`, `signal.nix` |
 | *(new module)*                                         | `modules/gui/apps/tools/llm/*`             | Split into `antigravity.nix`, `pi.nix`, `ollama.nix` |

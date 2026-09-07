@@ -77,9 +77,14 @@
         };
         editors = {
           enable = true;
-          images = false;
           jetbrains = {
             enable = false;
+          };
+          media = {
+            audio = false;
+            enable = false;
+            images = false;
+            videos = false;
           };
           office = {
             enable = true;
@@ -100,9 +105,9 @@
           orca = true;
         };
         tools = {
-          dolphin = true;
+          calc = true;
           enable = true;
-          haruna = true;
+          hardinfo = true;
           konsole = true;
           llm = {
             antigravity = true;
@@ -110,16 +115,21 @@
             ollama = false;
             pi = true;
           };
-          mayo = true;
-          nomacs = true;
           obs = false;
-          okular = true;
           social = {
             enable = false;
             signal = true;
             telegram = true;
             vesktop = true;
           };
+        };
+        viewers = {
+          dolphin = true;
+          enable = true;
+          haruna = true;
+          mayo = true;
+          nomacs = true;
+          okular = true;
         };
       };
       desktop = {
@@ -178,6 +188,12 @@
         };
       };
       enable = true;
+      games = {
+        enable = false;
+        epic = false;
+        misc = false;
+        steam = false;
+      };
       greeter = {
         enable = true;
         regreet = true;
@@ -252,6 +268,8 @@
         enable = true;
       };
       utils = {
+        archive = true;
+        diagnostics = true;
         enable = true;
         fun = true;
         modernCli = true;

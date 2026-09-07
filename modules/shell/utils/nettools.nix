@@ -29,6 +29,8 @@ in {
         lsof
         wakeonlan
         inetutils
+        wirelesstools
+        socat
       ]
       ++ lib.optionals (inputs ? tailcat && inputs.tailcat ? packages && inputs.tailcat.packages ? ${pkgs.stdenv.hostPlatform.system}) [
         inputs.tailcat.packages.${pkgs.stdenv.hostPlatform.system}.default
