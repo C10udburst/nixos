@@ -18,8 +18,9 @@ in {
   };
 
   config = lib.mkIf (viewersEnabled && cfg) {
+    environment.systemPackages = [pkgs.haruna];
+
     home-manager.users.cloudburst = {
-      home.packages = [pkgs.haruna];
       xdg.mimeApps.defaultApplications = harunaMimes;
     };
   };

@@ -19,7 +19,10 @@
 
     shell = {
       ranger.enable = false;
-      utils.enable = false;
+      utils = {
+        enable = false;
+        core = true;
+      };
       scripts = {
         dev = false;
         documents = false;
