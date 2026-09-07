@@ -3,10 +3,10 @@
 # A rebuild script that commits on a successful build across local and remote hosts
 set -eo pipefail
 
-# cd to your config dir
-pushd ~/nixos/ > /dev/null
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+pushd "$SCRIPT_DIR" > /dev/null
 
-# Autoformat your nix files gracefully
+# Autoformat nix files gracefully
 if ! alejandra . &>/dev/null; then
   alejandra .
   echo "❌ Formatting failed!"
@@ -42,14 +42,11 @@ COMMIT_ENTRIES=()
 REBOOT_LOCAL=false
 
 for TARGET in "${TARGETS[@]}"; do
-  # Normalize target name
   [[ "$TARGET" == "localhost" || "$TARGET" == "127.0.0.1" ]] && TARGET="$LOCAL_HOST"
 
   echo -e "\n🚀 NixOS Rebuilding host '$TARGET' with action '$DISPLAY_ACTION'..."
 
   if [[ "$TARGET" == "$LOCAL_HOST" ]]; then
-    # --- LOCAL REBUILD ---
-    # Refresh local sudo using the cached password via standard input (-S)
     echo "$PASSWORD" | sudo -S -v &>/dev/null
 
     if ! echo "$PASSWORD" | sudo -S nixos-rebuild "$ACTION" --flake ".#$TARGET" 2>&1 | tee nixos-switch.log | nom; then
@@ -62,10 +59,8 @@ for TARGET in "${TARGETS[@]}"; do
       REBOOT_LOCAL=true
     fi
   else
-    # --- REMOTE REBUILD ---
     export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
 
-    # 1. Build locally (prevents remote evaluation overhead)
     echo "   📦 Building system closure locally..."
     if ! nixos-rebuild build --flake ".#$TARGET" 2>&1 | tee nixos-switch.log | nom; then
       echo -e "\n❌ Local build for remote host $TARGET failed!"
@@ -73,31 +68,26 @@ for TARGET in "${TARGETS[@]}"; do
       exit 1
     fi
 
-    # Resolve the exact /nix/store/... path generated
     SYSTEM_PATH=$(readlink -f ./result)
 
-    # 2. Push closure to target (now piped through nom!)
     echo "   🚚 Pushing closure to $TARGET..."
     if ! nix-copy-closure --to "$TARGET" "$SYSTEM_PATH" 2>&1 | nom; then
       echo -e "\n❌ Failed to push closure to $TARGET!"
       exit 1
     fi
 
-    # 3. Register as a generation on the remote profile
     echo "   🔗 Registering new system profile..."
     if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nix-env -p /nix/var/nix/profiles/system --set $SYSTEM_PATH"; then
        echo -e "\n❌ Failed to set system profile on $TARGET!"
        exit 1
     fi
 
-    # 4. Run the activation script
     echo "   ⚡ Activating configuration ($ACTION)..."
     if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S $SYSTEM_PATH/bin/switch-to-configuration $ACTION"; then
        echo -e "\n❌ Remote activation failed on $TARGET!"
        exit 1
     fi
 
-    # 5. Fetch generation safely
     GEN=$(echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
     [[ -z "$GEN" || "$GEN" == "null" ]] && GEN="unknown"
 
@@ -110,21 +100,17 @@ for TARGET in "${TARGETS[@]}"; do
   COMMIT_ENTRIES+=("${TARGET}:${GEN}")
 done
 
-# --- Git Commit ---
 COMMIT_MSG="${COMMIT_ENTRIES[*]}"
 
 if git diff --quiet && git diff --staged --quiet; then
   echo -e "\n✅ No git changes to commit."
 else
-  # Fixed typo: ommit -> git commit
   git commit -m "$COMMIT_MSG"
   echo -e "\n✅ Committed: $COMMIT_MSG"
 fi
 
-# Back to where you were
 popd > /dev/null
 
-# Notify all OK!
 notify-send -e "NixOS Rebuilt OK!" "${COMMIT_ENTRIES[*]}" --icon=system-software-update || true
 
 if [[ "$REBOOT_LOCAL" == true ]]; then
