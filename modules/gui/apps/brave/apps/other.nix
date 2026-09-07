@@ -20,27 +20,40 @@ in {
   };
 
   config = lib.mkIf (braveEnabled && cfg) {
-    environment.systemPackages = [
-      (mkWebApp {
-        name = "XTB xStation 5";
-        url = "https://xstation5.xtb.com/";
-        icon = icons.xtb or "";
-        size = "1280,850";
-        categories = [
-          "Office"
-          "Finance"
-        ];
-      })
-      (mkWebApp {
-        name = "Fetlife DB";
-        url = "http://go/b/fl";
-        icon = icons.fetlife or "";
-        size = "730,1000";
-        categories = [
-          "Network"
-          "Chat"
-        ];
-      })
-    ];
+    environment.systemPackages =
+      [
+        (mkWebApp {
+          name = "XTB xStation 5";
+          url = "https://xstation5.xtb.com/";
+          icon = icons.xtb or "";
+          size = "1280,850";
+          categories = [
+            "Office"
+            "Finance"
+          ];
+        })
+        (mkWebApp {
+          name = "Fetlife DB";
+          url = "http://go/b/fl";
+          icon = icons.fetlife or "";
+          size = "730,1000";
+          categories = [
+            "Network"
+            "Chat"
+          ];
+        })
+      ]
+      ++ lib.optionals (config.features.gui.apps.threed.enable or false) [
+        (mkWebApp {
+          name = "Gridfinity Cutout";
+          url = "https://gridfinity-cutout.pages.dev/";
+          icon = icons.gridfinity or "";
+          categories = [
+            "Graphics"
+            "3DGraphics"
+            "Utility"
+          ];
+        })
+      ];
   };
 }

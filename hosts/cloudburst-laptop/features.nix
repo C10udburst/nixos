@@ -43,6 +43,8 @@
         tools = {
           social.enable = true;
           llm.enable = true;
+          organizeer = true;
+          net.enable = true;
         };
       };
       games.enable = true;

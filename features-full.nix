@@ -23,7 +23,8 @@
       };
       enable = true;
       hardware = {
-        bluetooth = false;
+        bluetooth = true;
+        ddc = true;
         enable = true;
         fuse = true;
         mobile = false;
@@ -115,7 +116,11 @@
             ollama = false;
             pi = true;
           };
+          net = {
+            enable = false;
+          };
           obs = false;
+          organizeer = false;
           social = {
             enable = false;
             signal = true;
@@ -198,6 +203,9 @@
         enable = true;
         regreet = true;
       };
+      shell = {
+        enable = true;
+      };
       theme = {
         enable = true;
         font = {
@@ -205,6 +213,11 @@
         };
         polarity = "dark";
         wallpaper = {
+          enable = true;
+        };
+      };
+      tools = {
+        net = {
           enable = true;
         };
       };
@@ -269,9 +282,11 @@
       };
       utils = {
         archive = true;
+        core = true;
         diagnostics = true;
         enable = true;
         fun = true;
+        media = true;
         modernCli = true;
         nettools = true;
         nix = true;

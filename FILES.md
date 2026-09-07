@@ -66,6 +66,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   ├── nix-ld.nix          # Dynamic linker fix for unpatched binaries
     │   │   ├── pipewire.nix        # PipeWire audio & rtkit
     │   │   ├── bluetooth.nix       # Bluetooth support & powerOnBoot
+    │   │   ├── ddc.nix             # DDC/CI monitor control (ddcutil, i2c)
     │   │   ├── touchscreen.nix     # Touchscreen IIO sensors
     │   │   ├── fuse.nix            # FUSE filesystem mounts (SMB, SSHFS, ADB)
     │   │   └── nvidia.nix          # NVIDIA drivers & container toolkit
@@ -121,10 +122,14 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │       └── _gcode-bounds.py
     │   └── utils/                  # Command-line packages split by profile
     │       ├── default.nix         # Utils master aggregator
-    │       ├── modern-cli.nix      # bat, fd, ripgrep, procs, dust, fzf, hexyl, binwalk, qrencode, zbar, jless
+    │       ├── core.nix            # screen, jq, curl, wget, file, killall
+    │       ├── modern-cli.nix      # bat, eza, fd, ripgrep, procs, dust, fzf, hexyl, binwalk, tmux, jless
+    │       ├── media.nix           # ffmpeg, qrencode, zbar, yt-dlp
+    │       ├── archive.nix         # zip, unzip, unrar, rar, p7zip, gnutar, cabextract, ncompress, cpio
+    │       ├── diagnostics.nix     # pciutils (lspci), usbutils (lsusb)
     │       ├── nix.nix             # alejandra, nix-output-monitor, nix-heuristic-gc, nix-index
-    │       ├── fun.nix             # kimsay, asciinema
-    │       └── nettools.nix        # nmap, traceroute, dig, mptcpd
+    │       ├── fun.nix             # fastfetch, kimsay, asciinema
+    │       └── nettools.nix        # remmina, netcat-gnu, nmap, traceroute, nettools, websocat, lsof, etc
     │
     ├── gui/                        # Graphical user environment
     │   ├── default.nix             # GUI umbrella module & MIME defaults
@@ -205,6 +210,8 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │       ├── default.nix     # Tools umbrella
     │   │       ├── calc.nix        # Qalculate-qt calculator
     │   │       ├── hardinfo.nix    # Hardinfo2 system profiler
+    │   │       ├── net.nix         # Network analysis (Wireshark GUI + CLI)
+    │   │       ├── organizeer.nix  # Organizeer daemon & client
     │   │       ├── konsole.nix     # Konsole terminal & default terminal association
     │   │       ├── obs.nix         # OBS Studio screen recording & virtual camera
     │   │       ├── social/         # Native messaging desktop applications
@@ -217,6 +224,8 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │           ├── antigravity.nix # Google Antigravity IDE & CLI
     │   │           ├── pi.nix      # Pi coding agent
     │   │           └── ollama.nix  # Local Ollama daemon
+    │   ├── shell/                      # Desktop shell helpers & notifications
+    │   │   └── default.nix             # libnotify, zenity
     │   └── dev/                    # Developer toolchains & workstation environments
     │       ├── default.nix         # Developer umbrella module
     │       ├── programming/

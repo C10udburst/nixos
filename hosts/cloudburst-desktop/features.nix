@@ -46,6 +46,8 @@
           obs = true;
           social.enable = true;
           llm.enable = true;
+          organizeer = true;
+          net.enable = true;
         };
       };
       dev = {
