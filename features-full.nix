@@ -248,7 +248,7 @@
         exitNode = false;
       };
       usbip = false;
-      waypipe = true;
+      waypipe = false;
       weylus = false;
     };
     shell = {

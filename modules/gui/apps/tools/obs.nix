@@ -10,10 +10,10 @@
 in {
   options.features.gui.apps.tools.obs = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = toolsEnabled && false;
   };
 
-  config = lib.mkIf (toolsEnabled && cfg) {
+  config = lib.mkIf cfg {
     programs.obs-studio = {
       enable = true;
       enableVirtualCamera = true;

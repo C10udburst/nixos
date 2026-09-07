@@ -26,10 +26,10 @@
 in {
   options.features.gui.greeter.regreet = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = greeterEnabled && true;
   };
 
-  config = lib.mkIf (greeterEnabled && cfg.regreet && !hasAutologin) {
+  config = lib.mkIf (cfg.regreet && !hasAutologin) {
     services.greetd.settings.default_session = {
       command = lib.mkForce "${pkgs.coreutils}/bin/env GSK_RENDERER=ngl ${pkgs.weston}/bin/weston --config=${westonIni} -- ${greetdSessionScript}";
       user = "greeter";

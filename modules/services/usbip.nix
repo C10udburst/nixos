@@ -8,10 +8,10 @@
 in {
   options.features.services.usbip = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = config.features.services.enable && false;
   };
 
-  config = lib.mkIf (config.features.services.enable && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [
       pkgs.linuxPackages.usbip
     ];

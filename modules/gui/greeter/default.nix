@@ -17,7 +17,7 @@ in {
     };
   };
 
-  config = lib.mkIf greeterEnabled {
+  config = lib.mkIf cfg.enable {
     services.greetd = {
       enable = true;
       settings = {

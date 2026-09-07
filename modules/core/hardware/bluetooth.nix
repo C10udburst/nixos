@@ -7,13 +7,10 @@
 in {
   options.features.core.hardware.bluetooth = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.core.enable && cfg.enable)
-      then true
-      else false;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.bluetooth) {
+  config = lib.mkIf cfg.bluetooth {
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;

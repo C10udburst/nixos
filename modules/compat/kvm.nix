@@ -10,11 +10,11 @@ in {
   options.features.compat.kvm = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = config.features.compat.enable && false;
     };
   };
 
-  config = lib.mkIf (compatEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     virtualisation.libvirtd.enable = true;
     programs.virt-manager.enable = true;
   };

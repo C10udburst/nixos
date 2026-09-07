@@ -7,10 +7,10 @@
 in {
   options.features.core.hardware.zram = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.zram) {
+  config = lib.mkIf cfg.zram {
     zramSwap = {
       enable = true;
       memoryPercent =

@@ -188,7 +188,7 @@
 in {
   options.features.gui.apps.editors.vscode = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = editorsEnabled && true;
   };
 
   config = lib.mkMerge [
@@ -200,7 +200,7 @@ in {
         };
       };
     }
-    (lib.mkIf (editorsEnabled && cfg) {
+    (lib.mkIf cfg {
       nixpkgs.overlays = [
         (inputs.nix-vscode-extensions.overlays.default or (_: _: {}))
       ];

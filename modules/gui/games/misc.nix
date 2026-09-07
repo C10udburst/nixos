@@ -9,13 +9,10 @@
 in {
   options.features.gui.games.misc = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if gamesEnabled
-      then true
-      else false;
+    default = gamesEnabled && true;
   };
 
-  config = lib.mkIf (gamesEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
       lutris
       mangohud

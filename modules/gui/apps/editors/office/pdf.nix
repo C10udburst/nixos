@@ -13,10 +13,10 @@
 in {
   options.features.gui.apps.editors.office.pdf = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = officeEnabled && true;
   };
 
-  config = lib.mkIf (officeEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
       karp
       poppler-utils

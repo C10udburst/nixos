@@ -69,7 +69,7 @@ in {
   options.features.gui.desktop.driftwm.noctalia = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = driftwmEnabled && true;
     };
     plugins = {
       enable = lib.mkOption {
@@ -120,7 +120,7 @@ in {
         };
       };
     }
-    (lib.mkIf (driftwmEnabled && cfg.enable) {
+    (lib.mkIf cfg.enable {
       home-manager.users.cloudburst = {config, ...}: let
         colors = config.lib.stylix.colors.withHashtag;
         stylixColors = config.lib.stylix.colors;

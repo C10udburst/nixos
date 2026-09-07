@@ -9,10 +9,10 @@
 in {
   options.features.compat.distrobox = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = config.features.compat.enable && false;
   };
 
-  config = lib.mkIf (compatEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.distrobox];
   };
 }

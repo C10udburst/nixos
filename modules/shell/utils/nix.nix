@@ -8,13 +8,10 @@
 in {
   options.features.shell.utils.nix = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.shell.enable && config.features.shell.utils.enable)
-      then true
-      else false;
+    default = (config.features.shell.enable && config.features.shell.utils.enable) && true;
   };
 
-  config = lib.mkIf (config.features.shell.enable && config.features.shell.utils.enable && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
       alejandra
       nix-output-monitor

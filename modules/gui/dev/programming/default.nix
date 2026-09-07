@@ -10,14 +10,11 @@ in {
   options.features.gui.dev.programming = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if (config.features.gui.enable && config.features.gui.dev.enable)
-        then true
-        else false;
+      default = (config.features.gui.enable && config.features.gui.dev.enable) && true;
     };
   };
 
-  config = lib.mkIf (devEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       gcc
     ];

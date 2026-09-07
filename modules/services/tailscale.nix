@@ -10,10 +10,7 @@ in {
   options.features.services.tailscale = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.services.enable
-        then true
-        else false;
+      default = config.features.services.enable && true;
     };
     exitNode = lib.mkOption {
       type = lib.types.bool;
@@ -30,7 +27,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.services.enable && cfg.enable) {
+    (lib.mkIf cfg.enable {
       services.tailscale = {
         enable = true;
         extraUpFlags = ["--operator=cloudburst"] ++ lib.optionals cfg.exitNode ["--advertise-exit-node"];

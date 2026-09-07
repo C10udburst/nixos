@@ -40,10 +40,10 @@
 in {
   options.features.shell.nushell.modules = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.shell.enable && config.features.shell.nushell.enable) && true;
   };
 
-  config = lib.mkIf (config.features.shell.enable && cfg.enable && cfg.modules) {
+  config = lib.mkIf cfg.modules {
     home-manager.users.cloudburst = {
       programs.nushell.extraConfig = lib.concatStringsSep "\n" (
         map (module: "use ${pkgs.nu_scripts}/share/nu_scripts/${module} *") nuModules

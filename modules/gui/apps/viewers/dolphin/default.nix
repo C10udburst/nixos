@@ -12,10 +12,10 @@
 in {
   options.features.gui.apps.viewers.dolphin = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = viewersEnabled && true;
   };
 
-  config = lib.mkIf (viewersEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.kdePackages.dolphin];
 
     home-manager.users.cloudburst = {

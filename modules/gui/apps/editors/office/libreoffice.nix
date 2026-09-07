@@ -13,10 +13,10 @@
 in {
   options.features.gui.apps.editors.office.libreoffice = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = officeEnabled && false;
   };
 
-  config = lib.mkIf (officeEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.libreoffice-qt];
   };
 }

@@ -11,10 +11,7 @@ in {
   options.features.core.nix = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.core.enable
-        then true
-        else false;
+      default = config.features.core.enable && true;
     };
     flakes = lib.mkOption {
       type = lib.types.bool;
@@ -37,7 +34,7 @@ in {
     };
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
 
     environment.systemPackages = lib.optionals cfg.vulnix [pkgs.vulnix];

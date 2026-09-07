@@ -11,13 +11,10 @@
 in {
   options.features.gui.apps.tools.calc = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable)
-      then true
-      else false;
+    default = (config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable) && true;
   };
 
-  config = lib.mkIf (toolsEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.qalculate-qt];
   };
 }

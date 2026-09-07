@@ -8,13 +8,10 @@
 in {
   options.features.gui.games.steam = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if gamesEnabled
-      then true
-      else false;
+    default = gamesEnabled && true;
   };
 
-  config = lib.mkIf (gamesEnabled && cfg) {
+  config = lib.mkIf cfg {
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true;

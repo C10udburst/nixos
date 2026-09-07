@@ -20,7 +20,7 @@ in {
     default = null;
   };
 
-  config = lib.mkIf (greeterEnabled && hasAutologin) {
+  config = lib.mkIf (cfg.enable && hasAutologin) {
     services.greetd.settings.default_session = lib.mkForce {
       command = autologinCommand;
       user = "cloudburst";

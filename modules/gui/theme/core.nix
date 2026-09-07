@@ -25,7 +25,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.gui.enable && cfg.enable) {
+    (lib.mkIf cfg.enable {
       programs.dconf.enable = true;
 
       environment.systemPackages = with pkgs; [

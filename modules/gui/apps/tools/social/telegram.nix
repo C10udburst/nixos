@@ -13,10 +13,10 @@
 in {
   options.features.gui.apps.tools.social.telegram = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = socialEnabled && true;
   };
 
-  config = lib.mkIf (socialEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.telegram-desktop];
   };
 }

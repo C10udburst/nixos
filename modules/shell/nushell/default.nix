@@ -12,10 +12,7 @@ in {
   options.features.shell.nushell = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.shell.enable
-        then true
-        else false;
+      default = config.features.shell.enable && true;
     };
     default = lib.mkOption {
       type = lib.types.enum [
@@ -31,7 +28,7 @@ in {
     };
   };
 
-  config = lib.mkIf (config.features.shell.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.nushell
       pkgs.carapace

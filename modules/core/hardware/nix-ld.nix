@@ -8,10 +8,10 @@
 in {
   options.features.core.hardware.nix-ld = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.nix-ld) {
+  config = lib.mkIf cfg.nix-ld {
     services.envfs.enable = false;
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = with pkgs; [

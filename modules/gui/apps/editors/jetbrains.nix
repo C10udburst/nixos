@@ -50,7 +50,7 @@ in {
   options.features.gui.apps.editors.jetbrains = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = editorsEnabled && false;
     };
   };
 
@@ -63,7 +63,7 @@ in {
         };
       };
     }
-    (lib.mkIf (editorsEnabled && cfg.enable) {
+    (lib.mkIf cfg.enable {
       environment.systemPackages =
         lib.optionals isRust [pkgs.jetbrains.rust-rover]
         ++ lib.optionals isGo [pkgs.jetbrains.goland]

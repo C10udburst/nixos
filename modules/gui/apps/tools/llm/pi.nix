@@ -14,7 +14,7 @@
 in {
   options.features.gui.apps.tools.llm.pi = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = llmEnabled && true;
   };
 
   config = lib.mkMerge [
@@ -23,7 +23,7 @@ in {
         pi-agent.url = "github:lukasl-dev/pi.nix";
       };
     }
-    (lib.mkIf (llmEnabled && cfg) {
+    (lib.mkIf cfg {
       environment.systemPackages = lib.optionals (
         inputs ? pi-agent
         && inputs.pi-agent ? packages

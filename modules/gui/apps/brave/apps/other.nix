@@ -21,10 +21,10 @@
 in {
   options.features.gui.apps.brave.apps.other = lib.mkOption {
     type = lib.types.bool;
-    default = true;
+    default = braveEnabled && true;
   };
 
-  config = lib.mkIf (braveEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages =
       [
         (mkWebApp {

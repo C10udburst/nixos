@@ -10,13 +10,10 @@
 in {
   options.features.gui.apps.threed.blender = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if threedEnabled
-      then true
-      else false;
+    default = threedEnabled && true;
   };
 
-  config = lib.mkIf (threedEnabled && cfg) {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.blender];
 
     home-manager.users.cloudburst = {

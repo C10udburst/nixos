@@ -7,10 +7,10 @@
 in {
   options.features.core.boot.grub32 = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = (config.features.core.enable && config.features.core.boot.enable) && false;
   };
 
-  config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.grub32) {
+  config = lib.mkIf cfg.grub32 {
     boot.loader.efi.canTouchEfiVariables = false;
     boot.loader.grub = {
       enable = true;

@@ -34,7 +34,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.gui.enable && config.features.gui.apps.enable && cfg.enable) {
+    (lib.mkIf cfg.enable {
       environment.etc."brave/policies/managed/GroupPolicy.json".text = builtins.toJSON (
         {
           PasswordManagerEnabled = false;

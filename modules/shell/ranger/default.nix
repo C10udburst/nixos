@@ -10,10 +10,7 @@ in {
   options.features.shell.ranger = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.shell.enable
-        then true
-        else false;
+      default = config.features.shell.enable && true;
     };
   };
 
@@ -30,7 +27,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.shell.enable && cfg.enable) {
+    (lib.mkIf cfg.enable {
       environment.systemPackages = [pkgs.ranger];
 
       home-manager.users.cloudburst = {

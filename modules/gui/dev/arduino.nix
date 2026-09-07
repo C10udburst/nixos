@@ -114,11 +114,11 @@ in {
   options.features.gui.dev.arduino = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = devEnabled && false;
     };
   };
 
-  config = lib.mkIf (devEnabled && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       arduino-cli
       arduino-ide

@@ -9,7 +9,7 @@
 in {
   options.features.shell.nushell.undo = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = (config.features.shell.enable && config.features.shell.nushell.enable) && false;
   };
 
   config = lib.mkMerge [
@@ -21,7 +21,7 @@ in {
         };
       };
     }
-    (lib.mkIf (config.features.shell.enable && cfg.enable && cfg.undo) {
+    (lib.mkIf cfg.undo {
       home-manager.users.cloudburst = {
         home.packages = [
           inputs.shell-undo.packages.${pkgs.system}.default

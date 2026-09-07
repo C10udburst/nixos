@@ -13,10 +13,10 @@
 in {
   options.features.gui.apps.tools.llm.ollama = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = llmEnabled && false;
   };
 
-  config = lib.mkIf (llmEnabled && cfg) {
+  config = lib.mkIf cfg {
     services.ollama = {
       enable = true;
       acceleration =

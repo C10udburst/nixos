@@ -9,10 +9,7 @@ in {
   options.features.core.users.cloudburst = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if config.features.core.users.enable
-        then true
-        else false;
+      default = (config.features.core.enable && config.features.core.users.enable) && true;
     };
     admin = lib.mkOption {
       type = lib.types.bool;
@@ -24,7 +21,7 @@ in {
     };
   };
 
-  config = lib.mkIf (config.features.core.enable && config.features.core.users.enable && cfg.enable) {
+  config = lib.mkIf cfg.enable {
     users.users.cloudburst = {
       isNormalUser = true;
       description = "cloudburst";
