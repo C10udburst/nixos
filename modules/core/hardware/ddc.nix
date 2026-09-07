@@ -8,10 +8,7 @@
 in {
   options.features.core.hardware.ddc = lib.mkOption {
     type = lib.types.bool;
-    default =
-      if (config.features.core.enable && config.features.core.hardware.enable && !config.features.core.hardware.slow)
-      then true
-      else false;
+    default = false;
   };
 
   config = lib.mkIf (config.features.core.enable && config.features.core.hardware.enable && cfg) {

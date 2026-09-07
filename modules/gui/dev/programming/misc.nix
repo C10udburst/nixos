@@ -1,0 +1,55 @@
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}: let
+  devEnabled =
+    config.features.gui.enable
+    && config.features.gui.dev.enable
+    && config.features.gui.dev.programming.enable;
+  cfg = config.features.gui.dev.programming.misc;
+
+  gitr = pkgs.appimageTools.wrapType2 {
+    pname = "gitr";
+    version = "v0.4.17";
+    src = inputs.gitr;
+    extraPkgs = pkgs':
+      with pkgs'; [
+        gtk3
+        openssl
+        libxkbcommon
+        fontconfig
+        libxcb
+        fuse
+      ];
+  };
+in {
+  options.features.gui.dev.programming.misc = lib.mkOption {
+    type = lib.types.bool;
+    default =
+      if devEnabled
+      then true
+      else false;
+  };
+
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        gitr = {
+          url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";
+          flake = false;
+        };
+      };
+    }
+    (lib.mkIf (devEnabled && cfg) {
+      environment.systemPackages = [
+        pkgs.sqlitebrowser
+        gitr
+        pkgs.gdb
+        pkgs.imhex
+      ];
+    })
+  ];
+}

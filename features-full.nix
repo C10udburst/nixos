@@ -24,7 +24,7 @@
       enable = true;
       hardware = {
         bluetooth = true;
-        ddc = true;
+        ddc = false;
         enable = true;
         fuse = true;
         mobile = false;
@@ -182,6 +182,7 @@
           enable = false;
           go = false;
           kotlin = false;
+          misc = false;
           node = false;
           rust = false;
         };

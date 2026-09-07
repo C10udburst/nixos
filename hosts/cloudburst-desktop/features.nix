@@ -1,5 +1,7 @@
 {...}: {
   features = {
+    core.hardware.ddc = true;
+
     services = {
       waypipe = true;
       weylus = true;
