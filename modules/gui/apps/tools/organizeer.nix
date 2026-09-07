@@ -8,8 +8,7 @@
   cfg = config.features.gui.apps.tools.organizeer;
   toolsEnabled =
     config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.tools.enable;
+    && config.features.gui.apps.enable;
 in {
   options.features.gui.apps.tools.organizeer = lib.mkOption {
     type = lib.types.bool;
