@@ -7,6 +7,11 @@ set -eo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pushd "$SCRIPT_DIR" >/dev/null
 
+# Firstly generate flake.nix from flake-file.nix
+if [[ -x "./flake" ]]; then
+  ./flake
+fi
+
 alejandra . &>/dev/null \
   || ( alejandra . ; echo "formatting failed!" && exit 1)
 

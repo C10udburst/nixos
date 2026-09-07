@@ -1,57 +1,12 @@
-#!/usr/bin/env python3
-import os
-import sys
-import re
-import json
-import subprocess
+#!/usr/bin/env bash
+#
+# Generates features-full.nix by evaluating the default state of all modules
+set -eo pipefail
 
-def extract_comments_and_order(features_full_path):
-    if not os.path.exists(features_full_path):
-        return {}, {}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+pushd "$SCRIPT_DIR" > /dev/null
 
-    with open(features_full_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    stack = []
-    path_comments = {}
-    key_order = {}
-    pending_leading = []
-
-    for line in lines:
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if stripped.startswith('#'):
-            pending_leading.append(stripped)
-            continue
-
-        m = re.match(r'^\s*([a-zA-Z0-9_-]+)\s*=\s*(.*)', line)
-        if m:
-            key = m.group(1)
-            rest = m.group(2)
-            cur_path = '.'.join(stack + [key])
-            parent_path = '.'.join(stack)
-            key_order.setdefault(parent_path, []).append(key)
-            inline_comment = None
-            if '#' in rest:
-                inline_comment = rest.split('#', 1)[1].strip()
-            path_comments[cur_path] = {
-                'leading': pending_leading,
-                'inline': inline_comment
-            }
-            pending_leading = []
-            if '{' in rest:
-                stack.append(key)
-
-        if '};' in line:
-            for _ in range(line.count('};')):
-                if stack:
-                    stack.pop()
-
-    return path_comments, key_order
-
-def evaluate_features():
-    nix_expr = """
+NIX_EXPR='
 let
   flake = builtins.getFlake (toString ./.);
   inherit (flake.inputs.nixpkgs) lib;
@@ -59,113 +14,66 @@ let
 
   isOption = v: builtins.isAttrs v && (v ? _type && v._type == "option" || v ? type && v ? default);
 
-  extract = v:
+  extractDefaults = v:
     if isOption v then
-      if v ? default then { _val = v.default; } else null
+      if v ? default then v.default else null
     else if builtins.isAttrs v then
       let
         sub = lib.filterAttrs (k: val: val != null) (
-          builtins.mapAttrs (_: extract) (builtins.removeAttrs v ["_module"])
+          builtins.mapAttrs (_: extractDefaults) (builtins.removeAttrs v ["_module"])
         );
       in
-        if sub == {} then null else { _sub = sub; }
+        if sub == {} then null else sub
     else null;
+
+  indent = n: lib.concatStrings (lib.genList (_: "  ") n);
+
+  formatValue = lvl: v:
+    if builtins.isBool v then (if v then "true" else "false")
+    else if builtins.isString v then
+      if lib.hasPrefix "/nix/store" v && lib.hasInfix "driftwm" v then
+        "\"" + "\${pkgs.driftwm}/bin/driftwm\""
+      else
+        builtins.toJSON v
+    else if builtins.isInt v then toString v
+    else if builtins.isNull v then "null"
+    else if builtins.isList v then
+      if v == [] then "[]"
+      else if lib.all (x: builtins.isString x && lib.stringLength x > 15) v then
+        "[\n" + (lib.concatMapStringsSep "\n" (x: "${indent (lvl + 1)}${builtins.toJSON x}") v) + "\n${indent lvl}]"
+      else
+        "[ " + (lib.concatMapStringsSep " " (formatValue lvl) v) + " ]"
+    else if builtins.isAttrs v then
+      if v == {} then "{}"
+      else "{\n" + (formatTree (lvl + 1) v) + "\n${indent lvl}}"
+    else "null";
+
+  formatTree = lvl: attrs:
+    let
+      names = builtins.attrNames attrs;
+      lines = map (name:
+        let
+          val = attrs.${name};
+        in
+          if builtins.isAttrs val && val != {} && !(isOption val) then
+            "${indent lvl}${name} = {\n" + (formatTree (lvl + 1) val) + "\n${indent lvl}};"
+          else
+            "${indent lvl}${name} = ${formatValue lvl val};"
+      ) names;
+    in
+      lib.concatStringsSep "\n" lines;
+
+  defaults = extractDefaults options;
 in
-  extract options
-"""
-    cmd = ["nix", "eval", "--impure", "--json", "--expr", nix_expr]
-    res = subprocess.run(cmd, capture_output=True, text=True)
-    if res.returncode != 0:
-        print("Error evaluating options from modules:", res.stderr, file=sys.stderr)
-        sys.exit(1)
+  "{\n  features = {\n" + (formatTree 2 defaults) + "\n  };\n}\n"
+'
 
-    return json.loads(res.stdout)
+echo "Evaluating default features from modules..."
+nix eval --impure --raw --expr "$NIX_EXPR" > features-full.nix
 
-def format_value(val, indent_lvl):
-    indent = "  " * indent_lvl
-    if isinstance(val, bool):
-        return "true" if val else "false"
-    elif isinstance(val, str):
-        if val.startswith("/nix/store") and "driftwm" in val:
-            return '"${pkgs.driftwm}/bin/driftwm"'
-        return f'"{val}"'
-    elif isinstance(val, (int, float)):
-        return str(val)
-    elif val is None:
-        return "null"
-    elif isinstance(val, list):
-        if not val:
-            return "[]"
-        if all(isinstance(x, str) and len(x) > 15 for x in val):
-            inner = "\n".join(f'{indent}  "{x}"' for x in val)
-            return f'[\n{inner}\n{indent}]'
-        inner = " ".join(format_value(x, indent_lvl) for x in val)
-        return f'[ {inner} ]'
-    elif isinstance(val, dict):
-        if not val:
-            return "{}"
-        return "{ ... }"
-    return "null"
+if command -v alejandra &>/dev/null; then
+  alejandra features-full.nix &>/dev/null || true
+fi
 
-def render_tree(attrs, path_comments, key_order, cur_path="features", indent_lvl=2):
-    indent = "  " * indent_lvl
-    lines = []
-
-    preferred_order = key_order.get(cur_path, [])
-    keys = list(attrs.keys())
-    def sort_key(k):
-        if k in preferred_order:
-            return (0, preferred_order.index(k))
-        return (1, k)
-
-    sorted_keys = sorted(keys, key=sort_key)
-
-    for key in sorted_keys:
-        node = attrs[key]
-        item_path = f"{cur_path}.{key}"
-        comment_info = path_comments.get(item_path, {})
-        leading = comment_info.get("leading", [])
-        inline = comment_info.get("inline")
-
-        if leading:
-            lines.append("")
-            for c in leading:
-                lines.append(f"{indent}{c}")
-
-        if "_val" in node:
-            val_str = format_value(node["_val"], indent_lvl)
-            inline_str = f" # {inline}" if inline else ""
-            lines.append(f"{indent}{key} = {val_str};{inline_str}")
-        elif "_sub" in node:
-            inline_str = f" # {inline}" if inline else ""
-            lines.append(f"{indent}{key} = {{{inline_str}")
-            sub_lines = render_tree(node["_sub"], path_comments, key_order, cur_path=item_path, indent_lvl=indent_lvl+1)
-            lines.extend(sub_lines)
-            lines.append(f"{indent}}};")
-
-    return lines
-
-def main():
-    repo_root = os.path.dirname(os.path.abspath(__file__))
-    features_full_path = os.path.join(repo_root, "features-full.nix")
-
-    path_comments, key_order = extract_comments_and_order(features_full_path)
-    eval_tree = evaluate_features()
-
-    tree_lines = render_tree(eval_tree["_sub"], path_comments, key_order, cur_path="features", indent_lvl=2)
-
-    out = ["{pkgs, ...}: {", "  features = {"]
-    out.extend(tree_lines)
-    out.append("  };")
-    out.append("}")
-    out.append("")
-
-    rendered = "\n".join(out)
-    with open(features_full_path, "w", encoding="utf-8") as f:
-        f.write(rendered)
-
-    subprocess.run(["alejandra", features_full_path], check=True)
-    print(f"✅ Successfully regenerated and formatted {features_full_path}")
-
-if __name__ == "__main__":
-    main()
+echo "✅ Generated features-full.nix successfully."
+popd > /dev/null
