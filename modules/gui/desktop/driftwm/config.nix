@@ -7,6 +7,7 @@
   cfg = config.features.gui.desktop.driftwm;
   isSlow = config.features.core.hardware.slow or false;
   isTouchscreen = config.features.core.hardware.touchscreen or false;
+  noctaliaEnabled = config.features.gui.desktop.driftwm.noctalia.enable or false;
 in {
   options.features.gui.desktop.driftwm = {
     extracmds = lib.mkOption {
@@ -39,7 +40,7 @@ in {
         )
       );
 
-      baseKeybindings = {
+      noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled {
         "mod+tab" = "spawn noctalia msg panel-toggle launcher \"/wind \"";
         "mod+space" = "spawn noctalia msg panel-toggle launcher";
         "mod+return" = "spawn noctalia msg panel-toggle launcher";
@@ -53,7 +54,11 @@ in {
         "mod+l" = "spawn noctalia msg session lock";
         "mod+r" = "spawn noctalia msg panel-toggle control-center";
         "mod+m" = "spawn noctalia msg panel-toggle cloudburst/driftwm:minimap";
+        "XF86MonBrightnessUp" = "spawn noctalia msg brightness increase";
+        "XF86MonBrightnessDown" = "spawn noctalia msg brightness decrease";
+      };
 
+      baseKeybindings = {
         "ctrl+alt+t" = "exec konsole";
         "ctrl+shift+escape" = "exec plasma-systemmonitor";
         "XF86Calculator" = "exec qalculate-qt";
@@ -63,8 +68,6 @@ in {
 
         "XF86AudioRaiseVolume" = "spawn pamixer -i 5";
         "XF86AudioLowerVolume" = "spawn pamixer -d 5";
-        "XF86MonBrightnessUp" = "spawn noctalia msg brightness increase";
-        "XF86MonBrightnessDown" = "spawn noctalia msg brightness decrease";
         "XF86AudioMute" = "spawn pamixer -t";
 
         "alt+f4" = "close-window";
@@ -137,7 +140,7 @@ in {
           autostart =
             cfg.extracmds
             ++ lib.optional isTouchscreen "auto-rotate"
-            ++ ["noctalia"]
+            ++ lib.optional noctaliaEnabled "noctalia"
             ++ lib.optional (cfg.desktop or false) "driftwm-desktop";
           window_placement = "auto";
           env = {
@@ -157,17 +160,17 @@ in {
             click_method = "button_areas";
           };
           cursor.inactive_opacity = 0.25;
-          mouse.on-canvas = {
+          mouse.on-canvas = lib.optionalAttrs noctaliaEnabled {
             "right" = "spawn noctalia msg panel-toggle launcher";
           };
           mouse.anywhere = {
             "ctrl+alt+trackpad-scroll" = "pan-viewport";
             "ctrl+alt+left" = "pan-viewport";
           };
-          touch.on-canvas = {
+          touch.on-canvas = lib.optionalAttrs noctaliaEnabled {
             "2-finger-tap" = "spawn noctalia msg panel-toggle launcher";
           };
-          touch.anywhere = {
+          touch.anywhere = lib.optionalAttrs noctaliaEnabled {
             "4-finger-tap" = "spawn noctalia msg panel-toggle launcher";
           };
           gestures = {
@@ -228,7 +231,7 @@ in {
             enabled = true;
             path = "${lib.getExe pkgs.xwayland-satellite}";
           };
-          keybindings = baseKeybindings // bookmarkBindings;
+          keybindings = baseKeybindings // bookmarkBindings // noctaliaKeybindings;
           window_rules = windowRules;
         }
         cfg.extraConfig;

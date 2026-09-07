@@ -52,7 +52,11 @@ This document visualizes the complete file tree of the proposed dendritic archit
     ├── core/                       # Base operating system layer
     │   ├── default.nix             # Core layer master orchestrator
     │   ├── nix.nix                 # Nix daemon, nixpkgs settings, binary caches, gc, vulnix
-    │   ├── boot.nix                # Bootloader (systemd-boot, grub32 EFI loader, timeout)
+    │   ├── boot/
+    │   │   ├── default.nix         # Bootloader master module (timeout)
+    │   │   ├── systemd.nix         # Systemd-boot loader
+    │   │   └── grub32.nix          # 32-bit EFI GRUB loader
+    │   ├── java.nix                # Java Development Kit (JDK) & JAVA_HOME
     │   ├── locale/
     │   │   ├── default.nix         # Locale options & dispatcher
     │   │   └── pl.nix              # Polish timezone, i18n, and console keymaps
@@ -64,8 +68,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   ├── bluetooth.nix       # Bluetooth support & powerOnBoot
     │   │   ├── touchscreen.nix     # Touchscreen IIO sensors
     │   │   ├── fuse.nix            # FUSE filesystem mounts (SMB, SSHFS, ADB)
-    │   │   ├── nvidia.nix          # NVIDIA drivers & container toolkit
-    │   │   └── appimage.nix        # AppImage runtime & binfmt
+    │   │   └── nvidia.nix          # NVIDIA drivers & container toolkit
     │   └── users/
     │       ├── default.nix         # Shared user options & groups
     │       └── cloudburst.nix      # cloudburst account, sudo, SSH keys & HM stateVersion
@@ -80,6 +83,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │
     ├── shell/                      # Terminal environment & command-line tools
     │   ├── default.nix             # Default shell orchestrator
+    │   ├── aliases.nix             # Shell aliases (cd shortcuts, eza, pubip)
     │   ├── git.nix                 # Git configuration & credentials
     │   ├── starship.nix            # Starship prompt configuration
     │   ├── ranger/
@@ -98,25 +102,18 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   ├── default.nix         # Scripts master aggregator & packaging
     │   │   ├── media/
     │   │   │   ├── default.nix     # Media scripts package module
-    │   │   │   ├── _icat.sh
-    │   │   │   ├── _palette.sh
-    │   │   │   ├── _video8mb.py
-    │   │   │   └── _datauri.sh
+    │   │   │   └── _album-splitter.py
     │   │   ├── dev/
     │   │   │   ├── default.nix     # Developer scripts package module
-    │   │   │   ├── _gh-origin-mod.sh
-    │   │   │   ├── _nix-py.sh
-    │   │   │   ├── _nx.sh
-    │   │   │   └── _sarif-md.py
+    │   │   │   ├── _git-checkout-default.nu
+    │   │   │   ├── _git-commit-with-msg.nu
+    │   │   │   ├── _git-rebase-interactive.nu
+    │   │   │   ├── _mkscript.nu
+    │   │   │   └── _git-update-submodules.nu
     │   │   ├── hardware/
-    │   │   │   ├── default.nix     # System & hardware scripts package module
-    │   │   │   ├── _serial.sh
-    │   │   │   ├── _extract.sh
-    │   │   │   ├── _www.py
-    │   │   │   ├── _rofi.sh
+    │   │   │   ├── default.nix     # Hardware-related scripts package module
     │   │   │   ├── _auto-rotate.sh
-    │   │   │   ├── _desktop-kickoff.sh
-    │   │   │   └── _weylus-screen.sh
+    │   │   │   └── _touchpad.sh
     │   │   └── documents/
     │   │       ├── default.nix     # Document & typesetting scripts package module
     │   │       ├── _beamer-clean.py
@@ -138,12 +135,15 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   │   ├── default.nix     # KDE Plasma 6 (system + HM plasma-manager)
     │   │   │   └── packages.nix    # KDE extra packages (kate, kfind, etc)
     │   │   └── driftwm/
-    │   │       ├── default.nix     # DriftWM compositor & monitor layout
+    │   │       ├── default.nix     # DriftWM packages & systemd integration
+    │   │       ├── config.nix      # DriftWM compositor configuration & keybindings
     │   │       ├── desktop.nix     # driftwm-desktop session package
     │   │       ├── noctalia.nix    # Noctalia desktop shell & status bar plugins
     │   │       └── _wallpaper.glsl # Co-located shader wallpaper
     │   ├── greeter/
-    │   │   └── default.nix         # Greeter module (ReGreet & autologin)
+    │   │   ├── default.nix         # Greeter service module (greetd)
+    │   │   ├── regreet.nix         # ReGreet GTK greeter with Weston
+    │   │   └── autogreet.nix       # Automatic login session
     │   ├── theme/
     │   │   ├── default.nix         # Master theme aggregator
     │   │   ├── core.nix            # Stylix core palette & Base16 engine
@@ -163,6 +163,14 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   │       ├── homelab.nix # Home Assistant, Wealthfolio
     │   │   │       ├── social.nix  # Web messenger fallbacks (Messenger)
     │   │   │       └── other.nix   # XTB xStation 5, Fetlife DB
+    │   │   ├── threed/             # 3D modeling, CAD, slicing & printer toolchains
+    │   │   │   ├── default.nix     # 3D master feature umbrella
+    │   │   │   ├── blender.nix     # Blender & Stylix interface theme
+    │   │   │   ├── orca.nix        # OrcaSlicer 3D printing slicer
+    │   │   │   ├── freecad.nix     # FreeCAD parametric 3D modeler
+    │   │   │   └── openscad/
+    │   │   │       ├── default.nix # OpenSCAD programmatic CAD modeler
+    │   │   │       └── libraries.nix # OpenSCAD libraries (BOSL2, constructive, Round-Anything, obiscad)
     │   │   ├── editors/
     │   │   │   ├── default.nix     # Editors umbrella & Neovim fallback
     │   │   │   ├── office/         # Office & document editors
@@ -175,7 +183,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │   └── tools/
     │   │       ├── default.nix     # Tools umbrella
     │   │       ├── dolphin/
-    │   │       │   ├── default.nix     # Dolphin file manager & contextual services
+    │   │       │   ├── default.nix # Dolphin file manager & contextual services
     │   │       │   ├── _dolphinui.xml
     │   │       │   ├── _dolphinrc.ini
     │   │       │   ├── _vscode.desktop
@@ -196,14 +204,6 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │           ├── antigravity.nix # Google Antigravity IDE & CLI
     │   │           ├── pi.nix      # Pi coding agent
     │   │           └── ollama.nix  # Local Ollama daemon
-    │   ├── threed/                     # 3D modeling, CAD, slicing & printer toolchains
-    │   │   ├── default.nix             # 3D master feature umbrella
-    │   │   ├── blender.nix             # Blender & Stylix interface theme
-    │   │   ├── orca.nix                # OrcaSlicer 3D printing slicer
-    │   │   ├── freecad.nix             # FreeCAD parametric 3D modeler
-    │   │   └── openscad/
-    │   │       ├── default.nix         # OpenSCAD programmatic CAD modeler
-    │   │       └── libraries.nix       # OpenSCAD libraries (BOSL2, constructive, Round-Anything, obiscad)
     │   └── dev/                    # Developer toolchains & workstation environments
     │       ├── default.nix         # Developer umbrella module
     │       ├── programming/
@@ -222,6 +222,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │
     ├── compat/                     # Compatibility, containerization & virtualization
     │   ├── default.nix             # Compat master module
+    │   ├── appimage.nix            # AppImage runtime & binfmt
     │   ├── wine/
     │   │   ├── default.nix         # Wine compatibility layer & prefix management
     │   │   └── _theme.reg.j2       # Stylix-rendered declarative wine theme
@@ -261,7 +262,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/driftwm.nix` + `modules/home/driftwm/*` | `modules/gui/desktop/driftwm/*`            | Co-located `_wallpaper.glsl` & `desktop.nix`       |
 | `modules/home/driftwm/noctalia.nix`                    | `modules/gui/desktop/driftwm/noctalia.nix` | Noctalia bar & inputs                              |
 | `modules/nixos/plasma.nix` + `modules/home/plasma.nix` | `modules/gui/desktop/plasma/*`             | Split into `default.nix` and `packages.nix`        |
-| `modules/nixos/greetd.nix`                             | `modules/gui/greeter/default.nix`          | ReGreet & autologin configuration                  |
+| `modules/nixos/greetd.nix`                             | `modules/gui/greeter/*`                    | Split into default.nix, regreet.nix, autogreet.nix |
 | `modules/nixos/brave/default.nix`                      | `modules/gui/apps/brave/default.nix`       | Core browser, system flags & enterprise policies   |
 | `modules/nixos/brave/apps.nix`                         | `modules/gui/apps/brave/apps/*`            | Split into `office.nix`, `media.nix`, `homelab.nix`, `social.nix`, `other.nix` |
 | `modules/home/libreoffice.nix`                         | `modules/gui/apps/editors/office/*`        | Split into `libreoffice.nix` and `pdf.nix`         |
@@ -279,10 +280,11 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/programming.nix`                        | `modules/gui/dev/programming/*`            | Granular `rust.nix`, `go.nix`, `node.nix`, `kotlin.nix` |
 | `modules/nixos/python.nix`                             | `modules/gui/dev/python.nix`               | Python environment & scientific stacks             |
 | `modules/nixos/arduino.nix`                            | `modules/gui/dev/arduino.nix`              | Microcontroller toolchains                         |
-| `modules/nixos/threed.nix` + `home/threed.nix`         | `modules/gui/threed/*`                     | Split into `blender`, `orca`, `freecad`, `openscad/` |
+| `modules/nixos/threed.nix` + `home/threed.nix`         | `modules/gui/apps/threed/*`                | Split into `blender`, `orca`, `freecad`, `openscad/` |
 | `modules/nixos/latex.nix` + `typst.nix`                | `modules/gui/dev/documents/*`              | Typesetting tools (`latex.nix`, `typst.nix`)       |
 | `modules/nixos/android.nix`                            | `modules/gui/dev/android.nix`              | Android SDK, udev rules & scrcpy                   |
 | `modules/home/wine/*`                                  | `modules/compat/wine/*`                    | Wine layer with co-located `_theme.reg.j2`         |
+| *(new module)*                                         | `modules/compat/appimage.nix`              | AppImage runtime & binfmt                          |
 | *(new module)*                                         | `modules/compat/distrobox.nix`             | Distrobox containers                               |
 | *(new module)*                                         | `modules/compat/waydroid.nix`              | Waydroid emulation                                 |
 | `modules/nixos/podman.nix`                             | `modules/compat/podman.nix`                | Podman container engine                            |

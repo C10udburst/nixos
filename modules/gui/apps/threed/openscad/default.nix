@@ -4,10 +4,10 @@
   pkgs,
   ...
 }: let
-  threedEnabled = config.features.gui.enable && config.features.gui.threed.enable;
-  cfg = config.features.gui.threed.openscad;
+  threedEnabled = config.features.gui.enable && config.features.gui.apps.threed.enable;
+  cfg = config.features.gui.apps.threed.openscad;
 in {
-  options.features.gui.threed.openscad = {
+  options.features.gui.apps.threed.openscad = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default =

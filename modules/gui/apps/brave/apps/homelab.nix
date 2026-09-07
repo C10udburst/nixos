@@ -6,7 +6,11 @@
   ...
 }: let
   cfg = config.features.gui.apps.brave.apps.homelab;
-  braveEnabled = config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.brave.enable && config.features.gui.apps.brave.apps.enable;
+  braveEnabled =
+    config.features.gui.enable
+    && config.features.gui.apps.enable
+    && config.features.gui.apps.brave.enable
+    && config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
 in {
@@ -55,16 +59,6 @@ in {
         categories = [
           "Settings"
           "Network"
-        ];
-      })
-      (mkWebApp {
-        name = "XTB xStation 5";
-        url = "https://xstation5.xtb.com/";
-        icon = icons.xtb or "";
-        size = "1280,850";
-        categories = [
-          "Office"
-          "Finance"
         ];
       })
     ];

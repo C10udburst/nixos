@@ -4,10 +4,10 @@
   pkgs,
   ...
 }: let
-  threedEnabled = config.features.gui.enable && config.features.gui.threed.enable;
-  cfg = config.features.gui.threed.orca;
+  threedEnabled = config.features.gui.enable && config.features.gui.apps.threed.enable;
+  cfg = config.features.gui.apps.threed.orca;
 in {
-  options.features.gui.threed.orca = lib.mkOption {
+  options.features.gui.apps.threed.orca = lib.mkOption {
     type = lib.types.bool;
     default =
       if threedEnabled

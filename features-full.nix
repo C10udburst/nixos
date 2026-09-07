@@ -1,6 +1,7 @@
 {
   features = {
     compat = {
+      appimage = false;
       distrobox = false;
       enable = true;
       kvm = {
@@ -22,7 +23,6 @@
       };
       enable = true;
       hardware = {
-        appimage = false;
         bluetooth = false;
         enable = true;
         fuse = true;
@@ -89,6 +89,16 @@
           vscode = true;
         };
         enable = true;
+        threed = {
+          blender = true;
+          enable = false;
+          freecad = true;
+          openscad = {
+            enable = true;
+            libraries = true;
+          };
+          orca = true;
+        };
         tools = {
           dolphin = true;
           enable = true;
@@ -182,16 +192,6 @@
           enable = true;
         };
       };
-      threed = {
-        blender = true;
-        enable = false;
-        freecad = true;
-        openscad = {
-          enable = true;
-          libraries = true;
-        };
-        orca = true;
-      };
       xdg = {
         enable = true;
       };
@@ -222,6 +222,9 @@
       weylus = false;
     };
     shell = {
+      aliases = {
+        enable = true;
+      };
       enable = true;
       git = {
         enable = true;
