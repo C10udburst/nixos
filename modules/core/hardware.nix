@@ -62,13 +62,6 @@ in {
         then false
         else true;
     };
-    nixIndex = lib.mkOption {
-      type = lib.types.bool;
-      default =
-        if cfg.slow
-        then false
-        else true;
-    };
   };
 
   config = lib.mkIf (config.features.core.enable && cfg.enable) {
@@ -177,8 +170,7 @@ in {
       ++ lib.optionals (cfg.fuse && (config.features.gui.dev.android.enable or false)) [
         pkgs.adbfs-rootless
       ]
-      ++ lib.optionals cfg.vulnix [pkgs.vulnix]
-      ++ lib.optionals cfg.nixIndex [pkgs.nix-index];
+      ++ lib.optionals cfg.vulnix [pkgs.vulnix];
 
     fileSystems = lib.mkIf cfg.fuse {
       "/mnt/brix0" = {

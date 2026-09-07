@@ -7,56 +7,6 @@
   compatEnabled = config.features.compat.enable;
   cfg = config.features.compat.podman;
   nvidiaEnabled = config.features.core.hardware.nvidia or false;
-
-  qocker = let
-    pythonEnv = pkgs.python3.withPackages (ps: [
-      ps.pyqt5
-    ]);
-  in
-    pkgs.stdenv.mkDerivation {
-      pname = "qocker";
-      version = "1.0.0";
-
-      src = pkgs.fetchFromGitHub {
-        owner = "xlmnxp";
-        repo = "qocker";
-        rev = "6fbf90cfbe4ef1f3197b7b46b19a2b58ee3d4f57";
-        hash = "sha256-M0U4mfCovwrVN+D7T11cwafz9PTBojLU8QfBMWCU+80=";
-      };
-
-      nativeBuildInputs = [
-        pkgs.qt5.wrapQtAppsHook
-        pkgs.makeWrapper
-      ];
-
-      buildInputs = [
-        pkgs.qt5.qtbase
-        pkgs.qt5.qtwayland
-      ];
-
-      installPhase = ''
-        mkdir -p $out/bin $out/share/qocker
-        cp -r * $out/share/qocker/
-
-        makeWrapper ${pythonEnv}/bin/python3 $out/bin/qocker \
-          --add-flags "$out/share/qocker/main.py" \
-          --prefix QT_PLUGIN_PATH : "${pkgs.qt5.qtbase.bin}/${pkgs.qt5.qtbase.qtPluginPrefix}" \
-          --prefix QT_PLUGIN_PATH : "${pkgs.qt5.qtwayland.bin}/${pkgs.qt5.qtbase.qtPluginPrefix}"
-      '';
-
-      desktopItem = pkgs.makeDesktopItem {
-        name = "qocker";
-        exec = "qocker";
-        icon = "qocker";
-        comment = "Qt-based GUI for Podman container management";
-        desktopName = "Qocker";
-        genericName = "Podman GUI";
-        categories = [
-          "System"
-          "Utility"
-        ];
-      };
-    };
 in {
   options.features.compat.podman = {
     enable = lib.mkOption {
@@ -80,7 +30,6 @@ in {
 
     environment.systemPackages = [
       pkgs.docker-compose
-      qocker
       pkgs.distrobox
     ];
 

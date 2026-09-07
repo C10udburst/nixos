@@ -14,7 +14,7 @@
   compactMode = mobile && touchscreen;
   hasDocker = config.features.compat.podman.enable or false;
   hasTailscale = config.features.services.tailscale.enable or false;
-  hasNixIndex = config.features.core.hardware.nixIndex or false;
+  hasNixIndex = config.features.shell.utils.nix or false;
 
   pluginMap = {
     audio-switcher = "blackbartblues/audio-switcher";

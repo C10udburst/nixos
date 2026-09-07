@@ -131,6 +131,13 @@ in {
           "Emulator"
         ];
       };
+
+      xdg.mimeApps.defaultApplications = {
+        "application/x-ms-dos-executable" = ["wine.desktop"];
+        "application/x-msi" = ["wine.desktop"];
+        "application/x-ms-shortcut" = ["wine.desktop"];
+        "application/x-bat" = ["wine.desktop"];
+      };
     };
   };
 }

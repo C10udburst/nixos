@@ -38,7 +38,12 @@
     };
   };
 
-  selectedBoards = lib.filter (b: builtins.hasAttr b boardsConfig) cfg.boards;
+  selectedBoards = [
+    "arduino"
+    "esp32"
+    "digispark"
+    "esp8266"
+  ];
   selectedCores = map (b: boardsConfig.${b}.core) selectedBoards;
   selectedUrls = lib.filter (url: url != null) (map (b: boardsConfig.${b}.url or null) selectedBoards);
 
@@ -110,11 +115,6 @@ in {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-    };
-
-    boards = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = ["arduino"];
     };
   };
 

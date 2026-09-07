@@ -27,7 +27,9 @@
 
     gui = {
       enable = true;
-      greeter.greetd.autologin = true;
+      greeter = {
+        autologin = "driftwm";
+      };
       desktop = {
         driftwm.enable = true;
         plasma.enable = false;
