@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: let
-  cfg = config.features.gui.apps.tools.okular;
-  toolsEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable;
+  cfg = config.features.gui.apps.viewers.okular;
+  viewersEnabled =
+    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.viewers.enable;
   associatePackage = (import ../../../../lib/helpers/associations.nix {inherit lib;}).associatePackage;
   okularMimes = lib.filterAttrs (
     name: value:
@@ -20,12 +20,12 @@
       && name != "image/tiff"
   ) (associatePackage pkgs.kdePackages.okular);
 in {
-  options.features.gui.apps.tools.okular = lib.mkOption {
+  options.features.gui.apps.viewers.okular = lib.mkOption {
     type = lib.types.bool;
     default = true;
   };
 
-  config = lib.mkIf (toolsEnabled && cfg) {
+  config = lib.mkIf (viewersEnabled && cfg) {
     home-manager.users.cloudburst = {
       home.packages = [pkgs.kdePackages.okular];
       xdg.mimeApps.defaultApplications = okularMimes;

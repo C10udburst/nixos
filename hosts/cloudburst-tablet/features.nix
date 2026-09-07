@@ -44,11 +44,10 @@
         };
         tools = {
           enable = false;
-          nomacs = true;
-          haruna = true;
           konsole = true;
-          okular = true;
-          dolphin = true;
+        };
+        viewers = {
+          mayo = false;
         };
       };
       dev.enable = false;

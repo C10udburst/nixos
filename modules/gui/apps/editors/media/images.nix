@@ -4,21 +4,26 @@
   pkgs,
   ...
 }: let
-  cfg = config.features.gui.apps.editors.images;
+  cfg = config.features.gui.apps.editors.media.images;
   editorsEnabled =
     config.features.gui.enable
     && config.features.gui.apps.enable
     && config.features.gui.apps.editors.enable;
 in {
-  options.features.gui.apps.editors.images = lib.mkOption {
+  options.features.gui.apps.editors.media.images = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default = config.features.gui.apps.editors.media.enable;
   };
 
   config = lib.mkIf (editorsEnabled && cfg) {
     environment.systemPackages = with pkgs; [
-      gimp
+      (gimp3-with-plugins.override {
+        plugins = with pkgs.gimp3Plugins; [
+          resynthesizer
+        ];
+      })
       inkscape
+      imagemagick
     ];
   };
 }
