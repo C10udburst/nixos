@@ -51,12 +51,21 @@ This document visualizes the complete file tree of the proposed dendritic archit
 └── modules/                        # Dendritic modules (auto-discovered by import-tree)
     ├── core/                       # Base operating system layer
     │   ├── default.nix             # Core layer master orchestrator
-    │   ├── nix.nix                 # Nix daemon, nixpkgs settings, binary caches, gc
+    │   ├── nix.nix                 # Nix daemon, nixpkgs settings, binary caches, gc, vulnix
     │   ├── boot.nix                # Bootloader (systemd-boot, grub32 EFI loader, timeout)
     │   ├── locale/
     │   │   ├── default.nix         # Locale options & dispatcher
     │   │   └── pl.nix              # Polish timezone, i18n, and console keymaps
-    │   ├── hardware.nix            # Hardware profiles (mobile, slow, touchscreen) & drivers (zram, ldfix, pipewire, nvidia, fuse)
+    │   ├── hardware/
+    │   │   ├── default.nix         # Core hardware profile flags (enable, mobile, slow)
+    │   │   ├── zram.nix            # ZRAM swap device & swappiness sysctl
+    │   │   ├── nix-ld.nix          # Dynamic linker fix for unpatched binaries
+    │   │   ├── pipewire.nix        # PipeWire audio & rtkit
+    │   │   ├── bluetooth.nix       # Bluetooth support & powerOnBoot
+    │   │   ├── touchscreen.nix     # Touchscreen IIO sensors
+    │   │   ├── fuse.nix            # FUSE filesystem mounts (SMB, SSHFS, ADB)
+    │   │   ├── nvidia.nix          # NVIDIA drivers & container toolkit
+    │   │   └── appimage.nix        # AppImage runtime & binfmt
     │   └── users/
     │       ├── default.nix         # Shared user options & groups
     │       └── cloudburst.nix      # cloudburst account, sudo, SSH keys & HM stateVersion
@@ -187,6 +196,14 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   │           ├── antigravity.nix # Google Antigravity IDE & CLI
     │   │           ├── pi.nix      # Pi coding agent
     │   │           └── ollama.nix  # Local Ollama daemon
+    │   ├── threed/                     # 3D modeling, CAD, slicing & printer toolchains
+    │   │   ├── default.nix             # 3D master feature umbrella
+    │   │   ├── blender.nix             # Blender & Stylix interface theme
+    │   │   ├── orca.nix                # OrcaSlicer 3D printing slicer
+    │   │   ├── freecad.nix             # FreeCAD parametric 3D modeler
+    │   │   └── openscad/
+    │   │       ├── default.nix         # OpenSCAD programmatic CAD modeler
+    │   │       └── libraries.nix       # OpenSCAD libraries (BOSL2, constructive, Round-Anything, obiscad)
     │   └── dev/                    # Developer toolchains & workstation environments
     │       ├── default.nix         # Developer umbrella module
     │       ├── programming/
@@ -201,7 +218,6 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │       │   ├── default.nix     # Typesetting documents umbrella
     │       │   ├── latex.nix       # TeXLive full distribution
     │       │   └── typst.nix       # Typst typesetting compiler
-    │       ├── threed.nix          # OpenSCAD, Blender, FreeCAD & BOSL2 libraries
     │       └── android.nix         # Android SDK, adb, udev rules, scrcpy & emulators
     │
     ├── compat/                     # Compatibility, containerization & virtualization
@@ -231,7 +247,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/nix.nix`                                | `modules/core/nix.nix`                     | Configures flakes, substituters, gc                |
 | `modules/nixos/users.nix` + `modules/home/user.nix`    | `modules/core/users/cloudburst.nix`        | Unified system user + HM state                     |
 | `modules/nixos/locale.nix`                             | `modules/core/locale/pl.nix`               | Timezone, keymaps, i18n                            |
-| `modules/nixos/zram.nix` + `ldfix.nix` + `main.nix`    | `modules/core/hardware.nix`                | Base drivers, zram, ldfix, kernel tweaks          |
+| `modules/nixos/zram.nix` + `ldfix.nix` + `main.nix`    | `modules/core/hardware/*`                  | Split into granular hardware drivers and profiles  |
 | `modules/nixos/tailscale.nix`                          | `modules/services/tailscale.nix`           | Tailscale VPN daemon & exit node                   |
 | `modules/nixos/weylus.nix`                             | `modules/services/weylus.nix`              | Tablet screen mirror & stylus input                |
 | `modules/nixos/usbip.nix`                              | `modules/services/usbip.nix`               | USB-over-IP daemon                                 |
@@ -263,7 +279,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/programming.nix`                        | `modules/gui/dev/programming/*`            | Granular `rust.nix`, `go.nix`, `node.nix`, `kotlin.nix` |
 | `modules/nixos/python.nix`                             | `modules/gui/dev/python.nix`               | Python environment & scientific stacks             |
 | `modules/nixos/arduino.nix`                            | `modules/gui/dev/arduino.nix`              | Microcontroller toolchains                         |
-| `modules/nixos/threed.nix` + `home/threed.nix`         | `modules/gui/dev/threed.nix`               | 3D printing & CAD toolchain                        |
+| `modules/nixos/threed.nix` + `home/threed.nix`         | `modules/gui/threed/*`                     | Split into `blender`, `orca`, `freecad`, `openscad/` |
 | `modules/nixos/latex.nix` + `typst.nix`                | `modules/gui/dev/documents/*`              | Typesetting tools (`latex.nix`, `typst.nix`)       |
 | `modules/nixos/android.nix`                            | `modules/gui/dev/android.nix`              | Android SDK, udev rules & scrcpy                   |
 | `modules/home/wine/*`                                  | `modules/compat/wine/*`                    | Wine layer with co-located `_theme.reg.j2`         |

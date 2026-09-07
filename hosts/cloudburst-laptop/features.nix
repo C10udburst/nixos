@@ -44,9 +44,9 @@
         enable = true;
         programming.enable = true;
         python.enable = true;
-        threed.enable = true;
         android.enable = true;
       };
+      threed.enable = true;
     };
 
     compat = {

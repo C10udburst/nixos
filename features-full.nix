@@ -26,13 +26,12 @@
         bluetooth = false;
         enable = true;
         fuse = true;
-        ldfix = true;
         mobile = false;
+        nix-ld = true;
         nvidia = false;
         pipewire = true;
         slow = false;
         touchscreen = false;
-        vulnix = true;
         zram = true;
       };
       locale = {
@@ -44,6 +43,7 @@
         enable = true;
         flakes = true;
         gc = false;
+        vulnix = true;
       };
       users = {
         cloudburst = {
@@ -163,16 +163,6 @@
           enable = true;
           utils = false;
         };
-        threed = {
-          blender = false;
-          enable = false;
-          freecad = false;
-          openscad = {
-            enable = false;
-            libraries = true;
-          };
-          orca = false;
-        };
       };
       enable = true;
       greeter = {
@@ -189,6 +179,16 @@
           enable = true;
         };
       };
+      threed = {
+        blender = true;
+        enable = false;
+        freecad = true;
+        openscad = {
+          enable = true;
+          libraries = true;
+        };
+        orca = true;
+      };
       xdg = {
         enable = true;
       };
@@ -200,12 +200,8 @@
         paths = [];
       };
       westonRdp = {
+        desktop = "driftwm";
         enable = false;
-        gskRenderer = "ngl";
-        tlsCert = "/var/lib/weston-rdp/tls.crt";
-        tlsKey = "/var/lib/weston-rdp/tls.key";
-        user = "cloudburst";
-        windowManager = "${pkgs.driftwm}/bin/driftwm";
       };
     };
     services = {
