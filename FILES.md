@@ -144,7 +144,8 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   ├── apps/
     │   │   ├── default.nix         # Desktop applications aggregator
     │   │   ├── brave/
-    │   │   │   ├── default.nix     # Core Brave browser, system flags & enterprise policies
+    │   │   │   ├── default.nix     # Brave browser umbrella & option declarations
+    │   │   │   ├── core.nix        # Core Brave browser, system flags & enterprise policies
     │   │   │   ├── _mkwebapp.nix   # WebApp generator helper
     │   │   │   └── apps/
     │   │   │       ├── default.nix # WebApps umbrella module
