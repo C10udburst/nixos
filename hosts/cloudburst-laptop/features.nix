@@ -1,49 +1,27 @@
 {...}: {
   features = {
-    core = {
-      enable = true;
-      hardware = {
-        mobile = true;
-        nvidia = true;
-      };
+    core.hardware = {
+      mobile = true;
+      nvidia = true;
     };
 
     services = {
-      enable = true;
       waypipe = true;
       weylus = true;
       usbip = true;
     };
 
-    shell = {
-      enable = true;
-      scripts.enable = true;
-    };
-
     gui = {
-      enable = true;
-      desktop = {
-        driftwm.enable = true;
-        plasma.enable = true;
-      };
       apps = {
-        brave.enable = true;
         threed.enable = true;
         editors = {
           vscode = true;
-          office = {
-            libreoffice = true;
-          };
-          media = {
-            images = true;
-            videos = true;
-            audio = true;
-          };
+          office.libreoffice = true;
+          media.enable = true;
         };
         tools = {
           social.enable = true;
           llm.enable = true;
-          organizeer = true;
           net.enable = true;
         };
       };

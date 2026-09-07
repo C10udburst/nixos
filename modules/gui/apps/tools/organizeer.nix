@@ -11,13 +11,12 @@
     && config.features.gui.apps.enable
     && config.features.gui.apps.tools.enable;
 in {
-  imports = lib.optionals (inputs ? organizeer && inputs.organizeer ? nixosModules) [
-    inputs.organizeer.nixosModules.default
-  ];
-
   options.features.gui.apps.tools.organizeer = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default =
+      if (config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable)
+      then true
+      else false;
   };
 
   config = lib.mkMerge [

@@ -1,44 +1,17 @@
 {...}: {
   features = {
-    core = {
-      enable = true;
-      hardware = {
-        zram = false;
-        fuse = false;
-      };
+    core.hardware = {
+      zram = false;
+      fuse = false;
     };
 
-    services = {
-      enable = true;
-      tailscale.enable = false;
-    };
+    services.tailscale.enable = false;
 
-    shell = {
-      enable = true;
-      scripts.enable = false;
-    };
+    shell.scripts.enable = false;
 
     gui = {
-      enable = true;
-      desktop = {
-        driftwm.enable = false;
-        plasma.enable = true;
-      };
-      apps = {
-        brave.enable = true;
-        editors = {
-          vscode = false;
-          office.libreoffice = false;
-        };
-        tools = {
-          social.enable = false;
-          llm.enable = false;
-        };
-      };
-      dev = {
-        enable = true;
-        python.enable = true;
-      };
+      desktop.driftwm.enable = false;
+      dev.python.enable = true;
     };
 
     compat.enable = false;

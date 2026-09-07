@@ -21,11 +21,21 @@ in {
       else false;
   };
 
-  config = lib.mkIf (config.features.shell.enable && config.features.shell.utils.enable && cfg) {
-    environment.systemPackages = with pkgs; [
-      fastfetch
-      kimsay
-      asciinema
-    ];
-  };
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        kimsay = {
+          url = "github:IcaroJam/kimsay";
+          flake = false;
+        };
+      };
+    }
+    (lib.mkIf (config.features.shell.enable && config.features.shell.utils.enable && cfg) {
+      environment.systemPackages = with pkgs; [
+        fastfetch
+        kimsay
+        asciinema
+      ];
+    })
+  ];
 }

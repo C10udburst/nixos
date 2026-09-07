@@ -17,7 +17,6 @@ in {
 
   config = lib.mkIf (gamesEnabled && cfg) {
     environment.systemPackages = with pkgs; [
-      protonup-qt
       lutris
       mangohud
     ];

@@ -50,23 +50,33 @@ in {
       else false;
   };
 
-  config = lib.mkIf (config.features.shell.enable && config.features.shell.scripts.enable && cfg) {
-    environment.systemPackages =
-      [
-        serial
-        extract
-        www
-        rofi
-      ]
-      ++ lib.optionals (config.features.core.hardware.touchscreen or false) [
-        auto-rotate
-      ]
-      ++ lib.optionals (config.features.services.weylus or false) [
-        weylus-screen
-      ]
-      ++ lib.optionals (config.networking.hostName != "cloudburst-desktop") [
-        desktop-kickoff
-        desktop-kickoff-launcher
-      ];
-  };
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        isw = {
+          url = "github:YoyPa/isw";
+          flake = false;
+        };
+      };
+    }
+    (lib.mkIf (config.features.shell.enable && config.features.shell.scripts.enable && cfg) {
+      environment.systemPackages =
+        [
+          serial
+          extract
+          www
+          rofi
+        ]
+        ++ lib.optionals (config.features.core.hardware.touchscreen or false) [
+          auto-rotate
+        ]
+        ++ lib.optionals (config.features.services.weylus or false) [
+          weylus-screen
+        ]
+        ++ lib.optionals (config.networking.hostName != "cloudburst-desktop") [
+          desktop-kickoff
+          desktop-kickoff-launcher
+        ];
+    })
+  ];
 }

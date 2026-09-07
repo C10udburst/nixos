@@ -29,6 +29,10 @@
       url = "github:YoyPa/isw";
       flake = false;
     };
+    jetbra-netfilter = {
+      url = "https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip";
+      flake = false;
+    };
     kimsay = {
       url = "github:IcaroJam/kimsay";
       flake = false;

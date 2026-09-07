@@ -1,7 +1,6 @@
 {...}: {
   features = {
     core = {
-      enable = true;
       boot = {
         systemd = false;
         grub32 = true;
@@ -15,41 +14,24 @@
     };
 
     services = {
-      enable = true;
       waypipe = true;
     };
 
     shell = {
-      enable = true;
       ranger.enable = false;
-      scripts = {
-        enable = false;
-        hardware = true;
-      };
       utils.enable = false;
     };
 
     gui = {
-      enable = true;
-      greeter = {
-        autologin = "driftwm";
-      };
-      desktop = {
-        driftwm.enable = true;
-        plasma.enable = false;
-      };
+      greeter.autologin = "driftwm";
+      desktop.plasma.enable = false;
       apps = {
-        brave.enable = true;
-        editors = {
-          enable = false;
-        };
+        editors.enable = false;
         tools = {
           enable = false;
           konsole = true;
         };
-        viewers = {
-          mayo = false;
-        };
+        viewers.mayo = false;
       };
       dev.enable = false;
     };
