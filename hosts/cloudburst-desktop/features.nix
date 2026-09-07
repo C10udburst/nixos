@@ -1,59 +1,35 @@
 {...}: {
   features = {
-    core = {
-      enable = true;
-    };
-
     services = {
-      enable = true;
       waypipe = true;
       weylus = true;
       usbip = true;
     };
 
-    shell = {
-      enable = true;
-      scripts.enable = true;
-    };
-
     gui = {
-      enable = true;
       desktop = {
-        driftwm = {
-          enable = true;
-          extracmds = [
-            "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,80"
-          ];
-        };
-        plasma.enable = true;
+        driftwm.extracmds = [
+          "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,80"
+        ];
       };
       apps = {
-        brave.enable = true;
         threed.enable = true;
         editors = {
           vscode = true;
-          office = {
-            libreoffice = true;
-          };
+          office.libreoffice = true;
           jetbrains.enable = true;
-          media = {
-            images = true;
-            videos = true;
-            audio = true;
-          };
+          media.enable = true;
         };
         tools = {
           obs = true;
           social.enable = true;
           llm.enable = true;
-          organizeer = true;
           net.enable = true;
         };
       };
       dev = {
         enable = true;
         programming = {
-          enable = true;
           rust = true;
           go = true;
           node = true;
@@ -80,12 +56,9 @@
       podman.enable = true;
     };
 
-    server = {
+    server.samba = {
       enable = true;
-      samba = {
-        enable = true;
-        paths = ["/mnt/dane"];
-      };
+      paths = ["/mnt/dane"];
     };
   };
 }

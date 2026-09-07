@@ -28,35 +28,45 @@ in {
     };
   };
 
-  config = lib.mkIf (devEnabled && cfg.enable) {
-    nixpkgs.config.android_sdk.accept_license = true;
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        scrcpy-app-src = {
+          url = "github:C10udburst/scrcpy-app";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
+      };
+    }
+    (lib.mkIf (devEnabled && cfg.enable) {
+      nixpkgs.config.android_sdk.accept_license = true;
 
-    environment.sessionVariables = lib.mkIf cfg.dev {
-      ANDROID_HOME = "/run/current-system/sw/libexec/android-sdk";
-      ANDROID_SDK_ROOT = "/run/current-system/sw/libexec/android-sdk";
-    };
+      environment.sessionVariables = lib.mkIf cfg.dev {
+        ANDROID_HOME = "/run/current-system/sw/libexec/android-sdk";
+        ANDROID_SDK_ROOT = "/run/current-system/sw/libexec/android-sdk";
+      };
 
-    environment.systemPackages =
-      lib.optionals cfg.core (
-        with pkgs; [
-          android-tools
-          jmtpfs
-          android-file-transfer
-        ]
-      )
-      ++ lib.optionals cfg.scrcpy (
-        with pkgs;
-          [
-            scrcpy
+      environment.systemPackages =
+        lib.optionals cfg.core (
+          with pkgs; [
+            android-tools
+            jmtpfs
+            android-file-transfer
           ]
-          ++ lib.optional (scrcpy-app != null) scrcpy-app
-      )
-      ++ lib.optionals cfg.dev [
-        pkgs.jadx
-        (pkgs.androidenv.composeAndroidPackages {
-          platformVersions = ["35" "36"];
-          buildToolsVersions = ["35.0.0"];
-        }).androidsdk
-      ];
-  };
+        )
+        ++ lib.optionals cfg.scrcpy (
+          with pkgs;
+            [
+              scrcpy
+            ]
+            ++ lib.optional (scrcpy-app != null) scrcpy-app
+        )
+        ++ lib.optionals cfg.dev [
+          pkgs.jadx
+          (pkgs.androidenv.composeAndroidPackages {
+            platformVersions = ["35" "36"];
+            buildToolsVersions = ["35.0.0"];
+          }).androidsdk
+        ];
+    })
+  ];
 }

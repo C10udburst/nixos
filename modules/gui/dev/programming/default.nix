@@ -30,15 +30,25 @@ in {
     };
   };
 
-  config = lib.mkIf (devEnabled && cfg.enable) {
-    environment.systemPackages = with pkgs; [
-      sqlitebrowser
-      imhex
-      gdb
-      gcc
-      gitr
-    ];
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        gitr = {
+          url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";
+          flake = false;
+        };
+      };
+    }
+    (lib.mkIf (devEnabled && cfg.enable) {
+      environment.systemPackages = with pkgs; [
+        sqlitebrowser
+        imhex
+        gdb
+        gcc
+        gitr
+      ];
 
-    boot.kernel.sysctl."kernel.yama.ptrace_scope" = 0;
-  };
+      boot.kernel.sysctl."kernel.yama.ptrace_scope" = 0;
+    })
+  ];
 }

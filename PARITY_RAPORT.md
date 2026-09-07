@@ -11,14 +11,29 @@
 ```diff
 --- old/cloudburst-desktop/systemPackages
 +++ new/cloudburst-desktop/systemPackages
+- cargo-1.95.0
+- gcc-wrapper-15.2.0
+- gdb-17.2
+- gitr-v0.4.17
+- go-1.26.6
+- gradle-8.14.4
 - haruna-1.7.1
+- idea-2026.2.0.1
+- imhex-1.38.1
+- kdenetwork-filesharing-26.04.3
+- kotlin-2.3.21
 - libargon2-20190702
 - libxcb-cursor-0.1.6
+- nodejs-24.19.0
 - openssl-3.6.3
+- pnpm-11.21.0
 - qocker-1.0.0
+- rustc-wrapper-1.95.0
+- samba-4.23.10
+- sqlitebrowser-3.13.1
+- wsdd-0.9
 + carapace-1.6.3
 + ddcutil-2.2.7
-+ goland-2026.2.0.1
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
 + starship-1.25.1
@@ -81,6 +96,7 @@
 - nvtop-3.3.2
 - openssl-3.6.3
 - pnpm-11.21.0
+- protonup-qt-2.14.0
 - qocker-1.0.0
 - rustc-wrapper-1.95.0
 + carapace-1.6.3
@@ -132,10 +148,8 @@
 --- old/cloudburst-tablet/systemPackages
 +++ new/cloudburst-tablet/systemPackages
 - alejandra-4.0.0
-- auto-rotate
+- bluez-5.86
 - cabextract-1.11
-- desktop-kickoff
-- desktop-kickoff.desktop
 - eza-0.23.4
 - fastfetch-2.63.1
 - ffmpeg-8.1.2
@@ -171,9 +185,26 @@
 - wireless-tools-30.pre9
 - yt-dlp-2026.08.19
 - zip-3.0
++ beamer-clean
 + carapace-1.6.3
++ chafa-1.18.2
++ datauri
++ extract
++ gcode-bounds
++ gh-origin-mod
++ icat
++ ics-merge
++ libsixel-1.10.5
++ nix-py
++ nx
 + openjdk-21.0.12+8
++ palette
++ rofi
++ sarif-md
++ serial
 + starship-1.25.1
++ video8mb
++ www
 + zenity-4.2.2
 ```
 
@@ -222,7 +253,7 @@
 - libargon2-20190702
 - libxcb-cursor-0.1.6
 - openssl-3.6.3
-- organizeer-1.0.0
+- python3-3.13.15-env
 - webapp-google-docs.desktop
 - webapp-google-forms.desktop
 - webapp-google-sheets.desktop
@@ -274,6 +305,7 @@
 + git-lfs-3.7.1
 + haruna-1.7.1
 + nushell-0.112.2
++ vscode-1.119.0
 ```
 
 ### 3. System Options & Services Differences

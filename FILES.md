@@ -123,7 +123,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │   └── utils/                  # Command-line packages split by profile
     │       ├── default.nix         # Utils master aggregator
     │       ├── core.nix            # screen, jq, curl, wget, file, killall
-    │       ├── modern-cli.nix      # bat, eza, fd, ripgrep, procs, dust, fzf, hexyl, binwalk, tmux, jless
+    │       ├── modern.nix          # bat, eza, fd, ripgrep, procs, dust, fzf, hexyl, binwalk, tmux, jless
     │       ├── media.nix           # ffmpeg, qrencode, zbar, yt-dlp
     │       ├── archive.nix         # zip, unzip, unrar, rar, p7zip, gnutar, cabextract, ncompress, cpio
     │       ├── diagnostics.nix     # pciutils (lspci), usbutils (lsusb)
@@ -279,7 +279,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/home/ranger/*`                                | `modules/shell/ranger/*`                   | Python commands co-located as `_commands.py`       |
 | `modules/home/git.nix`                                 | `modules/shell/git.nix`                    | Git configuration                                  |
 | `modules/nixos/scripts/*`                              | `modules/shell/scripts/<category>/*`       | Split into `media/`, `dev/`, `hardware/`, `documents/` |
-| *(new module)*                                         | `modules/shell/utils/*`                    | Split into `modern-cli.nix`, `nix.nix`, `fun.nix`, `nettools.nix` |
+| *(new module)*                                         | `modules/shell/utils/*`                    | Split into `modern.nix`, `nix.nix`, `fun.nix`, `nettools.nix` |
 | `modules/nixos/theme.nix` + `wallpaper.jpg`            | `modules/gui/theme/*`                      | Split into `core.nix`, `wallpaper.nix`, `font.nix` |
 | `modules/nixos/driftwm.nix` + `modules/home/driftwm/*` | `modules/gui/desktop/driftwm/*`            | Co-located `_wallpaper.glsl` & `desktop.nix`       |
 | `modules/home/driftwm/noctalia.nix`                    | `modules/gui/desktop/driftwm/noctalia.nix` | Noctalia bar & inputs                              |

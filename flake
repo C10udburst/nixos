@@ -13,9 +13,51 @@ let
   flake = builtins.getFlake (toString ./.);
   ffPath = flake.inputs.flake-file.outPath;
   pkgs = flake.inputs.nixpkgs.legacyPackages.x86_64-linux;
+  lib = pkgs.lib;
+  importTree = import ./lib/import-tree.nix;
+  files = (importTree.pipeTo (f: f)) ./modules;
+
+  findInputsInAttrs = a:
+    if builtins.isAttrs a then
+      if a ? flake-file && a.flake-file ? inputs then a.flake-file.inputs
+      else if a ? _type && a._type == "merge" && a ? contents then
+        lib.foldl (acc: item: acc // (findInputsInAttrs item)) {} a.contents
+      else if a ? config then findInputsInAttrs a.config
+      else {}
+    else {};
+
+  extract = file:
+    let
+      content = builtins.readFile file;
+      hasInputs = builtins.match ".*flake-file\\.inputs.*" content != null;
+    in
+      if !hasInputs then {}
+      else
+        let
+          fn = import file;
+          dummyArgs = {
+            config = {};
+            inherit lib;
+            pkgs = {
+              stdenv.hostPlatform.system = "x86_64-linux";
+              system = "x86_64-linux";
+            };
+            inputs = {};
+          };
+          res = if builtins.isFunction fn then fn dummyArgs else fn;
+        in
+          findInputsInAttrs res;
+
+  moduleInputs = lib.foldl (acc: item: acc // item) {} (map extract files);
+
   res = import ffPath {
     inherit pkgs;
-    modules = [ ./flake-file.nix ];
+    modules = [
+      ./flake-file.nix
+      {
+        flake-file.inputs = moduleInputs;
+      }
+    ];
   };
 in
   res.flake-file.apps.write-flake pkgs

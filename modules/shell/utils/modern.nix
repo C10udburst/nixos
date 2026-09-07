@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: let
-  cfg = config.features.shell.utils.modernCli;
+  cfg = config.features.shell.utils.modern;
 in {
-  options.features.shell.utils.modernCli = lib.mkOption {
+  options.features.shell.utils.modern = lib.mkOption {
     type = lib.types.bool;
     default =
       if (config.features.shell.enable && config.features.shell.utils.enable)

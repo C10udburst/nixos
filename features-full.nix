@@ -82,10 +82,10 @@
             enable = false;
           };
           media = {
-            audio = false;
+            audio = true;
             enable = false;
-            images = false;
-            videos = false;
+            images = true;
+            videos = true;
           };
           office = {
             enable = true;
@@ -120,7 +120,7 @@
             enable = false;
           };
           obs = false;
-          organizeer = false;
+          organizeer = true;
           social = {
             enable = false;
             signal = true;
@@ -287,7 +287,7 @@
         enable = true;
         fun = true;
         media = true;
-        modernCli = true;
+        modern = true;
         nettools = true;
         nix = true;
       };
