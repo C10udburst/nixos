@@ -20,10 +20,6 @@
     "btrtl"
   ];
 
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
   security.rtkit.enable = true;
 
   boot.initrd.availableKernelModules = [

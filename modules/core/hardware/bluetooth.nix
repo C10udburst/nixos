@@ -7,7 +7,10 @@
 in {
   options.features.core.hardware.bluetooth = lib.mkOption {
     type = lib.types.bool;
-    default = false;
+    default =
+      if (config.features.core.enable && cfg.enable)
+      then true
+      else false;
   };
 
   config = lib.mkIf (config.features.core.enable && cfg.enable && cfg.bluetooth) {

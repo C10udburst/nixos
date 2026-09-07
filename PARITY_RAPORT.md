@@ -11,26 +11,13 @@
 ```diff
 --- old/cloudburst-desktop/systemPackages
 +++ new/cloudburst-desktop/systemPackages
-- bluedevil-6.6.6
-- bluez-5.86
-- bluez-qt-6.26.0
-- ffmpeg-8.1.2
-- gradle-8.14.4
 - haruna-1.7.1
-- jless-0.9.0
-- killall-psmisc-23.7
 - libargon2-20190702
 - libxcb-cursor-0.1.6
-- obexftp-0.24.2
-- openobex-1.7.2
 - openssl-3.6.3
-- organizeer-1.0.0
 - qocker-1.0.0
-- screen-5.0.1
-- webapp-gridfinity-cutout.desktop
-- yt-dlp-2026.08.19
-- zenity-4.2.2
 + carapace-1.6.3
++ ddcutil-2.2.7
 + goland-2026.2.0.1
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
@@ -44,7 +31,6 @@
 --- old/cloudburst-desktop/homePackages
 +++ new/cloudburst-desktop/homePackages
 - code
-- jetbra-netfilter-1.0.0
 - konsole-26.04.3
 - pi-coding-agent-0.84.4
 - signal-desktop-8.25.0
@@ -55,9 +41,8 @@
 ```
 
 ### 3. System Options & Services Differences
-```diff
-- hardware.bluetooth.enable: true (previously implicitly enabled by packages = true)
-+ hardware.bluetooth.enable: false (now requires explicit features.core.hardware.bluetooth = true)
+```
+100% Parity (0 system service/option differences)
 ```
 
 ### 4. Home Manager Options & Programs Differences
@@ -69,9 +54,9 @@
 ### 5. Delta Analysis & Root Causes
 - **User-Level to System-Level Migration**: `signal-desktop`, `telegram-desktop`, and `pi-coding-agent` were formerly declared in HM `social.nix`/`llm.nix` and have been promoted to modular NixOS system packages under `features.gui.apps.tools.social` and `features.gui.apps.tools.llm`.
 - **Viewer Package Placement**: `haruna` was formerly a system package; it is now managed within Home Manager viewers with automatic XDG MIME type associations (`features.gui.apps.viewers.haruna`).
-- **VS Code Binary Name**: `code` (HM derivation name in old) is now evaluated as `vscode-1.119.0` via explicit package assignment.
-- **Legacy Custom Script Packages**: `organizeer` (out-of-tree flake input) and `qocker` (custom Python podman GUI script) were not carried over to the dendritic modules.
-- **Bluetooth Toggle**: `hardware.bluetooth` was previously pulled in implicitly whenever `systemSettings.packages = true`; it now cleanly adheres to the `features.core.hardware.bluetooth` toggle.
+- **VS Code Binary Name**: In the legacy configuration, VS Code was managed under Home Manager using a custom wrapper named `code`. In the new configuration, it is also managed under Home Manager `programs.vscode` with the upstream derivation package `vscode-1.119.0`.
+- **Legacy Custom Script Packages**: `qocker` (custom Python podman GUI script) was not ported to the dendritic modules; `organizeer` daemon and package are now fully integrated under `features.gui.apps.tools.organizeer`.
+- **Hardware & Display**: `ddcutil` is now managed cleanly via `features.core.hardware.ddc`.
 - **Shell Enhancements**: `carapace` and `starship` are now explicitly surfaced in system closures.
 
 ---
@@ -86,27 +71,20 @@
 - cargo-1.95.0
 - cuda12.9-cuda_cudart-12.9.79
 - cuda12.9-cuda_nvcc-12.9.86
-- ffmpeg-8.1.2
 - go-1.26.6
 - gradle-8.14.4
 - haruna-1.7.1
-- jless-0.9.0
-- killall-psmisc-23.7
 - kotlin-2.3.21
 - libargon2-20190702
 - libxcb-cursor-0.1.6
 - nodejs-24.19.0
 - nvtop-3.3.2
 - openssl-3.6.3
-- organizeer-1.0.0
 - pnpm-11.21.0
 - qocker-1.0.0
 - rustc-wrapper-1.95.0
-- screen-5.0.1
-- webapp-gridfinity-cutout.desktop
-- yt-dlp-2026.08.19
-- zenity-4.2.2
 + carapace-1.6.3
++ ddcutil-2.2.7
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
 + starship-1.25.1
@@ -140,10 +118,9 @@
 ```
 
 ### 5. Delta Analysis & Root Causes
-- **Gaming & Media Parity**: All gaming packages (`steam`, `gamemode`, `heroic`, `lutris`, `mangohud`, `protonup-qt`) and media editors (`gimp3-with-plugins`, `inkscape`, `imagemagick`, `kdenlive`, `audacity`) are in 100% parity.
+- **Gaming, Tools & Media Parity**: All gaming packages (`steam`, `gamemode`, `heroic`, `lutris`, `mangohud`, `protonup-qt`), media editors (`gimp3-with-plugins`, `inkscape`, `imagemagick`, `kdenlive`, `audacity`), and network tools (`wireshark`, `organizeer`) are in 100% parity.
 - **Programming Packages**: The legacy laptop configuration had individual toggles in `settings.nix` where programming packages (`rust`, `go`, `nodejs`, `kotlin`, `gradle`) were enabled directly. In the new architecture, `features.gui.dev.programming.enable = true` controls the core toolchain.
 - **User-Level Promotion**: `signal-desktop`, `telegram-desktop`, and `pi-coding-agent` are placed in system packages rather than HM packages.
-- **Bluetooth & Graphics**: Full parity on Bluetooth, NVIDIA CDI, and Wayland services.
 
 ---
 
@@ -169,7 +146,6 @@
 - killall-psmisc-23.7
 - konsole-26.04.3
 - libargon2-20190702
-- libnotify-0.8.8
 - libxcb-cursor-0.1.6
 - ncompress-5.0
 - nix-output-monitor-2.2.0
@@ -197,8 +173,8 @@
 - zip-3.0
 + carapace-1.6.3
 + openjdk-21.0.12+8
-+ ranger-1.9.4-unstable-2026-04-26
 + starship-1.25.1
++ zenity-4.2.2
 ```
 
 ### 2. Home Manager Packages (`home-manager.users.cloudburst.home.packages`)
@@ -210,23 +186,14 @@
 - wlr-randr-0.5.0
 - wvkbd-0.19.4
 - xdg-terminal-exec-0.14.2
-+ archivemount-1b
-+ atool-0.39.0
-+ chafa-1.18.2
-+ ffmpegthumbnailer-2.3.0
 + git-lfs-3.7.1
 + haruna-1.7.1
-+ libsixel-1.10.5
-+ mediainfo-26.05
-+ perl5.42.0-Image-ExifTool-13.59
-+ poppler-utils-26.06.0
-+ ranger-1.9.4-unstable-2026-04-26
-+ w3m-0.5.6
 ```
 
 ### 3. System Options & Services Differences
-```
-100% Parity (0 system service/option differences)
+```diff
+- hardware.bluetooth.enable: true
++ hardware.bluetooth.enable: false (explicitly disabled on tablet profile)
 ```
 
 ### 4. Home Manager Options & Programs Differences
@@ -236,8 +203,8 @@
 ```
 
 ### 5. Delta Analysis & Root Causes
-- **Slow / Low-Power Device Optimizations**: `mayo` 3D viewer is disabled by default specifically on the tablet (`mayo = false;`). Heavy CLI suites (`archive`, `diagnostics`, `nettools`, `modernCli`) that were part of monolithic packages on the legacy host are omitted on the tablet.
-- **Ranger Suite**: In the new repo, `features.shell.ranger` bundles preview helpers (`archivemount`, `atool`, `chafa`, `ffmpegthumbnailer`, `mediainfo`, etc.) into HM user environment.
+- **Slow / Low-Power Device Optimizations**: `ranger` file manager, heavy CLI suites (`archive`, `diagnostics`, `nettools`, `modernCli`), 3D CAD viewer (`mayo`), and `bluetooth` are explicitly disabled on the tablet profile to preserve memory and battery.
+- **Clean Home Manager Closure**: Disabling `ranger` on the tablet eliminated all preview dependencies including `image-exiftool`, `archivemount`, `atool`, `chafa`, `ffmpegthumbnailer`, and `mediainfo` from the tablet's user environment.
 - **Java Runtime**: `openjdk-21` is enabled via `features.core.java`.
 
 ---
@@ -249,22 +216,13 @@
 ```diff
 --- old/bootstrap/systemPackages
 +++ new/bootstrap/systemPackages
-- bluedevil-6.6.6
-- bluez-5.86
-- bluez-qt-6.26.0
 - desktop-kickoff
 - desktop-kickoff.desktop
-- ffmpeg-8.1.2
 - haruna-1.7.1
-- jless-0.9.0
-- killall-psmisc-23.7
 - libargon2-20190702
 - libxcb-cursor-0.1.6
-- obexftp-0.24.2
-- openobex-1.7.2
 - openssl-3.6.3
 - organizeer-1.0.0
-- screen-5.0.1
 - webapp-google-docs.desktop
 - webapp-google-forms.desktop
 - webapp-google-sheets.desktop
@@ -272,8 +230,8 @@
 - webapp-vs-code-web.desktop
 - wl-clipboard-2.3.0
 - wlr-randr-0.5.0
-- yt-dlp-2026.08.19
 + carapace-1.6.3
++ ddcutil-2.2.7
 + inetutils-2.7
 + karp-0-unstable-2025-03-05
 + lsof-4.99.6
@@ -297,6 +255,7 @@
 + websocat-1.14.0
 + wireshark-cli-4.6.8
 + wireshark-qt-4.6.8
++ zenity-4.2.2
 ```
 
 ### 2. Home Manager Packages (`home-manager.users.cloudburst.home.packages`)
@@ -318,9 +277,8 @@
 ```
 
 ### 3. System Options & Services Differences
-```diff
-- hardware.bluetooth.enable: true (previously implicitly enabled by packages = true)
-+ hardware.bluetooth.enable: false (now requires explicit features.core.hardware.bluetooth = true)
+```
+100% Parity (0 system service/option differences)
 ```
 
 ### 4. Home Manager Options & Programs Differences

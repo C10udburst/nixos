@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: let
-  cfg = config.features.shell.utils.modernCli;
+  cfg = config.features.shell.utils.core;
 in {
-  options.features.shell.utils.modernCli = lib.mkOption {
+  options.features.shell.utils.core = lib.mkOption {
     type = lib.types.bool;
     default =
       if (config.features.shell.enable && config.features.shell.utils.enable)
@@ -16,17 +16,12 @@ in {
 
   config = lib.mkIf (config.features.shell.enable && config.features.shell.utils.enable && cfg) {
     environment.systemPackages = with pkgs; [
-      bat
-      eza
-      fd
-      ripgrep
-      procs
-      dust
-      fzf
-      hexyl
-      binwalk
-      tmux
-      jless
+      screen
+      jq
+      curl
+      wget
+      file
+      killall
     ];
   };
 }

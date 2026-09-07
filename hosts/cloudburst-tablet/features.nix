@@ -10,7 +10,7 @@
         mobile = true;
         touchscreen = true;
         slow = true;
-        bluetooth = true;
+        bluetooth = false;
       };
     };
 
@@ -21,6 +21,7 @@
 
     shell = {
       enable = true;
+      ranger.enable = false;
       scripts = {
         enable = false;
         hardware = true;

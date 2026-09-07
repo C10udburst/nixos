@@ -16,6 +16,9 @@ in {
   };
 
   config = lib.mkIf (devEnabled && cfg) {
-    environment.systemPackages = [pkgs.kotlin];
+    environment.systemPackages = [
+      pkgs.kotlin
+      pkgs.gradle
+    ];
   };
 }
