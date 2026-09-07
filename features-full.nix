@@ -1,4 +1,4 @@
-{...}: {
+{pkgs, ...}: {
   features = {
     core = {
       # Master switch for the core layer (default: true)
@@ -23,6 +23,7 @@
       # Locale and regional settings (all timezone, LC_*, consoleKeyMap are handled in pl.nix)
       locale = {
         pl = true; # Polish locale, timezone, and keymap
+        enable = true;
       };
 
       # Hardware profile flags & base driver toggles
@@ -46,14 +47,13 @@
         cloudburst = {
           enable = true;
           admin = true;
-          extraGroups = [
-            # Host-specific groups (e.g. "podman" if containers active)
-            "podman"
-          ];
+          extraGroups = ["podman"];
         };
+        enable = true;
       };
     };
 
+    # Host-specific groups (e.g. "podman" if containers active)
     # Services but not explicitly server-related
     services = {
       enable = true;
@@ -69,7 +69,6 @@
       weylus = false;
       usbip = false;
     };
-
     shell = {
       enable = true;
 
@@ -97,8 +96,6 @@
       # Ranger terminal file manager
       ranger = {
         enable = true;
-        devicons = true;
-        archives = true;
       };
 
       # Custom CLI utility scripts split into categories (from modules/shell/scripts/)
@@ -119,7 +116,6 @@
         nix = true; # alejandra, nix-output-monitor, nix-heuristic-gc, nix-index
       };
     };
-
     gui = {
       enable = true;
 
@@ -131,24 +127,20 @@
       # Theming engine (Stylix colors, JetBrainsMono font, and sizes handled globally)
       theme = {
         enable = true;
-        core = {
-          enable = true;
-          polarity = "dark";
-          base16Scheme = null; # null derives scheme dynamically from wallpaper
-        };
         wallpaper = {
           enable = true;
-          path = null; # defaults to co-located _wallpaper.jpg
         };
         font = {
           enable = true; # uses global JetBrainsMono Nerd Font setup
         };
+        polarity = "dark";
       };
 
       # Display manager & greeter
       greeter = {
         regreet = true;
         autologin = null; # null (regreet or tuigreet), "driftwm", "plasma", or false
+        enable = true;
       };
 
       # Compositors & Desktop Environments
@@ -158,7 +150,6 @@
           extracmds = [];
           extraConfig = {}; # native Nix attribute set merged into config
           desktop = true; # enables driftwm-desktop (defaults to true unless slow)
-
           noctalia = {
             enable = true;
             plugins = {
@@ -172,36 +163,20 @@
             };
           };
         };
-
         plasma = {
           enable = true;
           packages = true; # extra KDE apps: Kate, KFind, Gwenview, etc.
         };
+        enable = true;
       };
 
       # Applications & Tools
       apps = {
         brave = {
           enable = true;
-          flags = [
-            "brave-dark-mode-block@2"
-            "brave-history-embeddings@1"
-            "brave-origin@1"
-            "brave-tree-tab@1"
-            "containers@1"
-            "enable-parallel-downloading@1"
-            "enable-quic@1"
-            "middle-button-autoscroll@1"
-            "smooth-scrolling@1"
-            "ignore-gpu-blocklist@1"
-            "brave-round-time-stamps@1"
-            "brave-web-bluetooth-api@1"
-            "brave-rounded-corners-by-default@1"
-            "brave-request-otr-tab@1"
-          ];
+          flags = ["brave-dark-mode-block@2" "brave-history-embeddings@1" "brave-origin@1" "brave-tree-tab@1" "containers@1" "enable-parallel-downloading@1" "enable-quic@1" "middle-button-autoscroll@1" "smooth-scrolling@1" "ignore-gpu-blocklist@1" "brave-round-time-stamps@1" "brave-web-bluetooth-api@1" "brave-rounded-corners-by-default@1" "brave-request-otr-tab@1"];
           extraFlags = []; # additional experimental browser flags
           extraCliFlags = []; # additional CLI flags (slow devices automatically receive low-resource flags)
-
           apps = {
             enable = true;
             office = false; # defaults to true if editors.office.libreoffice is false
@@ -226,11 +201,12 @@
           vscode = true;
           jetbrains = {
             enable = false;
-            # if enable = true, it only installs those IDEs that are set within
-            # dev.programming.*.enable = true, e.g. dev.programming.rust.enable = true will install RustRover, kotlin will install IntelliJ, etc.
           };
+          enable = true;
         };
 
+        # if enable = true, it only installs those IDEs that are set within
+        # dev.programming.*.enable = true, e.g. dev.programming.rust.enable = true will install RustRover, kotlin will install IntelliJ, etc.
         # Native Desktop Tools & Utilities
         tools = {
           enable = true;
@@ -247,7 +223,6 @@
             telegram = true;
             signal = true;
           };
-
           llm = {
             enable = false;
             antigravity = true;
@@ -255,11 +230,10 @@
             ollama = false;
           };
         };
+        enable = true;
       };
-
       dev = {
         enable = false;
-
         programming = {
           enable = false;
           rust = false;
@@ -267,18 +241,15 @@
           node = false;
           kotlin = false;
         };
-
         python = {
           enable = true;
           dataScience = false; # numpy, pandas, scipy, matplotlib, scikit-learn, ipython
           ai = false; # PyTorch (CUDA-enabled if hardware.nvidia is on)
           utils = false; # requests, pypdf
         };
-
         arduino = {
           enable = false;
         };
-
         threed = {
           enable = false;
           blender = false;
@@ -289,12 +260,11 @@
             libraries = true; # BOSL2, constructive, Round-Anything, obiscad
           };
         };
-
         documents = {
           latex = false;
           typst = false;
+          enable = true;
         };
-
         android = {
           enable = false;
           core = true; # adb, fastboot, udev rules
@@ -303,7 +273,6 @@
         };
       };
     };
-
     compat = {
       enable = true;
       wine = false;
@@ -313,22 +282,23 @@
         enable = false;
         dockerCompat = true;
       };
-
       kvm = {
         enable = false;
       };
     };
-
     server = {
       enable = false;
-
       samba = {
         enable = false;
         paths = [];
       };
-
       westonRdp = {
         enable = false;
+        gskRenderer = "ngl";
+        tlsCert = "/var/lib/weston-rdp/tls.crt";
+        tlsKey = "/var/lib/weston-rdp/tls.key";
+        user = "cloudburst";
+        windowManager = "${pkgs.driftwm}/bin/driftwm";
       };
     };
   };
