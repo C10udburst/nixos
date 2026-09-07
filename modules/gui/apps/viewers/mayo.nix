@@ -36,9 +36,9 @@ in {
   };
 
   config = lib.mkIf (viewersEnabled && cfg) {
-    home-manager.users.cloudburst = {
-      home.packages = [mayoCustom];
+    environment.systemPackages = [mayoCustom];
 
+    home-manager.users.cloudburst = {
       home.file.".local/share/mime/packages/step.xml".text = ''
         <?xml version="1.0" encoding="UTF-8"?>
         <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">

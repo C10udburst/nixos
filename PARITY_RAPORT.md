@@ -11,7 +11,6 @@
 ```diff
 --- old/cloudburst-desktop/systemPackages
 +++ new/cloudburst-desktop/systemPackages
-- haruna-1.7.1
 - kdenetwork-filesharing-26.04.3
 - libargon2-20190702
 - libxcb-cursor-0.1.6
@@ -22,6 +21,7 @@
 + carapace-1.6.3
 + ddcutil-2.2.7
 + goland-2026.2.0.1
++ mayo-custom
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
 + starship-1.25.1
@@ -34,11 +34,11 @@
 --- old/cloudburst-desktop/homePackages
 +++ new/cloudburst-desktop/homePackages
 - konsole-26.04.3
+- mayo-custom
 - pi-coding-agent-0.84.4
 - signal-desktop-8.25.0
 - telegram-desktop-6.8.1
 + git-lfs-3.7.1
-+ haruna-1.7.1
 ```
 
 ### 3. System Options & Services Differences
@@ -53,9 +53,9 @@
 ```
 
 ### 5. Delta Analysis & Root Causes
-- **User-Level to System-Level Migration**: `signal-desktop`, `telegram-desktop`, and `pi-coding-agent` were formerly declared in HM `social.nix`/`llm.nix` and have been promoted to modular NixOS system packages under `features.gui.apps.tools.social` and `features.gui.apps.tools.llm`.
-- **Viewer Package Placement**: `haruna` was formerly a system package; it is now managed within Home Manager viewers with automatic XDG MIME type associations (`features.gui.apps.viewers.haruna`).
-- **VS Code Parity**: The full FHS wrapper (`pkgs.vscode.fhsWithPackages`), ephemeral profile isolation, Wayland flags, and comprehensive user settings/extensions have been fully restored, matching the legacy Home Manager configuration.
+- **User-Level to System-Level Migration**: `signal-desktop`, `telegram-desktop`, `pi-coding-agent`, `haruna`, and `mayo` are managed as modular NixOS system packages under `environment.systemPackages`.
+- **VS Code Parity**: The full FHS wrapper (`pkgs.vscode.fhsWithPackages`), ephemeral profile isolation, Wayland flags, and comprehensive user settings/extensions are fully restored to match the legacy configuration.
+- **Fallback Web Applications**: When local desktop suites like LibreOffice or native VS Code are absent/disabled (e.g. on tablet or bootstrap hosts), lightweight web alternatives (`Google Docs`, `Google Sheets`, `Google Slides`, `Google Forms`, `VS Code Web`) are dynamically enabled.
 - **Legacy Custom Script Packages**: `qocker` (custom Python podman GUI script) was not ported to the dendritic modules; `organizeer` daemon and package are now fully integrated under `features.gui.apps.tools.organizeer`.
 - **Hardware & Display**: `ddcutil` is disabled by default and only enabled for the desktop profile via `features.core.hardware.ddc = true`.
 - **Shell Enhancements**: `carapace` and `starship` are now explicitly surfaced in system closures.
@@ -74,7 +74,6 @@
 - cuda12.9-cuda_nvcc-12.9.86
 - go-1.26.6
 - gradle-8.14.4
-- haruna-1.7.1
 - kotlin-2.3.21
 - libargon2-20190702
 - libxcb-cursor-0.1.6
@@ -86,6 +85,7 @@
 - qocker-1.0.0
 - rustc-wrapper-1.95.0
 + carapace-1.6.3
++ mayo-custom
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
 + starship-1.25.1
@@ -98,11 +98,11 @@
 --- old/cloudburst-laptop/homePackages
 +++ new/cloudburst-laptop/homePackages
 - konsole-26.04.3
+- mayo-custom
 - pi-coding-agent-0.84.4
 - signal-desktop-8.25.0
 - telegram-desktop-6.8.1
 + git-lfs-3.7.1
-+ haruna-1.7.1
 ```
 
 ### 3. System Options & Services Differences
@@ -138,7 +138,6 @@
 - ffmpeg-8.1.2
 - file-5.47
 - hardinfo2-2.2.16
-- haruna-1.7.1
 - jq-1.8.2
 - killall-psmisc-23.7
 - konsole-26.04.3
@@ -159,11 +158,6 @@
 - tmux-3.6a
 - unrar-7.2.6
 - unzip-6.0
-- webapp-google-docs.desktop
-- webapp-google-forms.desktop
-- webapp-google-sheets.desktop
-- webapp-google-slides.desktop
-- webapp-vs-code-web.desktop
 - wget-1.25.0
 - wireless-tools-30.pre9
 - yt-dlp-2026.08.19
@@ -180,6 +174,8 @@
 + serial
 + starship-1.25.1
 + video8mb
++ webapp-draw-io.desktop
++ webapp-google-drive.desktop
 + www
 + zenity-4.2.2
 ```
@@ -194,7 +190,6 @@
 - wvkbd-0.19.4
 - xdg-terminal-exec-0.14.2
 + git-lfs-3.7.1
-+ haruna-1.7.1
 ```
 
 ### 3. System Options & Services Differences
@@ -225,15 +220,10 @@
 +++ new/bootstrap/systemPackages
 - desktop-kickoff
 - desktop-kickoff.desktop
-- haruna-1.7.1
 - libargon2-20190702
 - libxcb-cursor-0.1.6
 - openssl-3.6.3
 - python3-3.13.15-env
-- webapp-google-docs.desktop
-- webapp-google-forms.desktop
-- webapp-google-sheets.desktop
-- webapp-google-slides.desktop
 - webapp-vs-code-web.desktop
 - wl-clipboard-2.3.0
 - wlr-randr-0.5.0
@@ -241,6 +231,7 @@
 + inetutils-2.7
 + karp-0-unstable-2025-03-05
 + lsof-4.99.6
++ mayo-custom
 + net-tools-2.10
 + netcat-gnu-0.7.1
 + nix-index-0.1.10
@@ -258,6 +249,8 @@
 + usbutils-019
 + vulnix-1.12.4
 + waypipe-0.11.0
++ webapp-draw-io.desktop
++ webapp-google-drive.desktop
 + websocat-1.14.0
 + wireshark-cli-4.6.8
 + wireshark-qt-4.6.8
@@ -270,6 +263,7 @@
 +++ new/bootstrap/homePackages
 - ddcutil-2.2.7
 - kdeconnect-kde-26.04.3
+- mayo-custom
 - noctalia-5.0.0
 - smartmontools-7.5
 - sshfs-fuse-3.7.6
@@ -279,7 +273,6 @@
 + carapace-1.6.3
 + code
 + git-lfs-3.7.1
-+ haruna-1.7.1
 + nushell-0.112.2
 ```
 

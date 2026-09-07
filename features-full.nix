@@ -179,10 +179,10 @@
         };
         enable = false;
         programming = {
-          enable = false;
+          enable = true;
           go = false;
           kotlin = false;
-          misc = false;
+          misc = true;
           node = false;
           rust = false;
         };
