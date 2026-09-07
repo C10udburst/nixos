@@ -233,7 +233,8 @@ This document visualizes the complete file tree of the proposed dendritic archit
     │       │   ├── rust.nix        # Rust toolchain (cargo, rustc, clippy)
     │       │   ├── go.nix          # Go compiler & tools
     │       │   ├── node.nix        # Node.js, pnpm, typescript
-    │       │   └── kotlin.nix      # Kotlin & JVM dev tools
+    │       │   ├── kotlin.nix      # Kotlin & JVM dev tools
+    │       │   └── misc.nix        # sqlitebrowser, gitr, gdb, imhex
     │       ├── python.nix          # Python 3, pip, data science, AI/CUDA stacks
     │       ├── arduino.nix         # Arduino IDE, avrdude, ESP boards & udev rules
     │       ├── documents/
@@ -303,7 +304,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 | `modules/nixos/obs.nix`                                | `modules/gui/apps/tools/obs.nix`           | OBS Studio                                         |
 | `modules/home/social.nix`                              | `modules/gui/apps/tools/social/*`          | Split into `vesktop.nix`, `telegram.nix`, `signal.nix` |
 | *(new module)*                                         | `modules/gui/apps/tools/llm/*`             | Split into `antigravity.nix`, `pi.nix`, `ollama.nix` |
-| `modules/nixos/programming.nix`                        | `modules/gui/dev/programming/*`            | Granular `rust.nix`, `go.nix`, `node.nix`, `kotlin.nix` |
+| `modules/nixos/programming.nix`                        | `modules/gui/dev/programming/*`            | Granular `rust.nix`, `go.nix`, `node.nix`, `kotlin.nix`, `misc.nix` |
 | `modules/nixos/python.nix`                             | `modules/gui/dev/python.nix`               | Python environment & scientific stacks             |
 | `modules/nixos/arduino.nix`                            | `modules/gui/dev/arduino.nix`              | Microcontroller toolchains                         |
 | `modules/nixos/threed.nix` + `home/threed.nix`         | `modules/gui/apps/threed/*`                | Split into `blender`, `orca`, `freecad`, `openscad/` |

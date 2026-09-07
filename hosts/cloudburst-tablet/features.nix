@@ -20,6 +20,10 @@
     shell = {
       ranger.enable = false;
       utils.enable = false;
+      scripts = {
+        dev = false;
+        documents = false;
+      };
     };
 
     gui = {

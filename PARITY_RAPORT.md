@@ -11,29 +11,17 @@
 ```diff
 --- old/cloudburst-desktop/systemPackages
 +++ new/cloudburst-desktop/systemPackages
-- cargo-1.95.0
-- gcc-wrapper-15.2.0
-- gdb-17.2
-- gitr-v0.4.17
-- go-1.26.6
-- gradle-8.14.4
 - haruna-1.7.1
-- idea-2026.2.0.1
-- imhex-1.38.1
 - kdenetwork-filesharing-26.04.3
-- kotlin-2.3.21
 - libargon2-20190702
 - libxcb-cursor-0.1.6
-- nodejs-24.19.0
 - openssl-3.6.3
-- pnpm-11.21.0
 - qocker-1.0.0
-- rustc-wrapper-1.95.0
 - samba-4.23.10
-- sqlitebrowser-3.13.1
 - wsdd-0.9
 + carapace-1.6.3
 + ddcutil-2.2.7
++ goland-2026.2.0.1
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
 + starship-1.25.1
@@ -45,14 +33,12 @@
 ```diff
 --- old/cloudburst-desktop/homePackages
 +++ new/cloudburst-desktop/homePackages
-- code
 - konsole-26.04.3
 - pi-coding-agent-0.84.4
 - signal-desktop-8.25.0
 - telegram-desktop-6.8.1
 + git-lfs-3.7.1
 + haruna-1.7.1
-+ vscode-1.119.0
 ```
 
 ### 3. System Options & Services Differences
@@ -69,9 +55,9 @@
 ### 5. Delta Analysis & Root Causes
 - **User-Level to System-Level Migration**: `signal-desktop`, `telegram-desktop`, and `pi-coding-agent` were formerly declared in HM `social.nix`/`llm.nix` and have been promoted to modular NixOS system packages under `features.gui.apps.tools.social` and `features.gui.apps.tools.llm`.
 - **Viewer Package Placement**: `haruna` was formerly a system package; it is now managed within Home Manager viewers with automatic XDG MIME type associations (`features.gui.apps.viewers.haruna`).
-- **VS Code Binary Name**: In the legacy configuration, VS Code was managed under Home Manager using a custom wrapper named `code`. In the new configuration, it is also managed under Home Manager `programs.vscode` with the upstream derivation package `vscode-1.119.0`.
+- **VS Code Parity**: The full FHS wrapper (`pkgs.vscode.fhsWithPackages`), ephemeral profile isolation, Wayland flags, and comprehensive user settings/extensions have been fully restored, matching the legacy Home Manager configuration.
 - **Legacy Custom Script Packages**: `qocker` (custom Python podman GUI script) was not ported to the dendritic modules; `organizeer` daemon and package are now fully integrated under `features.gui.apps.tools.organizeer`.
-- **Hardware & Display**: `ddcutil` is now managed cleanly via `features.core.hardware.ddc`.
+- **Hardware & Display**: `ddcutil` is disabled by default and only enabled for the desktop profile via `features.core.hardware.ddc = true`.
 - **Shell Enhancements**: `carapace` and `starship` are now explicitly surfaced in system closures.
 
 ---
@@ -100,7 +86,6 @@
 - qocker-1.0.0
 - rustc-wrapper-1.95.0
 + carapace-1.6.3
-+ ddcutil-2.2.7
 + pi-coding-agent-0.84.4
 + signal-desktop-8.25.0
 + starship-1.25.1
@@ -112,14 +97,12 @@
 ```diff
 --- old/cloudburst-laptop/homePackages
 +++ new/cloudburst-laptop/homePackages
-- code
 - konsole-26.04.3
 - pi-coding-agent-0.84.4
 - signal-desktop-8.25.0
 - telegram-desktop-6.8.1
 + git-lfs-3.7.1
 + haruna-1.7.1
-+ vscode-1.119.0
 ```
 
 ### 3. System Options & Services Differences
@@ -185,22 +168,15 @@
 - wireless-tools-30.pre9
 - yt-dlp-2026.08.19
 - zip-3.0
-+ beamer-clean
 + carapace-1.6.3
 + chafa-1.18.2
 + datauri
 + extract
-+ gcode-bounds
-+ gh-origin-mod
 + icat
-+ ics-merge
 + libsixel-1.10.5
-+ nix-py
-+ nx
 + openjdk-21.0.12+8
 + palette
 + rofi
-+ sarif-md
 + serial
 + starship-1.25.1
 + video8mb
@@ -262,7 +238,6 @@
 - wl-clipboard-2.3.0
 - wlr-randr-0.5.0
 + carapace-1.6.3
-+ ddcutil-2.2.7
 + inetutils-2.7
 + karp-0-unstable-2025-03-05
 + lsof-4.99.6
@@ -302,10 +277,10 @@
 - udiskie-2.6.2
 - wl-screenrec-0.2.0
 + carapace-1.6.3
++ code
 + git-lfs-3.7.1
 + haruna-1.7.1
 + nushell-0.112.2
-+ vscode-1.119.0
 ```
 
 ### 3. System Options & Services Differences

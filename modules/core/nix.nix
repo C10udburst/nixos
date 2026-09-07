@@ -42,17 +42,21 @@ in {
 
     environment.systemPackages = lib.optionals cfg.vulnix [pkgs.vulnix];
 
-    nixpkgs.overlays = [
-      (final: prev: {
-        driftwm =
-          if inputs ? driftwm && inputs.driftwm ? packages && inputs.driftwm.packages ? ${prev.stdenv.hostPlatform.system}
-          then
-            inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
-              doCheck = false;
-            })
-          else prev.driftwm or null;
-      })
-    ];
+    nixpkgs.overlays =
+      lib.optionals (inputs ? nix-vscode-extensions && inputs.nix-vscode-extensions ? overlays) [
+        inputs.nix-vscode-extensions.overlays.default
+      ]
+      ++ [
+        (final: prev: {
+          driftwm =
+            if inputs ? driftwm && inputs.driftwm ? packages && inputs.driftwm.packages ? ${prev.stdenv.hostPlatform.system}
+            then
+              inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+                doCheck = false;
+              })
+            else prev.driftwm or null;
+        })
+      ];
 
     nix.settings = {
       experimental-features = lib.optionals cfg.flakes [
