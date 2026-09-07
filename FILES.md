@@ -13,6 +13,7 @@ This document visualizes the complete file tree of the proposed dendritic archit
 ├── apply                           # User-facing deployment script
 ├── dry-run                         # Dry-run testing script
 ├── bootstrap                       # Minimal install script
+├── features                        # Generates features-full.nix directly from evaluated modules
 ├── mkmodule                        # Dendritic module scaffolder (creates boilerplate from tree path)
 ├── AGENTS.md                       # Repository agent guidelines
 │
