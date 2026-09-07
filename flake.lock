@@ -414,6 +414,22 @@
         "type": "sourcehut"
       }
     },
+    "kimsay": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785167244,
+        "narHash": "sha256-YQrchMAONHOqwy+CeZ5WEmJgNpd+ZbDGlMM/RVPxOvI=",
+        "owner": "IcaroJam",
+        "repo": "kimsay",
+        "rev": "86cc051aa35dccb1a924c6cc551a1f2f4871d93b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "IcaroJam",
+        "repo": "kimsay",
+        "type": "github"
+      }
+    },
     "nix-vscode-extensions": {
       "inputs": {
         "nixpkgs": [
@@ -782,6 +798,7 @@
         "home-manager": "home-manager",
         "import-tree": "import-tree",
         "isw": "isw",
+        "kimsay": "kimsay",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",

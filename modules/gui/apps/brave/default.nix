@@ -7,6 +7,7 @@
 }: let
   cfg = config.features.gui.apps.brave;
   isSlow = config.features.core.hardware.slow or false;
+  effectiveFlags = cfg.flags ++ cfg.extraFlags;
 in {
   options.features.gui.apps.brave = {
     enable = lib.mkOption {
@@ -15,6 +16,25 @@ in {
         if (config.features.gui.enable && config.features.gui.apps.enable)
         then true
         else false;
+    };
+    flags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [
+        "brave-dark-mode-block@2"
+        "brave-history-embeddings@1"
+        "brave-origin@1"
+        "brave-tree-tab@1"
+        "containers@1"
+        "enable-parallel-downloading@1"
+        "enable-quic@1"
+        "middle-button-autoscroll@1"
+        "smooth-scrolling@1"
+        "ignore-gpu-blocklist@1"
+        "brave-round-time-stamps@1"
+        "brave-web-bluetooth-api@1"
+        "brave-rounded-corners-by-default@1"
+        "brave-request-otr-tab@1"
+      ];
     };
     extraFlags = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -92,10 +112,34 @@ in {
       ];
 
       home-manager.users.cloudburst = {
+        systemd.user.services.brave-flags = {
+          Unit.Description = "Set Brave flags declaratively";
+          Install.WantedBy = ["default.target"];
+          Service = {
+            Type = "oneshot";
+            ExecStart = pkgs.writeShellScript "set-brave-flags" ''
+              STATE_FILE="$HOME/.config/BraveSoftware/Brave-Browser/Local State"
+              mkdir -p "$(dirname "$STATE_FILE")"
+              if [ ! -f "$STATE_FILE" ]; then
+                echo "{}" > "$STATE_FILE"
+              fi
+              ${pkgs.jq}/bin/jq '.browser.enabled_labs_experiments = $flags' \
+                --argjson flags '${builtins.toJSON effectiveFlags}' \
+                "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
+            '';
+          };
+        };
+
         xdg.mimeApps.defaultApplications = {
-          "text/html" = "brave-browser.desktop";
-          "x-scheme-handler/http" = "brave-browser.desktop";
-          "x-scheme-handler/https" = "brave-browser.desktop";
+          "text/html" = ["brave-browser.desktop"];
+          "text/xml" = ["brave-browser.desktop"];
+          "application/xhtml+xml" = ["brave-browser.desktop"];
+          "application/x-mimearchive" = ["brave-browser.desktop"];
+          "x-scheme-handler/http" = ["brave-browser.desktop"];
+          "x-scheme-handler/https" = ["brave-browser.desktop"];
+          "x-scheme-handler/about" = ["brave-browser.desktop"];
+          "x-scheme-handler/unknown" = ["brave-browser.desktop"];
+          "x-scheme-handler/mailto" = ["brave-browser.desktop"];
         };
       };
     })

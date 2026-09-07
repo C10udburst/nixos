@@ -29,6 +29,11 @@ in {
       xdg.dataFile."kio/servicemenus/gitr.desktop" = lib.mkIf isProgramming {
         source = ./_gitr.desktop;
       };
+
+      xdg.mimeApps.defaultApplications = {
+        "inode/directory" = ["org.kde.dolphin.desktop"];
+        "application/zip" = ["org.kde.dolphin.desktop"];
+      };
     };
   };
 }

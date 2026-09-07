@@ -55,15 +55,7 @@
           kotlin = true;
         };
         python.enable = true;
-        arduino = {
-          enable = true;
-          boards = [
-            "arduino"
-            "esp32"
-            "digispark"
-            "esp8266"
-          ];
-        };
+        arduino.enable = true;
         threed.enable = true;
         documents = {
           latex = true;
@@ -87,7 +79,7 @@
       enable = true;
       samba = {
         enable = true;
-        path = "/mnt/dane";
+        paths = ["/mnt/dane"];
       };
     };
   };

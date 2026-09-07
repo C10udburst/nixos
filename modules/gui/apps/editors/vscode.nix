@@ -79,6 +79,40 @@ in {
         enable = true;
         extensions = coreExtensions;
       };
+
+      xdg.mimeApps = {
+        defaultApplications = {
+          "text/javascript" = ["code.desktop"];
+          "application/javascript" = ["code.desktop"];
+          "text/x-python" = ["code.desktop"];
+          "text/x-rust" = ["code.desktop"];
+          "text/x-c" = ["code.desktop"];
+          "text/x-c++" = ["code.desktop"];
+          "text/x-go" = ["code.desktop"];
+          "text/x-java" = ["code.desktop"];
+          "text/plain" = ["code.desktop"];
+          "text/x-shellscript" = ["code.desktop"];
+          "application/json" = ["code.desktop"];
+          "text/markdown" = ["code.desktop"];
+          "text/x-nix" = ["code.desktop"];
+          "text/x-yaml" = ["code.desktop"];
+          "text/x-toml" = ["code.desktop"];
+          "text/x-ini" = ["code.desktop"];
+          "text/x-xml" = ["code.desktop"];
+          "text/x-sql" = ["code.desktop"];
+          "text/x-php" = ["code.desktop"];
+          "text/x-perl" = ["code.desktop"];
+          "text/x-ruby" = ["code.desktop"];
+          "text/x-lua" = ["code.desktop"];
+          "text/x-haskell" = ["code.desktop"];
+          "text/x-scala" = ["code.desktop"];
+          "text/x-kotlin" = ["code.desktop"];
+          "text/x-vb" = ["code.desktop"];
+        };
+        associations.added = {
+          "inode/directory" = ["code.desktop"];
+        };
+      };
     };
   };
 }

@@ -122,5 +122,10 @@
       url = "github:C10udburst/webicons-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    kimsay = {
+      url = "github:IcaroJam/kimsay";
+      flake = false;
+    };
   };
 }

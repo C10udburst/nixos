@@ -6,18 +6,25 @@
   serverEnabled = config.features.server.enable;
   cfg = config.features.server.samba;
 
-  allPaths =
-    (lib.optionals (cfg.path != "") [cfg.path])
-    ++ cfg.paths;
+  shareEntries = lib.listToAttrs (map (p: {
+      name = baseNameOf p;
+      value = {
+        path = p;
+        browseable = "yes";
+        "guest ok" = "no";
+        "read only" = "no";
+        "valid users" = "cloudburst";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+        "force user" = "cloudburst";
+      };
+    })
+    cfg.paths);
 in {
   options.features.server.samba = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-    };
-    path = lib.mkOption {
-      type = lib.types.str;
-      default = "";
     };
     paths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -25,30 +32,22 @@ in {
     };
   };
 
-  config = lib.mkIf (serverEnabled && cfg.enable && allPaths != []) {
+  config = lib.mkIf (serverEnabled && cfg.enable && cfg.paths != []) {
     services.samba = {
       enable = true;
       openFirewall = true;
-      settings = {
-        global = {
-          "workgroup" = "WORKGROUP";
-          "server string" = "smbnix";
-          "netbios name" = "smbnix";
-          "security" = "user";
-          "guest account" = "nobody";
-          "map to guest" = "bad user";
-        };
-        "dane" = {
-          "path" = lib.head allPaths;
-          "browseable" = "yes";
-          "guest ok" = "no";
-          "read only" = "no";
-          "valid users" = "cloudburst";
-          "create mask" = "0644";
-          "directory mask" = "0755";
-          "force user" = "cloudburst";
-        };
-      };
+      settings =
+        {
+          global = {
+            "workgroup" = "WORKGROUP";
+            "server string" = "smbnix";
+            "netbios name" = "smbnix";
+            "security" = "user";
+            "guest account" = "nobody";
+            "map to guest" = "bad user";
+          };
+        }
+        // shareEntries;
     };
 
     services.samba-wsdd = {

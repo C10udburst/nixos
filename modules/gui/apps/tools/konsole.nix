@@ -15,5 +15,18 @@ in {
 
   config = lib.mkIf (toolsEnabled && cfg) {
     environment.systemPackages = [pkgs.kdePackages.konsole];
+
+    home-manager.users.cloudburst = {
+      xdg.terminal-exec = {
+        enable = true;
+        settings = {
+          default = ["org.kde.konsole.desktop"];
+        };
+      };
+
+      home.sessionVariables = {
+        TERMINAL = "konsole";
+      };
+    };
   };
 }

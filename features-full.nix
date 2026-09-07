@@ -39,7 +39,6 @@
         fuse = true; # FUSE filesystem support
         appimage = false; # AppImage runtime support (false by default)
         vulnix = true; # Vulnerability scanner (defaults to false if slow)
-        nixIndex = true; # comma / nix-index database (defaults to false if slow)
       };
 
       # User account activation (shell, description, ssh keys are defined in cloudburst.nix)
@@ -55,7 +54,7 @@
       };
     };
 
-    # Services but not explictly server-related
+    # Services but not explicitly server-related
     services = {
       enable = true;
       tailscale = {
@@ -117,11 +116,17 @@
         modernCli = true; # bat, fd, ripgrep, procs, dust, fzf, hexyl, binwalk, qrencode, zbar, jless
         fun = true; # kimsay, asciinema
         nettools = true; # nmap, traceroute, dig, mptcpd
+        nix = true; # alejandra, nix-output-monitor, nix-heuristic-gc, nix-index
       };
     };
 
     gui = {
       enable = true;
+
+      # XDG desktop portal integration
+      xdg = {
+        enable = true;
+      };
 
       # Theming engine (Stylix colors, JetBrainsMono font, and sizes handled globally)
       theme = {
@@ -142,11 +147,8 @@
 
       # Display manager & greeter
       greeter = {
-        greetd = {
-          enable = true;
-          autologin = false;
-          defaultSession = "driftwm"; # by default pulls the first active desktop entry
-        };
+        regreet = true;
+        autologin = null; # null (regreet or tuigreet), "driftwm", "plasma", or false
       };
 
       # Compositors & Desktop Environments
@@ -181,13 +183,30 @@
       apps = {
         brave = {
           enable = true;
+          flags = [
+            "brave-dark-mode-block@2"
+            "brave-history-embeddings@1"
+            "brave-origin@1"
+            "brave-tree-tab@1"
+            "containers@1"
+            "enable-parallel-downloading@1"
+            "enable-quic@1"
+            "middle-button-autoscroll@1"
+            "smooth-scrolling@1"
+            "ignore-gpu-blocklist@1"
+            "brave-round-time-stamps@1"
+            "brave-web-bluetooth-api@1"
+            "brave-rounded-corners-by-default@1"
+            "brave-request-otr-tab@1"
+          ];
           extraFlags = []; # additional experimental browser flags
           extraCliFlags = []; # additional CLI flags (slow devices automatically receive low-resource flags)
 
           apps = {
             enable = true;
             office = false; # defaults to true if editors.office.libreoffice is false
-            media = true; # Immich Photos, Fetlife DB
+            media = true; # Immich Photos, Spotify, YouTube Music
+            other = true; # XTB xStation 5, Fetlife DB
             homelab = true; # Home Assistant, Wealthfolio, SiYuan Notes
             social = {
               core = true; # web-only messengers without native clients (e.g. Messenger)
@@ -203,6 +222,7 @@
             libreoffice = false;
             pdf = true; # pdfgrep, pandoc, karp
           };
+          images = false; # GIMP, Inkscape
           vscode = true;
           jetbrains = {
             enable = false;
@@ -217,6 +237,10 @@
           dolphin = true;
           konsole = true;
           obs = false;
+          nomacs = true;
+          haruna = true;
+          okular = true;
+          mayo = true;
           social = {
             enable = false; # off by default, but if enable= true, it enabled submodules
             vesktop = true;
@@ -229,15 +253,6 @@
             antigravity = true;
             pi = true;
             ollama = false;
-          };
-          associations = {
-            enable = true;
-
-            mayo = true;
-            nomacs = true;
-            haruna = true;
-            okular = true;
-            dolphin = true;
           };
         };
       };

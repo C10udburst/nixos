@@ -28,16 +28,6 @@ in {
         ];
       })
       (mkWebApp {
-        name = "Fetlife DB";
-        url = "http://go/b/fl";
-        icon = icons.fetlife or "";
-        size = "730,1000";
-        categories = [
-          "Network"
-          "Chat"
-        ];
-      })
-      (mkWebApp {
         name = "Spotify";
         url = "https://open.spotify.com";
         icon = icons.spotify or "";
