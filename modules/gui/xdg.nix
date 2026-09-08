@@ -16,11 +16,14 @@ in {
   config = lib.mkIf cfg.enable {
     xdg.portal = {
       enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-gtk
-        kdePackages.xdg-desktop-portal-kde
-      ];
+      extraPortals = lib.mkForce (
+        (with pkgs; [
+          xdg-desktop-portal-wlr
+          xdg-desktop-portal-gtk
+          kdePackages.xdg-desktop-portal-kde
+        ])
+        ++ lib.optional config.services.gnome.gnome-keyring.enable pkgs.gnome-keyring
+      );
       config = {
         common = {
           default = ["kde"];

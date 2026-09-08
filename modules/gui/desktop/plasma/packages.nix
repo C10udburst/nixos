@@ -28,6 +28,9 @@ in {
       khelpcenter
       gwenview
       qrca
+      kwallet
+      kwallet-pam
+      kwalletmanager
     ];
   };
 }
