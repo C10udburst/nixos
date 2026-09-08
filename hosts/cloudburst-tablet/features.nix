@@ -39,7 +39,7 @@ _: {
           enable = false;
           konsole = true;
           organizeer = true;
-          calc = true;
+          qalculate = true;
         };
         viewers.mayo = false;
       };

@@ -26,6 +26,10 @@ in {
       type = lib.types.bool;
       default = false;
     };
+    jadx = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
   };
 
   config = lib.mkMerge [
@@ -60,8 +64,8 @@ in {
             ]
             ++ lib.optional (scrcpy-app != null) scrcpy-app
         )
+        ++ lib.optional cfg.jadx pkgs.jadx
         ++ lib.optionals cfg.dev [
-          pkgs.jadx
           (pkgs.androidenv.composeAndroidPackages {
             platformVersions = ["35" "36"];
             buildToolsVersions = ["35.0.0"];

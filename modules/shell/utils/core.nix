@@ -19,6 +19,7 @@ in {
       wget
       file
       killall
+      libqalculate
     ];
   };
 }
