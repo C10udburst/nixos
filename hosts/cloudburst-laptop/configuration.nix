@@ -54,7 +54,6 @@ in {
   boot.kernelParams = ["ec_sys.write_support=1"];
 
   networking.hostName = "cloudburst-laptop";
-  networking.firewall.enable = false;
 
   environment.systemPackages = [
     isw

@@ -22,6 +22,7 @@
         timeout = 2;
       };
       enable = true;
+      firewall = false;
       hardware = {
         bluetooth = true;
         ddc = false;
