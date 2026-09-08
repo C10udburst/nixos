@@ -19,7 +19,6 @@
         ./hosts/${hostName}/configuration.nix
         inputs.home-manager.nixosModules.home-manager
         inputs.stylix.nixosModules.stylix
-        (inputs.organizeer.nixosModules.default or {})
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

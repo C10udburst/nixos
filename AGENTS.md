@@ -95,7 +95,7 @@ in
   # 1. Co-located Flake Inputs (Managed by flake-file)
   # ─────────────────────────────────────────────────────────────────────────────
   # Any input required solely by this feature is declared right here.
-  # Run `nix run .#write-flake` to regenerate root flake.nix.
+  # Run `./flake` to regenerate root flake.nix.
   flake-file.inputs = {
     webicons = {
       url = "github:C10udburst/webicons-nix";
@@ -188,6 +188,8 @@ Every feature in the dendritic configuration tree is governed by strict parent-c
    - `config-full.nix` is the single source of truth for all module defaults.
 3. **Explicit Host Overrides**:
    - Specifying an explicit boolean (e.g. `compat.podman.enable = true;` or `gui.apps.tools.dolphin = false;`) takes highest precedence over the canonical default.
+4. **Overrides parent flags**:
+   - If a host explicitly sets `parent.enable = false;`, but `parent.child.enable = true;`, the child should be **`true`**. The host's explicit override takes precedence over the parent gating.
 
 ### Concrete Examples
 
