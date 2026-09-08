@@ -36,9 +36,9 @@ _: {
 
     compat = {
       enable = true;
-      appimage = true;
+      appimage = false;
       wine = true;
-      podman.enable = true;
+      podman.enable = false;
     };
   };
 }

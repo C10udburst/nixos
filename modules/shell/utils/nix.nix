@@ -11,12 +11,21 @@ in {
     default = (config.features.shell.enable && config.features.shell.utils.enable) && true;
   };
 
-  config = lib.mkIf cfg {
-    environment.systemPackages = with pkgs; [
-      alejandra
-      nix-output-monitor
-      nix-heuristic-gc
-      nix-index
-    ];
-  };
+  config = lib.mkMerge [
+    {
+      programs.command-not-found.enable = lib.mkIf config.programs.nix-index.enable (lib.mkDefault false);
+    }
+    (lib.mkIf cfg {
+      programs.nix-index = {
+        enable = true;
+        enableBashIntegration = true;
+      };
+
+      environment.systemPackages = with pkgs; [
+        alejandra
+        nix-output-monitor
+        nix-heuristic-gc
+      ];
+    })
+  ];
 }

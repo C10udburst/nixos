@@ -28,6 +28,13 @@ in {
     };
   };
 
+  options.programs.nix-index = {
+    enableNushellIntegration = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+  };
+
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.nushell
@@ -46,6 +53,9 @@ in {
         extraConfig =
           ''
             $env.config.show_banner = false
+          ''
+          + lib.optionalString (config.programs.nix-index.enable && config.programs.nix-index.enableNushellIntegration) ''
+            $env.config.hooks.command_not_found = (source ${config.programs.nix-index.package}/etc/profile.d/command-not-found.nu)
           ''
           + lib.optionalString (cfg.scripts && (config.features.gui.enable or false)) ''
             def gridview [] {
