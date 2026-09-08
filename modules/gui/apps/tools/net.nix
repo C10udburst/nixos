@@ -13,7 +13,7 @@ in {
   options.features.gui.apps.tools.net = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = toolsEnabled && false;
+      default = toolsEnabled && true;
     };
   };
 

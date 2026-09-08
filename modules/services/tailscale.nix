@@ -28,7 +28,11 @@ in {
     (lib.mkIf cfg.enable {
       services.tailscale = {
         enable = true;
-        extraUpFlags = ["--operator=cloudburst"] ++ lib.optionals cfg.exitNode ["--advertise-exit-node"];
+        extraUpFlags =
+          [
+            "--operator=cloudburst --accept-routes"
+          ]
+          ++ lib.optionals cfg.exitNode ["--advertise-exit-node"];
       };
 
       networking.firewall.trustedInterfaces = ["tailscale0"];
