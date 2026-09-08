@@ -28,9 +28,6 @@ in {
         wirelesstools
         socat
       ]
-      ++ lib.optionals isGui [
-        remmina
-      ]
       ++ lib.optionals (inputs ? tailcat && inputs.tailcat ? packages && inputs.tailcat.packages ? ${pkgs.stdenv.hostPlatform.system}) [
         inputs.tailcat.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];

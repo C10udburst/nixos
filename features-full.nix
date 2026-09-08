@@ -106,7 +106,6 @@
           orca = true;
         };
         tools = {
-          calc = true;
           enable = true;
           hardinfo = true;
           konsole = true;
@@ -121,6 +120,7 @@
           };
           obs = false;
           organizeer = true;
+          qalculate = true;
           social = {
             enable = false;
             signal = true;
@@ -167,6 +167,7 @@
           core = true;
           dev = false;
           enable = false;
+          jadx = true;
           scrcpy = true;
         };
         arduino = {

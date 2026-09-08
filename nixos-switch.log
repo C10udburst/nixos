@@ -1,0 +1,26 @@
+building the system configuration...
+evaluation warning: stylix: regreet: custom services.greetd.settings.default_session.command value may not work: /nix/store/gph17gb73p6qbrqqjnypfjj5npf0ldyx-coreutils-9.11/bin/env GSK_RENDERER=ngl /nix/store/bfsvbks63cgpv782s483l009n3drpyy6-weston-15.0.1/bin/weston --config=/nix/store/ak80max865g5s23caj0mw8fr512w2d3p-weston.ini -- /nix/store/0nrdkbhfd9vrnnxw1lbj5ghki8z3v3rc-greetd-session
+evaluation warning: cloudburst profile: stylix: qt: `config.stylix.targets.qt.platform` other than 'qtct' are currently unsupported: kde. Support may be added in the future.
+evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
+Checking switch inhibitors... done
+stopping the following units: accounts-daemon.service, nix-gc.timer, waydroid-container.service
+activating the configuration...
+setting up /etc...
+removing obsolete symlink ‘/etc/pam.d/swaylock’...
+removing obsolete symlink ‘/etc/xdg/menus/applications.menu’...
+reloading user units for cloudburst...
+stopping the following user units: arduino-setup.service
+reloading the following user units: dbus-broker.service
+starting the following user units: arduino-setup.service
+restarting the following user units: nixos-activation.service
+reloading user units for greeter...
+stopping the following user units: arduino-setup.service
+reloading the following user units: dbus-broker.service
+starting the following user units: arduino-setup.service
+restarting the following user units: nixos-activation.service
+restarting sysinit-reactivation.target
+reloading the following units: dbus-broker.service
+restarting the following units: home-manager-cloudburst.service, nix-daemon.service, polkit.service, sshd.service
+starting the following units: accounts-daemon.service, waydroid-container.service
+the following new units were started: NetworkManager-dispatcher.service, sysinit-reactivation.target, systemd-tmpfiles-resetup.service
+Done. The new configuration is /nix/store/l0szxdfn313bfiv9g0vfy0fncrbz2pvf-nixos-system-cloudburst-desktop-26.05.20260901.a311611

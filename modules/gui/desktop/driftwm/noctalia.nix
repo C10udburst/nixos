@@ -529,33 +529,63 @@ in {
               "${tailscale}".manager_placement = "attached";
             };
 
-            widget = with pluginMap; {
-              audio_visualizer.mirrored = false;
-              clock = {
-                format =
-                  if compactMode
-                  then "{:%H:%M:%S %d.%m}"
-                  else "{:%H:%M:%S %a, %d.%m}";
-                vertical_format = "{:%H:%M}";
-              };
-              network.show_label = !compactMode;
-              driftwm.type = "${driftwm}:widget";
-              lock_keys = {
-                hide_when_off = true;
-                show_scroll_lock = true;
-              };
-              media = {
-                hide_when_no_media = true;
-                title_scroll = "on_hover";
-              };
-              weather.show_condition = false;
+            widget = with pluginMap;
+              {
+                audio_visualizer.mirrored = false;
+                clock = {
+                  format =
+                    if compactMode
+                    then "{:%H:%M:%S %d.%m}"
+                    else "{:%H:%M:%S %a, %d.%m}";
+                  vertical_format = "{:%H:%M}";
+                };
+                network.show_label = !compactMode;
+                driftwm.type = "${driftwm}:widget";
+                lock_keys = {
+                  hide_when_off = true;
+                  show_scroll_lock = true;
+                };
+                media = {
+                  hide_when_no_media = true;
+                  title_scroll = "on_hover";
+                };
+                weather.show_condition = false;
 
-              phone_bar.type = "${phone-connect}:bar";
-              cat_widget = {
-                show_cpu_percent = true;
-                type = "${cat}:cat";
+                phone_bar.type = "${phone-connect}:bar";
+                cat_widget = {
+                  show_cpu_percent = true;
+                  type = "${cat}:cat";
+                  actions = {
+                    middle = "exec plasma-systemmonitor";
+                    right = "panel-toggle control-center system";
+                  };
+                };
+                udiskie_status.type = "${udiskie}:status";
+                hassio_status.type = "${hassio}:status";
+                drive_summary.type = "${drive-health}:summary";
+                screen_toolkit.type = "${screen-toolkit}:widget";
+                procmon_widget.type = "${procmon}:widget";
+              }
+              // lib.optionalAttrs mobile {
+                battery.display_mode = "graphic";
+                battery-threshold.type = "${battery-threshold}:battery-threshold";
+              }
+              // lib.optionalAttrs hasDocker {
+                mini-docker.type = "${mini-docker}:mini-docker";
+              }
+              // lib.optionalAttrs hasTailscale {
+                tailscale_status.type = "${tailscale}:status";
+              }
+              // lib.optionalAttrs touchscreen {
+                wvkbd_toggle = {
+                  type = "custom_button";
+                  glyph = "keyboard";
+                  tooltip = "On-Screen Keyboard";
+                  actions = {
+                    left = "exec pkill wvkbd-mobintl || wvkbd";
+                  };
+                };
               };
-            };
           };
         };
       };
