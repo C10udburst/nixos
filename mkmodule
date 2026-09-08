@@ -3,29 +3,31 @@ import sys
 import os
 import re
 
+
 def normalize_path(raw_input):
     s = raw_input.strip()
     # If path was given as file path, normalize to feature path
     if s.startswith("modules/"):
-        s = s[len("modules/"):]
+        s = s[len("modules/") :]
         if s.endswith("/default.nix"):
-            s = s[:-len("/default.nix")]
+            s = s[: -len("/default.nix")]
         elif s.endswith(".nix"):
-            s = s[:-len(".nix")]
+            s = s[: -len(".nix")]
         return s.replace("/", ".")
-    
+
     # Strip known prefixes
-    for prefix in ["config.tree.", "config.features.", "features."]:
+    for prefix in ["config.features.", "features."]:
         if s.startswith(prefix):
-            s = s[len(prefix):]
+            s = s[len(prefix) :]
             break
     return s
+
 
 def find_in_files_md(feature_path, repo_root):
     files_md = os.path.join(repo_root, "FILES.md")
     if not os.path.exists(files_md):
         return None
-    
+
     parts = feature_path.split(".")
     rel_as_dir = "modules/" + "/".join(parts) + "/default.nix"
     rel_as_file = "modules/" + "/".join(parts) + ".nix"
@@ -38,8 +40,9 @@ def find_in_files_md(feature_path, repo_root):
         return rel_as_dir
     if rel_as_file in content:
         return rel_as_file
-    
+
     return None
+
 
 def resolve_target_file(feature_path, repo_root, force_dir=False):
     matched = find_in_files_md(feature_path, repo_root)
@@ -50,36 +53,44 @@ def resolve_target_file(feature_path, repo_root, force_dir=False):
     dir_candidate = os.path.join("modules", *parts)
     if force_dir or os.path.isdir(os.path.join(repo_root, dir_candidate)):
         return os.path.join("modules", *parts, "default.nix")
-    
+
     # Check if parent directory exists and last component can be a .nix file
     if len(parts) > 1:
         parent_dir = os.path.join("modules", *parts[:-1])
         if os.path.isdir(os.path.join(repo_root, parent_dir)):
             return os.path.join("modules", *parts[:-1], f"{parts[-1]}.nix")
-    
+
     # Fallback to dir/default.nix if it feels like a group, or file.nix
-    return os.path.join("modules", *parts[:-1], f"{parts[-1]}.nix") if len(parts) > 1 else os.path.join("modules", parts[0], "default.nix")
+    return (
+        os.path.join("modules", *parts[:-1], f"{parts[-1]}.nix")
+        if len(parts) > 1
+        else os.path.join("modules", parts[0], "default.nix")
+    )
+
 
 def find_canonical_default(feature_path, repo_root):
     features_full = os.path.join(repo_root, "features-full.nix")
     if not os.path.exists(features_full):
         return None
-    
+
     with open(features_full, "r", encoding="utf-8") as f:
         content = f.read()
-    
+
     parts = feature_path.split(".")
     last = parts[-1]
-    m = re.search(r'\b' + re.escape(last) + r'\s*=\s*(true|false)\b', content)
+    m = re.search(r"\b" + re.escape(last) + r"\s*=\s*(true|false)\b", content)
     if m:
         return m.group(1) == "true"
-    section_m = re.search(r'\b' + re.escape(last) + r'\s*=\s*\{([^}]*)\}', content, re.DOTALL)
+    section_m = re.search(
+        r"\b" + re.escape(last) + r"\s*=\s*\{([^}]*)\}", content, re.DOTALL
+    )
     if section_m:
         inner = section_m.group(1)
-        en_m = re.search(r'\benable\s*=\s*(true|false)\b', inner)
+        en_m = re.search(r"\benable\s*=\s*(true|false)\b", inner)
         if en_m:
             return en_m.group(1) == "true"
     return None
+
 
 def generate_boilerplate(feature_path, repo_root):
     parts = feature_path.split(".")
@@ -102,7 +113,7 @@ def generate_boilerplate(feature_path, repo_root):
         else:
             default_expr = "true"
 
-    code = f'''{{ config, lib, pkgs, inputs, ... }}:
+    code = f"""{{ config, lib, pkgs, inputs, ... }}:
 let
   cfg = config.{full_path};
 in
@@ -117,8 +128,9 @@ in
   config = lib.mkIf cfg.enable {{
   }};
 }}
-'''
+"""
     return code
+
 
 def main():
     if len(sys.argv) < 2:
@@ -150,6 +162,7 @@ def main():
             f.write(content)
 
     print(target_rel)
+
 
 if __name__ == "__main__":
     main()

@@ -9,7 +9,13 @@
 in {
   options.features.gui.apps.tools.organizeer = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable) && true;
+    default =
+      (
+        config.features.gui.enable
+        && config.features.gui.apps.enable
+        && config.features.gui.apps.tools.enable
+      )
+      && true;
   };
 
   config = lib.mkMerge [
@@ -22,7 +28,7 @@ in {
       };
     }
     (lib.mkIf cfg {
-      services.organizeer-daemon.enable = true;
+      #inputs.organizeer.services.organizeer-daemon.enable = true;
       environment.systemPackages = lib.optionals (inputs ? organizeer && inputs.organizeer ? packages) [
         inputs.organizeer.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
