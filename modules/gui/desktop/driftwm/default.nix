@@ -48,6 +48,10 @@ in {
           pkgs.kdePackages.qtsvg
           pkgs.libsForQt5.qt5ct
           pkgs.kdePackages.qt6ct
+          pkgs.kdePackages.breeze
+          pkgs.kdePackages.breeze.qt5
+          pkgs.kdePackages.breeze-gtk
+          pkgs.kdePackages.qqc2-breeze-style
         ]
         ++ lib.optionals (!isSlow) [
           pkgs.kdePackages.kdeconnect-kde

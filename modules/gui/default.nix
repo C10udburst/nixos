@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   options.features.gui = {
@@ -11,6 +12,12 @@
   };
 
   config = lib.mkIf config.features.gui.enable {
+    environment.systemPackages = [
+      pkgs.seahorse
+    ];
+
+    services.gnome.gnome-keyring.enable = lib.mkDefault true;
+
     home-manager.users.cloudburst = {
       xdg.configFile."mimeapps.list".force = true;
       xdg.mimeApps.enable = true;
