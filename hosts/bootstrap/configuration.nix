@@ -10,7 +10,6 @@
   boot.loader.timeout = 2;
 
   networking.hostName = "bootstrap-host";
-  networking.firewall.enable = true;
 
   system.stateVersion = "26.05";
 }

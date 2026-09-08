@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.features.compat.waydroid;
@@ -12,5 +13,6 @@ in {
 
   config = lib.mkIf cfg {
     virtualisation.waydroid.enable = true;
+    virtualisation.waydroid.package = pkgs.waydroid-nftables;
   };
 }

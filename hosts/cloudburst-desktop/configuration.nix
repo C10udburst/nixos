@@ -38,7 +38,6 @@
   boot.supportedFilesystems = ["ntfs"];
 
   networking.hostName = "cloudburst-desktop";
-  networking.firewall.enable = false;
 
   # Enable Multipath TCP (MPTCP) for simultaneous Ethernet and Wi-Fi transmission
   boot.kernel.sysctl."net.mptcp.enabled" = 1;
