@@ -1,4 +1,4 @@
-{...}: {
+_: {
   features = {
     core.hardware.ddc = true;
 

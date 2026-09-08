@@ -47,13 +47,14 @@ in {
           ''
             $env.config.show_banner = false
           ''
-          + lib.optionalString cfg.scripts ''
+          + lib.optionalString (cfg.scripts && (config.features.gui.enable or false)) ''
             def gridview [] {
               let input = $in
               if ($input | is-empty) { return }
               $input | to json | python3 ${gridviewScript}
             }
-
+          ''
+          + lib.optionalString cfg.scripts ''
             def treeview [] {
               let input = $in
               if ($input | is-empty) { return }

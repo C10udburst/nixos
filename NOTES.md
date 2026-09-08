@@ -1,8 +1,0 @@
-- in driftwm config, noctalia keybinds and autostart should only happen if noctalia is enable
-- greeter should be split to greeter/{regreet,autogreet}.nix
-- vesktop missing plugins from the old ~/nixos config
-- github:nix-community/nix-vscode-extensions should be in vscode.nix not nix.nix
-- move theed to gui.apps.threed
-- add shell.aliases
-- move appimage from hardware to modules.compat
-- remove devShells, also why is there packages section in outputs? no need.

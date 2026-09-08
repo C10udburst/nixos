@@ -1,11 +1,10 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }: let
-  compatEnabled = config.features.compat.enable;
   cfg = config.features.compat.kvm;
+  isGui = config.features.gui.enable;
 in {
   options.features.compat.kvm = {
     enable = lib.mkOption {
@@ -16,6 +15,6 @@ in {
 
   config = lib.mkIf cfg.enable {
     virtualisation.libvirtd.enable = true;
-    programs.virt-manager.enable = true;
+    programs.virt-manager.enable = lib.mkIf isGui true;
   };
 }

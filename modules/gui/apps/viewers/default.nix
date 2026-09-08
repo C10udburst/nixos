@@ -2,9 +2,7 @@
   config,
   lib,
   ...
-}: let
-  cfg = config.features.gui.apps.viewers;
-in {
+}: {
   options.features.gui.apps.viewers = {
     enable = lib.mkOption {
       type = lib.types.bool;

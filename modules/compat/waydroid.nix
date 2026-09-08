@@ -3,7 +3,6 @@
   lib,
   ...
 }: let
-  compatEnabled = config.features.compat.enable;
   cfg = config.features.compat.waydroid;
 in {
   options.features.compat.waydroid = lib.mkOption {

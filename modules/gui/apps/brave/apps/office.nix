@@ -6,7 +6,11 @@
   ...
 }: let
   cfg = config.features.gui.apps.brave.apps.office;
-  braveEnabled = config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.brave.enable && config.features.gui.apps.brave.apps.enable;
+  braveEnabled =
+    config.features.gui.enable
+    && config.features.gui.apps.enable
+    && config.features.gui.apps.brave.enable
+    && config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
   isLibreOffice =
@@ -54,12 +58,6 @@ in {
         name = "Google Forms";
         url = "https://docs.google.com/forms";
         icon = icons.google-forms or "";
-        categories = ["Office"];
-      })
-      (mkWebApp {
-        name = "Google Drive";
-        url = "https://drive.google.com";
-        icon = icons.google-drive or "";
         categories = ["Office"];
       })
       (mkWebApp {

@@ -5,6 +5,7 @@
   ...
 }: let
   cfg = config.features.shell.scripts.hardware;
+  isGui = config.features.gui.enable or false;
   serial = pkgs.writeShellScriptBin "serial" (builtins.readFile ./_serial.sh);
   extract = pkgs.writeShellScriptBin "extract" (builtins.readFile ./_extract.sh);
   www = pkgs.writeScriptBin "www" (builtins.readFile ./_www.py);
@@ -62,15 +63,17 @@ in {
           serial
           extract
           www
+        ]
+        ++ lib.optionals isGui [
           rofi
         ]
-        ++ lib.optionals (config.features.core.hardware.touchscreen or false) [
+        ++ lib.optionals (isGui && (config.features.core.hardware.touchscreen or false)) [
           auto-rotate
         ]
-        ++ lib.optionals (config.features.services.weylus or false) [
+        ++ lib.optionals (isGui && (config.features.services.weylus or false)) [
           weylus-screen
         ]
-        ++ lib.optionals (config.networking.hostName != "cloudburst-desktop") [
+        ++ lib.optionals (isGui && (config.networking.hostName != "cloudburst-desktop")) [
           desktop-kickoff
           desktop-kickoff-launcher
         ];

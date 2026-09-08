@@ -5,7 +5,6 @@
   ...
 }: let
   cfg = config.features.gui.greeter;
-  greeterEnabled = config.features.gui.enable && cfg.enable;
 in {
   options.features.gui.greeter = {
     enable = lib.mkOption {

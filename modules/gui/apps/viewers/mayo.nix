@@ -7,8 +7,7 @@
   cfg = config.features.gui.apps.viewers.mayo;
   viewersEnabled =
     config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.viewers.enable;
-  isSlow = config.features.core.hardware.slow or false;
-  associatePackage = (import ../../../../lib/helpers/associations.nix {inherit lib;}).associatePackage;
+  inherit ((import ../../../../lib/helpers/associations.nix {inherit lib;})) associatePackage;
 
   mayoCustom = pkgs.symlinkJoin {
     name = "mayo-custom";

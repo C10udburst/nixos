@@ -5,6 +5,7 @@
   ...
 }: let
   cfg = config.features.core.users.cloudburst;
+  isGui = config.features.gui.enable;
 in {
   options.features.core.users.cloudburst = {
     enable = lib.mkOption {
@@ -38,9 +39,9 @@ in {
         ]
         ++ cfg.extraGroups;
 
-      packages = with pkgs; [
+      packages = lib.optionals isGui (with pkgs; [
         kdePackages.kate
-      ];
+      ]);
 
       openssh.authorizedKeys.keys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDr78YYF81SudwLa3sCOjGcdaB7o8bUUGjqq3j92IfwY+DUx1zI6pV9gMxLgXcQTaNVMSVYns433k6PbnDu3wbORyWz58fRjGJUozuwHUVXaQPV9Lrk5LurTdAkGL5Fn6gE5zTYgZL51E30ln6XzYhmZVaaQoCTlhQRIs93v8AEqz5RnnflB0j3huAz12sOC8iJ+LD976+bVZqMkflKL+y1j9y7yvjgMxYvTpsVVD7+GPjAW+tCzReRFhfaHWXCK4HHZ7V7LQ4SSd3sRiQzwesUtIU6rudVWP8SqWDdu+FjNdp6vXRupwtydBxvn7DVkIug7zhQztQlyc0CSKfeXWM9swciScCvDJCmt3MxrCpm1NgQG27gOPTslyjn9xq6W/4eaQUemcKR2BMCtGx2LjifxrROKXdwZm0AOne7H8w+uEfPAxlbZ9Wc9Oko4E8mMqk7dkREVtkNxwRO/CwqWyT5mLLXWQ45o93ZxmidZ4nGg2KsJAgdYGfbRrCE0hYNY78= cloudburst@cloudburst-laptop"
@@ -59,9 +60,9 @@ in {
       home.stateVersion = "26.05";
       programs.home-manager.enable = true;
 
-      xdg.configFile."fontconfig/conf.d/10-hm-fonts.conf".force = true;
+      xdg.configFile."fontconfig/conf.d/10-hm-fonts.conf".force = lib.mkIf isGui true;
 
-      gtk = {
+      gtk = lib.mkIf isGui {
         enable = true;
         gtk2.force = true;
         iconTheme = {
@@ -76,7 +77,7 @@ in {
         };
       };
 
-      dconf.settings = {
+      dconf.settings = lib.mkIf isGui {
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
         };

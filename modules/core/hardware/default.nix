@@ -2,9 +2,7 @@
   config,
   lib,
   ...
-}: let
-  cfg = config.features.core.hardware;
-in {
+}: {
   options.features.core.hardware = {
     enable = lib.mkOption {
       type = lib.types.bool;

@@ -1,4 +1,4 @@
-{...}: {
+_: {
   features = {
     core = {
       boot = {
@@ -18,6 +18,7 @@
     };
 
     shell = {
+      git.enable = false;
       ranger.enable = false;
       utils = {
         enable = false;

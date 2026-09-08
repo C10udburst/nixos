@@ -3,7 +3,6 @@
   lib,
   ...
 }: let
-  serverEnabled = config.features.server.enable;
   cfg = config.features.server.samba;
 
   shareEntries = lib.listToAttrs (map (p: {

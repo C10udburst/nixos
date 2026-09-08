@@ -5,7 +5,6 @@
   ...
 }: let
   cfg = config.features.gui.greeter;
-  greeterEnabled = config.features.gui.enable && cfg.enable;
   hasAutologin = (cfg.autologin or null) != null && (cfg.autologin or false) != false;
 
   autologinCommand =

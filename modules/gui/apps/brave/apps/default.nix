@@ -1,8 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}: {
+{lib, ...}: {
   options.features.gui.apps.brave.apps = {
     enable = lib.mkOption {
       type = lib.types.bool;

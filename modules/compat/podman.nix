@@ -4,7 +4,6 @@
   pkgs,
   ...
 }: let
-  compatEnabled = config.features.compat.enable;
   cfg = config.features.compat.podman;
   nvidiaEnabled = config.features.core.hardware.nvidia or false;
 in {
@@ -22,7 +21,7 @@ in {
   config = lib.mkIf cfg.enable {
     virtualisation.podman = {
       enable = true;
-      dockerCompat = cfg.dockerCompat;
+      inherit (cfg) dockerCompat;
       defaultNetwork.settings.dns_enabled = true;
     };
 

@@ -4,7 +4,6 @@
   pkgs,
   ...
 }: let
-  serverEnabled = config.features.server.enable;
   cfg = config.features.server.westonRdp;
   user = "cloudburst";
   tlsCert = "/var/lib/weston-rdp/tls.crt";

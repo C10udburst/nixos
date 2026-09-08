@@ -5,6 +5,7 @@
   ...
 }: let
   cfg = config.features.shell.starship;
+  hostConfig = config;
 in {
   options.features.shell.starship = {
     enable = lib.mkOption {
@@ -16,7 +17,9 @@ in {
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [pkgs.starship];
 
-    home-manager.users.cloudburst = {config, ...}: {
+    home-manager.users.cloudburst = {config, ...}: let
+      hasStylix = (hostConfig.features.gui.enable or false) && (config.lib ? stylix) && (config.stylix.enable or false);
+    in {
       programs.bash.enable = true;
       programs.zsh.enable = true;
       home.sessionVariables.STARSHIP_LOG = "error";
@@ -78,21 +81,44 @@ in {
           in
             "[](${firstBg})" + (joinSegments segments);
 
-          palette = lib.mkForce "stylix";
+          palette = lib.mkForce (
+            if hasStylix
+            then "stylix"
+            else "default_colors"
+          );
 
-          palettes.stylix = {
-            color_fg0 = config.lib.stylix.colors.withHashtag.base05;
-            color_bg0 = config.lib.stylix.colors.withHashtag.base00;
-            color_bg1 = config.lib.stylix.colors.withHashtag.base01;
-            color_bg3 = config.lib.stylix.colors.withHashtag.base03;
-            color_blue = config.lib.stylix.colors.withHashtag.base0D;
-            color_aqua = config.lib.stylix.colors.withHashtag.base0C;
-            color_green = config.lib.stylix.colors.withHashtag.base0B;
-            color_orange = config.lib.stylix.colors.withHashtag.base09;
-            color_purple = config.lib.stylix.colors.withHashtag.base0E;
-            color_red = config.lib.stylix.colors.withHashtag.base08;
-            color_yellow = config.lib.stylix.colors.withHashtag.base0A;
-          };
+          palettes = lib.mkMerge [
+            (lib.mkIf hasStylix {
+              stylix = {
+                color_fg0 = config.lib.stylix.colors.withHashtag.base05;
+                color_bg0 = config.lib.stylix.colors.withHashtag.base00;
+                color_bg1 = config.lib.stylix.colors.withHashtag.base01;
+                color_bg3 = config.lib.stylix.colors.withHashtag.base03;
+                color_blue = config.lib.stylix.colors.withHashtag.base0D;
+                color_aqua = config.lib.stylix.colors.withHashtag.base0C;
+                color_green = config.lib.stylix.colors.withHashtag.base0B;
+                color_orange = config.lib.stylix.colors.withHashtag.base09;
+                color_purple = config.lib.stylix.colors.withHashtag.base0E;
+                color_red = config.lib.stylix.colors.withHashtag.base08;
+                color_yellow = config.lib.stylix.colors.withHashtag.base0A;
+              };
+            })
+            (lib.mkIf (!hasStylix) {
+              default_colors = {
+                color_fg0 = "#fbf1c7";
+                color_bg0 = "#282828";
+                color_bg1 = "#3c3836";
+                color_bg3 = "#665c54";
+                color_blue = "#83a598";
+                color_aqua = "#8ec07c";
+                color_green = "#b8bb26";
+                color_orange = "#fe8019";
+                color_purple = "#d3869b";
+                color_red = "#fb4934";
+                color_yellow = "#fabd2f";
+              };
+            })
+          ];
 
           os = {
             disabled = false;

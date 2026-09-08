@@ -1,8 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}: {
+{lib, ...}: {
   options.features.shell = {
     enable = lib.mkOption {
       type = lib.types.bool;
