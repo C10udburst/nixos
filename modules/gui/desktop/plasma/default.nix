@@ -1,8 +1,6 @@
 {
   config,
   lib,
-  pkgs,
-  inputs,
   ...
 }: let
   cfg = config.features.gui.desktop.plasma;

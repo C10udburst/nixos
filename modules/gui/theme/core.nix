@@ -37,7 +37,7 @@ in {
 
       stylix = {
         enable = true;
-        polarity = cfg.polarity;
+        inherit (cfg) polarity;
         targets.gtksourceview.enable = false;
       };
     })

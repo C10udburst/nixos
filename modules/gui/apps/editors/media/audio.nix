@@ -5,10 +5,6 @@
   ...
 }: let
   cfg = config.features.gui.apps.editors.media.audio;
-  editorsEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.editors.enable;
 in {
   options.features.gui.apps.editors.media.audio = lib.mkOption {
     type = lib.types.bool;

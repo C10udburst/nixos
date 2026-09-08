@@ -7,6 +7,7 @@
 }: let
   cfg = config.features.core.nix;
   isSlow = config.features.core.hardware.slow or false;
+  isGui = config.features.gui.enable;
 in {
   options.features.core.nix = {
     enable = lib.mkOption {
@@ -39,12 +40,12 @@ in {
 
     environment.systemPackages = lib.optionals cfg.vulnix [pkgs.vulnix];
 
-    nixpkgs.overlays =
+    nixpkgs.overlays = lib.optionals isGui (
       lib.optionals (inputs ? nix-vscode-extensions && inputs.nix-vscode-extensions ? overlays) [
         inputs.nix-vscode-extensions.overlays.default
       ]
       ++ [
-        (final: prev: {
+        (_final: prev: {
           driftwm =
             if inputs ? driftwm && inputs.driftwm ? packages && inputs.driftwm.packages ? ${prev.stdenv.hostPlatform.system}
             then
@@ -53,7 +54,8 @@ in {
               })
             else prev.driftwm or null;
         })
-      ];
+      ]
+    );
 
     nix.settings = {
       experimental-features = lib.optionals cfg.flakes [

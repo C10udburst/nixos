@@ -16,13 +16,15 @@ in {
   config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.blender];
 
-    home-manager.users.cloudburst = {
-      stylix.targets.blender.enable = true;
+    home-manager.users.cloudburst = lib.mkMerge [
+      (lib.mkIf (config.stylix.enable or false) {
+        stylix.targets.blender.enable = true;
 
-      xdg.configFile = {
-        "blender/${blenderVersion}/scripts/presets/interface_theme/Stylix.xml".source =
-          config.home-manager.users.cloudburst.xdg.configFile."blender/4.5/scripts/presets/interface_theme/Stylix.xml".source;
-      };
-    };
+        xdg.configFile = {
+          "blender/${blenderVersion}/scripts/presets/interface_theme/Stylix.xml".source =
+            config.home-manager.users.cloudburst.xdg.configFile."blender/4.5/scripts/presets/interface_theme/Stylix.xml".source;
+        };
+      })
+    ];
   };
 }

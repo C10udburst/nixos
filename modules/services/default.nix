@@ -1,10 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}: let
-  cfg = config.features.services;
-in {
+{lib, ...}: {
   options.features.services = {
     enable = lib.mkOption {
       type = lib.types.bool;

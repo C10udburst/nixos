@@ -6,7 +6,10 @@
   ...
 }: let
   cfg = config.features.gui.desktop.driftwm.noctalia;
-  driftwmEnabled = config.features.gui.enable && config.features.gui.desktop.enable && config.features.gui.desktop.driftwm.enable;
+  driftwmEnabled =
+    config.features.gui.enable
+    && config.features.gui.desktop.enable
+    && config.features.gui.desktop.driftwm.enable;
 
   mobile = config.features.core.hardware.mobile or false;
   touchscreen = config.features.core.hardware.touchscreen or false;
@@ -34,30 +37,27 @@
     udiskie = "aristides/udiskie";
   };
 
-  rawBasePluginNames = [
-    "audio-switcher"
-    "cat"
-    "driftwm"
-    "driftwm-windows"
-    "unicode"
-    "drive-health"
-    "hassio"
-    "phone-connect"
-    "procmon"
-    "screen-toolkit"
-    "udiskie"
-  ];
-
-  basePluginNames = lib.filter (name: !(slow && lib.elem name ["udiskie" "drive-health" "screen-toolkit" "phone-connect"])) rawBasePluginNames;
   batteryPluginNames = lib.optionals (mobile && cfg.plugins.mobile) ["battery-threshold"];
   dockerPluginNames = lib.optionals (hasDocker && !slow && cfg.plugins.containers) ["mini-docker"];
   tailscalePluginNames = lib.optionals (hasTailscale && cfg.plugins.connectivity) ["tailscale"];
   nixIndexPluginNames = lib.optionals hasNixIndex ["cloudburst-nix"];
 
   selectedPluginNames =
-    lib.optionals cfg.plugins.core ["audio-switcher" "cat" "driftwm" "driftwm-windows" "unicode"]
-    ++ lib.optionals cfg.plugins.system ["procmon" "screen-toolkit" "hassio"]
-    ++ lib.optionals (cfg.plugins.hardware && !slow) ["drive-health" "udiskie"]
+    lib.optionals cfg.plugins.core [
+      "cat"
+      "driftwm"
+      "driftwm-windows"
+      "unicode"
+    ]
+    ++ lib.optionals cfg.plugins.system [
+      "procmon"
+      "screen-toolkit"
+      "hassio"
+    ]
+    ++ lib.optionals (cfg.plugins.hardware && !slow) [
+      "drive-health"
+      "udiskie"
+    ]
     ++ lib.optionals (cfg.plugins.connectivity && !slow) ["phone-connect"]
     ++ batteryPluginNames
     ++ dockerPluginNames
@@ -129,7 +129,11 @@ in {
           ${wvkbdCmd} "$@"
         '';
       in {
-        imports = lib.optional (inputs ? noctalia && inputs.noctalia ? homeModules) inputs.noctalia.homeModules.default;
+        imports =
+          lib.optional (
+            inputs ? noctalia && inputs.noctalia ? homeModules
+          )
+          inputs.noctalia.homeModules.default;
 
         home.packages = with pkgs;
           [
@@ -391,7 +395,9 @@ in {
                     ];
 
                 end =
-                  ["tray"]
+                  [
+                    "tray"
+                  ]
                   ++ lib.optionals (!compactMode) ["group:storage_privacy"]
                   ++ lib.optionals mobile ["group:battery_group"]
                   ++ [
@@ -426,7 +432,9 @@ in {
                       accordion_direction = "end";
                       enabled = true;
                       members =
-                        ["privacy"]
+                        [
+                          "privacy"
+                        ]
                         ++ (lib.optionals (!slow) [
                           "udiskie_status"
                           "drive_summary"
@@ -459,7 +467,9 @@ in {
                       accordion_direction = "end";
                       enabled = !slow;
                       members =
-                        ["cat_widget"]
+                        [
+                          "cat_widget"
+                        ]
                         ++ (lib.optionals (!slow) ["procmon_widget"])
                         ++ lib.optionals (hasDocker && !slow) ["mini-docker"];
                     }

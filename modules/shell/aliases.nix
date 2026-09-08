@@ -32,7 +32,7 @@ in {
         // (lib.listToAttrs (
           map (i: {
             name = "..${toString i}";
-            value = "cd " + (lib.concatStringsSep "/" (map (x: "..") (lib.range 1 i)));
+            value = "cd " + (lib.concatStringsSep "/" (map (_x: "..") (lib.range 1 i)));
           }) (lib.range 2 10)
         ));
     };

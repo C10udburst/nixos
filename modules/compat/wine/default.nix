@@ -4,12 +4,11 @@
   pkgs,
   ...
 }: let
-  compatEnabled = config.features.compat.enable;
   cfg = config.features.compat.wine;
+  isGui = config.features.gui.enable or false;
 
   renderUtils = import ../../../lib/helpers/jinja.nix {inherit pkgs config lib;};
-  renderJinja2 = renderUtils.renderJinja2;
-  cleanColors = renderUtils.cleanColors;
+  inherit (renderUtils) renderJinja2 cleanColors;
 
   themeReg = renderJinja2 "wine-theme.reg" ./_theme.reg.j2 cleanColors;
 
@@ -114,25 +113,27 @@ in {
         };
       };
 
-      xdg.desktopEntries.wine = {
-        name = "Wine Windows Program Loader";
-        genericName = "Windows Emulator";
-        comment = "Run Windows applications with Wine";
-        exec = "${wineRunnerScript}/bin/wine-runner %f";
-        icon = "wine";
-        mimeType = [
-          "application/x-ms-dos-executable"
-          "application/x-msi"
-          "application/x-ms-shortcut"
-          "application/x-bat"
-        ];
-        categories = [
-          "Utility"
-          "Emulator"
-        ];
+      xdg.desktopEntries = lib.mkIf isGui {
+        wine = {
+          name = "Wine Windows Program Loader";
+          genericName = "Windows Emulator";
+          comment = "Run Windows applications with Wine";
+          exec = "${wineRunnerScript}/bin/wine-runner %f";
+          icon = "wine";
+          mimeType = [
+            "application/x-ms-dos-executable"
+            "application/x-msi"
+            "application/x-ms-shortcut"
+            "application/x-bat"
+          ];
+          categories = [
+            "Utility"
+            "Emulator"
+          ];
+        };
       };
 
-      xdg.mimeApps.defaultApplications = {
+      xdg.mimeApps.defaultApplications = lib.mkIf isGui {
         "application/x-ms-dos-executable" = ["wine.desktop"];
         "application/x-msi" = ["wine.desktop"];
         "application/x-ms-shortcut" = ["wine.desktop"];

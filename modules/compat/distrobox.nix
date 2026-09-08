@@ -4,7 +4,6 @@
   pkgs,
   ...
 }: let
-  compatEnabled = config.features.compat.enable;
   cfg = config.features.compat.distrobox;
 in {
   options.features.compat.distrobox = lib.mkOption {

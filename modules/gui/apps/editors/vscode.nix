@@ -205,139 +205,142 @@ in {
         (inputs.nix-vscode-extensions.overlays.default or (_: _: {}))
       ];
 
-      home-manager.users.cloudburst = {
-        stylix.targets.vscode.enable = true;
+      home-manager.users.cloudburst = lib.mkMerge [
+        (lib.mkIf (config.stylix.enable or false) {
+          stylix.targets.vscode.enable = true;
+        })
+        {
+          programs.vscode = {
+            enable = true;
+            package = ephemeralVscode;
+            mutableExtensionsDir = false;
 
-        programs.vscode = {
-          enable = true;
-          package = ephemeralVscode;
-          mutableExtensionsDir = false;
+            profiles.default = {
+              extensions = allExtensions;
 
-          profiles.default = {
-            extensions = allExtensions;
+              userSettings = {
+                "files.associations" = {
+                  "*.luau" = "lua";
+                };
 
-            userSettings = {
-              "files.associations" = {
-                "*.luau" = "lua";
-              };
+                # ── Security & Trust ──────────────────────────────────────────────────
+                "security.workspace.trust.enabled" = false;
 
-              # ── Security & Trust ──────────────────────────────────────────────────
-              "security.workspace.trust.enabled" = false;
-
-              # ── Appearance & editor UX ────────────────────────────────────────────
-              "editor.bracketPairColorization.enabled" = true;
-              "editor.guides.bracketPairs" = "active";
-              "editor.renderWhitespace" = "boundary";
-              "editor.smoothScrolling" = true;
-              "editor.cursorBlinking" = "smooth";
-              "editor.cursorSmoothCaretAnimation" = "on";
-              "editor.minimap.enabled" = false;
-              "editor.lineNumbers" = "relative";
-              "editor.wordWrap" = "off";
-              "editor.formatOnSave" = true;
-              "editor.inlineSuggest.enabled" = true;
-              "editor.mouseWheelZoom" = true;
-
-              # ── Updates & Auto-updates ────────────────────────────────────────────
-              "extensions.autoUpdate" = false;
-              "extensions.autoCheckUpdates" = false;
-              "update.mode" = "none";
-
-              # ── Workbench ─────────────────────────────────────────────────────────
-              "workbench.iconTheme" = "material-icon-theme";
-              "workbench.tree.indent" = 16;
-              "workbench.editor.enablePreview" = false;
-              "workbench.startupEditor" = "none";
-
-              # ── Telemetry — fully disabled ────────────────────────────────────────
-              "telemetry.telemetryLevel" = "off";
-              "redhat.telemetry.enabled" = false;
-              "ms-python.python.experiments.enabled" = false;
-              "julia.enableTelemetry" = false;
-
-              # ── Sync — disabled ───────────────────────────────────────────────────
-              "settingsSync.keybindingsPerPlatform" = false;
-              "sync.gist" = "";
-
-              # ── Files ─────────────────────────────────────────────────────────────
-              "files.autoSave" = "onFocusChange";
-              "files.trimTrailingWhitespace" = true;
-              "files.insertFinalNewline" = true;
-
-              # ── Terminal ──────────────────────────────────────────────────────────
-              "terminal.integrated.smoothScrolling" = true;
-
-              # ── Git ───────────────────────────────────────────────────────────────
-              "git.autofetch" = true;
-              "git.confirmSync" = false;
-
-              # ── Nix IDE ───────────────────────────────────────────────────────────
-              "nix.enableLanguageServer" = true;
-              "nix.serverPath" = "nixd";
-
-              # ── Rust Analyzer ─────────────────────────────────────────────────────
-              "rust-analyzer.checkOnSave" = true;
-
-              # ── LaTeX Workshop ────────────────────────────────────────────────────
-              "latex-workshop.view.pdf.viewer" = "tab";
-              "latex-workshop.latex.autoBuild.run" = "onSave";
-              "latex-workshop.showContextMenu" = true;
-              "latex-workshop.intellisense.package.enabled" = true;
-
-              # ── Typst (Tinymist) ──────────────────────────────────────────────────
-              "[typst]" = {
+                # ── Appearance & editor UX ────────────────────────────────────────────
+                "editor.bracketPairColorization.enabled" = true;
+                "editor.guides.bracketPairs" = "active";
+                "editor.renderWhitespace" = "boundary";
+                "editor.smoothScrolling" = true;
+                "editor.cursorBlinking" = "smooth";
+                "editor.cursorSmoothCaretAnimation" = "on";
+                "editor.minimap.enabled" = false;
+                "editor.lineNumbers" = "relative";
+                "editor.wordWrap" = "off";
                 "editor.formatOnSave" = true;
+                "editor.inlineSuggest.enabled" = true;
+                "editor.mouseWheelZoom" = true;
+
+                # ── Updates & Auto-updates ────────────────────────────────────────────
+                "extensions.autoUpdate" = false;
+                "extensions.autoCheckUpdates" = false;
+                "update.mode" = "none";
+
+                # ── Workbench ─────────────────────────────────────────────────────────
+                "workbench.iconTheme" = "material-icon-theme";
+                "workbench.tree.indent" = 16;
+                "workbench.editor.enablePreview" = false;
+                "workbench.startupEditor" = "none";
+
+                # ── Telemetry — fully disabled ────────────────────────────────────────
+                "telemetry.telemetryLevel" = "off";
+                "redhat.telemetry.enabled" = false;
+                "ms-python.python.experiments.enabled" = false;
+                "julia.enableTelemetry" = false;
+
+                # ── Sync — disabled ───────────────────────────────────────────────────
+                "settingsSync.keybindingsPerPlatform" = false;
+                "sync.gist" = "";
+
+                # ── Files ─────────────────────────────────────────────────────────────
+                "files.autoSave" = "onFocusChange";
+                "files.trimTrailingWhitespace" = true;
+                "files.insertFinalNewline" = true;
+
+                # ── Terminal ──────────────────────────────────────────────────────────
+                "terminal.integrated.smoothScrolling" = true;
+
+                # ── Git ───────────────────────────────────────────────────────────────
+                "git.autofetch" = true;
+                "git.confirmSync" = false;
+
+                # ── Nix IDE ───────────────────────────────────────────────────────────
+                "nix.enableLanguageServer" = true;
+                "nix.serverPath" = "nixd";
+
+                # ── Rust Analyzer ─────────────────────────────────────────────────────
+                "rust-analyzer.checkOnSave" = true;
+
+                # ── LaTeX Workshop ────────────────────────────────────────────────────
+                "latex-workshop.view.pdf.viewer" = "tab";
+                "latex-workshop.latex.autoBuild.run" = "onSave";
+                "latex-workshop.showContextMenu" = true;
+                "latex-workshop.intellisense.package.enabled" = true;
+
+                # ── Typst (Tinymist) ──────────────────────────────────────────────────
+                "[typst]" = {
+                  "editor.formatOnSave" = true;
+                };
+                "tinymist.formatterMode" = "typstyle";
+
+                # ── REST Client ───────────────────────────────────────────────────────
+                "rest-client.enableTelemetry" = false;
+
+                # ── Window ────────────────────────────────────────────────────────────
+                "window.titleBarStyle" = "custom";
+                "window.zoomLevel" = 0;
+
+                # ── Colorize ──────────────────────────────────────────────────────────
+                "colorize.include" = ["**/*"];
+                "colorize.decoration_type" = "background";
               };
-              "tinymist.formatterMode" = "typstyle";
-
-              # ── REST Client ───────────────────────────────────────────────────────
-              "rest-client.enableTelemetry" = false;
-
-              # ── Window ────────────────────────────────────────────────────────────
-              "window.titleBarStyle" = "custom";
-              "window.zoomLevel" = 0;
-
-              # ── Colorize ──────────────────────────────────────────────────────────
-              "colorize.include" = ["**/*"];
-              "colorize.decoration_type" = "background";
             };
           };
-        };
 
-        xdg.mimeApps = {
-          defaultApplications = {
-            "text/javascript" = ["code.desktop"];
-            "application/javascript" = ["code.desktop"];
-            "text/x-python" = ["code.desktop"];
-            "text/x-rust" = ["code.desktop"];
-            "text/x-c" = ["code.desktop"];
-            "text/x-c++" = ["code.desktop"];
-            "text/x-go" = ["code.desktop"];
-            "text/x-java" = ["code.desktop"];
-            "text/plain" = ["code.desktop"];
-            "text/x-shellscript" = ["code.desktop"];
-            "application/json" = ["code.desktop"];
-            "text/markdown" = ["code.desktop"];
-            "text/x-nix" = ["code.desktop"];
-            "text/x-yaml" = ["code.desktop"];
-            "text/x-toml" = ["code.desktop"];
-            "text/x-ini" = ["code.desktop"];
-            "text/x-xml" = ["code.desktop"];
-            "text/x-sql" = ["code.desktop"];
-            "text/x-php" = ["code.desktop"];
-            "text/x-perl" = ["code.desktop"];
-            "text/x-ruby" = ["code.desktop"];
-            "text/x-lua" = ["code.desktop"];
-            "text/x-haskell" = ["code.desktop"];
-            "text/x-scala" = ["code.desktop"];
-            "text/x-kotlin" = ["code.desktop"];
-            "text/x-vb" = ["code.desktop"];
+          xdg.mimeApps = {
+            defaultApplications = {
+              "text/javascript" = ["code.desktop"];
+              "application/javascript" = ["code.desktop"];
+              "text/x-python" = ["code.desktop"];
+              "text/x-rust" = ["code.desktop"];
+              "text/x-c" = ["code.desktop"];
+              "text/x-c++" = ["code.desktop"];
+              "text/x-go" = ["code.desktop"];
+              "text/x-java" = ["code.desktop"];
+              "text/plain" = ["code.desktop"];
+              "text/x-shellscript" = ["code.desktop"];
+              "application/json" = ["code.desktop"];
+              "text/markdown" = ["code.desktop"];
+              "text/x-nix" = ["code.desktop"];
+              "text/x-yaml" = ["code.desktop"];
+              "text/x-toml" = ["code.desktop"];
+              "text/x-ini" = ["code.desktop"];
+              "text/x-xml" = ["code.desktop"];
+              "text/x-sql" = ["code.desktop"];
+              "text/x-php" = ["code.desktop"];
+              "text/x-perl" = ["code.desktop"];
+              "text/x-ruby" = ["code.desktop"];
+              "text/x-lua" = ["code.desktop"];
+              "text/x-haskell" = ["code.desktop"];
+              "text/x-scala" = ["code.desktop"];
+              "text/x-kotlin" = ["code.desktop"];
+              "text/x-vb" = ["code.desktop"];
+            };
+            associations.added = {
+              "inode/directory" = ["code.desktop"];
+            };
           };
-          associations.added = {
-            "inode/directory" = ["code.desktop"];
-          };
-        };
-      };
+        }
+      ];
     })
   ];
 }

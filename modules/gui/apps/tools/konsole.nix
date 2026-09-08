@@ -5,8 +5,6 @@
   ...
 }: let
   cfg = config.features.gui.apps.tools.konsole;
-  toolsEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable;
 in {
   options.features.gui.apps.tools.konsole = lib.mkOption {
     type = lib.types.bool;
