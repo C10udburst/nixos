@@ -39,11 +39,6 @@ in {
     inputs.nixos-hardware.nixosModules.msi-gl65-10SDR-492
   ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 2;
-
   # Load ec_sys kernel module with write support for MSI fan control (isw)
   # and msi-ec out-of-tree kernel module for MSI Embedded Controller support
   boot.extraModulePackages = [config.boot.kernelPackages.msi-ec];

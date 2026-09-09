@@ -28,12 +28,6 @@
   };
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 2;
-  boot.loader.systemd-boot.extraInstallCommands = ''
-    echo "auto-entries 0" >> ${config.boot.loader.efi.efiSysMountPoint}/loader/loader.conf
-  '';
   boot.initrd.kernelModules = ["amdgpu"];
   boot.supportedFilesystems = ["ntfs"];
 
