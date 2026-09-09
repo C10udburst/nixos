@@ -10,7 +10,7 @@ in {
   options.features.gui.theme.plasma = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = config.features.gui.theme.enable && false;
+      default = config.features.gui.theme.enable && true;
     };
   };
 
@@ -80,6 +80,8 @@ in {
           };
         };
 
+        xdg.dataFile."color-schemes/Stylix.colors".source = kdeglobals;
+
         xdg.configFile = lib.mkMerge [
           {
             "color-schemes/Stylix.colors".source = kdeglobals;
@@ -98,7 +100,6 @@ in {
           };
           KDE = {
             widgetStyle = "Breeze";
-            LookAndFeelPackage = "stylix";
           };
           UiSettings = {
             ColorScheme = "Stylix";
@@ -214,7 +215,7 @@ in {
         };
 
         home.sessionVariables = {
-          KDE_COLOR_SCHEME_PATH = "${config.xdg.configHome}/color-schemes/Stylix.colors";
+          KDE_COLOR_SCHEME_PATH = "${config.xdg.dataHome}/color-schemes/Stylix.colors";
           QS_ICON_THEME = iconTheme;
         };
       };
