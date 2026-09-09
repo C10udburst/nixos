@@ -50,33 +50,35 @@ in {
       '';
 
       # Exclude kwallet, kwallet-pam, and kwalletmanager from the system profile
-      system.path = lib.mkForce (pkgs.buildEnv {
-        name = "system-path";
-        paths =
-          builtins.filter (
-            pkg: let
-              pname = pkg.pname or (builtins.parseDrvName (pkg.name or "")).name;
-            in
-              !builtins.elem pname [
-                "kwallet"
-                "kwallet-pam"
-                "kwalletmanager"
-              ]
-          )
-          config.environment.systemPackages;
-        inherit (config.environment) pathsToLink extraOutputsToInstall;
-        ignoreCollisions = true;
-        postBuild = ''
-          find $out/bin -maxdepth 1 -name ".*-wrapped" -type l -delete
-          find $out/bin -maxdepth 1 -name ".*-wrapped_*" -type l -delete
+      system.path = lib.mkForce (
+        pkgs.buildEnv {
+          name = "system-path";
+          paths =
+            builtins.filter (
+              pkg: let
+                pname = pkg.pname or (builtins.parseDrvName (pkg.name or "")).name;
+              in
+                !builtins.elem pname [
+                  "kwallet"
+                  "kwallet-pam"
+                  "kwalletmanager"
+                ]
+            )
+            config.environment.systemPackages;
+          inherit (config.environment) pathsToLink extraOutputsToInstall;
+          ignoreCollisions = true;
+          postBuild = ''
+            find $out/bin -maxdepth 1 -name ".*-wrapped" -type l -delete
+            find $out/bin -maxdepth 1 -name ".*-wrapped_*" -type l -delete
 
-          if [ -x $out/bin/glib-compile-schemas -a -w $out/share/glib-2.0/schemas ]; then
-              $out/bin/glib-compile-schemas $out/share/glib-2.0/schemas
-          fi
+            if [ -x $out/bin/glib-compile-schemas -a -w $out/share/glib-2.0/schemas ]; then
+                $out/bin/glib-compile-schemas $out/share/glib-2.0/schemas
+            fi
 
-          ${config.environment.extraSetup}
-        '';
-      });
+            ${config.environment.extraSetup}
+          '';
+        }
+      );
 
       home-manager.users.cloudburst = {
         xdg.configFile."kwalletrc".text = ''
@@ -86,10 +88,6 @@ in {
         '';
         programs.plasma = {
           enable = true;
-          workspace = {
-            iconTheme = "breeze-dark";
-            colorScheme = "Stylix";
-          };
           krunner = {
             shortcuts.launch = "Meta+Space";
           };
