@@ -7,7 +7,7 @@
 in {
   options.features.core.boot.grub32 = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.core.enable && config.features.core.boot.enable) && false;
+    default = config.features.core.boot.enable && false;
   };
 
   config = lib.mkIf cfg.grub32 {

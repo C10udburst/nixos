@@ -54,18 +54,6 @@
      ACCEL_MOUNT_MATRIX=0, -1, 0; -1, 0, 0; 0, 0, 1
   '';
 
-  boot.loader.systemd-boot.enable = false;
-  boot.loader.grub = {
-    enable = true;
-    efiSupport = true;
-    efiInstallAsRemovable = true;
-    device = "nodev";
-    forcei686 = true;
-    extraGrubInstallArgs = ["--target=i386-efi"];
-    configurationLimit = 1;
-  };
-  boot.loader.efi.canTouchEfiVariables = false;
-
   networking.hostName = "cloudburst-tablet";
 
   system.stateVersion = "26.05";

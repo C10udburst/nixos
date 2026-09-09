@@ -10,7 +10,7 @@
 in {
   options.features.shell.utils.nettools = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.shell.enable && config.features.shell.utils.enable) && true;
+    default = config.features.shell.utils.enable && true;
   };
 
   config = lib.mkIf cfg {

@@ -7,7 +7,7 @@
 in {
   options.features.shell.nushell.wrappers = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.shell.enable && config.features.shell.nushell.enable) && true;
+    default = config.features.shell.nushell.enable && true;
   };
 
   config = lib.mkIf cfg.wrappers {

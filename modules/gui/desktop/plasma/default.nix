@@ -9,7 +9,7 @@ in {
   options.features.gui.desktop.plasma = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = (config.features.gui.enable && config.features.gui.desktop.enable) && true;
+      default = config.features.gui.desktop.enable && true;
     };
   };
 

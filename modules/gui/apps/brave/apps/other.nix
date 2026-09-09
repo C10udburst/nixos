@@ -6,18 +6,10 @@
   ...
 }: let
   cfg = config.features.gui.apps.brave.apps.other;
-  braveEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.brave.enable
-    && config.features.gui.apps.brave.apps.enable;
+  braveEnabled = config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
-  isVscode =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.editors.enable
-    && (config.features.gui.apps.editors.vscode or false);
+  isVscode = config.features.gui.apps.editors.vscode or false;
 in {
   options.features.gui.apps.brave.apps.other = lib.mkOption {
     type = lib.types.bool;

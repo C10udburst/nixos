@@ -6,7 +6,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.brave.apps.social;
-  braveEnabled = config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.brave.enable && config.features.gui.apps.brave.apps.enable;
+  braveEnabled = config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
 in {

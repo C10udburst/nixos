@@ -5,8 +5,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.viewers.dolphin;
-  viewersEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.viewers.enable;
+  viewersEnabled = config.features.gui.apps.viewers.enable;
   isVscode = config.features.gui.apps.editors.vscode or false;
   isProgramming = config.features.gui.dev.programming.enable or false;
 in {

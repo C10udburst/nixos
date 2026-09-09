@@ -9,7 +9,7 @@
 in {
   options.features.shell.nushell.undo = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.shell.enable && config.features.shell.nushell.enable) && false;
+    default = config.features.shell.nushell.enable && false;
   };
 
   config = lib.mkMerge [

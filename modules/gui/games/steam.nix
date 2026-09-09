@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  gamesEnabled = config.features.gui.enable && config.features.gui.games.enable;
+  gamesEnabled = config.features.gui.games.enable;
   cfg = config.features.gui.games.steam;
 in {
   options.features.gui.games.steam = lib.mkOption {

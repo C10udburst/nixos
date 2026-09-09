@@ -5,10 +5,7 @@
   inputs,
   ...
 }: let
-  devEnabled =
-    config.features.gui.enable
-    && config.features.gui.dev.enable
-    && config.features.gui.dev.programming.enable;
+  devEnabled = config.features.gui.dev.programming.enable;
   cfg = config.features.gui.dev.programming.misc;
 
   gitr = pkgs.appimageTools.wrapType2 {

@@ -6,10 +6,7 @@
   ...
 }: let
   cfg = config.features.gui.desktop.driftwm.noctalia;
-  driftwmEnabled =
-    config.features.gui.enable
-    && config.features.gui.desktop.enable
-    && config.features.gui.desktop.driftwm.enable;
+  driftwmEnabled = config.features.gui.desktop.driftwm.enable;
 
   mobile = config.features.core.hardware.mobile or false;
   touchscreen = config.features.core.hardware.touchscreen or false;

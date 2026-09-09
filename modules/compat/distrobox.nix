@@ -8,7 +8,7 @@
 in {
   options.features.compat.distrobox = lib.mkOption {
     type = lib.types.bool;
-    default = config.features.compat.enable && false;
+    default = config.features.compat.enable && true;
   };
 
   config = lib.mkIf cfg {

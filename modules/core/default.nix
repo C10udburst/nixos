@@ -25,6 +25,8 @@ in {
     services.upower.enable = lib.mkDefault true;
     hardware.i2c.enable = true;
 
+    home-manager.backupFileExtension = "hm-backup";
+
     services.udev.extraRules = ''
       KERNEL=="cec*", SUBSYSTEM=="cec", MODE="0660", GROUP="video"
     '';

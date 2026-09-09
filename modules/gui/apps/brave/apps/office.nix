@@ -6,19 +6,10 @@
   ...
 }: let
   cfg = config.features.gui.apps.brave.apps.office;
-  braveEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.brave.enable
-    && config.features.gui.apps.brave.apps.enable;
+  braveEnabled = config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
-  isLibreOffice =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.editors.enable
-    && (config.features.gui.apps.editors.office.enable or false)
-    && (config.features.gui.apps.editors.office.libreoffice or false);
+  isLibreOffice = config.features.gui.apps.editors.office.libreoffice or false;
 in {
   options.features.gui.apps.brave.apps.office = lib.mkOption {
     type = lib.types.bool;

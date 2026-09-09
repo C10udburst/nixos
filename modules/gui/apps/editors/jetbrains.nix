@@ -6,10 +6,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.editors.jetbrains;
-  editorsEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.editors.enable;
+  editorsEnabled = config.features.gui.apps.editors.enable;
 
   isDev = config.features.gui.dev.enable or false;
   isProgramming = isDev && (config.features.gui.dev.programming.enable or false);
