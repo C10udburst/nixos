@@ -6,27 +6,4 @@ reloading user units for cloudburst...
 restarting the following user units: nixos-activation.service
 restarting sysinit-reactivation.target
 the following new units were started: NetworkManager-dispatcher.service
-warning: the following units failed: home-manager-cloudburst.service
-× home-manager-cloudburst.service - Home Manager environment for cloudburst
-     Loaded: loaded (/etc/systemd/system/home-manager-cloudburst.service; enabled; preset: ignored)
-     Active: failed (Result: exit-code) since Wed 2026-09-09 00:51:08 CEST; 260ms ago
-   Duration: 3h 10min 18.437s
- Invocation: 735fd5cc53ab4c909d39efac61348ffd
-    Process: 622296 ExecStart=/nix/store/h1is79q2q3cjf4q8slhjvd8apnpmzrf4-hm-setup-env /nix/store/bxjcsn202wi9xdmf7vbhf4c849wkk9aa-home-manager-generation (code=exited, status=1/FAILURE)
-   Main PID: 622296 (code=exited, status=1/FAILURE)
-         IP: 0B in, 0B out
-         IO: 0B read, 0B written
-   Mem peak: 18.2M
-        CPU: 296ms
-
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]:   File "/nix/store/wf122xwsbxqdzxjazkfddhir8vdrwf2v-write_config.py", line 322, in write_configs
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]:     config.save()
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]:     ~~~~~~~~~~~^^
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]:   File "/nix/store/wf122xwsbxqdzxjazkfddhir8vdrwf2v-write_config.py", line 283, in save
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]:     with open(self.filepath, "w", encoding="utf-8") as f:
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]:          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-wrz 09 00:51:08 cloudburst-desktop hm-activate-cloudburst[622570]: OSError: [Errno 30] Read-only file system: '/home/cloudburst/.config/kdeglobals'
-wrz 09 00:51:08 cloudburst-desktop systemd[1]: home-manager-cloudburst.service: Main process exited, code=exited, status=1/FAILURE
-wrz 09 00:51:08 cloudburst-desktop systemd[1]: home-manager-cloudburst.service: Failed with result 'exit-code'.
-wrz 09 00:51:08 cloudburst-desktop systemd[1]: Failed to start Home Manager environment for cloudburst.
-Command 'systemd-run -E LOCALE_ARCHIVE -E NIXOS_INSTALL_BOOTLOADER -E NIXOS_NO_CHECK --collect --no-ask-password --pipe --quiet --service-type=exec --unit=nixos-rebuild-switch-to-configuration /nix/store/z3z6akq3w6adr8l6hkpb299h04l37q71-nixos-system-cloudburst-desktop-26.05.20260901.a311611/bin/switch-to-configuration test' returned non-zero exit status 4.
+Done. The new configuration is /nix/store/z3z6akq3w6adr8l6hkpb299h04l37q71-nixos-system-cloudburst-desktop-26.05.20260901.a311611
