@@ -1,9 +1,37 @@
 building the system configuration...
-Checking switch inhibitors... done
-activating the configuration...
-setting up /etc...
-reloading user units for cloudburst...
-restarting the following user units: nixos-activation.service
-restarting sysinit-reactivation.target
-the following new units were started: NetworkManager-dispatcher.service
-Done. The new configuration is /nix/store/z3z6akq3w6adr8l6hkpb299h04l37q71-nixos-system-cloudburst-desktop-26.05.20260901.a311611
+error:
+       … while calling the 'head' builtin
+         at «github:nixos/nixpkgs/a3116115851d68b8952a2a4221cc25a84e56b532?narHash=sha256-Z%2BvUNbfd2FIKkWOTkcT7RYlh3oFCnig/d2eXD1SWf2E%3D»/lib/attrsets.nix:1717:13:
+         1716|           if length values == 1 || pred here (elemAt values 1) (head values) then
+         1717|             head values
+             |             ^
+         1718|           else
+
+       … while evaluating the attribute 'value'
+         at «github:nixos/nixpkgs/a3116115851d68b8952a2a4221cc25a84e56b532?narHash=sha256-Z%2BvUNbfd2FIKkWOTkcT7RYlh3oFCnig/d2eXD1SWf2E%3D»/lib/modules.nix:1167:7:
+         1166|     // {
+         1167|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+             |       ^
+         1168|       inherit (res.defsFinal') highestPrio;
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while evaluating definitions from `/nix/store/kd6sgqmk9f1fymkal5j1fyjcay4gs3jb-source/nixos/modules/system/activation/top-level.nix':
+
+       … while evaluating the option `warnings':
+
+       … while evaluating definitions from `/nix/store/kd6sgqmk9f1fymkal5j1fyjcay4gs3jb-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.services.home-manager-cloudburst.serviceConfig':
+
+       … while evaluating definitions from `/nix/store/2ans5qaidz3zysv21ydq25jz1pic7nf3-source/nixos':
+
+       … while evaluating the option `home-manager.users.cloudburst.home.file.".profile".source':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option `home-manager.users.cloudburst.home.sessionVariables.QT_QPA_PLATFORMTHEME' has conflicting definition values:
+       - In `/nix/store/2ans5qaidz3zysv21ydq25jz1pic7nf3-source/modules/misc/qt.nix': "qt5ct"
+       - In `/nix/store/dpwb96jc5f42yprpp0hrm42lrj0ni7bi-source/modules/gui/theme/core.nix': "qtct6"
+       Use `lib.mkForce value` or `lib.mkDefault value` to change the priority on any of these definitions.
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."cloudburst-desktop".config.system.build.toplevel' --no-link' returned non-zero exit status 1.

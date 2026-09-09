@@ -74,7 +74,7 @@ in {
 
         qt = {
           enable = true;
-          style.name = lib.mkForce "breeze";
+          style.name = lib.mkForce "qtct6";
           style.package = with pkgs; [
             kdePackages.breeze
             kdePackages.breeze.qt5
