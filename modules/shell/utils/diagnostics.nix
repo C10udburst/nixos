@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.features.shell.utils.diagnostics;
-  utilsEnabled = config.features.shell.enable && config.features.shell.utils.enable;
+  utilsEnabled = config.features.shell.utils.enable;
 in {
   options.features.shell.utils.diagnostics = lib.mkOption {
     type = lib.types.bool;

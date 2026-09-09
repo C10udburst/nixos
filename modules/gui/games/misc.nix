@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  gamesEnabled = config.features.gui.enable && config.features.gui.games.enable;
+  gamesEnabled = config.features.gui.games.enable;
   cfg = config.features.gui.games.misc;
 in {
   options.features.gui.games.misc = lib.mkOption {

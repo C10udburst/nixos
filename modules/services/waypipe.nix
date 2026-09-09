@@ -8,7 +8,7 @@
 in {
   options.features.services.waypipe = lib.mkOption {
     type = lib.types.bool;
-    default = config.features.services.enable && false;
+    default = config.features.services.enable && true;
   };
 
   config = lib.mkIf cfg {

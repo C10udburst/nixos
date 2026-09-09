@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  devEnabled = config.features.gui.enable && config.features.gui.dev.enable;
+  devEnabled = config.features.gui.dev.enable;
   cfg = config.features.gui.dev.arduino;
 
   boardsConfig = {

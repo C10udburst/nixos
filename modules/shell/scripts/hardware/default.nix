@@ -45,7 +45,7 @@
 in {
   options.features.shell.scripts.hardware = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.shell.enable && config.features.shell.scripts.enable) && true;
+    default = config.features.shell.scripts.enable && true;
   };
 
   config = lib.mkMerge [

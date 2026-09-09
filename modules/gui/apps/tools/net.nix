@@ -5,10 +5,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.tools.net;
-  toolsEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.tools.enable;
+  toolsEnabled = config.features.gui.apps.tools.enable;
 in {
   options.features.gui.apps.tools.net = {
     enable = lib.mkOption {

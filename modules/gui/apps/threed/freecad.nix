@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  threedEnabled = config.features.gui.enable && config.features.gui.apps.threed.enable;
+  threedEnabled = config.features.gui.apps.threed.enable;
   cfg = config.features.gui.apps.threed.freecad;
 in {
   options.features.gui.apps.threed.freecad = lib.mkOption {

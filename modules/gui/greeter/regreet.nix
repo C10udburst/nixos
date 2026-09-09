@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.features.gui.greeter;
-  greeterEnabled = config.features.gui.enable && cfg.enable;
+  greeterEnabled = cfg.enable;
   hasAutologin = (cfg.autologin or null) != null && (cfg.autologin or false) != false;
 
   westonIni = pkgs.writeText "weston.ini" ''

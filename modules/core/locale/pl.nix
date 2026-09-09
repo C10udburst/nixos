@@ -7,7 +7,7 @@
 in {
   options.features.core.locale.pl = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.core.enable && config.features.core.locale.enable) && true;
+    default = config.features.core.locale.enable && true;
   };
 
   config = lib.mkIf cfg {

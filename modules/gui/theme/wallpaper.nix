@@ -8,7 +8,7 @@ in {
   options.features.gui.theme.wallpaper = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = (config.features.gui.enable && config.features.gui.theme.enable) && true;
+      default = config.features.gui.theme.enable && true;
     };
   };
 

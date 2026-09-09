@@ -5,8 +5,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.viewers.mayo;
-  viewersEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.viewers.enable;
+  viewersEnabled = config.features.gui.apps.viewers.enable;
   inherit ((import ../../../../lib/helpers/associations.nix {inherit lib;})) associatePackage;
 
   mayoCustom = pkgs.symlinkJoin {

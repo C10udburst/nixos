@@ -8,7 +8,7 @@
 in {
   options.features.core.hardware.touchscreen = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.core.enable && config.features.core.hardware.enable) && false;
+    default = config.features.core.hardware.enable && false;
   };
 
   config = lib.mkIf cfg.touchscreen {

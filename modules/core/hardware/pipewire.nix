@@ -7,7 +7,7 @@
 in {
   options.features.core.hardware.pipewire = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
+    default = config.features.core.hardware.enable && true;
   };
 
   config = lib.mkIf cfg.pipewire {

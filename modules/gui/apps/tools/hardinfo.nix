@@ -5,10 +5,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.tools.hardinfo;
-  toolsEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.tools.enable;
+  toolsEnabled = config.features.gui.apps.tools.enable;
 in {
   options.features.gui.apps.tools.hardinfo = lib.mkOption {
     type = lib.types.bool;

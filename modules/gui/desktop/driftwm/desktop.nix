@@ -10,7 +10,7 @@
 in {
   options.features.gui.desktop.driftwm.desktop = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.gui.enable && config.features.gui.desktop.enable && cfg.enable) && (!isSlow);
+    default = cfg.enable && (!isSlow);
   };
 
   config = lib.mkIf cfg.desktop {

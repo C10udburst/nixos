@@ -5,12 +5,11 @@
   ...
 }: let
   cfg = config.features.gui.apps.tools.obs;
-  toolsEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.tools.enable;
+  toolsEnabled = config.features.gui.apps.tools.enable;
 in {
   options.features.gui.apps.tools.obs = lib.mkOption {
     type = lib.types.bool;
-    default = toolsEnabled && false;
+    default = toolsEnabled && true;
   };
 
   config = lib.mkIf cfg {

@@ -9,13 +9,7 @@
 in {
   options.features.gui.apps.tools.organizeer = lib.mkOption {
     type = lib.types.bool;
-    default =
-      (
-        config.features.gui.enable
-        && config.features.gui.apps.enable
-        && config.features.gui.apps.tools.enable
-      )
-      && true;
+    default = config.features.gui.apps.tools.enable && true;
   };
 
   config = lib.mkMerge [

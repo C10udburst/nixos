@@ -5,8 +5,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.viewers.nomacs;
-  viewersEnabled =
-    config.features.gui.enable && config.features.gui.apps.enable && config.features.gui.apps.viewers.enable;
+  viewersEnabled = config.features.gui.apps.viewers.enable;
   inherit ((import ../../../../lib/helpers/associations.nix {inherit lib;})) associatePackage;
   nomacsMimes = lib.filterAttrs (name: _: lib.hasPrefix "image/" name) (associatePackage pkgs.nomacs);
 in {

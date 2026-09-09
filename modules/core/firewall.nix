@@ -20,7 +20,7 @@ in {
         };
       }
     );
-    default = false;
+    default = config.features.core.enable && false;
   };
 
   config = {

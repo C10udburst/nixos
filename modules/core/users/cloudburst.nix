@@ -10,7 +10,7 @@ in {
   options.features.core.users.cloudburst = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = (config.features.core.enable && config.features.core.users.enable) && true;
+      default = config.features.core.users.enable && true;
     };
     admin = lib.mkOption {
       type = lib.types.bool;
@@ -65,10 +65,6 @@ in {
       gtk = lib.mkIf isGui {
         enable = true;
         gtk2.force = true;
-        iconTheme = {
-          name = "Adwaita";
-          package = pkgs.adwaita-icon-theme;
-        };
         gtk3.extraConfig = {
           gtk-application-prefer-dark-theme = true;
         };

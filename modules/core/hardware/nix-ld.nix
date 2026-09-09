@@ -51,7 +51,7 @@
 in {
   options.features.core.hardware.nix-ld = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.core.enable && config.features.core.hardware.enable) && true;
+    default = config.features.core.hardware.enable && true;
   };
 
   config = lib.mkIf cfg.nix-ld {

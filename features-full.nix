@@ -84,13 +84,13 @@
           };
           media = {
             audio = true;
-            enable = false;
+            enable = true;
             images = true;
             videos = true;
           };
           office = {
             enable = true;
-            libreoffice = false;
+            libreoffice = true;
             pdf = true;
           };
           vscode = true;
@@ -98,7 +98,7 @@
         enable = true;
         threed = {
           blender = true;
-          enable = false;
+          enable = true;
           freecad = true;
           openscad = {
             enable = true;
@@ -112,18 +112,18 @@
           konsole = true;
           llm = {
             antigravity = true;
-            enable = false;
+            enable = true;
             ollama = false;
             pi = true;
           };
           net = {
-            enable = false;
+            enable = true;
           };
-          obs = false;
+          obs = true;
           organizeer = true;
           qalculate = true;
           social = {
-            enable = false;
+            enable = true;
             signal = true;
             telegram = true;
             vesktop = true;
@@ -167,7 +167,7 @@
         android = {
           core = true;
           dev = false;
-          enable = false;
+          enable = true;
           jadx = true;
           scrcpy = true;
         };
@@ -182,11 +182,11 @@
         enable = false;
         programming = {
           enable = true;
-          go = false;
-          kotlin = false;
+          go = true;
+          kotlin = true;
           misc = true;
-          node = false;
-          rust = false;
+          node = true;
+          rust = true;
         };
         python = {
           ai = false;

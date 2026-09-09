@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  threedEnabled = config.features.gui.enable && config.features.gui.apps.threed.enable;
+  threedEnabled = config.features.gui.apps.threed.enable;
   cfg = config.features.gui.apps.threed.blender;
   blenderVersion = lib.versions.majorMinor pkgs.blender.version;
 in {

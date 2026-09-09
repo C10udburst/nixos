@@ -6,11 +6,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.tools.llm.antigravity;
-  llmEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.tools.enable
-    && config.features.gui.apps.tools.llm.enable;
+  llmEnabled = config.features.gui.apps.tools.llm.enable;
 in {
   options.features.gui.apps.tools.llm.antigravity = lib.mkOption {
     type = lib.types.bool;

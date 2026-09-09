@@ -13,20 +13,18 @@ _: {
       };
     };
 
-    services = {
-      waypipe = true;
-    };
-
     shell = {
       git.enable = false;
       ranger.enable = false;
       utils = {
         enable = false;
         core = true;
+        diagnostics = true;
       };
       scripts = {
         dev = false;
         documents = false;
+        media = false;
       };
     };
 
@@ -35,6 +33,7 @@ _: {
       desktop.plasma.enable = false;
       apps = {
         editors.enable = false;
+        threed.enable = false;
         tools = {
           enable = false;
           konsole = true;
@@ -43,7 +42,6 @@ _: {
         };
         viewers.mayo = false;
       };
-      dev.enable = false;
     };
 
     compat.enable = false;

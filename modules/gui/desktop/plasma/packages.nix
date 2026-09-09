@@ -8,7 +8,7 @@
 in {
   options.features.gui.desktop.plasma.packages = lib.mkOption {
     type = lib.types.bool;
-    default = (config.features.gui.enable && config.features.gui.desktop.enable && cfg.enable) && true;
+    default = cfg.enable && true;
   };
 
   config = lib.mkIf cfg.packages {

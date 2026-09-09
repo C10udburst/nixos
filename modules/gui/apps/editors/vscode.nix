@@ -6,10 +6,7 @@
   ...
 }: let
   cfg = config.features.gui.apps.editors.vscode;
-  editorsEnabled =
-    config.features.gui.enable
-    && config.features.gui.apps.enable
-    && config.features.gui.apps.editors.enable;
+  editorsEnabled = config.features.gui.apps.editors.enable;
 
   isDev = config.features.gui.dev.enable or false;
   isProgramming = isDev && (config.features.gui.dev.programming.enable or false);
@@ -29,7 +26,6 @@
   coreExtensions = with exts; [
     # Add Gitignore command
     codezombiech.gitignore
-
     # Remote Repositories
     ms-vscode.remote-repositories
     # Remote - SSH
@@ -50,7 +46,6 @@
     # Bracket / UI niceties
     usernamehw.errorlens
     pkief.material-icon-theme
-    kamikillerto.vscode-colorize
     # Nix
     jnoortheen.nix-ide
   ];
@@ -298,10 +293,6 @@ in {
                 # ── Window ────────────────────────────────────────────────────────────
                 "window.titleBarStyle" = "custom";
                 "window.zoomLevel" = 0;
-
-                # ── Colorize ──────────────────────────────────────────────────────────
-                "colorize.include" = ["**/*"];
-                "colorize.decoration_type" = "background";
               };
             };
           };
@@ -316,10 +307,8 @@ in {
               "text/x-c++" = ["code.desktop"];
               "text/x-go" = ["code.desktop"];
               "text/x-java" = ["code.desktop"];
-              "text/plain" = ["code.desktop"];
               "text/x-shellscript" = ["code.desktop"];
               "application/json" = ["code.desktop"];
-              "text/markdown" = ["code.desktop"];
               "text/x-nix" = ["code.desktop"];
               "text/x-yaml" = ["code.desktop"];
               "text/x-toml" = ["code.desktop"];

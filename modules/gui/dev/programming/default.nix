@@ -9,7 +9,7 @@ in {
   options.features.gui.dev.programming = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = (config.features.gui.enable && config.features.gui.dev.enable) && true;
+      default = config.features.gui.dev.enable && true;
     };
   };
 

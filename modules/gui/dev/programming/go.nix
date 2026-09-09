@@ -4,15 +4,12 @@
   pkgs,
   ...
 }: let
-  devEnabled =
-    config.features.gui.enable
-    && config.features.gui.dev.enable
-    && config.features.gui.dev.programming.enable;
+  devEnabled = config.features.gui.dev.programming.enable;
   cfg = config.features.gui.dev.programming.go;
 in {
   options.features.gui.dev.programming.go = lib.mkOption {
     type = lib.types.bool;
-    default = devEnabled && false;
+    default = devEnabled && true;
   };
 
   config = lib.mkIf cfg {

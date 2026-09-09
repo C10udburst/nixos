@@ -2,11 +2,13 @@
 import sys
 import os
 import re
+import shutil
+import subprocess
+import json
 
 
 def normalize_path(raw_input):
     s = raw_input.strip()
-    # If path was given as file path, normalize to feature path
     if s.startswith("modules/"):
         s = s[len("modules/") :]
         if s.endswith("/default.nix"):
@@ -15,7 +17,6 @@ def normalize_path(raw_input):
             s = s[: -len(".nix")]
         return s.replace("/", ".")
 
-    # Strip known prefixes
     for prefix in ["config.features.", "features."]:
         if s.startswith(prefix):
             s = s[len(prefix) :]
@@ -23,73 +24,109 @@ def normalize_path(raw_input):
     return s
 
 
-def find_in_files_md(feature_path, repo_root):
-    files_md = os.path.join(repo_root, "FILES.md")
-    if not os.path.exists(files_md):
-        return None
-
-    parts = feature_path.split(".")
-    rel_as_dir = "modules/" + "/".join(parts) + "/default.nix"
-    rel_as_file = "modules/" + "/".join(parts) + ".nix"
-
-    with open(files_md, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    # Check for direct file references in tree visualization or text
-    if rel_as_dir in content:
-        return rel_as_dir
-    if rel_as_file in content:
-        return rel_as_file
-
-    return None
-
-
-def resolve_target_file(feature_path, repo_root, force_dir=False):
-    matched = find_in_files_md(feature_path, repo_root)
-    if matched and not force_dir:
-        return matched
-
-    parts = feature_path.split(".")
-    dir_candidate = os.path.join("modules", *parts)
-    if force_dir or os.path.isdir(os.path.join(repo_root, dir_candidate)):
-        return os.path.join("modules", *parts, "default.nix")
-
-    # Check if parent directory exists and last component can be a .nix file
-    if len(parts) > 1:
-        parent_dir = os.path.join("modules", *parts[:-1])
-        if os.path.isdir(os.path.join(repo_root, parent_dir)):
-            return os.path.join("modules", *parts[:-1], f"{parts[-1]}.nix")
-
-    # Fallback to dir/default.nix if it feels like a group, or file.nix
-    return (
-        os.path.join("modules", *parts[:-1], f"{parts[-1]}.nix")
-        if len(parts) > 1
-        else os.path.join("modules", parts[0], "default.nix")
-    )
-
-
 def find_canonical_default(feature_path, repo_root):
     features_full = os.path.join(repo_root, "features-full.nix")
     if not os.path.exists(features_full):
         return None
 
-    with open(features_full, "r", encoding="utf-8") as f:
-        content = f.read()
-
     parts = feature_path.split(".")
-    last = parts[-1]
-    m = re.search(r"\b" + re.escape(last) + r"\s*=\s*(true|false)\b", content)
-    if m:
-        return m.group(1) == "true"
-    section_m = re.search(
-        r"\b" + re.escape(last) + r"\s*=\s*\{([^}]*)\}", content, re.DOTALL
+    nix_path = " ".join(f'"{p}"' for p in parts)
+    expr = f"""
+    let
+      full = import {os.path.abspath(features_full)};
+      getIn = attrs: path:
+        builtins.foldl' (acc: elem: if acc != null && builtins.isAttrs acc && acc ? ${{elem}} then acc.${{elem}} else null) attrs path;
+      val = getIn full.features [ {nix_path} ];
+    in
+      if val == null then null
+      else if builtins.isBool val then val
+      else if builtins.isAttrs val && val ? enable then val.enable
+      else null
+    """
+    res = subprocess.run(
+        ["nix", "eval", "--impure", "--json", "--expr", expr],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
     )
-    if section_m:
-        inner = section_m.group(1)
-        en_m = re.search(r"\benable\s*=\s*(true|false)\b", inner)
-        if en_m:
-            return en_m.group(1) == "true"
+    if res.returncode == 0:
+        try:
+            return json.loads(res.stdout)
+        except Exception:
+            return None
     return None
+
+
+def move_file(src, dst, repo_root):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    res = subprocess.run(
+        ["git", "mv", src, dst],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if res.returncode != 0:
+        shutil.move(src, dst)
+    print(f"Moved {os.path.relpath(src, repo_root)} -> {os.path.relpath(dst, repo_root)}", file=sys.stderr)
+
+
+def ensure_ancestor_directories(feature_path, repo_root, force_dir=False):
+    parts = feature_path.split(".")
+    # Check all intermediate ancestor paths
+    check_limit = len(parts) if force_dir else len(parts) - 1
+    for i in range(1, check_limit + 1):
+        prefix_parts = parts[:i]
+        prefix_feature_path = "features." + ".".join(prefix_parts)
+        if len(prefix_parts) > 1:
+            prefix_file = os.path.join(repo_root, "modules", *prefix_parts[:-1], f"{prefix_parts[-1]}.nix")
+        else:
+            prefix_file = os.path.join(repo_root, "modules", f"{prefix_parts[0]}.nix")
+
+        prefix_dir = os.path.join(repo_root, "modules", *prefix_parts)
+        target_default = os.path.join(prefix_dir, "default.nix")
+
+        if os.path.isfile(prefix_file):
+            move_file(prefix_file, target_default, repo_root)
+
+            # If the file had a bare option definition, update it to use .enable
+            with open(target_default, "r", encoding="utf-8") as f:
+                orig_content = f.read()
+
+            bare_pattern = rf"options\.{re.escape(prefix_feature_path)}\s*=\s*lib\.mkOption\s*\{{"
+            if re.search(bare_pattern, orig_content):
+                new_content = re.sub(
+                    bare_pattern,
+                    f"options.{prefix_feature_path}.enable = lib.mkOption {{",
+                    orig_content,
+                )
+                new_content = re.sub(
+                    r"lib\.mkIf\s+cfg\s*\{",
+                    "lib.mkIf cfg.enable {",
+                    new_content,
+                )
+                with open(target_default, "w", encoding="utf-8") as f:
+                    f.write(new_content)
+                print(f"Updated {os.path.relpath(target_default, repo_root)} to use .enable", file=sys.stderr)
+
+
+def resolve_target_file(feature_path, repo_root, force_dir=False):
+    parts = feature_path.split(".")
+    if len(parts) == 1:
+        return os.path.join("modules", parts[0], "default.nix")
+
+    dir_path = os.path.join(repo_root, "modules", *parts)
+    if force_dir or os.path.isdir(dir_path):
+        return os.path.join("modules", *parts, "default.nix")
+
+    file_path = os.path.join("modules", *parts[:-1], f"{parts[-1]}.nix")
+    default_path = os.path.join("modules", *parts, "default.nix")
+
+    if os.path.isfile(os.path.join(repo_root, default_path)):
+        return default_path
+    if os.path.isfile(os.path.join(repo_root, file_path)):
+        return file_path
+
+    return file_path
 
 
 def generate_boilerplate(feature_path, repo_root):
@@ -98,26 +135,21 @@ def generate_boilerplate(feature_path, repo_root):
     canonical = find_canonical_default(feature_path, repo_root)
 
     if len(parts) > 1:
-        parent_parts = parts[:-1]
-        parent_path = "features." + ".".join(parent_parts)
-        if canonical is True:
-            default_expr = f"if config.{parent_path}.enable then true else false"
-        elif canonical is False:
-            default_expr = "false"
-        else:
-            default_expr = f"if config.{parent_path}.enable then true else false"
+        parent_path = "features." + ".".join(parts[:-1])
+        canonical_val = "false" if canonical is False else "true"
+        default_expr = f"config.{parent_path}.enable && {canonical_val}"
     else:
-        # Top-level node
-        if canonical is not None:
-            default_expr = "true" if canonical else "false"
-        else:
-            default_expr = "true"
+        default_expr = "false" if canonical is False else "true"
 
-    code = f"""{{ config, lib, pkgs, inputs, ... }}:
-let
+    code = f"""{{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}}: let
   cfg = config.{full_path};
-in
-{{
+in {{
   options.{full_path} = {{
     enable = lib.mkOption {{
       type = lib.types.bool;
@@ -125,8 +157,13 @@ in
     }};
   }};
 
-  config = lib.mkIf cfg.enable {{
-  }};
+  config = lib.mkMerge [
+    {{
+      flake-file.inputs = {{}};
+    }}
+    (lib.mkIf cfg.enable {{
+    }})
+  ];
 }}
 """
     return code
@@ -151,6 +188,9 @@ def main():
     raw_path = args[0]
     repo_root = os.path.dirname(os.path.abspath(__file__))
     feature_path = normalize_path(raw_path)
+
+    ensure_ancestor_directories(feature_path, repo_root, force_dir=force_dir)
+
     target_rel = resolve_target_file(feature_path, repo_root, force_dir=force_dir)
     target_abs = os.path.join(repo_root, target_rel)
 
