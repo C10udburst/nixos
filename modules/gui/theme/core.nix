@@ -23,6 +23,11 @@ in {
           url = "github:nix-community/stylix/release-26.05";
           inputs.nixpkgs.follows = "nixpkgs";
         };
+        plasma-manager = {
+          url = "github:nix-community/plasma-manager";
+          inputs.nixpkgs.follows = "nixpkgs";
+          inputs.home-manager.follows = "home-manager";
+        };
       };
     }
     (lib.mkIf cfg.enable {
@@ -61,6 +66,9 @@ in {
           if cfg.polarity == "dark"
           then "breeze-dark"
           else "breeze";
+        toRgb = key: "${config.lib.stylix.colors."${key}-rgb-r"},${config.lib.stylix.colors."${key}-rgb-g"},${
+          config.lib.stylix.colors."${key}-rgb-b"
+        }";
       in {
         stylix.targets.qt.enable = false;
 
@@ -92,9 +100,138 @@ in {
           };
         };
 
-        xdg.configFile."color-schemes/Stylix.colors".source = kdeglobals;
-        xdg.configFile."qt5ct/colors/Stylix.conf".source = qtctColors;
-        xdg.configFile."qt6ct/colors/Stylix.conf".source = qtctColors;
+        xdg.configFile = lib.mkMerge [
+          {
+            "color-schemes/Stylix.colors".source = kdeglobals;
+            "qt5ct/colors/Stylix.conf".source = qtctColors;
+            "qt6ct/colors/Stylix.conf".source = qtctColors;
+          }
+          (lib.mkIf (!config.programs.plasma.enable) {
+            "kdeglobals".source = kdeglobals;
+          })
+        ];
+
+        programs.plasma.configFile."kdeglobals" = {
+          General = {
+            ColorScheme = "Stylix";
+            Name = "Stylix";
+          };
+          KDE = {
+            widgetStyle = "Breeze";
+            LookAndFeelPackage = "stylix";
+          };
+          UiSettings = {
+            ColorScheme = "Stylix";
+          };
+          "ColorEffects:Disabled" = {
+            ColorAmount = 0;
+            ColorEffect = 0;
+            ContrastAmount = "0.5";
+            ContrastEffect = 1;
+            IntensityAmount = 0;
+            IntensityEffect = 0;
+          };
+          "ColorEffects:Inactive" = {
+            ColorAmount = 0;
+            ColorEffect = 0;
+            ContrastAmount = "0.5";
+            ContrastEffect = 1;
+            IntensityAmount = 0;
+            IntensityEffect = 0;
+          };
+          "Colors:Button" = {
+            BackgroundAlternate = toRgb "base01";
+            BackgroundNormal = toRgb "base00";
+            DecorationFocus = toRgb "base0D";
+            DecorationHover = toRgb "base0D";
+            ForegroundActive = toRgb "base05";
+            ForegroundInactive = toRgb "base05";
+            ForegroundLink = toRgb "base05";
+            ForegroundNegative = toRgb "base08";
+            ForegroundNeutral = toRgb "base0D";
+            ForegroundNormal = toRgb "base05";
+            ForegroundPositive = toRgb "base0B";
+            ForegroundVisited = toRgb "base05";
+          };
+          "Colors:Complementary" = {
+            BackgroundAlternate = toRgb "base01";
+            BackgroundNormal = toRgb "base00";
+            DecorationFocus = toRgb "base0D";
+            DecorationHover = toRgb "base0D";
+            ForegroundActive = toRgb "base05";
+            ForegroundInactive = toRgb "base05";
+            ForegroundLink = toRgb "base05";
+            ForegroundNegative = toRgb "base08";
+            ForegroundNeutral = toRgb "base0D";
+            ForegroundNormal = toRgb "base05";
+            ForegroundPositive = toRgb "base0B";
+            ForegroundVisited = toRgb "base05";
+          };
+          "Colors:Selection" = {
+            BackgroundAlternate = toRgb "base0D";
+            BackgroundNormal = toRgb "base0D";
+            DecorationFocus = toRgb "base0D";
+            DecorationHover = toRgb "base0D";
+            ForegroundActive = toRgb "base00";
+            ForegroundInactive = toRgb "base00";
+            ForegroundLink = toRgb "base00";
+            ForegroundNegative = toRgb "base08";
+            ForegroundNeutral = toRgb "base0D";
+            ForegroundNormal = toRgb "base00";
+            ForegroundPositive = toRgb "base0B";
+            ForegroundVisited = toRgb "base00";
+          };
+          "Colors:Tooltip" = {
+            BackgroundAlternate = toRgb "base01";
+            BackgroundNormal = toRgb "base00";
+            DecorationFocus = toRgb "base0D";
+            DecorationHover = toRgb "base0D";
+            ForegroundActive = toRgb "base05";
+            ForegroundInactive = toRgb "base05";
+            ForegroundLink = toRgb "base05";
+            ForegroundNegative = toRgb "base08";
+            ForegroundNeutral = toRgb "base0D";
+            ForegroundNormal = toRgb "base05";
+            ForegroundPositive = toRgb "base0B";
+            ForegroundVisited = toRgb "base05";
+          };
+          "Colors:View" = {
+            BackgroundAlternate = toRgb "base01";
+            BackgroundNormal = toRgb "base00";
+            DecorationFocus = toRgb "base0D";
+            DecorationHover = toRgb "base0D";
+            ForegroundActive = toRgb "base05";
+            ForegroundInactive = toRgb "base05";
+            ForegroundLink = toRgb "base05";
+            ForegroundNegative = toRgb "base08";
+            ForegroundNeutral = toRgb "base0D";
+            ForegroundNormal = toRgb "base05";
+            ForegroundPositive = toRgb "base0B";
+            ForegroundVisited = toRgb "base05";
+          };
+          "Colors:Window" = {
+            BackgroundAlternate = toRgb "base01";
+            BackgroundNormal = toRgb "base00";
+            DecorationFocus = toRgb "base0D";
+            DecorationHover = toRgb "base0D";
+            ForegroundActive = toRgb "base05";
+            ForegroundInactive = toRgb "base05";
+            ForegroundLink = toRgb "base05";
+            ForegroundNegative = toRgb "base08";
+            ForegroundNeutral = toRgb "base0D";
+            ForegroundNormal = toRgb "base05";
+            ForegroundPositive = toRgb "base0B";
+            ForegroundVisited = toRgb "base05";
+          };
+          WM = {
+            activeBackground = toRgb "base00";
+            activeBlend = toRgb "base0A";
+            activeForeground = toRgb "base05";
+            inactiveBackground = toRgb "base00";
+            inactiveBlend = toRgb "base03";
+            inactiveForeground = toRgb "base05";
+          };
+        };
 
         home.sessionVariables = {
           KDE_COLOR_SCHEME_PATH = "${config.xdg.configHome}/color-schemes/Stylix.colors";
