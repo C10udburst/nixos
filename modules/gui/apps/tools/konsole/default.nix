@@ -83,6 +83,9 @@ in {
             then "Nushell.profile"
             else "Default.profile";
         };
+        UiSettings = {
+          ColorScheme = "Stylix";
+        };
       };
     };
   };

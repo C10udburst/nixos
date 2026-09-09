@@ -35,6 +35,8 @@ in {
         kdePackages.qtstyleplugin-kvantum
       ];
 
+      qt.style = lib.mkForce null;
+
       stylix = {
         enable = true;
         inherit (cfg) polarity;
