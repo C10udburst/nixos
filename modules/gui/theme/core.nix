@@ -28,10 +28,12 @@ in {
     (lib.mkIf cfg.enable {
       programs.dconf.enable = true;
 
-      qt = {
-        enable = true;
-        style = "breeze";
-      };
+      environment.systemPackages = with pkgs; [
+        kdePackages.breeze-icons
+        hicolor-icon-theme
+        libsForQt5.qtstyleplugin-kvantum
+        kdePackages.qtstyleplugin-kvantum
+      ];
 
       stylix = {
         enable = true;

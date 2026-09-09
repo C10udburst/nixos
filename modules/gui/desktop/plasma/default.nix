@@ -88,6 +88,10 @@ in {
         '';
         programs.plasma = {
           enable = true;
+          workspace = {
+            iconTheme = "breeze-dark";
+            colorScheme = "BreezeDark";
+          };
           krunner = {
             shortcuts.launch = "Meta+Space";
           };

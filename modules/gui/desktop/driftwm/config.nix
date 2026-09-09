@@ -239,6 +239,17 @@ in {
       xdg.configFile."driftwm/config.toml".source =
         tomlFormat.generate "driftwm-config.toml" driftwmConfig;
       xdg.configFile."driftwm/background.glsl".source = ./_wallpaper.glsl;
+      xdg.configFile."xdg-desktop-portal/driftwm-portals.conf".text = ''
+        [preferred]
+        default=kde
+        org.freedesktop.impl.portal.ScreenCast=wlr
+        org.freedesktop.impl.portal.Screenshot=wlr
+      '';
+
+      home.sessionVariables = {
+        QT_QPA_PLATFORM = "wayland;xcb";
+        QS_ICON_THEME = "breeze-dark";
+      };
     };
   };
 }
