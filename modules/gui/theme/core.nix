@@ -30,14 +30,13 @@ in {
 
       qt = {
         enable = true;
-        # style = lib.mkForce "breeze";
+        style = lib.mkForce null;
       };
 
       stylix = {
         enable = true;
         inherit (cfg) polarity;
         targets.gtksourceview.enable = false;
-        targets.qt.enable = true;
         icons = {
           enable = true;
           package = pkgs.kdePackages.breeze-icons;

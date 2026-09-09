@@ -77,16 +77,16 @@ in {
         "mod+down" = "center-nearest down";
         "mod+left" = "center-nearest left";
         "mod+right" = "center-nearest right";
-        "mod+shift+w" = "center-nearest up";
-        "mod+shift+s" = "center-nearest down";
-        "mod+shift+a" = "center-nearest left";
-        "mod+shift+d" = "center-nearest right";
+        "mod+w" = "center-nearest up";
+        "mod+s" = "center-nearest down";
+        "mod+a" = "center-nearest left";
+        "mod+d" = "center-nearest right";
         "mod+q" = "close-window";
         "mod+e" = "exec dolphin";
-        "mod+w" = "pan-viewport up";
-        "mod+s" = "pan-viewport down";
-        "mod+a" = "pan-viewport left";
-        "mod+d" = "pan-viewport right";
+        "mod+shift+w" = "pan-viewport up";
+        "mod+shift+s" = "pan-viewport down";
+        "mod+shift+a" = "pan-viewport left";
+        "mod+shift+d" = "pan-viewport right";
       };
 
       windowRules =
@@ -236,7 +236,8 @@ in {
         }
         cfg.extraConfig;
     in {
-      xdg.configFile."driftwm/config.toml".source = tomlFormat.generate "driftwm-config.toml" driftwmConfig;
+      xdg.configFile."driftwm/config.toml".source =
+        tomlFormat.generate "driftwm-config.toml" driftwmConfig;
       xdg.configFile."driftwm/background.glsl".source = ./_wallpaper.glsl;
     };
   };
