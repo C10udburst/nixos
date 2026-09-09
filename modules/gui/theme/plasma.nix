@@ -10,7 +10,7 @@ in {
   options.features.gui.theme.plasma = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = config.features.gui.theme.enable && true;
+      default = config.features.gui.theme.enable && false;
     };
   };
 
@@ -54,7 +54,7 @@ in {
 
         qt = {
           enable = true;
-          style.name = lib.mkForce "breeze";
+          # style.name = lib.mkForce "breeze";
           style.package = with pkgs; [
             kdePackages.breeze
             kdePackages.breeze.qt5
