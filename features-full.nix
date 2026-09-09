@@ -2,7 +2,7 @@
   features = {
     compat = {
       appimage = false;
-      distrobox = false;
+      distrobox = true;
       enable = true;
       kvm = {
         enable = false;
@@ -160,6 +160,9 @@
         enable = true;
         plasma = {
           enable = true;
+          keyring = {
+            enable = true;
+          };
           packages = true;
         };
       };
@@ -168,7 +171,7 @@
           core = true;
           dev = false;
           enable = true;
-          jadx = true;
+          jadx = false;
           scrcpy = true;
         };
         arduino = {
@@ -176,8 +179,8 @@
         };
         documents = {
           enable = true;
-          latex = false;
-          typst = false;
+          latex = true;
+          typst = true;
         };
         enable = false;
         programming = {
@@ -250,7 +253,7 @@
         exitNode = false;
       };
       usbip = false;
-      waypipe = false;
+      waypipe = true;
       weylus = false;
     };
     shell = {
