@@ -19,7 +19,7 @@ in {
       device = "nodev";
       forcei686 = true;
       extraGrubInstallArgs = ["--target=i386-efi"];
-      configurationLimit = 1;
+      configurationLimit = 2;
     };
   };
 }
