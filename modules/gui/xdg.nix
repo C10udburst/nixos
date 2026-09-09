@@ -16,6 +16,14 @@ in {
   config = lib.mkIf cfg.enable {
     xdg.portal = {
       enable = true;
+      wlr = {
+        enable = true;
+        settings = {
+          screencast = {
+            chooser_type = "none";
+          };
+        };
+      };
       extraPortals = lib.mkForce (
         (with pkgs; [
           xdg-desktop-portal-wlr
@@ -34,7 +42,7 @@ in {
           "org.freedesktop.impl.portal.Secret" = ["gnome-keyring"];
         };
         driftwm = {
-          default = lib.mkForce ["kde"];
+          default = ["kde"];
           "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
           "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
           "org.freedesktop.impl.portal.Secret" = ["gnome-keyring"];

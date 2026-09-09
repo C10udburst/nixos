@@ -8,6 +8,12 @@
   plotScript = pkgs.writeText "plot.py" (builtins.readFile ./_plot.py);
   pdScript = pkgs.writeText "pd.py" (builtins.readFile ./_pd.py);
   gridviewScript = pkgs.writeText "gridview.py" (builtins.readFile ./_gridview.py);
+  nushellPython = pkgs.python3.withPackages (ps:
+    with ps; [
+      tkinter
+      matplotlib
+      pandas
+    ]);
 in {
   options.features.shell.nushell = {
     enable = lib.mkOption {
@@ -61,7 +67,7 @@ in {
             def gridview [] {
               let input = $in
               if ($input | is-empty) { return }
-              $input | to json | python3 ${gridviewScript}
+              $input | to json | ${nushellPython}/bin/python3 ${gridviewScript}
             }
           ''
           + lib.optionalString cfg.scripts ''
@@ -88,7 +94,7 @@ in {
                 } else {
                   $data | get $col_x
                 }
-                python3 ${plotScript} (0..(($x_vals | length) - 1) | to json -r) ($x_vals | to json -r) "Index" $x_label
+                ${nushellPython}/bin/python3 ${plotScript} (0..(($x_vals | length) - 1) | to json -r) ($x_vals | to json -r) "Index" $x_label
               } else {
                 let y_label = if ($col_y | describe) == "closure" { "y" } else { $col_y }
                 let y_vals = if ($col_y | describe) == "closure" {
@@ -96,14 +102,14 @@ in {
                 } else {
                   $data | get $col_y
                 }
-                python3 ${plotScript} ($x_vals | to json -r) ($y_vals | to json -r) $x_label $y_label
+                ${nushellPython}/bin/python3 ${plotScript} ($x_vals | to json -r) ($y_vals | to json -r) $x_label $y_label
               }
             }
 
             def pd [] {
               let input = $in
               if ($input | is-empty) { return }
-              $input | to json | python3 ${pdScript}
+              $input | to json | ${nushellPython}/bin/python3 ${pdScript}
             }
           '';
       };

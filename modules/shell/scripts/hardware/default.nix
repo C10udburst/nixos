@@ -33,12 +33,9 @@
   weylus-screen = pkgs.writeShellApplication {
     name = "weylus-screen";
     runtimeInputs = [
-      pkgs.wlr-randr
-      pkgs.gnugrep
       pkgs.gnused
       pkgs.gawk
       pkgs.coreutils
-      pkgs.systemd
     ];
     text = builtins.readFile ./_weylus-screen.sh;
   };

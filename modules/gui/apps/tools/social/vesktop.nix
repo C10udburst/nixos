@@ -19,9 +19,11 @@ in {
         settings = {
           appBadge = false;
           arRPC = true;
+          minimizeToTray = false;
           disableMinSize = true;
+          checkUpdates = false;
           enableSplashScreen = false;
-          tray = true;
+          tray = false;
           hardwareAcceleration = true;
           discordBranch = "stable";
         };

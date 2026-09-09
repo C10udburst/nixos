@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# weylus-screen: Setup PipeWire screen selection for Weylus without interactive rofi/dmenu,
-# inject auto-fullscreen on client touch/click, and setup ADB reverse forwarding.
+# weylus-screen: Setup Weylus with auto-fullscreen on client touch/click and ADB reverse forwarding.
 set -euo pipefail
 
 WIDTH="${1:-1920}"
@@ -10,54 +9,7 @@ PORT="${3:-1701}"
 echo "=== Weylus Screen Setup ==="
 echo "Target resolution: ${WIDTH}x${HEIGHT}"
 
-# 1. Determine which display to capture
-SELECTED_OUTPUT=""
-if command -v wlr-randr >/dev/null 2>&1; then
-    OUTPUTS=$(wlr-randr --json 2>/dev/null | grep -o '"name": "[^"]*"' | tr -d '"' | awk '{print $2}' || true)
-    if [ -n "$OUTPUTS" ]; then
-        SELECTED_OUTPUT=$(echo "$OUTPUTS" | grep -v 'eDP-1' | head -n1 || true)
-        if [ -z "$SELECTED_OUTPUT" ]; then
-            SELECTED_OUTPUT=$(echo "$OUTPUTS" | head -n1)
-        fi
-    fi
-fi
-
-if [ -z "$SELECTED_OUTPUT" ]; then
-    SELECTED_OUTPUT="eDP-1"
-fi
-echo "Target display output: $SELECTED_OUTPUT"
-
-# 2. Configure xdg-desktop-portal-wlr to select this output directly without prompting rofi/dmenu
-XDPW_CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/xdg-desktop-portal-wlr"
-XDPW_DRIFTWM="$XDPW_CONF_DIR/driftwm"
-XDPW_CONFIG="$XDPW_CONF_DIR/config"
-DRIFTWM_BACKUP=""
-CONFIG_BACKUP=""
-
-mkdir -p "$XDPW_CONF_DIR"
-
-if [ -f "$XDPW_DRIFTWM" ]; then
-    DRIFTWM_BACKUP=$(mktemp)
-    cp "$XDPW_DRIFTWM" "$DRIFTWM_BACKUP"
-fi
-if [ -f "$XDPW_CONFIG" ]; then
-    CONFIG_BACKUP=$(mktemp)
-    cp "$XDPW_CONFIG" "$CONFIG_BACKUP"
-fi
-
-cat <<INI > "$XDPW_DRIFTWM"
-[screencast]
-output_name=$SELECTED_OUTPUT
-chooser_type=none
-INI
-cp "$XDPW_DRIFTWM" "$XDPW_CONFIG"
-
-# Restart portal so it reloads the config without chooser
-if systemctl --user is-active --quiet xdg-desktop-portal-wlr; then
-    systemctl --user restart xdg-desktop-portal-wlr || true
-fi
-
-# 3. Create custom index.html that automatically triggers fullscreen on first user touch/click
+# 1. Create custom index.html that automatically triggers fullscreen on first user touch/click
 CUSTOM_DIR=$(mktemp -d /tmp/weylus-custom-XXXXXX)
 CUSTOM_INDEX="$CUSTOM_DIR/index.html"
 
@@ -95,22 +47,6 @@ FORWARDED_DEVICES=()
 cleanup() {
     echo ""
     echo "Cleaning up..."
-    # Restore portal configuration
-    if [ -n "$DRIFTWM_BACKUP" ] && [ -f "$DRIFTWM_BACKUP" ]; then
-        mv "$DRIFTWM_BACKUP" "$XDPW_DRIFTWM"
-    else
-        rm -f "$XDPW_DRIFTWM"
-    fi
-    if [ -n "$CONFIG_BACKUP" ] && [ -f "$CONFIG_BACKUP" ]; then
-        mv "$CONFIG_BACKUP" "$XDPW_CONFIG"
-    else
-        rm -f "$XDPW_CONFIG"
-    fi
-
-    # Restart portal to restore standard configuration
-    if systemctl --user is-active --quiet xdg-desktop-portal-wlr; then
-        systemctl --user restart xdg-desktop-portal-wlr || true
-    fi
 
     # Clean temporary custom web directory
     rm -rf "$CUSTOM_DIR"
@@ -127,7 +63,7 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-# 4. Check for ADB and connected devices
+# 2. Check for ADB and connected devices
 launch_adb() {
     local port="$1"
     sleep 1

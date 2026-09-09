@@ -24,7 +24,7 @@ in {
       ];
 
     fileSystems = {
-      "/mnt/brix0" = {
+      "/mnt/brix0" = lib.mkIf (config.networking.hostName != "brix0") {
         device = "//brix0/data";
         fsType = "cifs";
         options = [
