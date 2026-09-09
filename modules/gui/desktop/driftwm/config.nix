@@ -245,6 +245,10 @@ in {
         org.freedesktop.impl.portal.ScreenCast=wlr
         org.freedesktop.impl.portal.Screenshot=wlr
       '';
+      xdg.configFile."xdg-desktop-portal-wlr/config".text = ''
+        [screencast]
+        chooser_type=none
+      '';
 
       home.sessionVariables = {
         QT_QPA_PLATFORM = "wayland;xcb";

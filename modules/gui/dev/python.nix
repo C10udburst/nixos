@@ -29,6 +29,7 @@
       with ps; [
         requests
         pypdf
+        tkinter
       ]
     ));
 
