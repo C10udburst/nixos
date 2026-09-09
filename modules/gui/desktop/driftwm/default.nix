@@ -60,6 +60,9 @@ in {
         ++ lib.optionals isTouchscreen [
           pkgs.wvkbd
         ];
+
+      environment.etc."xdg/menus/applications.menu".source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
+      environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";
     })
   ];
 }

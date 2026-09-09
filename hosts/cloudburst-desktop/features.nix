@@ -17,10 +17,6 @@ _: {
       dev = {
         enable = true;
         arduino.enable = true;
-        documents = {
-          latex = true;
-          typst = true;
-        };
         android = {
           dev = true;
           jadx = true;

@@ -10,7 +10,7 @@
 
   isDev = config.features.gui.dev.enable or false;
   isProgramming = isDev && (config.features.gui.dev.programming.enable or false);
-  isRust = isProgramming && (config.features.gui.dev.programming.rust.enable or false);
+  isRust = isProgramming && (config.features.gui.dev.programming.rust or false);
   isGo = isProgramming && (config.features.gui.dev.programming.go or false);
   isPython = isDev && (config.features.gui.dev.python.enable or false);
   isKotlin = isProgramming && (config.features.gui.dev.programming.kotlin or false);

@@ -9,7 +9,7 @@
 in {
   options.features.gui.dev.documents.latex = lib.mkOption {
     type = lib.types.bool;
-    default = devEnabled && false;
+    default = devEnabled && true;
   };
 
   config = lib.mkIf cfg {
