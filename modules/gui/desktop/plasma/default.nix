@@ -88,6 +88,7 @@ in {
           enable = true;
           workspace = {
             iconTheme = "breeze-dark";
+            colorScheme = "Stylix";
           };
           krunner = {
             shortcuts.launch = "Meta+Space";

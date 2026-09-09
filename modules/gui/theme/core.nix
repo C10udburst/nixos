@@ -92,7 +92,6 @@ in {
           };
         };
 
-        xdg.configFile."kdeglobals".source = kdeglobals;
         xdg.configFile."color-schemes/Stylix.colors".source = kdeglobals;
         xdg.configFile."qt5ct/colors/Stylix.conf".source = qtctColors;
         xdg.configFile."qt6ct/colors/Stylix.conf".source = qtctColors;
