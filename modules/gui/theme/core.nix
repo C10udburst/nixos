@@ -30,7 +30,7 @@ in {
 
       qt = {
         enable = true;
-        style = lib.mkForce "breeze";
+        # style = lib.mkForce "breeze";
       };
 
       stylix = {
