@@ -16,10 +16,6 @@ in
       type = lib.types.bool;
       default = config.features.server.web.enable && true;
     };
-    hostGo = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-    };
     tailscaleAuthKeyFile = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
@@ -32,14 +28,13 @@ in
         name = "go";
         port = port;
       })
-      (lib.mkIf cfg.hostGo {
+      {
         services.caddy.virtualHosts."http://go" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString port}
           '';
         };
-      })
-      {
+
         systemd.tmpfiles.rules = [
           "d ${storage}/golink 0755 root root -"
         ];

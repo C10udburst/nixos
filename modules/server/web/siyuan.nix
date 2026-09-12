@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }:
 let
@@ -30,7 +31,7 @@ in
         ];
 
         virtualisation.oci-containers.containers.siyuan = {
-          image = "b3log/siyuan:latest";
+          image = helpers.resolveImage "b3log/siyuan:latest";
           ports = [
             "127.0.0.1:6806:6806"
           ];

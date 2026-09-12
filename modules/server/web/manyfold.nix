@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }:
 let
@@ -45,7 +46,7 @@ in
         ];
 
         virtualisation.oci-containers.containers.manyfold = {
-          image = "ghcr.io/manyfold3d/manyfold-solo:latest";
+          image = helpers.resolveImage "ghcr.io/manyfold3d/manyfold-solo:latest";
           ports = [ "127.0.0.1:3214:3214" ];
           volumes = [
             "${storage}/manyfold/config:/config"
