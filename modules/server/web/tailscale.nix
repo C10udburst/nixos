@@ -2,14 +2,12 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.tailscale;
   webCfg = config.features.server.web;
-in
-{
+in {
   options.features.server.web.tailscale = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: { enable = b; }) (
+    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
       lib.types.submodule {
         options = {
           enable = lib.mkOption {
@@ -23,7 +21,7 @@ in
         };
       }
     );
-    default = { };
+    default = {};
   };
 
   config = lib.mkIf cfg.enable {

@@ -3,16 +3,14 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.karakeep;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.karakeep = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: { enable = b; }) (
+    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
       lib.types.submodule {
         options = {
           enable = lib.mkOption {
@@ -22,7 +20,7 @@ in
         };
       }
     );
-    default = { };
+    default = {};
   };
 
   config = lib.mkIf cfg.enable (

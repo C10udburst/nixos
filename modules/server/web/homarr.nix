@@ -4,14 +4,12 @@
   pkgs,
   helpers,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.homarr;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.homarr = {
     enable = lib.mkOption {
       type = lib.types.bool;

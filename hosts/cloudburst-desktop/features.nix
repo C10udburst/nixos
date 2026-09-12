@@ -1,6 +1,8 @@
 _: {
   features = {
-    core.hardware.ddc = true;
+    core.hardware = {
+      ddc = true;
+    };
 
     services = {
       weylus = true;

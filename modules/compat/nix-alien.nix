@@ -22,13 +22,14 @@ in {
       };
     }
     (lib.mkIf cfg {
-      environment.systemPackages = lib.optionals (
-        inputs ? nix-alien
-        && inputs.nix-alien ? packages
-        && inputs.nix-alien.packages ? ${pkgs.stdenv.hostPlatform.system}
-      ) [
-        inputs.nix-alien.packages.${pkgs.stdenv.hostPlatform.system}.nix-alien
-      ];
+      environment.systemPackages =
+        lib.optionals (
+          inputs ? nix-alien
+          && inputs.nix-alien ? packages
+          && inputs.nix-alien.packages ? ${pkgs.stdenv.hostPlatform.system}
+        ) [
+          inputs.nix-alien.packages.${pkgs.stdenv.hostPlatform.system}.nix-alien
+        ];
     })
   ];
 }

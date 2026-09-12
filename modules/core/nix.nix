@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.core.nix;
   isSlow = config.features.core.hardware.slow or false;
-in
-{
+in {
   options.features.core.nix = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -24,14 +22,17 @@ in
     };
     vulnix = lib.mkOption {
       type = lib.types.bool;
-      default = if isSlow then false else true;
+      default =
+        if isSlow
+        then false
+        else true;
     };
   };
 
   config = lib.mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
 
-    environment.systemPackages = lib.optionals cfg.vulnix [ pkgs.vulnix ];
+    environment.systemPackages = lib.optionals cfg.vulnix [pkgs.vulnix];
 
     nix.settings = {
       experimental-features = [
@@ -62,8 +63,14 @@ in
 
     nix.gc = lib.mkIf cfg.gc {
       automatic = true;
-      dates = if isSlow then "daily" else "weekly";
-      options = if isSlow then "--delete-older-than 3d" else "--delete-older-than 7d";
+      dates =
+        if isSlow
+        then "daily"
+        else "weekly";
+      options =
+        if isSlow
+        then "--delete-older-than 3d"
+        else "--delete-older-than 7d";
     };
 
     nix.optimise.automatic = cfg.autoOptimise && isSlow;

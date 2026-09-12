@@ -18,7 +18,7 @@ in {
   config = lib.mkIf cfg.enable (lib.mkMerge [
     (webHelper.mkWebApp {
       name = "hass";
-      aliases = [ "home-assistant" ];
+      aliases = ["home-assistant"];
       port = 8123;
     })
     {

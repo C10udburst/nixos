@@ -4,16 +4,14 @@
   pkgs,
   helpers,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.manyfold;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.manyfold = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: { enable = b; }) (
+    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
       lib.types.submodule {
         options = {
           enable = lib.mkOption {
@@ -23,7 +21,7 @@ in
         };
       }
     );
-    default = { };
+    default = {};
   };
 
   config = lib.mkIf cfg.enable (
@@ -47,7 +45,7 @@ in
 
         virtualisation.oci-containers.containers.manyfold = {
           image = helpers.resolveImage "ghcr.io/manyfold3d/manyfold-solo:latest";
-          ports = [ "127.0.0.1:3214:3214" ];
+          ports = ["127.0.0.1:3214:3214"];
           volumes = [
             "${storage}/manyfold/config:/config"
             "${storage}/manyfold/libraries:/libraries"

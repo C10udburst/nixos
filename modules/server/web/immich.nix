@@ -3,13 +3,11 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.immich;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.immich = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -25,7 +23,7 @@ in
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "immich";
-        aliases = [ "photos" ];
+        aliases = ["photos"];
         port = 2283;
         extraConfig = ''
           request_body {
