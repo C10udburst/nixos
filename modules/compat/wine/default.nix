@@ -51,19 +51,9 @@
 
     echo "Applying Stylix theme to Wine registry..."
     ${pkgs.wineWow64Packages.full}/bin/wine regedit /s "${themeReg}" || true
-
-    mkdir -p "$WINEPREFIX/dosdevices"
-    rm -f "$WINEPREFIX/dosdevices/d::"
-
-    FSTYPE=$(${pkgs.util-linux}/bin/findmnt -rn -o FSTYPE /mnt/dane 2>/dev/null || true)
-    if [ -n "$FSTYPE" ] && [ "$FSTYPE" != "autofs" ]; then
-      ln -snf "/mnt/dane" "$WINEPREFIX/dosdevices/d:"
-      echo "Mapped /mnt/dane to Wine drive D:"
-    else
-      if [ -L "$WINEPREFIX/dosdevices/d:" ]; then
-        rm -f "$WINEPREFIX/dosdevices/d:"
-        echo "Removed Wine drive D: symlink (unmounted or offline)"
-      fi
+    # Ensure any previous drive D: symlink is removed so Wine does not hang
+    if [ -d "$WINEPREFIX/dosdevices" ]; then
+      rm -f "$WINEPREFIX/dosdevices/d:" "$WINEPREFIX/dosdevices/d::"
     fi
   '';
 
@@ -99,7 +89,7 @@ in {
 
       systemd.user.services.wine-init = {
         Unit = {
-          Description = "Initialize Wine prefix and drive D: mapping";
+          Description = "Initialize Wine prefix";
         };
         Service = {
           Type = "oneshot";

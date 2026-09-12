@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }: let
   cfg = config.features.server.web.wealthfolio;
@@ -28,7 +29,7 @@ in {
       ];
 
       virtualisation.oci-containers.containers.wealthfolio = {
-        image = "wealthfolio/wealthfolio:latest";
+        image = helpers.resolveImage "wealthfolio/wealthfolio:latest";
         ports = [
           "127.0.0.1:8088:8088"
         ];

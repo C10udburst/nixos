@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }:
 let
@@ -39,7 +40,7 @@ in
         ];
 
         virtualisation.oci-containers.containers.transmute = {
-          image = "ghcr.io/transmute-app/transmute:latest";
+          image = helpers.resolveImage "ghcr.io/transmute-app/transmute:latest";
           ports = [
             "127.0.0.1:3313:3313"
           ];

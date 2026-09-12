@@ -1,0 +1,7 @@
+{
+  "b3log/siyuan:latest": "b3log/siyuan@sha256:6ab17ed3ca40f646eab674f3fdcc459ff186614c02434b9b07709bd4cc98716d",
+  "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:1f5b892aeef4ad0a4907f075777bbd0ce7120f4cdc53b9f3f028519250421aed",
+  "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:f620fe830c8964abb0c6ab9c35ae58a3e7426e939adddbba9def12dd618b4d42",
+  "ghcr.io/transmute-app/transmute:latest": "ghcr.io/transmute-app/transmute@sha256:51a32b28e0cb84cde624ca41570f069d91ee7e83fac5c9d0b970e7a583b3abde",
+  "wealthfolio/wealthfolio:latest": "wealthfolio/wealthfolio@sha256:3c6f117828949204029c2b4a391f039e62987b4e091139e11b04e6764b5f6866"
+}

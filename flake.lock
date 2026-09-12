@@ -648,6 +648,26 @@
         "type": "github"
       }
     },
+    "oci-lock": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789244384,
+        "narHash": "sha256-2imMKCiH8G85AsRqjGAR9Qdoq2CfkPsvUDFHrjg2T+w=",
+        "owner": "C10udburst",
+        "repo": "oci-lock",
+        "rev": "973c3ea92906a79eace370b96e49097c91f8d6da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "C10udburst",
+        "repo": "oci-lock",
+        "type": "github"
+      }
+    },
     "openscad-bosl2": {
       "flake": false,
       "locked": {
@@ -850,6 +870,7 @@
         "noctalia": "noctalia",
         "noctalia-cloudburst": "noctalia-cloudburst",
         "noctalia-community-plugins": "noctalia-community-plugins",
+        "oci-lock": "oci-lock",
         "openscad-bosl2": "openscad-bosl2",
         "openscad-constructive": "openscad-constructive",
         "openscad-obiscad": "openscad-obiscad",

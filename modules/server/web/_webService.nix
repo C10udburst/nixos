@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  pkgs ? null,
+  ...
 }:
 let
   baseDomain = config.features.server.web.core.baseDomain or "example.com";

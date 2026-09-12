@@ -62,6 +62,10 @@
       url = "github:noctalia-dev/community-plugins";
       flake = false;
     };
+    oci-lock = {
+      url = "github:C10udburst/oci-lock";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     openscad-bosl2 = {
       url = "github:BelfrySCAD/BOSL2";
       flake = false;

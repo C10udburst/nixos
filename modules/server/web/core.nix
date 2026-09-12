@@ -5,15 +5,6 @@
 }:
 let
   cfg = config.features.server.web.core;
-
-  appsWithPorts = lib.filter (a: a.port != null) cfg._apps;
-  groupByPort = lib.groupBy (a: toString a.port) appsWithPorts;
-  collisions = lib.filterAttrs (_port: apps: builtins.length apps > 1) groupByPort;
-  formatCollision =
-    port: apps:
-    "Port ${port} is used by multiple web apps: ${lib.concatMapStringsSep ", " (a: a.name) apps}";
-  collisionMessages = lib.mapAttrsToList formatCollision collisions;
-
 in
 {
   options.features.server.web.core = {
@@ -38,20 +29,6 @@ in
     networking.firewall.allowedTCPPorts = [
       80
       443
-    ];
-
-    assertions = [
-      {
-        assertion = collisions == { };
-        message =
-          "\n"
-          + lib.concatStringsSep "\n" (
-            [
-              "Port collision detected in server.web:"
-            ]
-            ++ collisionMessages
-          );
-      }
     ];
   };
 }

@@ -255,6 +255,9 @@
           enable = false;
           hostGo = true;
         };
+        homarr = {
+          enable = false;
+        };
         homeassistant = {
           enable = false;
           esphome = false;
