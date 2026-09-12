@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   cfg = config.features.gui.desktop.driftwm;
@@ -29,6 +30,22 @@ in {
       };
     }
     (lib.mkIf cfg.enable {
+      nixpkgs.overlays = [
+        (_final: prev: {
+          driftwm =
+            if
+              inputs ? driftwm
+              && inputs.driftwm ? packages
+              && inputs.driftwm.packages ? ${prev.stdenv.hostPlatform.system}
+            then
+              inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+                doCheck = false;
+              })
+            else
+              prev.driftwm or null;
+        })
+      ];
+
       programs.kdeconnect.enable = lib.mkDefault (!isSlow);
 
       systemd.packages = [pkgs.driftwm];

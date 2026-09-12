@@ -44,6 +44,9 @@ _: {
       };
     };
 
-    compat.enable = false;
+    compat = {
+      enable = false;
+      nix-alien = false;
+    };
   };
 }

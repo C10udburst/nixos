@@ -2,11 +2,11 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }: let
   cfg = config.features.gui.apps.viewers.okular;
   viewersEnabled = config.features.gui.apps.viewers.enable;
-  inherit ((import ../../../../lib/helpers/associations.nix {inherit lib;})) associatePackage;
   okularMimes = lib.filterAttrs (
     name: value:
       !(builtins.any (
@@ -17,7 +17,7 @@
         )
         value)
       && name != "image/tiff"
-  ) (associatePackage pkgs.kdePackages.okular);
+  ) (helpers.associatePackage pkgs.kdePackages.okular);
 in {
   options.features.gui.apps.viewers.okular = lib.mkOption {
     type = lib.types.bool;

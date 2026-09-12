@@ -2,21 +2,17 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.core.nix;
   isSlow = config.features.core.hardware.slow or false;
-  isGui = config.features.gui.enable;
-in {
+in
+{
   options.features.core.nix = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = config.features.core.enable && true;
-    };
-    flakes = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
     };
     autoOptimise = lib.mkOption {
       type = lib.types.bool;
@@ -28,37 +24,17 @@ in {
     };
     vulnix = lib.mkOption {
       type = lib.types.bool;
-      default =
-        if isSlow
-        then false
-        else true;
+      default = if isSlow then false else true;
     };
   };
 
   config = lib.mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
 
-    environment.systemPackages = lib.optionals cfg.vulnix [pkgs.vulnix];
-
-    nixpkgs.overlays = lib.optionals isGui (
-      lib.optionals (inputs ? nix-vscode-extensions && inputs.nix-vscode-extensions ? overlays) [
-        inputs.nix-vscode-extensions.overlays.default
-      ]
-      ++ [
-        (_final: prev: {
-          driftwm =
-            if inputs ? driftwm && inputs.driftwm ? packages && inputs.driftwm.packages ? ${prev.stdenv.hostPlatform.system}
-            then
-              inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
-                doCheck = false;
-              })
-            else prev.driftwm or null;
-        })
-      ]
-    );
+    environment.systemPackages = lib.optionals cfg.vulnix [ pkgs.vulnix ];
 
     nix.settings = {
-      experimental-features = lib.optionals cfg.flakes [
+      experimental-features = [
         "nix-command"
         "flakes"
       ];
@@ -86,14 +62,8 @@ in {
 
     nix.gc = lib.mkIf cfg.gc {
       automatic = true;
-      dates =
-        if isSlow
-        then "daily"
-        else "weekly";
-      options =
-        if isSlow
-        then "--delete-older-than 3d"
-        else "--delete-older-than 7d";
+      dates = if isSlow then "daily" else "weekly";
+      options = if isSlow then "--delete-older-than 3d" else "--delete-older-than 7d";
     };
 
     nix.optimise.automatic = cfg.autoOptimise && isSlow;
