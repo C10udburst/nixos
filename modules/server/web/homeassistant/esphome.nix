@@ -16,7 +16,7 @@ in {
   config = lib.mkIf (hassCfg.enable && cfg) (lib.mkMerge [
     (webHelper.mkWebApp {
       name = "esphome";
-      aliases = [ "esp" ];
+      aliases = ["esp"];
       port = 6052;
       suspend = "esphome.service";
     })

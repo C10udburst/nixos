@@ -41,8 +41,7 @@ in {
               inputs.driftwm.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
                 doCheck = false;
               })
-            else
-              prev.driftwm or null;
+            else prev.driftwm or null;
         })
       ];
 

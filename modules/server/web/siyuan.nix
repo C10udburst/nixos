@@ -4,13 +4,11 @@
   pkgs,
   helpers,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.siyuan;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.siyuan = {
     enable = lib.mkOption {
       type = lib.types.bool;

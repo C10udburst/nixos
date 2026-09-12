@@ -3,13 +3,11 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.copyparty;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.copyparty = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -39,8 +37,8 @@ in
 
         systemd.services.copyparty = {
           description = "Copyparty file server";
-          wantedBy = [ "multi-user.target" ];
-          after = [ "network.target" ];
+          wantedBy = ["multi-user.target"];
+          after = ["network.target"];
           serviceConfig = {
             ExecStart = ''
               ${pkgs.copyparty}/bin/copyparty \

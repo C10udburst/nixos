@@ -3,14 +3,12 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.vaultwarden;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.vaultwarden = {
     enable = lib.mkOption {
       type = lib.types.bool;

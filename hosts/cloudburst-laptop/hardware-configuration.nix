@@ -19,20 +19,39 @@
   fileSystems."/" = {
     device = "/dev/mapper/luks-b4e1a0c8-0db6-45ec-93da-8b296092dde3";
     fsType = "btrfs";
+    options = [
+      "compress=zstd"
+      "ssd"
+      "discard=async"
+    ];
   };
 
-  boot.initrd.luks.devices."luks-b4e1a0c8-0db6-45ec-93da-8b296092dde3".device = "/dev/disk/by-uuid/b4e1a0c8-0db6-45ec-93da-8b296092dde3";
+  boot.initrd.luks.devices."luks-b4e1a0c8-0db6-45ec-93da-8b296092dde3" = {
+    device = "/dev/disk/by-uuid/b4e1a0c8-0db6-45ec-93da-8b296092dde3";
+    allowDiscards = true;
+  };
 
   fileSystems."/home" = {
     device = "/dev/mapper/luks-b4e1a0c8-0db6-45ec-93da-8b296092dde3";
     fsType = "btrfs";
-    options = ["subvol=home"];
+    options = [
+      "subvol=home"
+      "compress=zstd"
+      "ssd"
+      "discard=async"
+    ];
   };
 
   fileSystems."/nix" = {
     device = "/dev/mapper/luks-b4e1a0c8-0db6-45ec-93da-8b296092dde3";
     fsType = "btrfs";
-    options = ["subvol=nix" "noatime"];
+    options = [
+      "subvol=nix"
+      "noatime"
+      "compress=zstd"
+      "ssd"
+      "discard=async"
+    ];
   };
 
   fileSystems."/boot" = {

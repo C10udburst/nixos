@@ -19,7 +19,7 @@ in {
   config = lib.mkIf cfg.enable (lib.mkMerge [
     (webHelper.mkWebApp {
       name = "wealth";
-      aliases = [ "wealthfolio" ];
+      aliases = ["wealthfolio"];
       port = 8088;
       suspend = "podman-wealthfolio.service";
     })

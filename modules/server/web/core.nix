@@ -2,11 +2,9 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.core;
-in
-{
+in {
   options.features.server.web.core = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -19,7 +17,7 @@ in
     _apps = lib.mkOption {
       internal = true;
       type = lib.types.listOf lib.types.attrs;
-      default = [ ];
+      default = [];
     };
   };
 

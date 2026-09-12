@@ -3,14 +3,12 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.golink;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
   port = 8077;
-in
-{
+in {
   options.features.server.web.golink = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -41,8 +39,8 @@ in
 
         systemd.services.golink = {
           description = "GoLink private shortlink service";
-          wantedBy = [ "multi-user.target" ];
-          after = [ "network.target" ];
+          wantedBy = ["multi-user.target"];
+          after = ["network.target"];
           serviceConfig = {
             ExecStart = ''
               ${pkgs.golink}/bin/golink \

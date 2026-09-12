@@ -34,6 +34,13 @@
         nvidia = false;
         pipewire = true;
         slow = false;
+        ssd = {
+          btrfsAutoScrub = true;
+          enable = true;
+          fstrim = true;
+          smartd = true;
+          tools = true;
+        };
         touchscreen = false;
         zram = true;
       };
