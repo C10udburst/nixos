@@ -11,6 +11,7 @@ _: {
     };
 
     gui = {
+      apps.brave.apps.office = true;
       games.enable = true;
       dev.enable = true;
     };

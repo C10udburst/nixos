@@ -2,3 +2,4 @@ nixos-switch.log
 .pi
 smb-secrets
 result
+features-full.nix
