@@ -1,13 +1,13 @@
 {
   lib,
   pkgs ? null,
+  config ? null,
   ...
 } @ args: let
-  nodeHelpers = import ./node.nix {inherit lib;};
-  associationHelpers = import ./helpers/associations.nix {inherit lib;};
-  jinjaHelpers =
+  associations = import ./associations.nix {inherit lib;};
+  jinja =
     if pkgs != null
-    then import ./helpers/jinja.nix (args // {inherit pkgs lib;})
+    then import ./jinja.nix (args // {inherit pkgs lib config;})
     else {};
 in
-  nodeHelpers // associationHelpers // jinjaHelpers
+  associations // jinja

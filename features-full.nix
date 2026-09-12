@@ -7,6 +7,7 @@
       kvm = {
         enable = false;
       };
+      nix-alien = true;
       podman = {
         dockerCompat = true;
         enable = false;
@@ -46,7 +47,6 @@
       nix = {
         autoOptimise = true;
         enable = true;
-        flakes = true;
         gc = false;
         vulnix = true;
       };
@@ -54,7 +54,7 @@
         cloudburst = {
           admin = true;
           enable = true;
-          extraGroups = ["podman"];
+          extraGroups = [];
         };
         enable = true;
       };
@@ -213,6 +213,9 @@
         enable = true;
       };
       theme = {
+        editors = {
+          enable = true;
+        };
         enable = true;
         font = {
           enable = true;
@@ -237,9 +240,58 @@
         enable = false;
         paths = [];
       };
-      westonRdp = {
-        desktop = "driftwm";
+      web = {
+        copyparty = {
+          enable = false;
+        };
+        core = {
+          _apps = [];
+          baseDomain = "brix0.wilkins.pl.eu.org";
+          enable = false;
+        };
         enable = false;
+        gitea = {};
+        golink = {
+          enable = false;
+          hostGo = true;
+        };
+        homeassistant = {
+          enable = false;
+          esphome = false;
+        };
+        homepage = {
+          enable = false;
+        };
+        immich = {
+          enable = false;
+          ml = "openvino";
+        };
+        karakeep = {};
+        manyfold = {};
+        pihole = {
+          coredns = {};
+          dnsServers = ["192.168.1.10" "192.168.1.11" "192.168.1.1"];
+          enable = false;
+        };
+        redirect = {};
+        sablier = {};
+        siyuan = {
+          enable = false;
+        };
+        ssl = {
+          enable = false;
+        };
+        storage = "/opt";
+        tailscale = {};
+        transmute = {
+          enable = false;
+        };
+        vaultwarden = {
+          enable = false;
+        };
+        wealthfolio = {
+          enable = false;
+        };
       };
     };
     services = {

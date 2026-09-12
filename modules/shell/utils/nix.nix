@@ -3,9 +3,11 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.features.shell.utils.nix;
-in {
+in
+{
   options.features.shell.utils.nix = lib.mkOption {
     type = lib.types.bool;
     default = config.features.shell.utils.enable && true;
@@ -25,6 +27,7 @@ in {
         alejandra
         nix-output-monitor
         nix-heuristic-gc
+        nix-tree
       ];
     })
   ];

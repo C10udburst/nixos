@@ -90,6 +90,17 @@
     if config != null && config ? lib && config.lib ? stylix && (config.stylix.enable or false)
     then lib.genAttrs base16Keys (key: config.lib.stylix.colors.${key})
     else fallbackColors;
+
+  render =
+    arg1: arg2:
+    if builtins.isAttrs arg2 then
+      let
+        base = baseNameOf arg1;
+        name = if lib.hasSuffix ".j2" base then lib.removeSuffix ".j2" base else base;
+      in
+      renderJinja2 name arg1 arg2
+    else
+      arg3: renderJinja2 arg1 arg2 arg3;
 in {
-  inherit renderJinja2 cleanColors;
+  inherit renderJinja2 cleanColors render;
 }

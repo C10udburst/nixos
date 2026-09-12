@@ -75,8 +75,7 @@ features
  │    ├── podman           # Podman rootless container runtime & docker-compat
  │    └── kvm              # QEMU / KVM virtualization & virt-manager
  └── server                # Server daemons & network sharing
-      ├── samba            # Samba network file sharing
-      └── westonRdp        # Weston RDP server
+      └── samba            # Samba network file sharing
 ```
 
 ---
@@ -239,17 +238,15 @@ compat = {
   - `python.enable` defaults to **`true`**, while `programming.enable`, `arduino.enable`, `threed.enable`, `documents.latex`, and `android.enable` default to **`false`**.
   - Child tool options inside `python` (`dataScience`, `ai`, `utils`) default to **`false`**.
 
-### How This Works in `lib/node.nix`
-The dendritic engine coordinates this via conditional defaults:
+### How This Works in Modules
+Modules coordinate this via conditional defaults on their parent node's enable option:
 ```nix
-# Child enable definition inside mkDendriticNode
 enable = lib.mkOption {
   type = lib.types.bool;
-  default = if parent.enable then canonicalDefault else false;
+  default = config.features.<parent>.enable && canonicalDefault;
 };
 ```
-- Both `.enable` and `.enabled` are supported symmetrically.
-- Coerced boolean syntax (`compat = true;`) sets `compat.enable = true;`, leaving all child options to take their respective canonical defaults.
+- Modules receive common helpers as a first-class module argument: `{ config, lib, pkgs, helpers, ... }:` (e.g. `helpers.render`, `helpers.cleanColors`, `helpers.associatePackage`).
 
 ---
 
@@ -348,3 +345,5 @@ Each host directory under `hosts/<hostname>/` is organized into four distinct fi
    Do NOT add `description = "..."` attributes to dendritic options or module stubs. Keep options clean, minimal, and free of redundant docstrings.
 7. **No Manual Module Imports**:
    Never declare `imports = [ ... ]` in module files under `./modules/`. `import-tree` automatically discovers all `.nix` files recursively. All imports are 100% implicit.
+8. **Never Use `pkgs.fetchurl` Directly**:
+   Never use `pkgs.fetchurl` directly for external archives or binaries. Always declare all external URLs, archives, and dependencies co-located in `flake-file.inputs` (e.g. with `flake = false;`), and run `./flake` (or `nix run .#write-flake`) to regenerate `flake.nix`.

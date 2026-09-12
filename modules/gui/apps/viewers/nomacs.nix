@@ -2,12 +2,12 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }: let
   cfg = config.features.gui.apps.viewers.nomacs;
   viewersEnabled = config.features.gui.apps.viewers.enable;
-  inherit ((import ../../../../lib/helpers/associations.nix {inherit lib;})) associatePackage;
-  nomacsMimes = lib.filterAttrs (name: _: lib.hasPrefix "image/" name) (associatePackage pkgs.nomacs);
+  nomacsMimes = lib.filterAttrs (name: _: lib.hasPrefix "image/" name) (helpers.associatePackage pkgs.nomacs);
 in {
   options.features.gui.apps.viewers.nomacs = lib.mkOption {
     type = lib.types.bool;

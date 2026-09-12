@@ -2,15 +2,13 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }: let
   cfg = config.features.compat.wine;
   isGui = config.features.gui.enable or false;
 
-  renderUtils = import ../../../lib/helpers/jinja.nix {inherit pkgs config lib;};
-  inherit (renderUtils) renderJinja2 cleanColors;
-
-  themeReg = renderJinja2 "wine-theme.reg" ./_theme.reg.j2 cleanColors;
+  themeReg = helpers.render "wine-theme.reg" ./_theme.reg.j2 helpers.cleanColors;
 
   wineInitScript = pkgs.writeShellScriptBin "wine-init" ''
     set -euo pipefail

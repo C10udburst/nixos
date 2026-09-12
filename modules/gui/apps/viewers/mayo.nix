@@ -2,11 +2,11 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }: let
   cfg = config.features.gui.apps.viewers.mayo;
   viewersEnabled = config.features.gui.apps.viewers.enable;
-  inherit ((import ../../../../lib/helpers/associations.nix {inherit lib;})) associatePackage;
 
   mayoCustom = pkgs.symlinkJoin {
     name = "mayo-custom";
@@ -26,7 +26,7 @@
     '';
   };
 
-  mayoMimes = associatePackage mayoCustom;
+  mayoMimes = helpers.associatePackage mayoCustom;
 in {
   options.features.gui.apps.viewers.mayo = lib.mkOption {
     type = lib.types.bool;

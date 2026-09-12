@@ -2,14 +2,14 @@
   config,
   lib,
   pkgs,
+  helpers,
   ...
 }: let
   cfg = config.features.gui.apps.tools.konsole;
 
-  renderUtils = import ../../../../../lib/helpers/jinja.nix {inherit pkgs config lib;};
-  inherit (renderUtils) renderJinja2 cleanColors;
+  inherit (helpers) render renderJinja2 cleanColors;
 
-  colorscheme = renderJinja2 "Base16-Stylix.colorscheme" ./_Base16-Stylix.colorscheme.j2 cleanColors;
+  colorscheme = render "Base16-Stylix.colorscheme" ./_Base16-Stylix.colorscheme.j2 cleanColors;
 
   fontName = config.stylix.fonts.monospace.name or "monospace";
   fontSize = toString (config.stylix.fonts.sizes.terminal or 11);

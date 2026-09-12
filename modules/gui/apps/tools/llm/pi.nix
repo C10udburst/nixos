@@ -16,7 +16,10 @@ in {
   config = lib.mkMerge [
     {
       flake-file.inputs = {
-        pi-agent.url = "github:lukasl-dev/pi.nix";
+        pi-agent = {
+          url = "github:lukasl-dev/pi.nix";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
       };
     }
     (lib.mkIf cfg {

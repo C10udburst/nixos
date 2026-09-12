@@ -16,7 +16,10 @@ in {
   config = lib.mkMerge [
     {
       flake-file.inputs = {
-        antigravity-nix.url = "github:jacopone/antigravity-nix";
+        antigravity-nix = {
+          url = "github:jacopone/antigravity-nix";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
       };
     }
     (lib.mkIf cfg {

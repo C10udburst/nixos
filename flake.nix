@@ -6,7 +6,10 @@
   outputs = inputs: import ./outputs.nix inputs;
 
   inputs = {
-    antigravity-nix.url = "github:jacopone/antigravity-nix";
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     driftwm = {
       url = "github:malbiruk/driftwm";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -36,6 +39,10 @@
     kimsay = {
       url = "github:IcaroJam/kimsay";
       flake = false;
+    };
+    nix-alien = {
+      url = "github:thiagokokada/nix-alien";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
@@ -75,7 +82,10 @@
       url = "git+ssh://git@github.com/C10udburst/Organizeer.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pi-agent.url = "github:lukasl-dev/pi.nix";
+    pi-agent = {
+      url = "github:lukasl-dev/pi.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs = {
@@ -89,6 +99,10 @@
     };
     ranger-devicons = {
       url = "github:alexanderjeurissen/ranger_devicons";
+      flake = false;
+    };
+    sablier-bin = {
+      url = "https://github.com/sablierapp/sablier/releases/download/v1.18.0/sablier-1.18.0-linux-amd64.tar.gz";
       flake = false;
     };
     scrcpy-app-src = {
