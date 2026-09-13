@@ -31,12 +31,22 @@ in {
         '';
       })
       {
+        users.users.transmute = {
+          isSystemUser = true;
+          group = "transmute";
+          home = "${storage}/transmute";
+          autoSubUidGidRange = true;
+          linger = true;
+        };
+        users.groups.transmute = {};
+
         systemd.tmpfiles.rules = [
-          "d ${storage}/transmute 0755 root root -"
+          "d ${storage}/transmute 0750 transmute transmute - -"
         ];
 
         virtualisation.oci-containers.containers.transmute = {
           image = helpers.resolveImage "ghcr.io/transmute-app/transmute:latest";
+          podman.user = "transmute";
           ports = [
             "127.0.0.1:3313:3313"
           ];

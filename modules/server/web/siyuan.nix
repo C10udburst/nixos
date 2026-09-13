@@ -2,13 +2,14 @@
   config,
   lib,
   pkgs,
-  helpers,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.siyuan;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix {inherit config lib pkgs;};
-in {
+  webHelper = import ./_webService.nix { inherit config lib pkgs; };
+in
+{
   options.features.server.web.siyuan = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.enable && true;
@@ -17,27 +18,40 @@ in {
   config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
-        name = "siyuan";
+        name = "notes";
+        aliases = [ "siyuan" ];
         port = 6806;
-        suspend = "podman-siyuan.service";
+        suspend = "siyuan.service";
       })
       {
+        users.users.siyuan = {
+          isSystemUser = true;
+          group = "siyuan";
+          home = "${storage}/siyuan";
+        };
+        users.groups.siyuan = { };
+
         systemd.tmpfiles.rules = [
-          "d ${storage}/siyuan 0755 root root -"
+          "d ${storage}/siyuan 0750 siyuan siyuan - -"
         ];
 
-        virtualisation.oci-containers.containers.siyuan = {
-          image = helpers.resolveImage "b3log/siyuan:latest";
-          ports = [
-            "127.0.0.1:6806:6806"
-          ];
-          volumes = [
-            "${storage}/siyuan:/siyuan/workspace"
-          ];
-          cmd = [
-            "serve"
-            "--workspace=/siyuan/workspace"
-          ];
+        systemd.services.siyuan = {
+          description = "SiYuan note-taking service";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          serviceConfig = {
+            ExecStart = ''
+              ${pkgs.siyuan.kernel}/bin/kernel serve \
+                --workspace=${storage}/siyuan \
+                --wd=${pkgs.siyuan}/share/siyuan/resources \
+                --port=6806
+            '';
+            User = "siyuan";
+            Group = "siyuan";
+            WorkingDirectory = "${storage}/siyuan";
+            Restart = "on-failure";
+            RestartSec = "5s";
+          };
         };
       }
     ]
