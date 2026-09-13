@@ -12,6 +12,7 @@ in {
 
   config = lib.mkIf cfg.grub32 {
     boot.loader.efi.canTouchEfiVariables = false;
+    boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot/efi";
     boot.loader.grub = {
       enable = true;
       efiSupport = true;

@@ -57,7 +57,7 @@
     ];
   };
 
-  fileSystems."/boot" = {
+  fileSystems."/boot/efi" = {
     device = "/dev/disk/by-uuid/FD83-2818";
     fsType = "vfat";
     options = [

@@ -4,13 +4,11 @@
   pkgs,
   helpers,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.wealthfolio;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.wealthfolio = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.enable && true;
@@ -20,7 +18,7 @@ in
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "wealth";
-        aliases = [ "wealthfolio" ];
+        aliases = ["wealthfolio"];
         port = 8088;
         suspend = "podman-wealthfolio.service";
       })
@@ -32,7 +30,7 @@ in
           autoSubUidGidRange = true;
           linger = true;
         };
-        users.groups.wealthfolio = { };
+        users.groups.wealthfolio = {};
 
         systemd.tmpfiles.rules = [
           "d ${storage}/wealthfolio 0750 wealthfolio wealthfolio - -"

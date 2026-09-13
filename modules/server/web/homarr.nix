@@ -4,14 +4,12 @@
   pkgs,
   helpers,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.homarr;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.homarr = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.enable && false;
@@ -35,10 +33,10 @@ in
           home = "${storage}/homarr";
           autoSubUidGidRange = true;
           linger = true;
-          extraGroups = [ "podman" ];
+          extraGroups = ["podman"];
         };
-        users.groups.homarr = { };
-        users.groups.podman = { };
+        users.groups.homarr = {};
+        users.groups.podman = {};
 
         systemd.tmpfiles.rules = [
           "d ${storage}/homarr 0750 homarr homarr - -"

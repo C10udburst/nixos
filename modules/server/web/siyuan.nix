@@ -3,13 +3,11 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.siyuan;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.siyuan = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.enable && true;
@@ -19,7 +17,7 @@ in
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "notes";
-        aliases = [ "siyuan" ];
+        aliases = ["siyuan"];
         port = 6806;
         suspend = "siyuan.service";
       })
@@ -29,7 +27,7 @@ in
           group = "siyuan";
           home = "${storage}/siyuan";
         };
-        users.groups.siyuan = { };
+        users.groups.siyuan = {};
 
         systemd.tmpfiles.rules = [
           "d ${storage}/siyuan 0750 siyuan siyuan - -"
@@ -37,8 +35,8 @@ in
 
         systemd.services.siyuan = {
           description = "SiYuan note-taking service";
-          wantedBy = [ "multi-user.target" ];
-          after = [ "network.target" ];
+          wantedBy = ["multi-user.target"];
+          after = ["network.target"];
           serviceConfig = {
             ExecStart = ''
               ${pkgs.siyuan.kernel}/bin/kernel serve \

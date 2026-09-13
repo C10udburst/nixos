@@ -17,7 +17,6 @@
   hasNixIndex = config.features.shell.utils.nix or false;
 
   pluginMap = {
-    audio-switcher = "blackbartblues/audio-switcher";
     battery-threshold = "damian-ds7/battery-threshold";
     cat = "dotnetrob/cat";
     driftwm = "cloudburst/driftwm";
@@ -352,12 +351,15 @@ in {
 
                 start =
                   if compactMode
-                  then [
-                    "launcher"
-                    "clock"
-                    "procmon_widget"
-                    "hassio_status"
-                  ]
+                  then
+                    [
+                      "launcher"
+                      "clock"
+                    ]
+                    ++ lib.optionals (!slow) ["procmon_widget"]
+                    ++ [
+                      "hassio_status"
+                    ]
                   else
                     [
                       "launcher"
