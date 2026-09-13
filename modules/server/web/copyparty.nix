@@ -8,20 +8,19 @@
   storage = config.features.server.web.storage;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
-  options.features.server.web.copyparty = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.server.web.enable && true;
-    };
+  options.features.server.web.copyparty = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.server.web.enable && true;
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "files";
         aliases = [
           "file"
           "drive"
+          "copyparty"
         ];
         port = 3923;
         extraConfig = ''

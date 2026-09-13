@@ -14,13 +14,11 @@
     then tailscaleCfg.domain
     else null;
 
-  vhosts = lib.concatStringsSep ", " (
+  wildcardVhosts = lib.concatStringsSep ", " (
     [
-      "http://"
       "https://${baseDomain}"
       "https://*.${baseDomain}"
     ]
-    ++ lib.optional (tailscaleDomain != null) "https://${tailscaleDomain}"
     ++ (map (d: "https://${d}") (cfg.extraDomains or []))
   );
 
@@ -45,32 +43,44 @@
     '')
     apps;
 in {
-  options.features.server.web.redirect = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
-      lib.types.submodule {
-        options = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = webCfg.enable && true;
-          };
-          extraDomains = lib.mkOption {
-            type = lib.types.listOf lib.types.str;
-            default = [];
-          };
-        };
-      }
-    );
-    default = {};
+  options.features.server.web.redirect = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = webCfg.enable && true;
+    };
+    extraDomains = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+    };
   };
 
   config = lib.mkIf cfg.enable {
-    services.caddy.virtualHosts."${vhosts}" = {
-      extraConfig = ''
-        ${appRedirectRules}
-        handle {
-          redir https://home.${baseDomain} 302
-        }
-      '';
-    };
+    services.caddy.virtualHosts = lib.mkMerge [
+      {
+        "http://" = {
+          extraConfig = ''
+            redir https://{host}{uri} 308
+          '';
+        };
+        "${wildcardVhosts}" = {
+          extraConfig = ''
+            ${appRedirectRules}
+            handle {
+              redir https://home.${baseDomain} 302
+            }
+          '';
+        };
+      }
+      (lib.mkIf (tailscaleDomain != null) {
+        "https://${tailscaleDomain}" = {
+          extraConfig = ''
+            ${appRedirectRules}
+            handle {
+              redir https://home.${baseDomain} 302
+            }
+          '';
+        };
+      })
+    ];
   };
 }

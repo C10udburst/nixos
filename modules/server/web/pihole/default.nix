@@ -28,43 +28,53 @@ in {
         "192.168.1.1"
       ];
     };
+    dhcpServer = lib.mkOption {
+      type = lib.types.str;
+      default = "192.168.1.10";
+    };
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    (webHelper.mkWebApp {
-      name = "pihole";
-      port = 8080;
-    })
-    {
-      environment.etc = {
-        "dnsmasq.d/dhcp-dns.conf".text = ''
-          dhcp-option=option:dns-server,${lib.concatStringsSep "," cfg.dnsServers}
-        '';
-        "dnsmasq.d/dhcp-server-id.conf".text = ''
-          dhcp-option=54,192.168.1.10
-        '';
-        "dnsmasq.d/dhcp-ntp.conf".text = ''
-          dhcp-option=option:ntp-server,192.168.1.1
-        '';
-      };
-
-      services.pihole-ftl = {
-        enable = true;
-        stateDirectory = "${storage}/pihole";
-        openFirewallDNS = !corednsEnabled;
-        openFirewallDHCP = true;
-        settings = {
-          dns.port = effectiveDnsPort;
-          dhcp.active = true;
-          misc.etc_dnsmasq_d = true;
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (webHelper.mkWebApp {
+        name = "pihole";
+        aliases = [
+          "pi"
+          "dns"
+        ];
+        port = 8080;
+      })
+      {
+        environment.etc = {
+          "dnsmasq.d/dhcp-dns.conf".text = ''
+            dhcp-option=option:dns-server,${lib.concatStringsSep "," cfg.dnsServers}
+          '';
+          "dnsmasq.d/dhcp-server-id.conf".text = ''
+            dhcp-option=54,${cfg.dhcpServer}
+          '';
+          "dnsmasq.d/dhcp-ntp.conf".text = ''
+            dhcp-option=option:ntp-server,192.168.1.1
+          '';
         };
-      };
 
-      services.pihole-web = {
-        enable = true;
-        hostName = "pihole.${baseDomain}";
-        ports = [8080];
-      };
-    }
-  ]);
+        services.pihole-ftl = {
+          enable = true;
+          stateDirectory = "${storage}/pihole";
+          openFirewallDNS = !corednsEnabled;
+          openFirewallDHCP = true;
+          settings = {
+            dns.port = effectiveDnsPort;
+            dhcp.active = true;
+            misc.etc_dnsmasq_d = true;
+          };
+        };
+
+        services.pihole-web = {
+          enable = true;
+          hostName = "pihole.${baseDomain}";
+          ports = [8080];
+        };
+      }
+    ]
+  );
 }

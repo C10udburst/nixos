@@ -9,14 +9,12 @@
   storage = config.features.server.web.storage;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
-  options.features.server.web.wealthfolio = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.server.web.enable && true;
-    };
+  options.features.server.web.wealthfolio = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.server.web.enable && true;
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
+  config = lib.mkIf cfg (lib.mkMerge [
     (webHelper.mkWebApp {
       name = "wealth";
       aliases = ["wealthfolio"];

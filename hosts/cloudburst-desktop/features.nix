@@ -14,7 +14,7 @@ _: {
         "wlr-randr --output HDMI-A-1 --pos 0,0 --output DP-1 --pos 1920,80"
       ];
       apps = {
-        editors.jetbrains.enable = true;
+        editors.jetbrains = true;
       };
       dev = {
         enable = true;

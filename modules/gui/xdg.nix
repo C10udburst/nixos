@@ -6,14 +6,12 @@
 }: let
   cfg = config.features.gui.xdg;
 in {
-  options.features.gui.xdg = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.gui.enable && true;
-    };
+  options.features.gui.xdg = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.gui.enable && true;
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg {
     xdg.portal = {
       enable = true;
       wlr = {

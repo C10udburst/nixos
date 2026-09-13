@@ -8,34 +8,27 @@
   isSlow = config.features.core.hardware.slow or false;
   hasBtrfs = lib.any (fs: fs.fsType == "btrfs") (builtins.attrValues config.fileSystems);
 in {
-  options.features.core.hardware.ssd = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
-      lib.types.submodule {
-        options = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = config.features.core.hardware.enable && true;
-          };
-          fstrim = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-          };
-          btrfsAutoScrub = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-          };
-          smartd = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-          };
-          tools = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-          };
-        };
-      }
-    );
-    default = {};
+  options.features.core.hardware.ssd = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = config.features.core.hardware.enable && true;
+    };
+    fstrim = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+    btrfsAutoScrub = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+    smartd = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+    tools = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
   };
 
   config = lib.mkMerge [

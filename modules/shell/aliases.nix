@@ -5,14 +5,12 @@
 }: let
   cfg = config.features.shell.aliases;
 in {
-  options.features.shell.aliases = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.shell.enable && true;
-    };
+  options.features.shell.aliases = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.shell.enable && true;
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg {
     home-manager.users.cloudburst = {
       home.shellAliases =
         {

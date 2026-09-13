@@ -10,20 +10,11 @@
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.karakeep = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
-      lib.types.submodule {
-        options = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = webCfg.enable && true;
-          };
-        };
-      }
-    );
-    default = {};
+    type = lib.types.bool;
+    default = webCfg.enable && true;
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "bookmarks";

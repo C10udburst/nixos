@@ -183,8 +183,7 @@ Every feature in the dendritic configuration tree is governed by strict parent-c
    - **All child submodules are `false`**. A disabled branch never activates any of its descendants.
 2. **If Parent is `true` (`parent.enable == true`)**:
    - Submodules do **NOT** blindly cascade to `true`.
-   - Instead, each child submodule adopts its **canonical default value as defined in `config-full.nix`**!
-   - `config-full.nix` is the single source of truth for all module defaults.
+   - Instead, each child submodule adopts its **canonical default value**!
 3. **Explicit Host Overrides**:
    - Specifying an explicit boolean (e.g. `compat.podman.enable = true;` or `gui.apps.tools.dolphin = false;`) takes highest precedence over the canonical default.
 4. **Overrides parent flags**:
@@ -224,28 +223,33 @@ compat = {
     enable = false;
     dockerCompat = true;
   };
-  kvm = {
-    enable = false;
-  };
+  kvm = false;
 };
 ```
-- Setting `compat = true;` (or `compat.enable = true;`) enables the compatibility subsystem, but its heavy runtime children (`wine`, `distrobox`, `waydroid`, `podman.enable`, `kvm.enable`) default to **`false`**.
-- To activate Podman, the host explicitly declares `compat.podman.enable = true;`. When enabled, `dockerCompat` defaults to **`true`** (per `config-full.nix`).
+- Setting `compat = true;` (or `compat.enable = true;`) enables the compatibility subsystem, but its heavy runtime children (`wine`, `distrobox`, `waydroid`, `podman.enable`, `kvm`) default to **`false`**.
+- To activate Podman, the host explicitly declares `compat.podman.enable = true;`. When enabled, `dockerCompat` defaults to **`true`**.
 
 #### Example 3: Enabling `gui.dev`
-- In `config-full.nix`, `gui.dev.enable` is `false`.
 - If a host sets `gui.dev.enable = true;`:
   - `python.enable` defaults to **`true`**, while `programming.enable`, `arduino.enable`, `threed.enable`, `documents.latex`, and `android.enable` default to **`false`**.
   - Child tool options inside `python` (`dataScience`, `ai`, `utils`) default to **`false`**.
 
 ### How This Works in Modules
-Modules coordinate this via conditional defaults on their parent node's enable option:
-```nix
-enable = lib.mkOption {
-  type = lib.types.bool;
-  default = config.features.<parent>.enable && canonicalDefault;
-};
-```
+Modules coordinate this via conditional defaults referencing the parent node's enable option:
+- **Nodes with children or other config flags** define an attribute set containing `enable`:
+  ```nix
+  options.features.<path>.enable = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.<parent>.enable && canonicalDefault;
+  };
+  ```
+- **Bare options without any extras** are defined directly on the path:
+  ```nix
+  options.features.<path> = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.<parent>.enable && canonicalDefault;
+  };
+  ```
 - Modules receive common helpers as a first-class module argument: `{ config, lib, pkgs, helpers, ... }:` (e.g. `helpers.render`, `helpers.cleanColors`, `helpers.associatePackage`).
 
 ---
@@ -314,7 +318,6 @@ Each host directory under `hosts/<hostname>/` is organized into four distinct fi
 4. **`features.nix`** *(Pure Dendritic Configuration)*:
    - Contains the entire feature tree declaration (`features = { ... };`).
    - Purely declarative toggles for features, cascading theming, desktop options, webapps, development toolchains, and servers.
-   - See `proto/config-full.nix` for an exhaustive reference of all available feature nodes.
 
 ---
 
@@ -347,3 +350,7 @@ Each host directory under `hosts/<hostname>/` is organized into four distinct fi
    Never declare `imports = [ ... ]` in module files under `./modules/`. `import-tree` automatically discovers all `.nix` files recursively. All imports are 100% implicit.
 8. **Never Use `pkgs.fetchurl` Directly**:
    Never use `pkgs.fetchurl` directly for external archives or binaries. Always declare all external URLs, archives, and dependencies co-located in `flake-file.inputs` (e.g. with `flake = false;`), and run `./flake` (or `nix run .#write-flake`) to regenerate `flake.nix`.
+9. **Option Definition Convention (No `coercedTo lib.types.bool`)**:
+   Never use `lib.types.coercedTo lib.types.bool`. Keep option definitions simple:
+   - If a given `options.features` node has children or other config flags, use `options.features.<path>.enable = parent && true/false` (defined alongside its sibling options/submodules).
+   - If it is just a bare option without any extras, use `options.features.<path> = parent && true/false` directly as a boolean option (`lib.mkOption { type = lib.types.bool; default = ...; }`).

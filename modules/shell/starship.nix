@@ -7,14 +7,12 @@
   cfg = config.features.shell.starship;
   hostConfig = config;
 in {
-  options.features.shell.starship = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.shell.enable && true;
-    };
+  options.features.shell.starship = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.shell.enable && true;
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg {
     environment.systemPackages = [pkgs.starship];
 
     home-manager.users.cloudburst = {config, ...}: let

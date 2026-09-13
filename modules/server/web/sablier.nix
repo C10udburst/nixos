@@ -9,31 +9,24 @@
   webCfg = config.features.server.web;
   uniqueUnits = lib.unique cfg._suspendedUnits;
 in {
-  options.features.server.web.sablier = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
-      lib.types.submodule {
-        options = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = webCfg.enable && true;
-          };
-          cpuThreshold = lib.mkOption {
-            type = lib.types.int;
-            default = 5;
-          };
-          sessionDuration = lib.mkOption {
-            type = lib.types.str;
-            default = "15m";
-          };
-          _suspendedUnits = lib.mkOption {
-            type = lib.types.listOf lib.types.str;
-            default = [];
-            internal = true;
-          };
-        };
-      }
-    );
-    default = {};
+  options.features.server.web.sablier = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = webCfg.enable && true;
+    };
+    cpuThreshold = lib.mkOption {
+      type = lib.types.int;
+      default = 5;
+    };
+    sessionDuration = lib.mkOption {
+      type = lib.types.str;
+      default = "15m";
+    };
+    _suspendedUnits = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      internal = true;
+    };
   };
 
   config = lib.mkMerge [

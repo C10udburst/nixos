@@ -10,29 +10,22 @@
   tailscaleAnswers = lib.concatMapStrings (ip: "        answer \"{{ .Name }} 60 IN A ${ip}\"\n") cfg.tailscaleIp;
   localAnswers = lib.concatMapStrings (ip: "        answer \"{{ .Name }} 60 IN A ${ip}\"\n") cfg.localIp;
 in {
-  options.features.server.web.pihole.coredns = lib.mkOption {
-    type = lib.types.coercedTo lib.types.bool (b: {enable = b;}) (
-      lib.types.submodule {
-        options = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = piholeCfg.enable && true;
-          };
-          tailscaleIp = lib.mkOption {
-            type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
-            default = ["100.93.113.91"];
-          };
-          localIp = lib.mkOption {
-            type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
-            default = [
-              "192.168.1.10"
-              "192.168.1.11"
-            ];
-          };
-        };
-      }
-    );
-    default = {};
+  options.features.server.web.pihole.coredns = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = piholeCfg.enable && true;
+    };
+    tailscaleIp = lib.mkOption {
+      type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
+      default = ["100.93.113.91"];
+    };
+    localIp = lib.mkOption {
+      type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
+      default = [
+        "192.168.1.10"
+        "192.168.1.11"
+      ];
+    };
   };
 
   config = lib.mkIf (piholeCfg.enable && cfg.enable) {

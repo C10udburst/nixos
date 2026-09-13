@@ -44,11 +44,9 @@
     '';
   };
 in {
-  options.features.gui.apps.editors.jetbrains = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = editorsEnabled && false;
-    };
+  options.features.gui.apps.editors.jetbrains = lib.mkOption {
+    type = lib.types.bool;
+    default = editorsEnabled && false;
   };
 
   config = lib.mkMerge [
@@ -60,7 +58,7 @@ in {
         };
       };
     }
-    (lib.mkIf cfg.enable {
+    (lib.mkIf cfg {
       environment.systemPackages =
         lib.optionals isRust [pkgs.jetbrains.rust-rover]
         ++ lib.optionals isGo [pkgs.jetbrains.goland]

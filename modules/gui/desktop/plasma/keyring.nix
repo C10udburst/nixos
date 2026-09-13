@@ -6,14 +6,12 @@
 }: let
   cfg = config.features.gui.desktop.plasma.keyring;
 in {
-  options.features.gui.desktop.plasma.keyring = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.gui.desktop.plasma.enable && true;
-    };
+  options.features.gui.desktop.plasma.keyring = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.gui.desktop.plasma.enable && true;
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg {
     services.gnome.gnome-keyring.enable = lib.mkDefault true;
 
     # Completely disable KWallet in PAM and use GNOME Keyring instead

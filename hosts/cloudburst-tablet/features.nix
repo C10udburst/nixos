@@ -15,7 +15,7 @@ _: {
 
     shell = {
       git.enable = false;
-      ranger.enable = false;
+      ranger = false;
       utils = {
         enable = false;
         core = true;

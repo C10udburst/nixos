@@ -10,14 +10,12 @@
   storage = webCfg.storage;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
-  options.features.server.web.homarr = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.server.web.enable && false;
-    };
+  options.features.server.web.homarr = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.server.web.enable && false;
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "home";

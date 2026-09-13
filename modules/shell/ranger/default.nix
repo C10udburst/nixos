@@ -7,11 +7,9 @@
 }: let
   cfg = config.features.shell.ranger;
 in {
-  options.features.shell.ranger = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.shell.enable && true;
-    };
+  options.features.shell.ranger = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.shell.enable && true;
   };
 
   config = lib.mkMerge [
@@ -27,7 +25,7 @@ in {
         };
       };
     }
-    (lib.mkIf cfg.enable {
+    (lib.mkIf cfg {
       environment.systemPackages = [pkgs.ranger];
 
       home-manager.users.cloudburst = {
