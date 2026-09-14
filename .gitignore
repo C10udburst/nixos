@@ -3,3 +3,6 @@ nixos-switch.log
 smb-secrets
 result
 features-full.nix
+secret.key
+public.key
+*.key

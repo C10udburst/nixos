@@ -523,6 +523,26 @@
         "type": "github"
       }
     },
+    "nixcache-oci": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789416374,
+        "narHash": "sha256-alphc/0ogTxUqrmU7bYDnPh5EHpfGF1+VZ7QKTmdMvo=",
+        "owner": "cmspam",
+        "repo": "nixcache-oci",
+        "rev": "637d622fa42231df97bec2fee4aa598b0b671cf2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cmspam",
+        "repo": "nixcache-oci",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -865,6 +885,7 @@
         "kimsay": "kimsay",
         "nix-alien": "nix-alien",
         "nix-vscode-extensions": "nix-vscode-extensions",
+        "nixcache-oci": "nixcache-oci",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "noctalia": "noctalia",
