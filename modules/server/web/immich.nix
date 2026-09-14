@@ -32,6 +32,15 @@ in {
         '';
       })
       {
+        systemd.tmpfiles.rules = [
+          "d ${storage}/immich/cache 0750 immich immich - -"
+        ];
+
+        users.users.immich.extraGroups = [
+          "video"
+          "render"
+        ];
+
         services.immich = {
           enable = true;
           port = 2283;
@@ -44,7 +53,16 @@ in {
             enable = cfg.ml != null;
             environment = lib.optionalAttrs (cfg.ml != null) {
               IMMICH_ACCELERATION_TYPE = cfg.ml;
+              MACHINE_LEARNING_CACHE_FOLDER = "${storage}/immich/cache";
+              XDG_CACHE_HOME = "${storage}/immich/cache";
+              MPLCONFIGDIR = "${storage}/immich/cache";
             };
+          };
+        };
+
+        systemd.services.immich-machine-learning = lib.mkIf (cfg.ml != null) {
+          serviceConfig = {
+            CPUQuota = "200%";
           };
         };
       }

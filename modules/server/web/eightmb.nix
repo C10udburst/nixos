@@ -5,11 +5,11 @@
   helpers,
   ...
 }: let
-  cfg = config.features.server.web.transmute;
+  cfg = config.features.server.web.eightmb;
   storage = config.features.server.web.storage;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
-  options.features.server.web.transmute = lib.mkOption {
+  options.features.server.web.eightmb = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.enable && true;
   };
@@ -17,13 +17,13 @@ in {
   config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
-        name = "convert";
+        name = "8mb";
         aliases = [
-          "convertx"
-          "transmute"
+          "eightmb"
+          "compress"
         ];
-        port = 3313;
-        suspend = "podman-transmute.service";
+        port = 8002;
+        suspend = "podman-eightmb.service";
         extraConfig = ''
           request_body {
             max_size 50000MB
@@ -31,10 +31,10 @@ in {
         '';
       })
       {
-        users.users.transmute = {
+        users.users.eightmb = {
           isSystemUser = true;
-          group = "transmute";
-          home = "${storage}/transmute";
+          group = "eightmb";
+          home = "${storage}/eightmb";
           autoSubUidGidRange = true;
           linger = true;
           extraGroups = [
@@ -42,27 +42,27 @@ in {
             "render"
           ];
         };
-        users.groups.transmute = {};
+        users.groups.eightmb = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/transmute 0750 transmute transmute - -"
+          "d ${storage}/eightmb 0750 eightmb eightmb - -"
+          "d ${storage}/eightmb/outputs 0750 eightmb eightmb - -"
+          "d ${storage}/eightmb/uploads 0750 eightmb eightmb - -"
         ];
 
-        virtualisation.oci-containers.containers.transmute = {
-          image = helpers.resolveImage "ghcr.io/transmute-app/transmute:latest";
-          podman.user = "transmute";
+        virtualisation.oci-containers.containers.eightmb = {
+          image = helpers.resolveImage "docker.io/jms1717/8mblocal:latest";
+          podman.user = "eightmb";
           ports = [
-            "127.0.0.1:3313:3313"
+            "127.0.0.1:8002:8001"
           ];
           devices = [
             "/dev/dri:/dev/dri"
           ];
           volumes = [
-            "${storage}/transmute:/app/data"
+            "${storage}/eightmb/outputs:/app/outputs"
+            "${storage}/eightmb/uploads:/app/uploads"
           ];
-          environment = {
-            ALLOW_UNAUTHENTICATED = "true";
-          };
         };
       }
     ]

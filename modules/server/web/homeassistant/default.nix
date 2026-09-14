@@ -24,7 +24,7 @@ in {
     {
       services.home-assistant = {
         enable = true;
-        configDir = "${storage}/homeassistant";
+        configDir = "${storage}/homeassistant/config";
         config = {
           http = {
             use_x_forwarded_for = true;
@@ -35,6 +35,8 @@ in {
           };
         };
       };
+
+      users.users.hass.extraGroups = ["dialout"];
     }
   ]);
 }

@@ -7,6 +7,7 @@
 }: let
   cfg = config.features.server.web.wealthfolio;
   storage = config.features.server.web.storage;
+  baseDomain = config.features.server.web.core.baseDomain or "example.com";
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.wealthfolio = lib.mkOption {
@@ -48,6 +49,7 @@ in {
           environment = {
             WF_LISTEN_ADDR = "0.0.0.0:8088";
             WF_DB_PATH = "/data/wealthfolio.db";
+            WF_CORS_ALLOW_ORIGINS = "wealth.${baseDomain}";
           };
         };
       }

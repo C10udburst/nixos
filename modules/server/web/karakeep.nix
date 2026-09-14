@@ -31,8 +31,14 @@ in {
           "d ${storage}/karakeep 0750 karakeep karakeep - -"
         ];
 
+        services.meilisearch = {
+          noAnalytics = true;
+        };
+
         services.karakeep = {
           enable = true;
+          browser.enable = true;
+          meilisearch.enable = true;
           extraEnvironment = {
             PORT = "3080";
             DATA_DIR = "${storage}/karakeep";
