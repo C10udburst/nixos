@@ -4,7 +4,8 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.gui.apps.editors.jetbrains;
   editorsEnabled = config.features.gui.apps.editors.enable;
 
@@ -19,7 +20,7 @@
     pname = "jetbra-netfilter";
     version = "1.0.0";
     src = inputs.jetbra-netfilter;
-    nativeBuildInputs = [pkgs.unzip];
+    nativeBuildInputs = [ pkgs.unzip ];
     installPhase = ''
       mkdir -p $out
       if [ -d "$src/jetbra" ]; then
@@ -43,7 +44,8 @@
       done
     '';
   };
-in {
+in
+{
   options.features.gui.apps.editors.jetbrains = lib.mkOption {
     type = lib.types.bool;
     default = editorsEnabled && false;
@@ -53,20 +55,20 @@ in {
     {
       flake-file.inputs = {
         jetbra-netfilter = {
-          url = "https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip";
+          url = "https://ipfs.filebase.io/ipns/3.jetbra.in/files/jetbra-8f6785eac5e6e7e8b20e6174dd28bb19d8da7550.zip";
           flake = false;
         };
       };
     }
     (lib.mkIf cfg {
       environment.systemPackages =
-        lib.optionals isRust [pkgs.jetbrains.rust-rover]
-        ++ lib.optionals isGo [pkgs.jetbrains.goland]
-        ++ lib.optionals isPython [pkgs.jetbrains.pycharm]
-        ++ lib.optionals isKotlin [pkgs.jetbrains.idea];
+        lib.optionals isRust [ pkgs.jetbrains.rust-rover ]
+        ++ lib.optionals isGo [ pkgs.jetbrains.goland ]
+        ++ lib.optionals isPython [ pkgs.jetbrains.pycharm ]
+        ++ lib.optionals isKotlin [ pkgs.jetbrains.idea ];
 
       home-manager.users.cloudburst = {
-        home.packages = [jetbra-netfilter];
+        home.packages = [ jetbra-netfilter ];
         home.sessionVariables = {
           IDEA_VM_OPTIONS = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
           PYCHARM_VM_OPTIONS = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";

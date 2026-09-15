@@ -24,11 +24,6 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Magic Nix Cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
-        with:
-          listen: 127.0.0.1:37516
-
       - name: Setup signing key
         run: |
           if [[ -n "${{ secrets.NIX_SIGNING_KEY }}" ]]; then
