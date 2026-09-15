@@ -10,31 +10,24 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 jobs:
-  build:
-    name: Build ${{ matrix.host }}
+  build-and-cache:
+    name: Build and Cache Hosts
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        host:
-          - cloudburst-desktop
-          - cloudburst-laptop
-          - cloudburst-tablet
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Checkout nixcache-oci tools
-        uses: actions/checkout@v4
-        with:
-          repository: cmspam/nixcache-oci
-          path: ${{ runner.temp }}/nixcache-oci
-
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+        with:
+          listen: 127.0.0.1:37516
 
       - name: Setup signing key
         run: |
@@ -54,7 +47,7 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Build host and publish cache
+      - name: Build hosts and publish cache
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NIXCACHE_CONFIG_DIR: "."
@@ -64,34 +57,15 @@ jobs:
           export NIXCACHE_REPO="$REPO"
           export NIXCACHE_IMAGE="ghcr.io/${NIXCACHE_REPO}/nix-cache"
 
-          # Source nixcache-oci builder logic
-          source "${{ runner.temp }}/nixcache-oci/lib/cache-builder.sh"
+          # Resolve nixcache-oci source directly from locked flake inputs
+          NIXCACHE_SRC=$(nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixcache-oci.outPath')
+          source "${NIXCACHE_SRC}/lib/cache-builder.sh"
 
-          # Target only the current matrix host
+          # Target all 3 hosts together
           discover_outputs() {
-            echo ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
-          }
-
-          # Refresh index immediately before merging to handle concurrent matrix job completions
-          _orig_update_cache_index=$(declare -f update_cache_index | tail -n +2)
-          update_cache_index() {
-            local existing_index_file="$1"
-            local receipts_file="$2"
-            shift 2
-            local gc_root_paths=("$@")
-
-            local existing_manifest
-            existing_manifest=$(oci_get_manifest "cache-index" 2>/dev/null || true)
-            if [[ -n "$existing_manifest" ]]; then
-              local index_digest
-              index_digest=$(echo "$existing_manifest" | jq -r '.layers[0].digest // empty' 2>/dev/null)
-              if [[ -n "$index_digest" ]]; then
-                oci_get_blob "$index_digest" > "$existing_index_file" 2>/dev/null || echo '{}' > "$existing_index_file"
-              fi
-            fi
-
-            eval "_call_orig_update_cache_index() $_orig_update_cache_index"
-            _call_orig_update_cache_index "$existing_index_file" "$receipts_file" "${gc_root_paths[@]}"
+            echo ".#nixosConfigurations.cloudburst-desktop.config.system.build.toplevel"
+            echo ".#nixosConfigurations.cloudburst-laptop.config.system.build.toplevel"
+            echo ".#nixosConfigurations.cloudburst-tablet.config.system.build.toplevel"
           }
 
           full_pipeline
