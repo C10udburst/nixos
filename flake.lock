@@ -434,14 +434,14 @@
     "jetbra-netfilter": {
       "flake": false,
       "locked": {
-        "lastModified": 1761932502,
-        "narHash": "sha256-iCtLAmJ1uBU2VtU/EbgASI5Ws9pUJUpWxOB6xsZjgVs=",
+        "lastModified": 1719929664,
+        "narHash": "sha256-FvjwrmRE9xXkDIIkOyxVEFdycYa/t2Z0EgBueV+26BQ=",
         "type": "tarball",
-        "url": "https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip"
+        "url": "https://ipfs.filebase.io/ipns/3.jetbra.in/files/jetbra-8f6785eac5e6e7e8b20e6174dd28bb19d8da7550.zip"
       },
       "original": {
         "type": "tarball",
-        "url": "https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip"
+        "url": "https://ipfs.filebase.io/ipns/3.jetbra.in/files/jetbra-8f6785eac5e6e7e8b20e6174dd28bb19d8da7550.zip"
       }
     },
     "kimsay": {

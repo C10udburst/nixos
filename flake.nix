@@ -33,7 +33,7 @@
       flake = false;
     };
     jetbra-netfilter = {
-      url = "https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip";
+      url = "https://ipfs.filebase.io/ipns/3.jetbra.in/files/jetbra-8f6785eac5e6e7e8b20e6174dd28bb19d8da7550.zip";
       flake = false;
     };
     kimsay = {

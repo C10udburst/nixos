@@ -4,8 +4,7 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.gui.apps.editors.jetbrains;
   editorsEnabled = config.features.gui.apps.editors.enable;
 
@@ -20,7 +19,7 @@ let
     pname = "jetbra-netfilter";
     version = "1.0.0";
     src = inputs.jetbra-netfilter;
-    nativeBuildInputs = [ pkgs.unzip ];
+    nativeBuildInputs = [pkgs.unzip];
     installPhase = ''
       mkdir -p $out
       if [ -d "$src/jetbra" ]; then
@@ -44,8 +43,7 @@ let
       done
     '';
   };
-in
-{
+in {
   options.features.gui.apps.editors.jetbrains = lib.mkOption {
     type = lib.types.bool;
     default = editorsEnabled && false;
@@ -62,13 +60,13 @@ in
     }
     (lib.mkIf cfg {
       environment.systemPackages =
-        lib.optionals isRust [ pkgs.jetbrains.rust-rover ]
-        ++ lib.optionals isGo [ pkgs.jetbrains.goland ]
-        ++ lib.optionals isPython [ pkgs.jetbrains.pycharm ]
-        ++ lib.optionals isKotlin [ pkgs.jetbrains.idea ];
+        lib.optionals isRust [pkgs.jetbrains.rust-rover]
+        ++ lib.optionals isGo [pkgs.jetbrains.goland]
+        ++ lib.optionals isPython [pkgs.jetbrains.pycharm]
+        ++ lib.optionals isKotlin [pkgs.jetbrains.idea];
 
       home-manager.users.cloudburst = {
-        home.packages = [ jetbra-netfilter ];
+        home.packages = [jetbra-netfilter];
         home.sessionVariables = {
           IDEA_VM_OPTIONS = "${jetbra-netfilter}/vmoptions/idea.vmoptions";
           PYCHARM_VM_OPTIONS = "${jetbra-netfilter}/vmoptions/pycharm.vmoptions";
