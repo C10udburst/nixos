@@ -7,6 +7,10 @@
 }: let
   cfg = config.features.gui.apps.tools.organizeer;
 in {
+  imports = lib.optionals (inputs ? organizeer && inputs.organizeer ? nixosModules) [
+    inputs.organizeer.nixosModules.default
+  ];
+
   options.features.gui.apps.tools.organizeer = lib.mkOption {
     type = lib.types.bool;
     default = config.features.gui.apps.tools.enable && true;
@@ -21,10 +25,12 @@ in {
         };
       };
     }
+    (lib.mkIf (cfg && inputs ? organizeer && inputs.organizeer ? nixosModules) {
+      services.organizeer-daemon.enable = true;
+    })
     (lib.mkIf cfg {
-      #inputs.organizeer.services.organizeer-daemon.enable = true;
       environment.systemPackages = lib.optionals (inputs ? organizeer && inputs.organizeer ? packages) [
-        inputs.organizeer.packages.${pkgs.stdenv.hostPlatform.system}.default
+        inputs.organizeer.packages.${pkgs.stdenv.hostPlatform.system}.app
       ];
     })
   ];

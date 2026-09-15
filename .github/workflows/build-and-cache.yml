@@ -24,6 +24,41 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
 
+      - name: Setup access for private dependencies
+        run: |
+          # 1. SSH key access (for git+ssh:// private repositories like Organizeer)
+          if [[ -n "${{ secrets.SSH_PRIVATE_KEY }}" ]]; then
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+
+            # Configure for root / nix-daemon as well
+            sudo mkdir -p /root/.ssh
+            sudo cp ~/.ssh/known_hosts /root/.ssh/known_hosts
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee /root/.ssh/id_ed25519 >/dev/null
+            sudo chmod 600 /root/.ssh/id_ed25519
+
+            echo -e "Host github.com\n  IdentityFile /root/.ssh/id_ed25519\n  StrictHostKeyChecking accept-new" | sudo tee -a /etc/ssh/ssh_config >/dev/null || true
+            echo -e "Host github.com\n  IdentityFile ~/.ssh/id_ed25519\n  StrictHostKeyChecking accept-new" >> ~/.ssh/config
+
+            eval $(ssh-agent -s)
+            ssh-add ~/.ssh/id_ed25519
+            echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+            echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+            echo ">>> Configured SSH key for private repositories"
+          fi
+
+          # 2. Personal Access Token (PAT) fallback (rewrites SSH git URLs to HTTPS token auth)
+          if [[ -n "${{ secrets.GH_PAT }}" ]]; then
+            sudo git config --system url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
+            sudo git config --system --add url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "git@github.com:"
+            git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
+            git config --global --add url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "git@github.com:"
+            echo "extra-access-tokens = github.com=${{ secrets.GH_PAT }}" | sudo tee -a /etc/nix/nix.conf >/dev/null
+            echo ">>> Configured GitHub PAT for private repositories"
+          fi
+
       - name: Setup signing key
         run: |
           if [[ -n "${{ secrets.NIX_SIGNING_KEY }}" ]]; then
