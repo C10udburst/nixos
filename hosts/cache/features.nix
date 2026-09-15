@@ -29,7 +29,10 @@ _: {
         enable = true;
         documents.enable = false;
         arduino.enable = true;
-        android.jadx = true;
+        android = {
+          dev = true;
+          jadx = true;
+        };
         programming = {
           go = false;
           kotlin = false;
