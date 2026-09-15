@@ -4,9 +4,11 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.gui.apps.tools.organizeer;
-in {
+in
+{
   imports = lib.optionals (inputs ? organizeer && inputs.organizeer ? nixosModules) [
     inputs.organizeer.nixosModules.default
   ];
@@ -21,7 +23,7 @@ in {
       flake-file.inputs = {
         organizeer = {
           url = "git+ssh://git@github.com/C10udburst/Organizeer.git";
-          inputs.nixpkgs.follows = "nixpkgs";
+          #inputs.nixpkgs.follows = "nixpkgs"; #breaks gradle lock
         };
       };
     }

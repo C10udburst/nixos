@@ -86,10 +86,7 @@
       url = "github:Irev-Dev/Round-Anything";
       flake = false;
     };
-    organizeer = {
-      url = "git+ssh://git@github.com/C10udburst/Organizeer.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    organizeer.url = "git+ssh://git@github.com/C10udburst/Organizeer.git";
     pi-agent = {
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
