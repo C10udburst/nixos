@@ -3,10 +3,12 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   gamesEnabled = config.features.gui.games.enable;
   cfg = config.features.gui.games.misc;
-in {
+in
+{
   options.features.gui.games.misc = lib.mkOption {
     type = lib.types.bool;
     default = gamesEnabled && true;
@@ -14,7 +16,6 @@ in {
 
   config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
-      lutris
       mangohud
     ];
   };

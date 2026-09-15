@@ -37,5 +37,6 @@ in {
     cloudburst-laptop = mkHost {hostName = "cloudburst-laptop";};
     cloudburst-tablet = mkHost {hostName = "cloudburst-tablet";};
     bootstrap = mkHost {hostName = "bootstrap";};
+    cache = mkHost {hostName = "cache";};
   };
 }

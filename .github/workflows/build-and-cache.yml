@@ -21,6 +21,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" 2>/dev/null || true
+          sudo docker image prune --all --force 2>/dev/null || true
+          df -h
+
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
 
@@ -91,11 +97,9 @@ jobs:
           NIXCACHE_SRC=$(nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixcache-oci.outPath')
           source "${NIXCACHE_SRC}/lib/cache-builder.sh"
 
-          # Target all 3 hosts together
+          # Target the cache host covering selected features
           discover_outputs() {
-            echo ".#nixosConfigurations.cloudburst-desktop.config.system.build.toplevel"
-            echo ".#nixosConfigurations.cloudburst-laptop.config.system.build.toplevel"
-            echo ".#nixosConfigurations.cloudburst-tablet.config.system.build.toplevel"
+            echo ".#nixosConfigurations.cache.config.system.build.toplevel"
           }
 
           full_pipeline

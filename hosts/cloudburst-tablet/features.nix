@@ -46,7 +46,6 @@ _: {
 
     compat = {
       enable = false;
-      nix-alien = false;
     };
   };
 }
