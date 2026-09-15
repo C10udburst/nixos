@@ -4,11 +4,9 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.gui.apps.tools.organizeer;
-in
-{
+in {
   imports = lib.optionals (inputs ? organizeer && inputs.organizeer ? nixosModules) [
     inputs.organizeer.nixosModules.default
   ];
