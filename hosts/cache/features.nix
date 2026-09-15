@@ -42,6 +42,11 @@ _: {
       };
     };
 
+    server = {
+      enable = true;
+      web.enable = true;
+    };
+
     compat = {
       wine = true;
       waydroid = true;
