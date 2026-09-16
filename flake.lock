@@ -562,6 +562,22 @@
         "type": "github"
       }
     },
+    "nixos-unstable": {
+      "locked": {
+        "lastModified": 1789546076,
+        "narHash": "sha256-zVxLZiSnmaaPLwnhj7pwmqe3axBg/C6nG5JZsJMh2g4=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "b1b875982b17dabde9b4a37f3e229e74913e6db3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1767892417,
@@ -883,6 +899,7 @@
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixcache-oci": "nixcache-oci",
         "nixos-hardware": "nixos-hardware",
+        "nixos-unstable": "nixos-unstable",
         "nixpkgs": "nixpkgs_2",
         "noctalia": "noctalia",
         "noctalia-cloudburst": "noctalia-cloudburst",

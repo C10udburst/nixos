@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgsUnstable,
   ...
 }: let
   cfg = config.features.server.web.immich;
@@ -43,6 +44,7 @@ in {
 
         services.immich = {
           enable = true;
+          package = pkgsUnstable.immich;
           port = 2283;
           host = "127.0.0.1";
           mediaLocation = "${storage}/immich";
