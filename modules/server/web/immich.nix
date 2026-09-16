@@ -55,9 +55,9 @@ in {
             enable = cfg.ml != null;
             environment = lib.optionalAttrs (cfg.ml != null) {
               IMMICH_ACCELERATION_TYPE = cfg.ml;
-              MACHINE_LEARNING_CACHE_FOLDER = "${storage}/immich/cache";
-              XDG_CACHE_HOME = "${storage}/immich/cache";
-              MPLCONFIGDIR = "${storage}/immich/cache";
+              MACHINE_LEARNING_CACHE_FOLDER = lib.mkForce "${storage}/immich/cache";
+              XDG_CACHE_HOME = lib.mkForce "${storage}/immich/cache";
+              MPLCONFIGDIR = lib.mkForce "${storage}/immich/cache";
             };
           };
         };

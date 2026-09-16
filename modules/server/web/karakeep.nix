@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgsUnstable,
   ...
 }: let
   cfg = config.features.server.web.karakeep;
@@ -32,18 +33,21 @@ in {
         ];
 
         services.meilisearch = {
-          noAnalytics = true;
+          settings.no_analytics = true;
         };
 
         services.karakeep = {
           enable = true;
+          package = pkgsUnstable.karakeep;
           browser.enable = true;
           meilisearch.enable = true;
           extraEnvironment = {
             PORT = "3080";
-            DATA_DIR = "${storage}/karakeep";
           };
         };
+
+        systemd.services.karakeep-web.environment.DATA_DIR = lib.mkForce "${storage}/karakeep";
+        systemd.services.karakeep-workers.environment.DATA_DIR = lib.mkForce "${storage}/karakeep";
       }
     ]
   );
