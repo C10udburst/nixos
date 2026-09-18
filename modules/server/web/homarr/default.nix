@@ -29,7 +29,7 @@
 in {
   options.features.server.web.homarr = lib.mkOption {
     type = lib.types.bool;
-    default = config.features.server.web.enable && false;
+    default = config.features.server.web.enable && true;
   };
 
   config = lib.mkIf cfg (
@@ -41,7 +41,6 @@ in {
           "homepage"
         ];
         port = 7575;
-        suspend = "podman-homarr.service";
       })
       {
         age.secrets.homarr-env = {

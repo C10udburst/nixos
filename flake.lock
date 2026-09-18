@@ -1149,11 +1149,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789244384,
-        "narHash": "sha256-2imMKCiH8G85AsRqjGAR9Qdoq2CfkPsvUDFHrjg2T+w=",
+        "lastModified": 1789748450,
+        "narHash": "sha256-bztPBoiiCRvwAtYx4iZtVma2VN2roXVJla2A9WA6pK8=",
         "owner": "C10udburst",
         "repo": "oci-lock",
-        "rev": "973c3ea92906a79eace370b96e49097c91f8d6da",
+        "rev": "c3a74ebcb7967d8c6f58308d5be58478f31b9844",
         "type": "github"
       },
       "original": {

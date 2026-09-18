@@ -9,7 +9,7 @@
 in {
   options.features.server.web.homepage = lib.mkOption {
     type = lib.types.bool;
-    default = config.features.server.web.enable && true;
+    default = config.features.server.web.enable && false;
   };
 
   config = lib.mkIf cfg (
