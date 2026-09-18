@@ -4,7 +4,7 @@ let
   users = [cloudburst];
 
   # Host public keys
-  cloudburst-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP6nZFxrEKbYZ4zTRT1f6G5K/yOgCSEdutpfrGKd+AuW root@nixos";
+  cloudburst-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP6nZFxrEKbYZ4zTRT1f6G5K/yOgCSEdutpfrGKd+AuW";
   cloudburst-laptop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXN+rc6QVRB54swk7dsXfbzHNIHNm4RjuSLueUzDi2H";
   cloudburst-tablet = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINn+GfTMQYqlUdiFhsTwoko21NzwL9CkEhiXigHTLFSL";
   cache = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGaxH0iycuhAYW9eAumBaMViCUvVU7Fl1gobsT19HLcr";

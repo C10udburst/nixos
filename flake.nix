@@ -48,6 +48,7 @@
       url = "github:IcaroJam/kimsay";
       flake = false;
     };
+    ngipkgs.url = "github:ngi-nix/ngipkgs";
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs.nixpkgs.follows = "nixpkgs";

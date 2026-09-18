@@ -5,11 +5,20 @@
   ...
 }: let
   cfg = config.features.server.web.ssl;
+  baseDomain = config.features.server.web.core.baseDomain;
+  tokenFile =
+    if cfg.cloudflare.apiTokenFile != null
+    then cfg.cloudflare.apiTokenFile
+    else config.age.secrets.cloudflare-api-token.path;
 in {
   options.features.server.web.ssl = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = config.features.server.web.enable && true;
+    };
+    email = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
     };
     cloudflare = {
       apiTokenFile = lib.mkOption {
@@ -24,20 +33,17 @@ in {
       file = ../../../secrets/cloudflare-api-token.age;
     };
 
-    services.caddy.package = pkgs.caddy.withPlugins {
-      plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
-      hash = "sha256-PWadA5qr/gR2qDcT8l8u1Xku7LM2HIfWTLOkzezCYy0=";
+    security.acme = {
+      acceptTerms = true;
+      defaults = lib.mkIf (cfg.email != null) {
+        email = cfg.email;
+      };
+      certs."${baseDomain}" = {
+        domain = baseDomain;
+        extraDomainNames = ["*.${baseDomain}"];
+        dnsProvider = "cloudflare";
+        environmentFile = tokenFile;
+      };
     };
-
-    services.caddy.globalConfig = lib.mkAfter ''
-      acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    '';
-    systemd.services.caddy.serviceConfig.EnvironmentFile = [
-      (
-        if cfg.cloudflare.apiTokenFile != null
-        then cfg.cloudflare.apiTokenFile
-        else config.age.secrets.cloudflare-api-token.path
-      )
-    ];
   };
 }

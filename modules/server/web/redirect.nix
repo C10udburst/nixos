@@ -63,6 +63,7 @@ in {
           '';
         };
         "${wildcardVhosts}" = {
+          useACMEHost = lib.mkIf (webCfg.ssl.enable or false) baseDomain;
           extraConfig = ''
             ${appRedirectRules}
             handle {

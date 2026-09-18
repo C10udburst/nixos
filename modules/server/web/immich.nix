@@ -23,8 +23,11 @@ in {
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
       (webHelper.mkWebApp {
-        name = "immich";
-        aliases = ["photos"];
+        name = "photos";
+        aliases = [
+          "immich"
+          "photo"
+        ];
         port = 2283;
         extraConfig = ''
           request_body {

@@ -55,6 +55,7 @@
     ];
     features.server.web.sablier._suspendedUnits = suspendList;
     services.caddy.virtualHosts."${domain}" = {
+      useACMEHost = lib.mkIf (config.features.server.web.ssl.enable or false) baseDomain;
       extraConfig = ''
         header -X-Frame-Options
         header ?Content-Security-Policy "frame-ancestors ${allowedAncestors}"
