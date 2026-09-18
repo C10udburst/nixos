@@ -21,6 +21,7 @@
         inputs.home-manager.nixosModules.home-manager
         inputs.stylix.nixosModules.stylix
         (inputs.nixcache-oci.nixosModules.default or {})
+        (inputs.agenix.nixosModules.default or {})
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

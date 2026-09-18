@@ -24,6 +24,13 @@ in {
         suspend = "podman-wealthfolio.service";
       })
       {
+        age.secrets.wealthfolio-env = {
+          file = ../../../secrets/wealthfolio-env.age;
+          owner = "wealthfolio";
+          group = "wealthfolio";
+          mode = "0400";
+        };
+
         users.users.wealthfolio = {
           isSystemUser = true;
           group = "wealthfolio";
@@ -51,6 +58,9 @@ in {
             WF_DB_PATH = "/data/wealthfolio.db";
             WF_CORS_ALLOW_ORIGINS = "wealth.${baseDomain}";
           };
+          environmentFiles = [
+            config.age.secrets.wealthfolio-env.path
+          ];
         };
       }
     ]

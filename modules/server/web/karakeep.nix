@@ -4,12 +4,14 @@
   pkgs,
   pkgsUnstable,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.karakeep;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix {inherit config lib pkgs;};
-in {
+  webHelper = import ./_webService.nix { inherit config lib pkgs; };
+in
+{
   options.features.server.web.karakeep = lib.mkOption {
     type = lib.types.bool;
     default = webCfg.enable && true;
@@ -28,6 +30,7 @@ in {
         suspend = "karakeep-web.service";
       })
       {
+
         systemd.tmpfiles.rules = [
           "d ${storage}/karakeep 0750 karakeep karakeep - -"
         ];

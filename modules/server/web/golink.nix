@@ -15,7 +15,7 @@ in {
       default = config.features.server.web.enable && true;
     };
     tailscaleAuthKeyFile = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
+      type = lib.types.nullOr (lib.types.either lib.types.path lib.types.str);
       default = null;
     };
   };
@@ -27,6 +27,10 @@ in {
         port = port;
       })
       {
+        age.secrets.golink-tailscale-auth-key = {
+          file = ../../../secrets/golink-tailscale-auth-key.age;
+        };
+
         services.caddy.virtualHosts."http://go" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString port}
@@ -50,8 +54,12 @@ in {
             '';
             Restart = "on-failure";
             RestartSec = "5s";
-            EnvironmentFile = lib.mkIf (cfg.tailscaleAuthKeyFile != null) [
-              cfg.tailscaleAuthKeyFile
+            EnvironmentFile = [
+              (
+                if cfg.tailscaleAuthKeyFile != null
+                then cfg.tailscaleAuthKeyFile
+                else config.age.secrets.golink-tailscale-auth-key.path
+              )
             ];
           };
         };

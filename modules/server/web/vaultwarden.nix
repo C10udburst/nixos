@@ -25,8 +25,13 @@ in {
         port = 8222;
       })
       {
+        age.secrets.vaultwarden-env = {
+          file = ../../../secrets/vaultwarden-env.age;
+        };
+
         services.vaultwarden = {
           enable = true;
+          environmentFile = config.age.secrets.vaultwarden-env.path;
           config = {
             ROCKET_PORT = 8222;
             ENABLE_WEBSOCKET = true;

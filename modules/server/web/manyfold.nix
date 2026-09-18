@@ -28,6 +28,13 @@ in {
         suspend = "podman-manyfold.service";
       })
       {
+        age.secrets.manyfold-env = {
+          file = ../../../secrets/manyfold-env.age;
+          owner = "manyfold";
+          group = "manyfold";
+          mode = "0400";
+        };
+
         users.users.manyfold = {
           isSystemUser = true;
           group = "manyfold";
@@ -55,6 +62,9 @@ in {
             PUID = "1000";
             PGID = "1000";
           };
+          environmentFiles = [
+            config.age.secrets.manyfold-env.path
+          ];
         };
       }
     ]

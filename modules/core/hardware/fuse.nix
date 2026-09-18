@@ -23,6 +23,10 @@ in {
         pkgs.adbfs-rootless
       ];
 
+    age.secrets.smb-secrets = {
+      file = ../../../secrets/smb-secrets.age;
+    };
+
     fileSystems = {
       "/mnt/brix0" = lib.mkIf (config.networking.hostName != "brix0") {
         device = "//brix0/data";
@@ -34,7 +38,7 @@ in {
           "x-systemd.mount-timeout=2s"
           "uid=1000"
           "gid=100"
-          "credentials=/etc/nixos/smb-secrets"
+          "credentials=${config.age.secrets.smb-secrets.path}"
         ];
       };
 
@@ -48,7 +52,7 @@ in {
           "x-systemd.mount-timeout=2s"
           "uid=1000"
           "gid=100"
-          "credentials=/etc/nixos/smb-secrets"
+          "credentials=${config.age.secrets.smb-secrets.path}"
         ];
       };
     };

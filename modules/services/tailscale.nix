@@ -14,6 +14,10 @@ in {
       type = lib.types.bool;
       default = false;
     };
+    authKeyFile = lib.mkOption {
+      type = lib.types.nullOr (lib.types.either lib.types.path lib.types.str);
+      default = null;
+    };
   };
 
   config = lib.mkMerge [
@@ -28,6 +32,7 @@ in {
     (lib.mkIf cfg.enable {
       services.tailscale = {
         enable = true;
+        authKeyFile = lib.mkIf (cfg.authKeyFile != null) cfg.authKeyFile;
         extraUpFlags =
           [
             "--operator=cloudburst --accept-routes"
