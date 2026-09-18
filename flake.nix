@@ -31,6 +31,54 @@
       url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";
       flake = false;
     };
+    hass-adaptive-lighting = {
+      url = "github:basnijholt/adaptive-lighting";
+      flake = false;
+    };
+    hass-bermuda = {
+      url = "github:agittins/bermuda";
+      flake = false;
+    };
+    hass-bodymiscale = {
+      url = "github:dckiller51/bodymiscale";
+      flake = false;
+    };
+    hass-burze-dzis-net = {
+      url = "github:PiotrMachowski/Home-Assistant-custom-components-Burze.dzis.net";
+      flake = false;
+    };
+    hass-energy-hub-poland = {
+      url = "github:AllonGit/energy_hub_poland";
+      flake = false;
+    };
+    hass-illuminance = {
+      url = "github:pnbruckner/ha-illuminance";
+      flake = false;
+    };
+    hass-magic-areas = {
+      url = "github:jseidl/hass-magic_areas";
+      flake = false;
+    };
+    hass-moonraker = {
+      url = "github:marcolivierarsenault/moonraker-home-assistant";
+      flake = false;
+    };
+    hass-powercalc = {
+      url = "github:bramstroker/homeassistant-powercalc";
+      flake = false;
+    };
+    hass-waste-collection-schedule = {
+      url = "github:mampfes/hacs_waste_collection_schedule";
+      flake = false;
+    };
+    hass-xiaomi-home = {
+      url = "github:XiaoMi/ha_xiaomi_home";
+      flake = false;
+    };
+    hass-xiaomi-miot = {
+      url = "github:al-one/hass-xiaomi-miot";
+      flake = false;
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";

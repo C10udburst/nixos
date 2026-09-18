@@ -38,11 +38,11 @@ _: {
     };
 
     # enable only for testing
-    # server.web = {
-    #   enable = true;
-    #   core.baseDomain = "desktop.wilkins.pl.eu.org";
-    #   etcHosts.enable = true;
-    #   golink = false;
-    # };
+    server.web = {
+      enable = true;
+      core.baseDomain = "desktop.wilkins.pl.eu.org";
+      etcHosts.enable = true;
+      golink = false;
+    };
   };
 }
