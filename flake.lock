@@ -203,6 +203,26 @@
         "type": "github"
       }
     },
+    "fetlife-browser": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789735267,
+        "narHash": "sha256-KnLKi8roLeNuKnAX+iaRJ0Wp7rKLnJUX6MvQ8kB0CkA=",
+        "ref": "refs/heads/main",
+        "rev": "49709de99af2e1bf6020ea2b1beca6c39d518cdb",
+        "revCount": 30,
+        "type": "git",
+        "url": "ssh://git@github.com/C10udburst/fetlife-browser.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/C10udburst/fetlife-browser.git"
+      }
+    },
     "firefox-gnome-theme": {
       "flake": false,
       "locked": {
@@ -955,6 +975,7 @@
         "antigravity-nix": "antigravity-nix",
         "driftwm": "driftwm",
         "driftwm-desktop": "driftwm-desktop",
+        "fetlife-browser": "fetlife-browser",
         "flake-file": "flake-file",
         "gitr": "gitr",
         "home-manager": "home-manager_2",

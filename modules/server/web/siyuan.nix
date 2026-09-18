@@ -17,11 +17,22 @@ in {
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "notes";
-        aliases = ["siyuan"];
+        aliases = [
+          "siyuan"
+          "markdown"
+          "note"
+        ];
         port = 6806;
         suspend = "siyuan.service";
       })
       {
+        age.secrets.siyuan-env = {
+          file = ../../../secrets/siyuan-env.age;
+          owner = "siyuan";
+          group = "siyuan";
+          mode = "0400";
+        };
+
         users.users.siyuan = {
           isSystemUser = true;
           group = "siyuan";
@@ -47,6 +58,7 @@ in {
             User = "siyuan";
             Group = "siyuan";
             WorkingDirectory = "${storage}/siyuan";
+            EnvironmentFile = config.age.secrets.siyuan-env.path;
             Restart = "on-failure";
             RestartSec = "5s";
           };

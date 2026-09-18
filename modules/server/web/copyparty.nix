@@ -31,7 +31,7 @@ in {
       })
       {
         systemd.tmpfiles.rules = [
-          "d ${storage}/copyparty 0755 root root -"
+          "d ${storage}/copyparty 0755 root root - -"
         ];
 
         systemd.services.copyparty = {
@@ -42,7 +42,7 @@ in {
             ExecStart = ''
               ${pkgs.copyparty}/bin/copyparty \
                 -p 3923 \
-                -a 127.0.0.1 \
+                -i 127.0.0.1 \
                 -v ${storage}/copyparty:/:rw
             '';
             Restart = "on-failure";

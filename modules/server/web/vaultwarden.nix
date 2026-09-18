@@ -29,6 +29,14 @@ in {
           file = ../../../secrets/vaultwarden-env.age;
         };
 
+        systemd.tmpfiles.rules = [
+          "d ${storage}/vaultwarden 0700 vaultwarden vaultwarden - -"
+        ];
+
+        systemd.services.vaultwarden.serviceConfig.ReadWritePaths = [
+          "${storage}/vaultwarden"
+        ];
+
         services.vaultwarden = {
           enable = true;
           environmentFile = config.age.secrets.vaultwarden-env.path;

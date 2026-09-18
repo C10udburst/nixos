@@ -33,7 +33,6 @@ in {
             "todo"
           ];
           port = port;
-          suspend = "organizeer.service";
         })
         {
           users.users.organizeer = {

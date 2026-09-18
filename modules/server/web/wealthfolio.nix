@@ -53,6 +53,9 @@ in {
           volumes = [
             "${storage}/wealthfolio:/data"
           ];
+          extraOptions = [
+            "--userns=keep-id:uid=1000,gid=1000"
+          ];
           environment = {
             WF_LISTEN_ADDR = "0.0.0.0:8088";
             WF_DB_PATH = "/data/wealthfolio.db";

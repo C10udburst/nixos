@@ -25,7 +25,10 @@ in {
   "secrets/cloudflare-api-token.age".publicKeys = users ++ serverHosts;
   "secrets/golink-tailscale-auth-key.age".publicKeys = users ++ serverHosts;
   "secrets/vaultwarden-env.age".publicKeys = users ++ serverHosts;
-  "secrets/karakeep-meilisearch-master-key.age".publicKeys = users ++ serverHosts;
   "secrets/manyfold-env.age".publicKeys = users ++ serverHosts;
   "secrets/wealthfolio-env.age".publicKeys = users ++ serverHosts;
+  "secrets/homarr-env.age".publicKeys = users ++ serverHosts;
+  "secrets/siyuan-env.age".publicKeys = users ++ serverHosts;
+  "secrets/gitea-env.age".publicKeys = users ++ serverHosts;
+  "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;
 }

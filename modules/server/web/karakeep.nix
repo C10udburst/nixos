@@ -4,14 +4,12 @@
   pkgs,
   pkgsUnstable,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.karakeep;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix { inherit config lib pkgs; };
-in
-{
+  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+in {
   options.features.server.web.karakeep = lib.mkOption {
     type = lib.types.bool;
     default = webCfg.enable && true;
@@ -27,13 +25,25 @@ in
           "bookmark"
         ];
         port = 3080;
-        suspend = "karakeep-web.service";
+        suspend = [
+          "karakeep-web.service"
+          "karakeep-workers.service"
+          "karakeep-browser.service"
+          "meilisearch.service"
+        ];
       })
       {
-
         systemd.tmpfiles.rules = [
           "d ${storage}/karakeep 0750 karakeep karakeep - -"
+          "L+ /var/lib/karakeep - - - - ${storage}/karakeep"
         ];
+
+        systemd.services.karakeep-init = {
+          environment.STATE_DIRECTORY = "/var/lib/karakeep";
+          serviceConfig.StateDirectory = lib.mkForce [];
+        };
+        systemd.services.karakeep-web.serviceConfig.StateDirectory = lib.mkForce [];
+        systemd.services.karakeep-workers.serviceConfig.StateDirectory = lib.mkForce [];
 
         services.meilisearch = {
           settings.no_analytics = true;
@@ -48,9 +58,6 @@ in
             PORT = "3080";
           };
         };
-
-        systemd.services.karakeep-web.environment.DATA_DIR = lib.mkForce "${storage}/karakeep";
-        systemd.services.karakeep-workers.environment.DATA_DIR = lib.mkForce "${storage}/karakeep";
       }
     ]
   );

@@ -22,6 +22,10 @@
       url = "github:C10udburst/driftwm-desktop";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fetlife-browser = {
+      url = "git+ssh://git@github.com/C10udburst/fetlife-browser.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-file.url = "github:vic/flake-file";
     gitr = {
       url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";

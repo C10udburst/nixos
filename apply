@@ -11,6 +11,8 @@ if [[ -x "./flake" ]]; then
   ./flake
 fi
 
+nix flake lock
+
 # Autoformat nix files gracefully
 if ! alejandra . &>/dev/null; then
   alejandra .

@@ -74,6 +74,9 @@ in {
       (lib.mkIf (tailscaleDomain != null) {
         "https://${tailscaleDomain}" = {
           extraConfig = ''
+            tls {
+              get_certificate tailscale
+            }
             ${appRedirectRules}
             handle {
               redir https://home.${baseDomain} 302

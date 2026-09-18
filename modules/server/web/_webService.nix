@@ -8,6 +8,9 @@
   sablierHostPort = "127.0.0.1:10000";
   sessionDuration = config.features.server.web.sablier.sessionDuration or "15m";
 
+  homeAncestors = "https://home.${baseDomain}";
+  allowedAncestors = "'self' ${homeAncestors}";
+
   mkWebApp = {
     name,
     aliases ? [],
@@ -24,14 +27,22 @@
       then "127.0.0.1:${toString port}"
       else throw "mkWebApp requires either port or socket for ${name}";
 
-    sablierConfig = lib.optionalString (suspend != null && sablierEnabled) ''
+    suspendList =
+      if suspend == null
+      then []
+      else if lib.isList suspend
+      then suspend
+      else [suspend];
+    suspendNames = lib.concatStringsSep "," suspendList;
+
+    sablierConfig = lib.optionalString (suspendList != [] && sablierEnabled) ''
       forward_auth ${sablierHostPort} {
-        uri /api/strategies/poke?names=${suspend}&session_duration=${sessionDuration}
+        uri /api/strategies/poke?names=${suspendNames}&session_duration=${sessionDuration}
       }
       handle_errors {
         @down expression `{err.status_code} in [502, 503, 504]`
         handle @down {
-          rewrite * /api/strategies/dynamic?names=${suspend}&session_duration=${sessionDuration}&theme=ghost&url=https://{host}{uri}
+          rewrite * /api/strategies/dynamic?names=${suspendNames}&session_duration=${sessionDuration}&theme=ghost&url=https://{host}{uri}
           reverse_proxy ${sablierHostPort}
         }
       }
@@ -42,15 +53,22 @@
         inherit name aliases port;
       }
     ];
-    features.server.web.sablier._suspendedUnits = lib.optional (suspend != null) suspend;
+    features.server.web.sablier._suspendedUnits = suspendList;
     services.caddy.virtualHosts."${domain}" = {
       extraConfig = ''
+        header -X-Frame-Options
+        header ?Content-Security-Policy "frame-ancestors ${allowedAncestors}"
+
         ${sablierConfig}
-        reverse_proxy ${upstream}
+        reverse_proxy ${upstream} {
+          header_down -X-Frame-Options
+          header_down Content-Security-Policy "frame-ancestors 'none'" "frame-ancestors 'self'"
+          header_down Content-Security-Policy "frame-ancestors ([^;]+)" "frame-ancestors $1 ${homeAncestors}"
+        }
         ${extraConfig}
       '';
     };
   };
 in {
-  inherit mkWebApp;
+  inherit mkWebApp allowedAncestors homeAncestors;
 }

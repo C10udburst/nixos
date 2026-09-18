@@ -36,5 +36,14 @@ _: {
       enable = true;
       paths = ["/mnt/dane"];
     };
+
+    server.web = {
+      enable = true;
+      core.baseDomain = "desktop.wilkins.pl.eu.org";
+      pihole.enable = false;
+      golink = false;
+      homepage = false;
+      homarr = true;
+    };
   };
 }

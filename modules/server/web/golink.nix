@@ -9,18 +9,12 @@
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
   port = 8077;
 in {
-  options.features.server.web.golink = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.server.web.enable && true;
-    };
-    tailscaleAuthKeyFile = lib.mkOption {
-      type = lib.types.nullOr (lib.types.either lib.types.path lib.types.str);
-      default = null;
-    };
+  options.features.server.web.golink = lib.mkOption {
+    type = lib.types.bool;
+    default = config.features.server.web.enable && true;
   };
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "go";
@@ -55,11 +49,7 @@ in {
             Restart = "on-failure";
             RestartSec = "5s";
             EnvironmentFile = [
-              (
-                if cfg.tailscaleAuthKeyFile != null
-                then cfg.tailscaleAuthKeyFile
-                else config.age.secrets.golink-tailscale-auth-key.path
-              )
+              config.age.secrets.golink-tailscale-auth-key.path
             ];
           };
         };

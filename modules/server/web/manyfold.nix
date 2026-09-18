@@ -58,6 +58,9 @@ in {
             "${storage}/manyfold/config:/config"
             "${storage}/manyfold/libraries:/libraries"
           ];
+          extraOptions = [
+            "--userns=keep-id:uid=1000,gid=1000"
+          ];
           environment = {
             PUID = "1000";
             PGID = "1000";
