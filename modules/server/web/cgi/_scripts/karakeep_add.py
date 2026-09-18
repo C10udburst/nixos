@@ -8,14 +8,17 @@ import urllib.request
 import urllib.error
 from urllib.parse import urlparse
 
-KARAKEEP_WAKE_URL = os.environ.get("KARAKEEP_WAKE_URL", "https://bookmarks.brix0.wilkins.pl.eu.org")
+KARAKEEP_WAKE_URL = os.environ.get("KARAKEEP_WAKE_URL", "")
 KARAKEEP_BASE = os.environ.get("KARAKEEP_BASE", "http://localhost:3080").rstrip("/")
 KARAKEEP_API_KEY = os.environ.get("KARAKEEP_API_KEY", "")
 # Optional: shared secret to prevent random abuse of your CGI endpoint
 CGI_TOKEN = os.environ.get("KARAKEEP_CGI_TOKEN", "")  # if set, require ?token=...
 
 API_CREATE_BOOKMARK = f"{KARAKEEP_BASE}/api/v1/bookmarks"
-REDIRECT_AFTER = os.environ.get("KARAKEEP_REDIRECT_AFTER", f"{KARAKEEP_WAKE_URL}/")  # where the user ends up after saving
+REDIRECT_AFTER = os.environ.get(
+    "KARAKEEP_REDIRECT_AFTER", f"{KARAKEEP_WAKE_URL}/"
+)  # where the user ends up after saving
+
 
 def respond(status_line: str, headers: dict, body: str = ""):
     print(status_line)
@@ -44,7 +47,7 @@ def main():
     form = cgi.FieldStorage()
     url = (form.getfirst("url") or "").strip()
     token = (form.getfirst("token") or "").strip()
-    
+
     for _ in range(30):
         try:
             req = urllib.request.urlopen(KARAKEEP_WAKE_URL, timeout=5)

@@ -63,12 +63,21 @@ in {
             };
           };
 
-          systemd.services.manyfold.serviceConfig = {
-            WorkingDirectory = lib.mkForce "/opt/manyfold";
-            StateDirectory = lib.mkForce [];
-            EnvironmentFile = [
-              config.age.secrets.manyfold-env.path
-            ];
+          systemd.services.manyfold = {
+            environment = {
+              BUNDLE_WITHOUT = "development:test";
+              LD_LIBRARY_PATH = lib.mkForce (lib.makeLibraryPath [
+                pkgs.assimp.lib
+                pkgs.libarchive.lib
+              ]);
+            };
+            serviceConfig = {
+              WorkingDirectory = lib.mkForce "/opt/manyfold";
+              StateDirectory = lib.mkForce [];
+              EnvironmentFile = [
+                config.age.secrets.manyfold-env.path
+              ];
+            };
           };
 
           services.redis.servers.manyfold.port = lib.mkDefault 6379;

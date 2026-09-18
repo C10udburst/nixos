@@ -32,4 +32,5 @@ in {
   "secrets/gitea-env.age".publicKeys = users ++ serverHosts;
   "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;
   "secrets/duplicati-pass.age".publicKeys = users ++ serverHosts;
+  "secrets/resume-env.age".publicKeys = users ++ serverHosts;
 }

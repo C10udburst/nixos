@@ -1,7 +1,6 @@
 {
   "docker.io/jms1717/8mblocal:latest": "docker.io/jms1717/8mblocal@sha256:a034dbaa79610461b15e3acc14f02b5cfc51d27bf3af5a245db21d5742090d04",
   "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:1f5b892aeef4ad0a4907f075777bbd0ce7120f4cdc53b9f3f028519250421aed",
-  "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:f620fe830c8964abb0c6ab9c35ae58a3e7426e939adddbba9def12dd618b4d42",
   "ghcr.io/transmute-app/transmute:latest": "ghcr.io/transmute-app/transmute@sha256:51a32b28e0cb84cde624ca41570f069d91ee7e83fac5c9d0b970e7a583b3abde",
   "ghcr.io/wealthfolio/wealthfolio:latest": "ghcr.io/wealthfolio/wealthfolio@sha256:3c6f117828949204029c2b4a391f039e62987b4e091139e11b04e6764b5f6866"
 }
