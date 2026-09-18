@@ -354,3 +354,6 @@ Each host directory under `hosts/<hostname>/` is organized into four distinct fi
    Never use `lib.types.coercedTo lib.types.bool`. Keep option definitions simple:
    - If a given `options.features` node has children or other config flags, use `options.features.<path>.enable = parent && true/false` (defined alongside its sibling options/submodules).
    - If it is just a bare option without any extras, use `options.features.<path> = parent && true/false` directly as a boolean option (`lib.mkOption { type = lib.types.bool; default = ...; }`).
+10. **Never Decrypt or Inspect Secrets (Strict Privacy Rule)**:
+    Agents are strictly prohibited from decrypting, reading, or inspecting secret files (e.g. running `agenix -d`, `age -d`, reading decrypted paths in `/run/agenix`, or inspecting secret contents). When configuring services with secrets, wire the secret paths (e.g. via `config.age.secrets.<name>.path`), define public keys in `secrets.nix`, and either generate random placeholder passwords or instruct the user to edit secrets with `agenix -e`. Never read existing secret plaintext.
+

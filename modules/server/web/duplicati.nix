@@ -23,6 +23,13 @@ in {
         port = 8200;
       })
       {
+        age.secrets.duplicati-pass = {
+          file = ../../../secrets/duplicati-pass.age;
+          owner = "duplicati";
+          group = "duplicati";
+          mode = "0400";
+        };
+
         systemd.tmpfiles.rules = [
           "d ${storage}/duplicati 0750 duplicati duplicati - -"
         ];
@@ -32,8 +39,19 @@ in {
           dataDir = "${storage}/duplicati";
           port = 8200;
           interface = "127.0.0.1";
-          parameters = ''
-            --webservice-allowedhostnames=*
+          parametersFile = "/run/duplicati/parameters";
+        };
+
+        systemd.services.duplicati = {
+          serviceConfig = {
+            RuntimeDirectory = "duplicati";
+            RuntimeDirectoryMode = "0700";
+          };
+          preStart = ''
+            {
+              echo "--webservice-allowedhostnames=*"
+              printf -- "--webservice-password=%s\n" "$(< ${config.age.secrets.duplicati-pass.path})"
+            } > /run/duplicati/parameters
           '';
         };
       }

@@ -40,6 +40,7 @@ _: {
     server.web = {
       enable = true;
       core.baseDomain = "desktop.wilkins.pl.eu.org";
+      etcHosts.enable = true;
       pihole.enable = false;
       golink = false;
       homepage = false;

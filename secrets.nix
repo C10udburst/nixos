@@ -7,7 +7,7 @@ let
   cloudburst-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP6nZFxrEKbYZ4zTRT1f6G5K/yOgCSEdutpfrGKd+AuW root@nixos";
   cloudburst-laptop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXN+rc6QVRB54swk7dsXfbzHNIHNm4RjuSLueUzDi2H";
   cloudburst-tablet = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINn+GfTMQYqlUdiFhsTwoko21NzwL9CkEhiXigHTLFSL";
-  cache = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGaxH0iycuhAYW9eAumBaMViCUvVU7Fl1gobsT19HLcr"; # brix0 / cache
+  cache = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGaxH0iycuhAYW9eAumBaMViCUvVU7Fl1gobsT19HLcr";
 
   allHosts = [
     cloudburst-desktop
@@ -31,4 +31,5 @@ in {
   "secrets/siyuan-env.age".publicKeys = users ++ serverHosts;
   "secrets/gitea-env.age".publicKeys = users ++ serverHosts;
   "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;
+  "secrets/duplicati-pass.age".publicKeys = users ++ serverHosts;
 }

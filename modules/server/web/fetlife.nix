@@ -9,7 +9,11 @@
   storage = config.features.server.web.storage;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
   port = 6969;
-  fetlifePkg = inputs.fetlife-browser.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  hasPkg = inputs ? fetlife-browser && inputs.fetlife-browser ? packages;
+  fetlifePkg =
+    if hasPkg
+    then inputs.fetlife-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    else null;
 in {
   options.features.server.web.fetlife = lib.mkOption {
     type = lib.types.bool;
@@ -25,7 +29,7 @@ in {
         };
       };
     }
-    (lib.mkIf (cfg && inputs ? fetlife && inputs.fetlife ? packages) (
+    (lib.mkIf (cfg && hasPkg) (
       lib.mkMerge [
         (webHelper.mkWebApp {
           name = "fetlife";

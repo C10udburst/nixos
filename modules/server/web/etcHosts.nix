@@ -18,7 +18,7 @@ in {
   options.features.server.web.etcHosts = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = config.features.server.web.enable && true;
+      default = config.features.server.web.enable && false;
     };
   };
 
