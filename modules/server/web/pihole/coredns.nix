@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   piholeCfg = config.features.server.web.pihole;
   cfg = config.features.server.web.pihole.coredns;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
@@ -13,26 +12,28 @@ let
       template IN ANY ${alias} {
           answer "{{ .Name }} 60 IN CNAME ${target}."
       }
-    '') cfg.cname
+    '')
+    cfg.cname
   );
 
-  tailscaleAnswers = lib.concatMapStrings (
-    ip: "answer \"{{ .Name }} 60 IN A ${ip}\"\n"
-  ) cfg.tailscaleIp;
+  tailscaleAnswers =
+    lib.concatMapStrings (
+      ip: "answer \"{{ .Name }} 60 IN A ${ip}\"\n"
+    )
+    cfg.tailscaleIp;
   localAnswers = lib.concatMapStrings (ip: "answer \"{{ .Name }} 60 IN A ${ip}\"\n") cfg.localIp;
-in
-{
+in {
   options.features.server.web.pihole.coredns = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = piholeCfg.enable && true;
     };
     tailscaleIp = lib.mkOption {
-      type = lib.types.coercedTo lib.types.str (s: [ s ]) (lib.types.listOf lib.types.str);
-      default = [ "100.93.113.91" ];
+      type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
+      default = ["100.93.113.91"];
     };
     localIp = lib.mkOption {
-      type = lib.types.coercedTo lib.types.str (s: [ s ]) (lib.types.listOf lib.types.str);
+      type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
       default = [
         "192.168.1.10"
         "192.168.1.11"
@@ -51,8 +52,8 @@ in
   };
 
   config = lib.mkIf (piholeCfg.enable && cfg.enable) {
-    networking.firewall.allowedTCPPorts = [ 53 ];
-    networking.firewall.allowedUDPPorts = [ 53 ];
+    networking.firewall.allowedTCPPorts = [53];
+    networking.firewall.allowedUDPPorts = [53];
 
     services.coredns = {
       enable = true;

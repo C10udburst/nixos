@@ -34,30 +34,30 @@ _: {
 
     server.samba = {
       enable = true;
-      paths = [ "/mnt/dane" ];
+      paths = ["/mnt/dane"];
     };
 
     # enable only for testing
-    # server.web = {
-    #   enable = true;
-    #   core.baseDomain = "desktop.wilkins.pl.eu.org";
-    #   homeassistant.devices = [];
-    #   etcHosts.enable = true;
-    #   pihole = {
-    #     dhcpServer = "192.168.1.64";
-    #     dnsServers = [
-    #       "192.168.1.64"
-    #       "192.168.1.46"
-    #       "192.168.1.10"
-    #     ];
-    #     coredns = {
-    #       localIp = [
-    #         "192.168.1.64"
-    #         "192.168.1.46"
-    #       ];
-    #     };
-    #   };
-    #   golink = false;
-    # };
+    server.web = {
+      enable = true;
+      core.baseDomain = "desktop.wilkins.pl.eu.org";
+      homeassistant.devices = [];
+      etcHosts.enable = true;
+      pihole = {
+        dhcpServer = "192.168.1.64";
+        dnsServers = [
+          "192.168.1.64"
+          "192.168.1.46"
+          "192.168.1.10"
+        ];
+        coredns = {
+          localIp = [
+            "192.168.1.64"
+            "192.168.1.46"
+          ];
+        };
+      };
+      golink = false;
+    };
   };
 }

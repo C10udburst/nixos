@@ -32,16 +32,15 @@
       else if lib.isList suspend
       then suspend
       else [suspend];
-    suspendNames = lib.concatStringsSep "," suspendList;
 
     sablierConfig = lib.optionalString (suspendList != [] && sablierEnabled) ''
       forward_auth ${sablierHostPort} {
-        uri /api/strategies/poke?names=${suspendNames}
+        uri /api/strategies/poke?group=${name}
       }
       handle_errors {
         @down expression `{err.status_code} in [502, 503, 504]`
         handle @down {
-          rewrite * /api/strategies/dynamic?names=${suspendNames}
+          rewrite * /api/strategies/dynamic?group=${name}
           reverse_proxy ${sablierHostPort}
         }
       }
@@ -50,9 +49,9 @@
     features.server.web.core._apps = [
       {
         inherit name aliases port;
+        suspend = suspendList;
       }
     ];
-    features.server.web.sablier._suspendedUnits = suspendList;
     services.caddy.virtualHosts."${domain}" = {
       useACMEHost = lib.mkIf (config.features.server.web.ssl.enable or false) baseDomain;
       extraConfig = ''

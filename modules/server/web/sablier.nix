@@ -8,7 +8,8 @@
   cfg = config.features.server.web.sablier;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  uniqueUnits = lib.unique cfg._suspendedUnits;
+  apps = webCfg.core._apps or [];
+  suspendedApps = lib.filter (app: (app.suspend or []) != []) apps;
 
   configFile = (pkgs.formats.yaml {}).generate "sablier.yaml" {
     provider = {
@@ -51,11 +52,6 @@ in {
       type = lib.types.str;
       default = "15m";
     };
-    _suspendedUnits = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      internal = true;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -84,9 +80,51 @@ in {
     };
 
     systemd.services = lib.mkMerge [
-      (lib.genAttrs (map (lib.removeSuffix ".service") uniqueUnits) (_name: {
-        serviceConfig."X-Sablier-Section = true\n\n[X-Sablier]\nEnable" = "true";
-      }))
+      (lib.mkMerge (map (
+          app:
+            lib.genAttrs (map (lib.removeSuffix ".service") (lib.unique app.suspend)) (_name: {
+              serviceConfig."X-Sablier-Section = true\n\n[X-Sablier]\nEnable = true\nGroup" = app.name;
+            })
+        )
+        suspendedApps))
+      {
+        sablier-rebuild-poke = lib.mkIf (suspendedApps != []) {
+          description = "Poke all Sablier groups after system rebuild";
+          wantedBy = ["multi-user.target"];
+          after = [
+            "podman-sablier.service"
+            "network.target"
+          ];
+          wants = ["podman-sablier.service"];
+          restartTriggers = [
+            (pkgs.writeText "sablier-groups" (builtins.toJSON (map (a: a.name) suspendedApps)))
+          ];
+          path = [
+            pkgs.curl
+            pkgs.coreutils
+          ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = false;
+            Restart = "on-failure";
+            RestartSec = "2s";
+          };
+          script = ''
+            for i in $(seq 1 30); do
+              if curl -s http://127.0.0.1:10000/health | grep -q "OK"; then
+                break
+              fi
+              sleep 1
+            done
+
+            ${lib.concatMapStringsSep "\n" (app: ''
+                echo "Poking Sablier group: ${app.name}"
+                curl -fsSL "http://127.0.0.1:10000/api/strategies/poke?group=${app.name}" || true
+              '')
+              suspendedApps}
+          '';
+        };
+      }
     ];
   };
 }
