@@ -6,7 +6,6 @@
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
   sablierEnabled = config.features.server.web.sablier.enable or false;
   sablierHostPort = "127.0.0.1:10000";
-  sessionDuration = config.features.server.web.sablier.sessionDuration or "15m";
 
   homeAncestors = "https://home.${baseDomain}";
   allowedAncestors = "'self' ${homeAncestors}";
@@ -37,12 +36,12 @@
 
     sablierConfig = lib.optionalString (suspendList != [] && sablierEnabled) ''
       forward_auth ${sablierHostPort} {
-        uri /api/strategies/poke?names=${suspendNames}&session_duration=${sessionDuration}
+        uri /api/strategies/poke?names=${suspendNames}
       }
       handle_errors {
         @down expression `{err.status_code} in [502, 503, 504]`
         handle @down {
-          rewrite * /api/strategies/dynamic?names=${suspendNames}&session_duration=${sessionDuration}&theme=ghost&url=https://{host}{uri}
+          rewrite * /api/strategies/dynamic?names=${suspendNames}
           reverse_proxy ${sablierHostPort}
         }
       }

@@ -42,7 +42,10 @@ in {
           environment.STATE_DIRECTORY = "/var/lib/karakeep";
           serviceConfig.StateDirectory = lib.mkForce [];
         };
-        systemd.services.karakeep-web.serviceConfig.StateDirectory = lib.mkForce [];
+        systemd.services.karakeep-web.serviceConfig = {
+          StateDirectory = lib.mkForce [];
+          SuccessExitStatus = [143];
+        };
         systemd.services.karakeep-workers.serviceConfig.StateDirectory = lib.mkForce [];
 
         services.meilisearch = {

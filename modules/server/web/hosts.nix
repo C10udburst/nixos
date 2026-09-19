@@ -10,21 +10,32 @@
 
   toSubdomain = sub: "${sub}.${cfg.core.baseDomain}";
 
-  allDomains =
+  allDomains = lib.unique (
     [
       cfg.core.baseDomain
     ]
     ++ lib.map (app: toSubdomain app.name) apps
-    ++ lib.concatMap (app: lib.map toSubdomain (app.aliases or [])) apps;
+    ++ lib.concatMap (app: lib.map toSubdomain (app.aliases or [])) apps
+  );
+
+  ips = [
+    "169.254.1.2"
+    "10.88.0.1"
+    "172.17.0.1"
+  ];
+
+  ipDomainLines =
+    lib.concatMapStrings (
+      ip:
+        lib.concatMapStrings (domain: "${ip} ${domain}\n") allDomains
+    )
+    ips;
 
   containerHosts = pkgs.writeText "containers-hosts" ''
     127.0.0.1 localhost
     ::1 localhost
     127.0.0.2 ${config.networking.hostName}
-    169.254.1.2 ${lib.concatStringsSep " " allDomains}
-    10.88.0.1 ${lib.concatStringsSep " " allDomains}
-    172.17.0.1 ${lib.concatStringsSep " " allDomains}
-  '';
+    ${ipDomainLines}'';
 in {
   options.features.server.web.hosts = lib.mkOption {
     type = lib.types.bool;

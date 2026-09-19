@@ -12,7 +12,7 @@
 
   scriptRoutes = lib.concatStringsSep "\n" (
     lib.mapAttrsToList (name: s: ''
-      @${name} path /${name} /${name}/* /${name}.py /${name}.cgi /${name}.html
+      @${name} path /${name} /${name}/* /${name}.py /${name}.cgi /${name}.html /${name}.json
       handle @${name} {
         reverse_proxy unix//run/fcgiwrap-cgi.sock {
           transport fastcgi {

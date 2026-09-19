@@ -613,198 +613,6 @@
         "type": "github"
       }
     },
-    "hass-adaptive-lighting": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788868987,
-        "narHash": "sha256-IYXVsC07GOGeejxODbGp/BCz+Du4r1Go8w1e+33QxUE=",
-        "owner": "basnijholt",
-        "repo": "adaptive-lighting",
-        "rev": "7d0f4b610acb5088125aff266ba3d9af10164b2f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "basnijholt",
-        "repo": "adaptive-lighting",
-        "type": "github"
-      }
-    },
-    "hass-bermuda": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784659335,
-        "narHash": "sha256-6wMoIaAGebZJ47WpAoPALFHVIUDvlzdySfPsHiLWYAE=",
-        "owner": "agittins",
-        "repo": "bermuda",
-        "rev": "cd46d17e8469b9a761ebdb49ce3b33da51b0b1f6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "agittins",
-        "repo": "bermuda",
-        "type": "github"
-      }
-    },
-    "hass-bodymiscale": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788424681,
-        "narHash": "sha256-NjyMRh16BJ6J64ecZDHvHtyUpmLGvElF8p9N3Nch4vg=",
-        "owner": "dckiller51",
-        "repo": "bodymiscale",
-        "rev": "684a5b99b621845e25e523f7e9261231d4ba7259",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dckiller51",
-        "repo": "bodymiscale",
-        "type": "github"
-      }
-    },
-    "hass-burze-dzis-net": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1743812773,
-        "narHash": "sha256-rpy2pLx+04GWXVzFzzSo/2jyD3/uVBwuDI5CJOnIOww=",
-        "owner": "PiotrMachowski",
-        "repo": "Home-Assistant-custom-components-Burze.dzis.net",
-        "rev": "e573764dffbbd0ae18c3535ff22aa93c61ee1546",
-        "type": "github"
-      },
-      "original": {
-        "owner": "PiotrMachowski",
-        "repo": "Home-Assistant-custom-components-Burze.dzis.net",
-        "type": "github"
-      }
-    },
-    "hass-energy-hub-poland": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1787993565,
-        "narHash": "sha256-H/qi5mKydhS9wQkJuIPoBmHSXiBJ4X5PHjW4YuLzDsI=",
-        "owner": "AllonGit",
-        "repo": "energy_hub_poland",
-        "rev": "8a223519e6c6637c47e46cb76536ce44f0c44266",
-        "type": "github"
-      },
-      "original": {
-        "owner": "AllonGit",
-        "repo": "energy_hub_poland",
-        "type": "github"
-      }
-    },
-    "hass-illuminance": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1779458585,
-        "narHash": "sha256-3wXoz9yzdhWJo5Un5SdUdk/hYssvaqdGAAuW6+QGbZk=",
-        "owner": "pnbruckner",
-        "repo": "ha-illuminance",
-        "rev": "4080436c2f544829bfc9db44fa1b7ab443acf15f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pnbruckner",
-        "repo": "ha-illuminance",
-        "type": "github"
-      }
-    },
-    "hass-magic-areas": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788935890,
-        "narHash": "sha256-uv92MhhfPxRnwRmGahkUmohQ4iC9yrIYH8G6m9dRkAQ=",
-        "owner": "jseidl",
-        "repo": "hass-magic_areas",
-        "rev": "eb6337facae8333c5cdeb5dd2f59e4301a7a2744",
-        "type": "github"
-      },
-      "original": {
-        "owner": "jseidl",
-        "repo": "hass-magic_areas",
-        "type": "github"
-      }
-    },
-    "hass-moonraker": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788175325,
-        "narHash": "sha256-RxjJo1e7yRNSvOotEB45bof2jYZdJBlmNHowgdCv6Z4=",
-        "owner": "marcolivierarsenault",
-        "repo": "moonraker-home-assistant",
-        "rev": "0da2a7b48ec52840ee61d99a078d759bb1d787b0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "marcolivierarsenault",
-        "repo": "moonraker-home-assistant",
-        "type": "github"
-      }
-    },
-    "hass-powercalc": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789743990,
-        "narHash": "sha256-i2eCaPkUeR9kZKqz0vB9zJh4avidtwSLXfqIfN35WIc=",
-        "owner": "bramstroker",
-        "repo": "homeassistant-powercalc",
-        "rev": "00c605999340f3b7e17f03d10e56aac3c9693cd7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "bramstroker",
-        "repo": "homeassistant-powercalc",
-        "type": "github"
-      }
-    },
-    "hass-waste-collection-schedule": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789593310,
-        "narHash": "sha256-hdrlGkoPgv5AvFTGNOTokc2p4P7vRg2nulXH6pQe204=",
-        "owner": "mampfes",
-        "repo": "hacs_waste_collection_schedule",
-        "rev": "6c30fe0b378001c22187d3f02ce523c25981ea69",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mampfes",
-        "repo": "hacs_waste_collection_schedule",
-        "type": "github"
-      }
-    },
-    "hass-xiaomi-home": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1787046520,
-        "narHash": "sha256-zYb2ru9S3BzS6edTzV60mdIuRmYcEjBTbs2MMTdb8rU=",
-        "owner": "XiaoMi",
-        "repo": "ha_xiaomi_home",
-        "rev": "1a5f890cbe08d14ec7252196bd925a57090e8774",
-        "type": "github"
-      },
-      "original": {
-        "owner": "XiaoMi",
-        "repo": "ha_xiaomi_home",
-        "type": "github"
-      }
-    },
-    "hass-xiaomi-miot": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789352302,
-        "narHash": "sha256-HOO7jgL8KcI462YWvesZWfkTzY9xAQ/cy1S+0yamujA=",
-        "owner": "al-one",
-        "repo": "hass-xiaomi-miot",
-        "rev": "50f9fc31ca760615864336bc0e79eaea789d7324",
-        "type": "github"
-      },
-      "original": {
-        "owner": "al-one",
-        "repo": "hass-xiaomi-miot",
-        "type": "github"
-      }
-    },
     "hercules-ci-effects": {
       "inputs": {
         "flake-parts": [
@@ -1692,18 +1500,6 @@
         "fetlife-browser": "fetlife-browser",
         "flake-file": "flake-file",
         "gitr": "gitr",
-        "hass-adaptive-lighting": "hass-adaptive-lighting",
-        "hass-bermuda": "hass-bermuda",
-        "hass-bodymiscale": "hass-bodymiscale",
-        "hass-burze-dzis-net": "hass-burze-dzis-net",
-        "hass-energy-hub-poland": "hass-energy-hub-poland",
-        "hass-illuminance": "hass-illuminance",
-        "hass-magic-areas": "hass-magic-areas",
-        "hass-moonraker": "hass-moonraker",
-        "hass-powercalc": "hass-powercalc",
-        "hass-waste-collection-schedule": "hass-waste-collection-schedule",
-        "hass-xiaomi-home": "hass-xiaomi-home",
-        "hass-xiaomi-miot": "hass-xiaomi-miot",
         "home-manager": "home-manager_2",
         "import-tree": "import-tree",
         "isw": "isw",
@@ -1729,25 +1525,11 @@
         "plasma-manager": "plasma-manager",
         "ranger-archives": "ranger-archives",
         "ranger-devicons": "ranger-devicons",
-        "sablier-bin": "sablier-bin",
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
         "stylix": "stylix",
         "tailcat": "tailcat",
         "webicons": "webicons"
-      }
-    },
-    "sablier-bin": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788313414,
-        "narHash": "sha256-0uFiy+1oLnhOO2W6RKJnskgJlgG5dFgAkaTudTcRWeE=",
-        "type": "tarball",
-        "url": "https://github.com/sablierapp/sablier/releases/download/v1.18.0/sablier-1.18.0-linux-amd64.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/sablierapp/sablier/releases/download/v1.18.0/sablier-1.18.0-linux-amd64.tar.gz"
       }
     },
     "sbt-derivation": {

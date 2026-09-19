@@ -15,18 +15,17 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.pihole;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
-  webHelper = import ../_webService.nix {inherit config lib pkgs;};
+  webHelper = import ../_webService.nix { inherit config lib pkgs; };
   corednsEnabled = cfg.coredns.enable or cfg.coredns or false;
 
-  effectiveDnsPort =
-    if corednsEnabled
-    then 5354
-    else 53;
-in {
+  effectiveDnsPort = if corednsEnabled then 5354 else 53;
+in
+{
   options.features.server.web.pihole = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -44,7 +43,6 @@ in {
         "185.226.181.19"
         "195.10.195.195"
         "2a00:f826:8:2::195"
-        "2001:470:71:6dc::53"
         # DNS.SB
         "185.222.222.222"
         "45.11.45.11"
@@ -53,7 +51,7 @@ in {
       ];
     };
     dnsServers = lib.mkOption {
-      type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
+      type = lib.types.coercedTo lib.types.str (s: [ s ]) (lib.types.listOf lib.types.str);
       default = [
         "192.168.1.10"
         "192.168.1.11"
@@ -77,6 +75,8 @@ in {
         port = 8080;
       })
       {
+        networking.nameservers = [ "127.0.0.1" ];
+
         environment.etc = {
           "dnsmasq.d/dhcp-dns.conf".text = ''
             dhcp-option=option:dns-server,${lib.concatStringsSep "," cfg.dnsServers}
@@ -105,11 +105,15 @@ in {
             };
             dhcp = {
               active = true;
-              start = "192.168.1.50";
+              start = "192.168.1.15";
               end = "192.168.1.250";
               router = "192.168.1.1";
               netmask = "255.255.255.0";
               leaseTime = "1w";
+            };
+            ntp = {
+              ipv4.active = false;
+              ipv6.active = false;
             };
             misc = {
               etc_dnsmasq_d = true;
@@ -117,23 +121,31 @@ in {
           };
         };
 
-        systemd.services.pihole-ftl.preStart = let
-          gravityDB = config.services.pihole-ftl.settings.files.gravity;
-          ftlBin = lib.getExe config.services.pihole-ftl.package;
-          schema = "${config.services.pihole-ftl.piholePackage}/share/pihole/advanced/Templates/gravity.db.sql";
-        in ''
-          # Ensure gravity database exists and has required schema/tables
-          if [ ! -s "${gravityDB}" ] || ! ${ftlBin} sqlite3 -ni "${gravityDB}" "SELECT 1 FROM \"group\" LIMIT 1;" >/dev/null 2>&1; then
-            echo "Initializing Pi-hole gravity database schema at ${gravityDB}..."
-            ${ftlBin} sqlite3 -ni "${gravityDB}" < "${schema}"
-            ${ftlBin} sqlite3 -ni "${gravityDB}" "INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts', 1, 'Default StevenBlack blocklist');"
-          fi
-        '';
+        systemd.services.pihole-ftl.preStart =
+          let
+            gravityDB = config.services.pihole-ftl.settings.files.gravity;
+            ftlBin = lib.getExe config.services.pihole-ftl.package;
+            schema = "${config.services.pihole-ftl.piholePackage}/share/pihole/advanced/Templates/gravity.db.sql";
+          in
+          ''
+            # Ensure gravity database exists and has required schema/tables
+            if [ ! -s "${gravityDB}" ] || ! ${ftlBin} sqlite3 -ni "${gravityDB}" "SELECT 1 FROM \"group\" LIMIT 1;" >/dev/null 2>&1; then
+              echo "Initializing Pi-hole gravity database schema at ${gravityDB}..."
+              ${ftlBin} sqlite3 -ni "${gravityDB}" < "${schema}"
+              ${ftlBin} sqlite3 -ni "${gravityDB}" "INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts', 1, 'Default StevenBlack blocklist');"
+            fi
+          '';
 
         services.pihole-web = {
           enable = true;
           hostName = "pihole.${baseDomain}";
-          ports = [8080];
+          ports = [ 8080 ];
+        };
+
+        services.caddy.virtualHosts."http://pi.hole" = {
+          extraConfig = ''
+            redir https://pihole.${baseDomain}{uri} 302
+          '';
         };
       }
     ]

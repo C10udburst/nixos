@@ -29,6 +29,11 @@ in {
           "photo"
         ];
         port = 2283;
+        suspend = [
+          "immich.service"
+          "immich-machine-learning.service"
+          "immich-server.service"
+        ];
         extraConfig = ''
           request_body {
             max_size 50000MB

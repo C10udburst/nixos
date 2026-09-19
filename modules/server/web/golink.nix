@@ -21,6 +21,15 @@ in {
         port = port;
       })
       {
+        users.users.golink = {
+          isSystemUser = true;
+          group = "golink";
+          home = "${storage}/golink";
+          autoSubUidGidRange = true;
+          linger = true;
+        };
+        users.groups.golink = {};
+
         age.secrets.golink-tailscale-auth-key = {
           file = ../../../secrets/golink-tailscale-auth-key.age;
         };
@@ -40,6 +49,8 @@ in {
           wantedBy = ["multi-user.target"];
           after = ["network.target"];
           serviceConfig = {
+            User = "golink";
+            Group = "golink";
             ExecStart = ''
               ${pkgs.golink}/bin/golink \
                 -sqlitedb ${storage}/golink/golink.db \

@@ -2,21 +2,50 @@
   config,
   lib,
   pkgs,
-  inputs,
+  helpers,
   ...
 }: let
   cfg = config.features.server.web.sablier;
   webCfg = config.features.server.web;
+  storage = webCfg.storage;
   uniqueUnits = lib.unique cfg._suspendedUnits;
+
+  configFile = (pkgs.formats.yaml {}).generate "sablier.yaml" {
+    provider = {
+      name = "systemd";
+      systemd = {
+        user-instance = false;
+      };
+    };
+    server = {
+      port = 10000;
+    };
+    storage = {
+      file = "${storage}/sablier/state.json";
+    };
+    sessions = {
+      default-duration = cfg.sessionDuration;
+      expiration-interval = "20s";
+    };
+    logging = {
+      level = "info";
+    };
+    strategy = {
+      dynamic = {
+        show-details-by-default = true;
+        default-theme = "ghost";
+        default-refresh-frequency = "5s";
+      };
+      blocking = {
+        default-timeout = "1m";
+      };
+    };
+  };
 in {
   options.features.server.web.sablier = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = webCfg.enable && true;
-    };
-    cpuThreshold = lib.mkOption {
-      type = lib.types.int;
-      default = 5;
     };
     sessionDuration = lib.mkOption {
       type = lib.types.str;
@@ -29,66 +58,35 @@ in {
     };
   };
 
-  config = lib.mkMerge [
-    {
-      flake-file.inputs = {
-        sablier-bin = {
-          url = "https://github.com/sablierapp/sablier/releases/download/v1.18.0/sablier-1.18.0-linux-amd64.tar.gz";
-          flake = false;
-        };
-      };
-    }
-    (lib.mkIf cfg.enable (let
-      sablierPkg = pkgs.runCommand "sablier" {} ''
-        install -Dm755 ${inputs.sablier-bin}/sablier $out/bin/sablier
-      '';
-    in {
-      systemd.services = lib.mkMerge [
-        (lib.genAttrs (map (lib.removeSuffix ".service") uniqueUnits) (_name: {
-          serviceConfig."X-Sablier-Section = true\n\n[X-Sablier]\nEnable" = "true";
-        }))
-        {
-          sablier = {
-            description = "Sablier scale-to-zero server";
-            wantedBy = ["multi-user.target"];
-            after = ["network.target"];
-            serviceConfig = {
-              ExecStart = ''
-                ${sablierPkg}/bin/sablier start \
-                  --server.port=10000 \
-                  --provider.name=systemd \
-                  --storage.file=/var/lib/sablier/state.json
-              '';
-              Restart = "on-failure";
-              RestartSec = "5s";
-              StateDirectory = "sablier";
-            };
-          };
+  config = lib.mkIf cfg.enable {
+    systemd.tmpfiles.rules = [
+      "d ${storage}/sablier 0750 root root - -"
+      "L+ ${storage}/sablier/sablier.yaml - - - - ${configFile}"
+    ];
 
-          sablier-cpu-monitor = lib.mkIf (uniqueUnits != []) {
-            description = "Sablier CPU activity monitor for suspended services";
-            wantedBy = ["multi-user.target"];
-            after = ["sablier.service"];
-            path = [
-              pkgs.systemd
-              pkgs.curl
-              pkgs.coreutils
-              pkgs.bash
-            ];
-            environment = {
-              CPU_THRESHOLD = toString cfg.cpuThreshold;
-              SESSION_DURATION = cfg.sessionDuration;
-              SABLIER_URL = "http://127.0.0.1:10000";
-            };
-            serviceConfig = {
-              Type = "simple";
-              Restart = "always";
-              RestartSec = "5s";
-              ExecStart = "${./_sablier_cpu_monitor.sh} ${lib.concatStringsSep " " uniqueUnits}";
-            };
-          };
-        }
+    virtualisation.oci-containers.containers.sablier = {
+      image = helpers.resolveImage "ghcr.io/sablierapp/sablier:latest";
+      extraOptions = [
+        "--network=host"
       ];
-    }))
-  ];
+      volumes = [
+        "${configFile}:/etc/sablier/sablier.yaml:ro"
+        "/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket"
+        "/run/dbus/system_bus_socket:/run/dbus/system_bus_socket"
+        "/etc/systemd/system:/etc/systemd/system:ro"
+        "/nix/store:/nix/store:ro"
+        "${storage}/sablier:${storage}/sablier"
+      ];
+      cmd = [
+        "start"
+        "--configFile=/etc/sablier/sablier.yaml"
+      ];
+    };
+
+    systemd.services = lib.mkMerge [
+      (lib.genAttrs (map (lib.removeSuffix ".service") uniqueUnits) (_name: {
+        serviceConfig."X-Sablier-Section = true\n\n[X-Sablier]\nEnable" = "true";
+      }))
+    ];
+  };
 }
