@@ -41,7 +41,7 @@ _: {
     server.web = {
       enable = true;
       core.baseDomain = "desktop.wilkins.pl.eu.org";
-      homeassistant.devices = [];
+      #homeassistant.devices = [];
       etcHosts.enable = true;
       pihole.enable = false;
       golink = true;
