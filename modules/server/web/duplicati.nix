@@ -30,8 +30,10 @@ in {
           mode = "0400";
         };
 
+        users.users.duplicati.extraGroups = ["web"];
+
         systemd.tmpfiles.rules = [
-          "d ${storage}/duplicati 0750 duplicati duplicati - -"
+          "d ${storage}/duplicati 2750 duplicati web - -"
         ];
 
         services.duplicati = {

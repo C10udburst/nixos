@@ -46,8 +46,10 @@ in {
         users.groups.resume = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/resume 0750 resume resume - -"
-          "d ${storage}/resume/data 0750 resume resume - -"
+          "d ${storage}/resume 2751 resume web - -"
+          "z ${storage}/resume 2751 resume web - -"
+          "d ${storage}/resume/data 2750 resume web - -"
+          "z ${storage}/resume/data 2750 resume web - -"
         ];
 
         services.postgresql = {

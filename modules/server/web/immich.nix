@@ -42,7 +42,8 @@ in {
       })
       {
         systemd.tmpfiles.rules = [
-          "d ${storage}/immich/cache 0750 immich immich - -"
+          "d ${storage}/immich 2750 immich web - -"
+          "d ${storage}/immich/cache 2750 immich web - -"
         ];
 
         users.users.immich.extraGroups = [

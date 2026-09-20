@@ -43,6 +43,7 @@ _: {
       core.baseDomain = "desktop.wilkins.pl.eu.org";
       #homeassistant.devices = [];
       etcHosts.enable = true;
+      copyparty.paths = ["/opt/dane"];
       pihole.enable = false;
       golink = true;
     };

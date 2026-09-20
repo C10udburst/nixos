@@ -30,7 +30,7 @@ in {
         };
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/vaultwarden 0700 vaultwarden vaultwarden - -"
+          "d ${storage}/vaultwarden 2750 vaultwarden web - -"
         ];
 
         systemd.services.vaultwarden.serviceConfig.ReadWritePaths = [

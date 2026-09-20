@@ -2,88 +2,73 @@
   config,
   lib,
   pkgs,
-  inputs,
+  helpers,
   ...
 }: let
   cfg = config.features.server.web.manyfold;
-  webCfg = config.features.server.web;
-  storage = webCfg.storage;
+  storage = config.features.server.web.storage;
+  baseDomain = config.features.server.web.core.baseDomain or "example.com";
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
-  imports = lib.optionals (inputs ? ngipkgs && inputs.ngipkgs ? nixosModules) [
-    inputs.ngipkgs.nixosModules.services.manyfold
-  ];
-
   options.features.server.web.manyfold = lib.mkOption {
     type = lib.types.bool;
-    default = webCfg.enable && true;
+    default = config.features.server.web.enable && true;
   };
 
-  config = lib.mkMerge [
-    {
-      flake-file.inputs = {
-        ngipkgs.url = "github:ngi-nix/ngipkgs";
-      };
-    }
-    (lib.mkIf (cfg && inputs ? ngipkgs && inputs.ngipkgs ? packages) (
-      lib.mkMerge [
-        (webHelper.mkWebApp {
-          name = "3d";
-          aliases = [
-            "manyfold"
-            "models"
-            "stl"
+  config = lib.mkIf cfg (
+    lib.mkMerge [
+      (webHelper.mkWebApp {
+        name = "3d";
+        aliases = [
+          "manyfold"
+          "models"
+          "stl"
+        ];
+        port = 3214;
+        suspend = "podman-manyfold.service";
+      })
+      {
+        age.secrets.manyfold-env = {
+          file = ../../../secrets/manyfold-env.age;
+          owner = "manyfold";
+          group = "manyfold";
+          mode = "0400";
+        };
+
+        users.users.manyfold = {
+          isSystemUser = true;
+          group = "manyfold";
+          home = "${storage}/manyfold";
+          autoSubUidGidRange = true;
+          linger = true;
+        };
+        users.groups.manyfold = {};
+
+        systemd.tmpfiles.rules = [
+          "d ${storage}/manyfold 2750 manyfold web - -"
+          "d ${storage}/manyfold/config 2750 manyfold web - -"
+          "d ${storage}/manyfold/libraries 2750 manyfold web - -"
+        ];
+
+        virtualisation.oci-containers.containers.manyfold = {
+          image = helpers.resolveImage "ghcr.io/manyfold3d/manyfold-solo:latest";
+          podman.user = "manyfold";
+          ports = [
+            "127.0.0.1:3214:3214"
           ];
-          port = 3214;
-          suspend = "manyfold.service";
-        })
-        {
-          age.secrets.manyfold-env = {
-            file = ../../../secrets/manyfold-env.age;
-            owner = "manyfold";
-            group = "manyfold";
-            mode = "0400";
-          };
-
-          users.users.manyfold.home = "/opt/manyfold";
-
-          systemd.tmpfiles.rules = [
-            "d /opt/manyfold 0750 manyfold manyfold - -"
-            "d ${storage}/manyfold 0750 manyfold manyfold - -"
-            "d ${storage}/manyfold/libraries 0750 manyfold manyfold - -"
+          volumes = [
+            "${storage}/manyfold/config:/config"
+            "${storage}/manyfold/data:/libraries"
+            "${storage}/manyfold/data:/models"
           ];
-
-          services.manyfold = {
-            enable = true;
-            package = inputs.ngipkgs.packages.${pkgs.stdenv.hostPlatform.system}.manyfold;
-            port = 3214;
-            settings = {
-              DATABASE_ADAPTER = lib.mkDefault "sqlite3";
-              DATABASE_NAME = lib.mkDefault "/opt/manyfold/manyfold.sqlite3";
-            };
+          environment = {
+            PUBLIC_HOSTNAME = "3d.${baseDomain}";
           };
-
-          systemd.services.manyfold = {
-            environment = {
-              BUNDLE_WITHOUT = "development:test";
-              LD_LIBRARY_PATH = lib.mkForce (lib.makeLibraryPath [
-                pkgs.assimp.lib
-                pkgs.libarchive.lib
-              ]);
-            };
-            serviceConfig = {
-              WorkingDirectory = lib.mkForce "/opt/manyfold";
-              StateDirectory = lib.mkForce [];
-              EnvironmentFile = [
-                config.age.secrets.manyfold-env.path
-              ];
-            };
-          };
-
-          services.redis.servers.manyfold.port = lib.mkDefault 6379;
-          services.redis.servers.manyfold.bind = "127.0.0.1";
-        }
-      ]
-    ))
-  ];
+          environmentFiles = [
+            config.age.secrets.manyfold-env.path
+          ];
+        };
+      }
+    ]
+  );
 }

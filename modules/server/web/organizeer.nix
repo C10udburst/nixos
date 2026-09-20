@@ -43,7 +43,7 @@ in {
           users.groups.organizeer = {};
 
           systemd.tmpfiles.rules = [
-            "d ${storage}/organizeer 0750 organizeer organizeer - -"
+            "d ${storage}/organizeer 2750 organizeer web - -"
           ];
 
           systemd.services.organizeer = {

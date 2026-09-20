@@ -2,6 +2,7 @@
   "docker.io/jms1717/8mblocal:latest": "docker.io/jms1717/8mblocal@sha256:a034dbaa79610461b15e3acc14f02b5cfc51d27bf3af5a245db21d5742090d04",
   "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:f0fb462299af9749a72f11040fd3f604d1c4976b3d9a137ae5021b7f44d980f5",
   "ghcr.io/home-assistant/home-assistant:stable": "ghcr.io/home-assistant/home-assistant@sha256:d8922685169707fd91e8b9729902d975f06157d005e422874d201e0261dda196",
+  "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:f620fe830c8964abb0c6ab9c35ae58a3e7426e939adddbba9def12dd618b4d42",
   "ghcr.io/sablierapp/sablier:latest": "ghcr.io/sablierapp/sablier@sha256:c00c8a01c8c809dd258a8b362ad8ba9a9227753fc9857ae7506fd427175e038c",
   "ghcr.io/transmute-app/transmute:latest": "ghcr.io/transmute-app/transmute@sha256:51a32b28e0cb84cde624ca41570f069d91ee7e83fac5c9d0b970e7a583b3abde",
   "ghcr.io/wealthfolio/wealthfolio:latest": "ghcr.io/wealthfolio/wealthfolio@sha256:3c6f117828949204029c2b4a391f039e62987b4e091139e11b04e6764b5f6866"

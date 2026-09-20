@@ -24,7 +24,7 @@ in {
     })
     {
       systemd.tmpfiles.rules = [
-        "d ${esphomeDir} 0750 esphome esphome - -"
+        "d ${esphomeDir} 2750 esphome web - -"
       ];
 
       systemd.services.esphome.serviceConfig = {

@@ -45,9 +45,9 @@ in {
         users.groups.eightmb = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/eightmb 0750 eightmb eightmb - -"
-          "d ${storage}/eightmb/outputs 0750 eightmb eightmb - -"
-          "d ${storage}/eightmb/uploads 0750 eightmb eightmb - -"
+          "d ${storage}/eightmb 2750 eightmb web - -"
+          "d ${storage}/eightmb/outputs 2750 eightmb web - -"
+          "d ${storage}/eightmb/uploads 2750 eightmb web - -"
         ];
 
         virtualisation.oci-containers.containers.eightmb = {

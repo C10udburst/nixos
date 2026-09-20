@@ -56,7 +56,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     systemd.tmpfiles.rules = [
-      "d ${storage}/sablier 0750 root root - -"
+      "d ${storage}/sablier 2750 root web - -"
       "L+ ${storage}/sablier/sablier.yaml - - - - ${configFile}"
     ];
 
@@ -80,18 +80,22 @@ in {
     };
 
     systemd.services = lib.mkMerge [
-      (lib.mkMerge (map (
+      (lib.mkMerge (
+        map (
           app:
             lib.genAttrs (map (lib.removeSuffix ".service") (lib.unique app.suspend)) (_name: {
               serviceConfig."X-Sablier-Section = true\n\n[X-Sablier]\nEnable = true\nGroup" = app.name;
             })
         )
-        suspendedApps))
+        suspendedApps
+      ))
       {
         podman-sablier = {
           restartTriggers = [
             configFile
-            (pkgs.writeText "sablier-suspended-apps" (builtins.toJSON (map (a: {inherit (a) name suspend;}) suspendedApps)))
+            (pkgs.writeText "sablier-suspended-apps" (
+              builtins.toJSON (map (a: {inherit (a) name suspend;}) suspendedApps)
+            ))
           ];
         };
 
@@ -126,7 +130,7 @@ in {
 
             ${lib.concatMapStringsSep "\n" (app: ''
                 echo "Poking Sablier group: ${app.name}"
-                curl -fsSL "http://127.0.0.1:10000/api/strategies/poke?group=${app.name}" || true
+                curl -fsSL "http://127.0.0.1:10000/api/strategies/poke?group=${app.name}?session_duration=10m" || true
               '')
               suspendedApps}
           '';

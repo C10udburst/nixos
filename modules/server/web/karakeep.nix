@@ -34,7 +34,7 @@ in {
       })
       {
         systemd.tmpfiles.rules = [
-          "d ${storage}/karakeep 0750 karakeep karakeep - -"
+          "d ${storage}/karakeep 2750 karakeep web - -"
           "L+ /var/lib/karakeep - - - - ${storage}/karakeep"
         ];
 

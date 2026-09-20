@@ -41,7 +41,8 @@ in {
         users.groups.wealthfolio = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/wealthfolio 0750 wealthfolio wealthfolio - -"
+          "d ${storage}/wealthfolio 2751 wealthfolio web - -"
+          "z ${storage}/wealthfolio 2751 wealthfolio web - -"
         ];
 
         virtualisation.oci-containers.containers.wealthfolio = {

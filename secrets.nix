@@ -21,16 +21,18 @@ let
     cache
   ];
 in {
-  "secrets/smb-secrets.age".publicKeys = users ++ allHosts;
   "secrets/cloudflare-api-token.age".publicKeys = users ++ serverHosts;
-  "secrets/golink-tailscale-auth-key.age".publicKeys = users ++ serverHosts;
-  "secrets/vaultwarden-env.age".publicKeys = users ++ serverHosts;
-  "secrets/manyfold-env.age".publicKeys = users ++ serverHosts;
-  "secrets/wealthfolio-env.age".publicKeys = users ++ serverHosts;
-  "secrets/homarr-env.age".publicKeys = users ++ serverHosts;
-  "secrets/siyuan-env.age".publicKeys = users ++ serverHosts;
-  "secrets/gitea-env.age".publicKeys = users ++ serverHosts;
-  "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;
+  "secrets/copyparty-accounts.age".publicKeys = users ++ serverHosts;
   "secrets/duplicati-pass.age".publicKeys = users ++ serverHosts;
+  "secrets/gitea-env.age".publicKeys = users ++ serverHosts;
+  "secrets/golink-tailscale-auth-key.age".publicKeys = users ++ serverHosts;
+  "secrets/homarr-env.age".publicKeys = users ++ serverHosts;
+  "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;
+  "secrets/litellm.age".publicKeys = users ++ serverHosts;
+  "secrets/manyfold-env.age".publicKeys = users ++ serverHosts;
   "secrets/resume-env.age".publicKeys = users ++ serverHosts;
+  "secrets/siyuan-env.age".publicKeys = users ++ serverHosts;
+  "secrets/smb-secrets.age".publicKeys = users ++ allHosts;
+  "secrets/vaultwarden-env.age".publicKeys = users ++ serverHosts;
+  "secrets/wealthfolio-env.age".publicKeys = users ++ serverHosts;
 }

@@ -41,7 +41,7 @@ in {
         users.groups.siyuan = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/siyuan 0750 siyuan siyuan - -"
+          "d ${storage}/siyuan 2750 siyuan web - -"
         ];
 
         systemd.services.siyuan = {

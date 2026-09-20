@@ -48,7 +48,7 @@ in {
           users.groups.fetlife = {};
 
           systemd.tmpfiles.rules = [
-            "d ${storage}/fetlife 0750 fetlife fetlife - -"
+            "d ${storage}/fetlife 2750 fetlife web - -"
           ];
 
           systemd.services.fetlife = {

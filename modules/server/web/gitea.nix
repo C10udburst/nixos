@@ -24,7 +24,7 @@ in {
       })
       {
         systemd.tmpfiles.rules = [
-          "d ${storage}/gitea 0750 git git - -"
+          "d ${storage}/gitea 2750 gitea web - -"
         ];
 
         services.gitea = {

@@ -90,6 +90,10 @@ in {
           '';
         };
 
+        systemd.tmpfiles.rules = [
+          "d ${storage}/pihole 2750 pihole-ftl web - -"
+        ];
+
         services.pihole-ftl = {
           enable = true;
           stateDirectory = "${storage}/pihole";

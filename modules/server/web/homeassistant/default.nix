@@ -18,7 +18,6 @@ in {
       type = lib.types.listOf lib.types.str;
       default = [
         "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
-        "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyusb0"
       ];
     };
   };
@@ -45,9 +44,9 @@ in {
         users.groups.homeassistant = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/homeassistant 0755 homeassistant homeassistant - -"
-          "z ${storage}/homeassistant 0755 homeassistant homeassistant - -"
-          "d ${storage}/homeassistant/config 0750 homeassistant homeassistant - -"
+          "d ${storage}/homeassistant 2755 homeassistant web - -"
+          "z ${storage}/homeassistant 2755 homeassistant web - -"
+          "d ${storage}/homeassistant/config 2750 homeassistant web - -"
         ];
 
         virtualisation.oci-containers.containers.homeassistant = {
@@ -61,6 +60,7 @@ in {
           ];
           extraOptions = [
             "--network=host"
+            "--group-add=keep-groups"
           ];
         };
       }

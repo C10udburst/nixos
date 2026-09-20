@@ -44,7 +44,7 @@ in {
         };
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/golink 0750 golink golink - -"
+          "d ${storage}/golink 2750 golink web - -"
         ];
 
         systemd.services.golink = {
