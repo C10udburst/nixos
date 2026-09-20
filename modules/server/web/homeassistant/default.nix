@@ -52,6 +52,19 @@ in {
           "d ${storage}/homeassistant/config 0750 homeassistant web - -"
         ];
 
+        systemd.services."podman-homeassistant" = {
+          serviceConfig = {
+            AmbientCapabilities = [
+              "CAP_NET_ADMIN"
+              "CAP_NET_RAW"
+            ];
+            CapabilityBoundingSet = [
+              "CAP_NET_ADMIN"
+              "CAP_NET_RAW"
+            ];
+          };
+        };
+
         virtualisation.oci-containers.containers.homeassistant = {
           image = helpers.resolveImage "ghcr.io/home-assistant/home-assistant:stable";
           podman.user = "homeassistant";
