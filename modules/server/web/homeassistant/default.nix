@@ -44,9 +44,9 @@ in {
         users.groups.homeassistant = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/homeassistant 2755 homeassistant web - -"
-          "z ${storage}/homeassistant 2755 homeassistant web - -"
-          "d ${storage}/homeassistant/config 2750 homeassistant web - -"
+          "d ${storage}/homeassistant 0755 homeassistant web - -"
+          "z ${storage}/homeassistant 0755 homeassistant web - -"
+          "d ${storage}/homeassistant/config 0750 homeassistant web - -"
         ];
 
         virtualisation.oci-containers.containers.homeassistant = {

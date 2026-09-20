@@ -45,7 +45,8 @@ in {
         users.groups.transmute = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/transmute 2750 transmute web - -"
+          "d ${storage}/transmute 0750 transmute web - -"
+          "z ${storage}/transmute 0750 transmute web - -"
         ];
 
         virtualisation.oci-containers.containers.transmute = {

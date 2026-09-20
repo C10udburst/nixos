@@ -85,5 +85,23 @@
     "d /opt/dane 0775 cloudburst users - -"
   ];
 
+  # Optimize UDP GRO forwarding for Tailscale on Ethernet (enp0s31f6)
+  environment.systemPackages = [pkgs.ethtool];
+
+  systemd.services.tailscale-udp-gro = {
+    description = "Enable UDP GRO forwarding on enp0s31f6 for Tailscale";
+    wantedBy = ["multi-user.target"];
+    after = ["network.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.ethtool}/bin/ethtool -K enp0s31f6 rx-udp-gro-forwarding on rx-gro-list off";
+      RemainAfterExit = true;
+    };
+  };
+
+  services.udev.extraRules = ''
+    ACTION=="add|bind", SUBSYSTEM=="net", KERNEL=="enp0s31f6", RUN+="${pkgs.ethtool}/bin/ethtool -K %k rx-udp-gro-forwarding on rx-gro-list off"
+  '';
+
   system.stateVersion = "26.05";
 }

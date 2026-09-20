@@ -45,9 +45,10 @@ in {
         users.groups.manyfold = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/manyfold 2750 manyfold web - -"
-          "d ${storage}/manyfold/config 2750 manyfold web - -"
-          "d ${storage}/manyfold/libraries 2750 manyfold web - -"
+          "d ${storage}/manyfold 0750 manyfold web - -"
+          "z ${storage}/manyfold 0750 manyfold web - -"
+          "d ${storage}/manyfold/config 0750 manyfold web - -"
+          "d ${storage}/manyfold/libraries 0750 manyfold web - -"
         ];
 
         virtualisation.oci-containers.containers.manyfold = {

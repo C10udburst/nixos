@@ -60,8 +60,9 @@ in {
         users.groups.homarr = {};
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/homarr 2750 homarr web - -"
-          "d ${storage}/homarr/appdata 2750 homarr web - -"
+          "d ${storage}/homarr 0750 homarr web - -"
+          "z ${storage}/homarr 0750 homarr web - -"
+          "d ${storage}/homarr/appdata 0750 homarr web - -"
         ];
 
         systemd.services.homarr-declarative-apps = {
