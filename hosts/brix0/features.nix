@@ -20,5 +20,6 @@ _: {
       tailscale.exitNode = true;
       waypipe = false;
     };
+    compat.podman.enable = true;
   };
 }
