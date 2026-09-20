@@ -175,6 +175,9 @@ Rebuild and deploy changes across one or multiple machines:
 
 # Rebuild and switch remote target(s)
 ./apply switch cloudburst-laptop cloudburst-tablet
+
+# Rebuild and switch remote target specifying IP or address
+./apply switch brix0:192.168.1.50
 ```
 
 ### Checking Configuration

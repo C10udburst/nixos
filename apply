@@ -6,6 +6,22 @@ set -eo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pushd "$SCRIPT_DIR" > /dev/null
 
+if [[ "$1" =~ ^(-h|--help)$ ]]; then
+  echo "Usage: ./apply [boot|reboot|switch|test] [<host[:ip]> ...]"
+  echo ""
+  echo "Actions:"
+  echo "  boot (default)  Build and set as default boot configuration"
+  echo "  reboot          Build, set as default boot configuration, and reboot"
+  echo "  switch          Build and switch to new configuration immediately"
+  echo "  test            Build and activate configuration without adding to bootloader"
+  echo ""
+  echo "Targets:"
+  echo "  <host>          Hostname defined in flake (e.g. cloudburst-laptop)"
+  echo "  <host>:<ip>     Hostname defined in flake with explicit target IP/address (e.g. brix0:192.168.1.50)"
+  echo "  (default)       Localhost ($(hostname))"
+  exit 0
+fi
+
 # Firstly generate flake.nix from flake-file.nix
 if [[ -x "./flake" ]]; then
   ./flake
@@ -49,15 +65,38 @@ COMMIT_ENTRIES=()
 REBOOT_LOCAL=false
 
 for TARGET in "${TARGETS[@]}"; do
-  [[ "$TARGET" == "localhost" || "$TARGET" == "127.0.0.1" ]] && TARGET="$LOCAL_HOST"
+  HOST="$TARGET"
+  DEST="$TARGET"
 
-  echo -e "\n🚀 NixOS Rebuilding host '$TARGET' with action '$DISPLAY_ACTION'..."
+  if [[ "$TARGET" == *:* ]]; then
+    HOST="${TARGET%%:*}"
+    DEST="${TARGET#*:}"
+    [[ -z "$DEST" ]] && DEST="$HOST"
+  fi
 
-  if [[ "$TARGET" == "$LOCAL_HOST" ]]; then
+  USER_PREFIX=""
+  if [[ "$HOST" == *@* ]]; then
+    USER_PREFIX="${HOST%%@*}@"
+    HOST="${HOST#*@}"
+    if [[ "$DEST" != *@* ]]; then
+      DEST="${USER_PREFIX}${DEST}"
+    fi
+  fi
+
+  [[ "$HOST" == "localhost" || "$HOST" == "127.0.0.1" ]] && HOST="$LOCAL_HOST"
+  [[ "$DEST" == "localhost" || "$DEST" == "127.0.0.1" ]] && DEST="$LOCAL_HOST"
+
+  if [[ "$HOST" != "$DEST" ]]; then
+    echo -e "\n🚀 NixOS Rebuilding host '$HOST' via '$DEST' with action '$DISPLAY_ACTION'..."
+  else
+    echo -e "\n🚀 NixOS Rebuilding host '$HOST' with action '$DISPLAY_ACTION'..."
+  fi
+
+  if [[ "$HOST" == "$LOCAL_HOST" && "$DEST" == "$LOCAL_HOST" ]]; then
     echo "$PASSWORD" | sudo -S -v &>/dev/null
 
-    if ! echo "$PASSWORD" | sudo -S nixos-rebuild "$ACTION" --flake ".#$TARGET" 2>&1 | tee nixos-switch.log | nom; then
-      echo -e "\n❌ Local rebuild failed on $TARGET!"
+    if ! echo "$PASSWORD" | sudo -S nixos-rebuild "$ACTION" --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
+      echo -e "\n❌ Local rebuild failed on $HOST!"
       grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
       exit 1
     fi
@@ -69,42 +108,46 @@ for TARGET in "${TARGETS[@]}"; do
     export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
 
     echo "   📦 Building system closure locally..."
-    if ! nixos-rebuild build --flake ".#$TARGET" 2>&1 | tee nixos-switch.log | nom; then
-      echo -e "\n❌ Local build for remote host $TARGET failed!"
+    if ! nixos-rebuild build --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
+      echo -e "\n❌ Local build for remote host $HOST failed!"
       grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
       exit 1
     fi
 
     SYSTEM_PATH=$(readlink -f ./result)
 
-    echo "   🚚 Pushing closure to $TARGET..."
-    if ! nix-copy-closure --to "$TARGET" "$SYSTEM_PATH" 2>&1 | nom; then
-      echo -e "\n❌ Failed to push closure to $TARGET!"
+    echo "   🚚 Pushing closure to $DEST..."
+    if ! nix-copy-closure --to "$DEST" "$SYSTEM_PATH" 2>&1 | nom; then
+      echo -e "\n❌ Failed to push closure to $DEST!"
       exit 1
     fi
 
     echo "   🔗 Registering new system profile..."
-    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nix-env -p /nix/var/nix/profiles/system --set $SYSTEM_PATH"; then
-       echo -e "\n❌ Failed to set system profile on $TARGET!"
+    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S nix-env -p /nix/var/nix/profiles/system --set $SYSTEM_PATH"; then
+       echo -e "\n❌ Failed to set system profile on $DEST!"
        exit 1
     fi
 
     echo "   ⚡ Activating configuration ($ACTION)..."
-    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S $SYSTEM_PATH/bin/switch-to-configuration $ACTION"; then
-       echo -e "\n❌ Remote activation failed on $TARGET!"
+    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S $SYSTEM_PATH/bin/switch-to-configuration $ACTION"; then
+       echo -e "\n❌ Remote activation failed on $DEST!"
        exit 1
     fi
 
-    GEN=$(echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
+    GEN=$(echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
     [[ -z "$GEN" || "$GEN" == "null" ]] && GEN="unknown"
 
     if [[ "$DO_REBOOT" == true ]]; then
-      echo "   🔄 Rebooting remote host '$TARGET'..."
-      echo "$PASSWORD" | ssh $NIX_SSHOPTS "$TARGET" "sudo -S reboot" &>/dev/null || true
+      if [[ "$HOST" != "$DEST" ]]; then
+        echo "   🔄 Rebooting remote host '$HOST' ($DEST)..."
+      else
+        echo "   🔄 Rebooting remote host '$HOST'..."
+      fi
+      echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S reboot" &>/dev/null || true
     fi
   fi
 
-  COMMIT_ENTRIES+=("${TARGET}:${GEN}")
+  COMMIT_ENTRIES+=("${HOST}:${GEN}")
 done
 
 COMMIT_MSG="${COMMIT_ENTRIES[*]}"
