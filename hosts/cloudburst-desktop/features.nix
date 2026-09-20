@@ -38,14 +38,14 @@ _: {
     };
 
     # enable only for testing
-    server.web = {
-      enable = true;
-      core.baseDomain = "desktop.wilkins.pl.eu.org";
-      #homeassistant.devices = [];
-      etcHosts.enable = true;
-      copyparty.paths = ["/opt/dane"];
-      pihole.enable = false;
-      golink = true;
-    };
+    # server.web = {
+    #   enable = true;
+    #   core.baseDomain = "desktop.wilkins.pl.eu.org";
+    #   #homeassistant.devices = [];
+    #   etcHosts.enable = true;
+    #   copyparty.paths = ["/opt/dane"];
+    #   pihole.enable = false;
+    #   golink = true;
+    # };
   };
 }

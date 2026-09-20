@@ -38,19 +38,31 @@ sudo dd if=$(echo ./result/iso/*.iso) of=/dev/sdX bs=4M status=progress oflag=sy
 1. Insert the USB drive and boot the target device into UEFI boot mode.
 2. The system will boot automatically into the minimal bootstrap environment.
 3. Check the machine's IP address displayed on the terminal or via `ip a` (e.g., `192.168.1.50`).
-4. (Optional) If you want custom partitions, launch the terminal partition editor:
-   ```bash
-   tparted
-   ```
-   Or partition with `gdisk`/`parted`, format filesystems, and mount your root partition to `/mnt` (with `/mnt/boot` or `/mnt/boot/efi` for EFI).
+4. **Partition the drive, format filesystems, and mount to `/mnt`**:
+   - Launch the interactive partition editor:
+     ```bash
+     tparted
+     ```
+     Or partition manually with `gdisk`/`parted`, format filesystems (`mkfs.ext4`, `mkfs.btrfs`, `mkfs.fat -F 32`), and mount:
+     ```bash
+     mount /dev/nvme0n1p2 /mnt
+     mkdir -p /mnt/boot
+     mount /dev/nvme0n1p1 /mnt/boot
+     ```
+   > [!IMPORTANT]
+   > Mounting your root filesystem to `/mnt` **before** initializing is essential: it allows `nixos-generate-config` to detect your real disk UUIDs and mountpoints, and ensures the SSH host key for Agenix is written directly to `/mnt/etc/ssh/`.
 
 ---
 
 ### 3. Initialize Host Configuration (`./bootstrap init`)
 
-From your workstation (in this repository directory), run:
+From your workstation (over SSH):
 ```bash
 ./bootstrap init <ip> <hostname>
+```
+*Or locally from within the live environment:*
+```bash
+./bootstrap init <hostname>
 ```
 *Example:*
 ```bash
@@ -58,7 +70,7 @@ From your workstation (in this repository directory), run:
 ```
 
 **What this does automatically:**
-1. Connects to the target machine over SSH.
+1. Connects to the target machine over SSH (or inspects local system directly if local).
 2. Extracts hardware configuration via `nixos-generate-config` (from `/mnt` if mounted or running hardware).
 3. Generates the 4-file host directory in `./hosts/<hostname>/`:
    - `hardware-configuration.nix` (auto-detected hardware configuration)
@@ -66,7 +78,7 @@ From your workstation (in this repository directory), run:
    - `home-manager.nix` (host-specific user profile overrides)
    - `features.nix` (declarative dendritic feature toggles)
 4. Registers the host in `outputs.nix` under `nixosConfigurations`.
-5. Retrieves the host's SSH public key and prints the snippet for [secrets.nix](file:///home/cloudburst/nixos/secrets.nix).
+5. Retrieves or generates the host's SSH public key, saves it to `/mnt/etc/ssh/`, and prints the snippet for [secrets.nix](file:///home/cloudburst/nixos/secrets.nix).
 6. Formats with `alejandra` and stages changes in Git.
 
 ---
@@ -74,20 +86,29 @@ From your workstation (in this repository directory), run:
 ### 4. Configure Features and Secrets
 
 #### A. Add Host Key to Secrets (Optional / Agenix)
-If the host needs access to encrypted secrets (such as Samba credentials or service tokens), copy the printed key from the previous step into `secrets.nix`:
+If the host needs access to encrypted secrets (such as Samba credentials or service tokens):
+1. On your **workstation** (where your personal SSH private key is present to decrypt existing secrets), open `secrets.nix`.
+2. Add the host key printed by `./bootstrap init`:
 ```nix
 # In secrets.nix:
 cloudburst-new = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA...";
 
 allHosts = [
   ...
-  cloudburst-new
+  cloudburst-new # grants access to all-host secrets (e.g. SMB credentials)
+];
+
+# If this host is a server running hosted services (Gitea, Vaultwarden, etc.):
+serverHosts = [
+  ...
+  cloudburst-new # grants access to server secrets
 ];
 ```
-Re-encrypt secrets:
+3. Re-encrypt secrets on your workstation:
 ```bash
 agenix --rekey
 ```
+*(Note: Always run `agenix --rekey` on your workstation, not in the live installer environment, since your personal decrypting SSH key is not present on the installer ISO).*
 
 #### B. Configure Features (`./hosts/<hostname>/features.nix`)
 Open `./hosts/<hostname>/features.nix` and enable the desired feature set:
@@ -122,19 +143,22 @@ _: {
 
 Build and apply the configuration to the target machine:
 ```bash
-./bootstrap apply <ip> <hostname>
-```
+# Remotely from your workstation:
+./bootstrap apply <ip> <hostname> [--mkrepo]
 
-To also clone this repository to `~/nixos` on the new host upon completion:
-```bash
-./bootstrap apply <ip> <hostname> --mkrepo
+# Or locally from within the live environment:
+./bootstrap apply <hostname> [--mkrepo]
 ```
 
 **What this does:**
-1. Builds the system closure locally on your workstation.
-2. Pushes the closure to the target machine via `nix-copy-closure`.
-3. Sets the NixOS system profile and switches to the new configuration.
-4. If `--mkrepo` is passed, sets up and syncs the repository into `~/nixos` on the target machine.
+1. Builds the system closure locally.
+2. **If `/mnt` is mounted (installation mode):**
+   - Copies the system closure directly to `/mnt/nix/store` on the target disk (without exhausting RAM/tmpfs).
+   - Runs `nixos-install --root /mnt --system ...` to install NixOS and the bootloader to `/mnt/boot`.
+   - If `--mkrepo` is passed, sets up and syncs the repository into `/home/cloudburst/nixos` on the installed disk.
+3. **If `/mnt` is not mounted (update mode):**
+   - Pushes closure to `/nix/store` and activates the configuration via `switch-to-configuration switch`.
+   - If `--mkrepo` is passed, sets up and syncs the repository into `~/nixos`.
 
 ---
 

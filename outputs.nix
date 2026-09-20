@@ -34,6 +34,7 @@
     };
 in {
   nixosConfigurations = {
+    brix0 = mkHost {hostName = "brix0";};
     cloudburst-desktop = mkHost {hostName = "cloudburst-desktop";};
     cloudburst-laptop = mkHost {hostName = "cloudburst-laptop";};
     cloudburst-tablet = mkHost {hostName = "cloudburst-tablet";};

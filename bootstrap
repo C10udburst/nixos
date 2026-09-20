@@ -9,8 +9,8 @@ SSH_OPTS=(-o StrictHostKeyChecking=accept-new -o ConnectTimeout=10)
 print_usage() {
   cat <<EOF
 Usage:
-  ./bootstrap init <ip> <hostname>
-  ./bootstrap apply <ip> <hostname> [--mkrepo]
+  ./bootstrap init [<ip>] <hostname>
+  ./bootstrap apply [<ip>] <hostname> [--mkrepo]
   ./bootstrap iso
 
 Commands:
@@ -18,22 +18,29 @@ Commands:
       Builds the minimal bootable installation ISO image (result/iso/*.iso)
       containing installer tools, SSH with authorized keys, and dual 32/64-bit GRUB.
 
-  init <ip> <hostname>
-      Connects to <ip> via SSH, runs nixos-generate-config remotely to retrieve
-      the hardware configuration, creates ./hosts/<hostname>/ according to the
-      4-file dendritic pattern, and registers <hostname> in outputs.nix.
+  init [<ip>] <hostname>
+      Connects to <ip> via SSH (or runs locally if <ip> is omitted / 'local'),
+      retrieves the hardware configuration, creates ./hosts/<hostname>/ according
+      to the 4-file dendritic pattern, and registers <hostname> in outputs.nix.
 
-  apply <ip> <hostname> [--mkrepo]
-      Builds the NixOS closure for <hostname> locally, pushes it to <ip> via
-      nix-copy-closure, and activates the configuration.
+  apply [<ip>] <hostname> [--mkrepo]
+      Builds the NixOS closure for <hostname> locally.
+      - If /mnt is mounted on the target (installation mode):
+        Copies the system closure directly to /mnt/nix/store and runs
+        nixos-install to install NixOS and the bootloader to the mounted disk.
+      - If /mnt is not mounted (update mode):
+        Pushes closure to /nix/store and activates the running configuration.
       If --mkrepo is provided, sets up and syncs this repository into ~/nixos
-      on the remote target.
+      (or /mnt/home/cloudburst/nixos in installation mode).
 
 Examples:
   ./bootstrap iso
   ./bootstrap init 192.168.1.50 my-server
   ./bootstrap apply 192.168.1.50 my-server
   ./bootstrap apply 192.168.1.50 my-server --mkrepo
+  # Running locally from within the live environment:
+  ./bootstrap init my-server
+  ./bootstrap apply my-server --mkrepo
 EOF
 }
 
@@ -45,8 +52,8 @@ resolve_ssh_target() {
     return 0
   fi
 
-  # If no user is specified, try cloudburst first, then root, then nixos
-  for user in "cloudburst" "root" "nixos"; do
+  # If no user is specified, try root first (installer ISO default), then cloudburst, then nixos
+  for user in "root" "cloudburst" "nixos"; do
     if ssh -q "${SSH_OPTS[@]}" -o BatchMode=yes "$user@$target" "true" 2>/dev/null; then
       echo "$user@$target"
       return 0
@@ -73,13 +80,24 @@ get_sudo_prefix() {
 }
 
 cmd_init() {
-  local ip="$1"
-  local hostname="$2"
+  local ip=""
+  local hostname=""
 
-  if [[ -z "$ip" || -z "$hostname" ]]; then
-    echo "Error: Both <ip> and <hostname> are required for init." >&2
+  if [[ $# -eq 1 ]]; then
+    ip="local"
+    hostname="$1"
+  elif [[ $# -ge 2 ]]; then
+    ip="$1"
+    hostname="$2"
+  else
+    echo "Error: <hostname> is required for init (e.g. ./bootstrap init <hostname> or ./bootstrap init <ip> <hostname>)." >&2
     print_usage
     exit 1
+  fi
+
+  local is_local=false
+  if [[ "$ip" == "local" || "$ip" == "localhost" || "$ip" == "127.0.0.1" ]]; then
+    is_local=true
   fi
 
   local target_dir="$REPO_ROOT/hosts/$hostname"
@@ -88,41 +106,119 @@ cmd_init() {
     exit 1
   fi
 
-  echo "🔍 Resolving SSH connection to $ip..."
-  local ssh_target
-  ssh_target=$(resolve_ssh_target "$ip")
-  echo "✓ Using SSH target: $ssh_target"
+  local hw_config=""
+  local host_pub_key=""
 
-  local remote_pass
-  remote_pass=$(get_sudo_prefix "$ssh_target")
-
-  echo "📡 Fetching remote hardware configuration from $ssh_target..."
-  local remote_cmd='
+  if [[ "$is_local" == true ]]; then
+    echo "📡 Fetching local hardware configuration..."
     if [ -f /mnt/etc/nixos/hardware-configuration.nix ]; then
-      cat /mnt/etc/nixos/hardware-configuration.nix
+      hw_config=$(cat /mnt/etc/nixos/hardware-configuration.nix)
     elif [ -f /etc/nixos/hardware-configuration.nix ]; then
-      cat /etc/nixos/hardware-configuration.nix
+      hw_config=$(cat /etc/nixos/hardware-configuration.nix)
+    elif mountpoint -q /mnt 2>/dev/null; then
+      hw_config=$(sudo nixos-generate-config --root /mnt --show-hardware-config)
     elif command -v nixos-generate-config >/dev/null 2>&1; then
-      if mountpoint -q /mnt 2>/dev/null; then
-        sudo nixos-generate-config --root /mnt --show-hardware-config
-      else
-        sudo nixos-generate-config --show-hardware-config
-      fi
+      hw_config=$(sudo nixos-generate-config --show-hardware-config)
     else
-      echo "ERROR: Could not find or generate hardware-configuration.nix on remote host" >&2
+      echo "ERROR: Could not find or generate hardware-configuration.nix" >&2
       exit 1
     fi
-  '
 
-  local hw_config
-  if [[ -n "$remote_pass" ]]; then
-    hw_config=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -S bash -c '$remote_cmd'")
+    echo "🔑 Retrieving SSH host public key for agenix..."
+    if mountpoint -q /mnt 2>/dev/null; then
+      sudo mkdir -p /mnt/etc/ssh
+      if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+        if [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+          sudo cp -a /etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/ 2>/dev/null || true
+        fi
+        if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+          sudo ssh-keygen -t ed25519 -N "" -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@$hostname" >/dev/null 2>&1 || true
+        fi
+        sudo chmod 600 /mnt/etc/ssh/ssh_host_ed25519_key 2>/dev/null || true
+        sudo chmod 644 /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+      fi
+      host_pub_key=$(sudo cat /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true)
+    elif [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+      host_pub_key=$(sudo cat /etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true)
+    else
+      sudo mkdir -p /etc/ssh
+      sudo ssh-keygen -t ed25519 -N "" -f /etc/ssh/ssh_host_ed25519_key -C "root@$hostname" >/dev/null 2>&1 || true
+      sudo chmod 600 /etc/ssh/ssh_host_ed25519_key 2>/dev/null || true
+      sudo chmod 644 /etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+      host_pub_key=$(sudo cat /etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true)
+    fi
+
   else
-    hw_config=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "bash -c '$remote_cmd'")
+    echo "🔍 Resolving SSH connection to $ip..."
+    local ssh_target
+    ssh_target=$(resolve_ssh_target "$ip")
+    echo "✓ Using SSH target: $ssh_target"
+
+    local remote_pass
+    remote_pass=$(get_sudo_prefix "$ssh_target")
+
+    echo "📡 Fetching remote hardware configuration from $ssh_target..."
+    local remote_cmd='
+      if [ -f /mnt/etc/nixos/hardware-configuration.nix ]; then
+        cat /mnt/etc/nixos/hardware-configuration.nix
+      elif [ -f /etc/nixos/hardware-configuration.nix ]; then
+        cat /etc/nixos/hardware-configuration.nix
+      elif command -v nixos-generate-config >/dev/null 2>&1; then
+        if mountpoint -q /mnt 2>/dev/null; then
+          sudo nixos-generate-config --root /mnt --show-hardware-config
+        else
+          sudo nixos-generate-config --show-hardware-config
+        fi
+      else
+        echo "ERROR: Could not find or generate hardware-configuration.nix on remote host" >&2
+        exit 1
+      fi
+    '
+
+    if [[ -n "$remote_pass" ]]; then
+      hw_config=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -S bash -c '$remote_cmd'")
+    else
+      hw_config=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo bash -c '$remote_cmd'")
+    fi
+
+    echo "🔑 Retrieving SSH host public key for agenix..."
+    local remote_key_cmd='
+      set -e
+      if mountpoint -q /mnt 2>/dev/null; then
+        mkdir -p /mnt/etc/ssh
+        if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+          if [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+            cp -a /etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/ 2>/dev/null || true
+          fi
+          if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+            ssh-keygen -t ed25519 -N "" -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1 || true
+          fi
+          chmod 600 /mnt/etc/ssh/ssh_host_ed25519_key 2>/dev/null || true
+          chmod 644 /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+        fi
+        cat /mnt/etc/ssh/ssh_host_ed25519_key.pub
+      elif [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+        cat /etc/ssh/ssh_host_ed25519_key.pub
+      else
+        mkdir -p /etc/ssh
+        ssh-keygen -t ed25519 -N "" -f /etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1 || true
+        chmod 600 /etc/ssh/ssh_host_ed25519_key 2>/dev/null || true
+        chmod 644 /etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+        cat /etc/ssh/ssh_host_ed25519_key.pub
+      fi
+    '
+
+    local host_pub_key_raw=""
+    if [[ -n "$remote_pass" ]]; then
+      host_pub_key_raw=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -S bash -c '$remote_key_cmd'" 2>/dev/null || true)
+    else
+      host_pub_key_raw=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo bash -c '$remote_key_cmd'" 2>/dev/null || true)
+    fi
+    host_pub_key="$host_pub_key_raw"
   fi
 
-  if [[ -z "$hw_config" || "$hw_config" != *"boot."* && "$hw_config" != *"fileSystems"* ]]; then
-    echo "❌ Failed to retrieve valid hardware configuration from $ssh_target!" >&2
+  if [[ -z "$hw_config" || ("$hw_config" != *"boot."* && "$hw_config" != *"fileSystems"*) ]]; then
+    echo "❌ Failed to retrieve valid hardware configuration!" >&2
     echo "Output was:" >&2
     echo "$hw_config" >&2
     exit 1
@@ -184,46 +280,16 @@ EOF
     echo "✓ Registered '${hostname}' in outputs.nix under nixosConfigurations"
   fi
 
-  # 6. Retrieve or generate SSH host public key for agenix
-  echo "🔑 Retrieving SSH host public key for agenix..."
-  local remote_key_cmd='
-    if mountpoint -q /mnt 2>/dev/null; then
-      mkdir -p /mnt/etc/ssh
-      if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
-        if [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
-          cp -a /etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/ 2>/dev/null || true
-        fi
-        if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
-          ssh-keygen -t ed25519 -N "" -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1
-        fi
-      fi
-      cat /mnt/etc/ssh/ssh_host_ed25519_key.pub
-    elif [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
-      cat /etc/ssh/ssh_host_ed25519_key.pub
-    else
-      mkdir -p /etc/ssh
-      ssh-keygen -t ed25519 -N "" -f /etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1
-      cat /etc/ssh/ssh_host_ed25519_key.pub
-    fi
-  '
+  host_pub_key=$(echo "$host_pub_key" | grep -E '^ssh-(ed25519|rsa)' | awk '{print $1 " " $2}' | head -n 1 || true)
+  host_pub_key=$(echo "$host_pub_key" | xargs)
 
-  local host_pub_key_raw
-  if [[ -n "$remote_pass" ]]; then
-    host_pub_key_raw=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -S bash -c '$remote_key_cmd'" 2>/dev/null || true)
-  else
-    host_pub_key_raw=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "bash -c '$remote_key_cmd'" 2>/dev/null || true)
-  fi
-
-  local host_pub_key
-  host_pub_key=$(echo "$host_pub_key_raw" | awk '{print $1 " " $2}')
-
-  # 7. Format with alejandra if available
+  # 6. Format with alejandra if available
   if command -v alejandra &>/dev/null; then
     echo "🎨 Formatting with alejandra..."
     (cd "$REPO_ROOT" && alejandra . &>/dev/null || true)
   fi
 
-  # 8. Stage in git
+  # 7. Stage in git
   echo "📦 Staging files in Git..."
   (cd "$REPO_ROOT" && git add "hosts/$hostname" "$outputs_path")
 
@@ -252,7 +318,11 @@ EOF
   echo ""
   echo "Next steps:"
   echo "  1. Customize hosts/$hostname/features.nix with desired features."
-  echo "  2. Deploy using: ./bootstrap apply $ip $hostname [--mkrepo]"
+  if [[ "$is_local" == true ]]; then
+    echo "  2. Deploy using: ./bootstrap apply $hostname [--mkrepo]"
+  else
+    echo "  2. Deploy using: ./bootstrap apply $ip $hostname [--mkrepo]"
+  fi
 }
 
 cmd_apply() {
@@ -277,16 +347,33 @@ cmd_apply() {
     esac
   done
 
+  # Support running `./bootstrap apply <hostname>` locally if single positional arg is a host
+  if [[ -n "$ip" && -z "$hostname" ]]; then
+    if [[ -d "$REPO_ROOT/hosts/$ip" ]]; then
+      hostname="$ip"
+      ip="local"
+    fi
+  fi
+
   if [[ -z "$ip" || -z "$hostname" ]]; then
-    echo "Error: Both <ip> and <hostname> are required for apply." >&2
+    echo "Error: <hostname> is required for apply (e.g. ./bootstrap apply <hostname> or ./bootstrap apply <ip> <hostname>)." >&2
     print_usage
     exit 1
+  fi
+
+  local is_local=false
+  if [[ "$ip" == "local" || "$ip" == "localhost" || "$ip" == "127.0.0.1" ]]; then
+    is_local=true
   fi
 
   local target_dir="$REPO_ROOT/hosts/$hostname"
   if [[ ! -d "$target_dir" ]]; then
     echo "Error: Host configuration for '$hostname' not found at $target_dir" >&2
-    echo "Run './bootstrap init $ip $hostname' first." >&2
+    if [[ "$is_local" == true ]]; then
+      echo "Run './bootstrap init $hostname' first." >&2
+    else
+      echo "Run './bootstrap init $ip $hostname' first." >&2
+    fi
     exit 1
   fi
 
@@ -304,21 +391,65 @@ cmd_apply() {
   fi
   git add .
 
-  local ssh_target
-  ssh_target=$(resolve_ssh_target "$ip")
-  echo "✓ Using SSH target: $ssh_target"
-
-  local remote_pass
-  remote_pass=$(get_sudo_prefix "$ssh_target")
-
-  local sudo_cmd="sudo"
-  if [[ -n "$remote_pass" ]]; then
-    sudo_cmd="sudo -S"
-  fi
-
   local nom_cmd="cat"
   if command -v nom &>/dev/null; then
     nom_cmd="nom"
+  fi
+
+  local ssh_target=""
+  local remote_pass=""
+  local sudo_cmd="sudo"
+  local is_mountpoint=false
+
+  if [[ "$is_local" == true ]]; then
+    echo "✓ Running locally on target machine"
+    if mountpoint -q /mnt 2>/dev/null; then
+      is_mountpoint=true
+      echo "✓ Detected mounted root partition at /mnt (installation mode)"
+    fi
+  else
+    ssh_target=$(resolve_ssh_target "$ip")
+    echo "✓ Using SSH target: $ssh_target"
+
+    remote_pass=$(get_sudo_prefix "$ssh_target")
+    if [[ -n "$remote_pass" ]]; then
+      sudo_cmd="sudo -S"
+    fi
+
+    local check_mnt_cmd="mountpoint -q /mnt 2>/dev/null && echo 'yes' || echo 'no'"
+    local mnt_result
+    if [[ -n "$remote_pass" ]]; then
+      mnt_result=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd bash -c '$check_mnt_cmd'" 2>/dev/null || echo "no")
+    else
+      mnt_result=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "bash -c '$check_mnt_cmd'" 2>/dev/null || echo "no")
+    fi
+    if [[ "$mnt_result" == *"yes"* ]]; then
+      is_mountpoint=true
+      echo "✓ Detected mounted root partition at /mnt on $ssh_target (installation mode)"
+    fi
+  fi
+
+  # Prevent accidental in-RAM switch if booted on live ISO without /mnt mounted
+  if [[ "$is_mountpoint" == false ]]; then
+    local target_is_bootstrap=false
+    if [[ "$is_local" == true ]]; then
+      if [[ "$(hostname)" == "bootstrap" || -f /etc/iso-release ]]; then
+        target_is_bootstrap=true
+      fi
+    else
+      local host_check
+      host_check=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "hostname 2>/dev/null || true")
+      if [[ "$host_check" == "bootstrap" ]]; then
+        target_is_bootstrap=true
+      fi
+    fi
+
+    if [[ "$target_is_bootstrap" == true ]]; then
+      echo -e "\n❌ Error: Target appears to be running the bootstrap installer ISO, but /mnt is not mounted!" >&2
+      echo "Please partition your disk and mount the root filesystem to /mnt (and EFI to /mnt/boot or /mnt/boot/efi) before applying." >&2
+      popd > /dev/null
+      exit 1
+    fi
   fi
 
   echo -e "\n📦 Building system closure locally for '$hostname'..."
@@ -332,33 +463,261 @@ cmd_apply() {
   local system_path
   system_path=$(readlink -f ./result)
 
-  export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
-  echo -e "\n🚚 Pushing closure to $ssh_target ($system_path)..."
-  if ! nix-copy-closure --to "$ssh_target" "$system_path" 2>&1 | $nom_cmd; then
-    echo -e "\n❌ Failed to push closure to $ssh_target!" >&2
-    popd > /dev/null
-    exit 1
+  local gen="1"
+
+  # Retrieve expected SSH public key from secrets.nix if configured
+  local secrets_nix="$REPO_ROOT/secrets.nix"
+  local expected_key=""
+  if [[ -f "$secrets_nix" ]]; then
+    expected_key=$(grep -E "^\s*${hostname}\s*=" "$secrets_nix" | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/' | awk '{print $1 " " $2}' || true)
   fi
 
-  echo -e "\n🔗 Registering new system profile on $ssh_target..."
-  if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nix-env -p /nix/var/nix/profiles/system --set $system_path"; then
-    echo -e "\n❌ Failed to set system profile on $ssh_target!" >&2
-    popd > /dev/null
-    exit 1
+  if [[ "$is_mountpoint" == true ]]; then
+    # ── INSTALLATION MODE (/mnt is mounted) ──────────────────────────────
+    if [[ "$is_local" == true ]]; then
+      echo -e "\n📂 Ensuring /mnt/nix/store exists..."
+      sudo mkdir -p /mnt/nix/store /mnt/nix/var/nix
+
+      echo -e "\n🚚 Copying closure directly to /mnt/nix/store ($system_path)..."
+      if ! sudo nix copy --to /mnt "$system_path" 2>&1 | $nom_cmd; then
+        echo "⚠️  nix copy --to /mnt failed, falling back to nix-store pipe..."
+        if ! nix-store --export $(nix-store -qR "$system_path") | sudo nix-store --store /mnt --import; then
+          echo -e "\n❌ Failed to copy closure to /mnt/nix/store!" >&2
+          popd > /dev/null
+          exit 1
+        fi
+      fi
+
+      # Ensure SSH host key exists on /mnt before installation so agenix can decrypt secrets
+      echo -e "\n🔑 Ensuring SSH host key is preserved on /mnt/etc/ssh..."
+      sudo mkdir -p /mnt/etc/ssh
+      if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key ]; then
+        if [ -f /etc/ssh/ssh_host_ed25519_key ]; then
+          echo "   Copying live session host key to /mnt/etc/ssh/..."
+          sudo cp -a /etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
+          sudo chmod 600 /mnt/etc/ssh/ssh_host_ed25519_key
+          sudo chmod 644 /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+        else
+          echo "   Generating fresh SSH host key on /mnt/etc/ssh/..."
+          sudo ssh-keygen -t ed25519 -N "" -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@$hostname" >/dev/null 2>&1 || true
+        fi
+      fi
+      local current_pub_key=""
+      if [ -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+        current_pub_key=$(sudo cat /mnt/etc/ssh/ssh_host_ed25519_key.pub | awk '{print $1 " " $2}')
+      fi
+      if [[ -n "$expected_key" ]]; then
+        if [[ "$expected_key" == "$current_pub_key"* ]]; then
+          echo "✓ Verified: SSH host key on /mnt matches secrets.nix for $hostname"
+        else
+          echo "⚠️  WARNING: SSH host key on /mnt does NOT match $hostname in secrets.nix!" >&2
+          echo "   secrets.nix: $expected_key" >&2
+          echo "   /mnt on disk: $current_pub_key" >&2
+          echo "   Agenix secrets may fail to decrypt on first boot until re-keyed." >&2
+        fi
+      elif [[ -n "$current_pub_key" ]]; then
+        echo "ℹ️  Host key on /mnt: $current_pub_key"
+      fi
+
+      echo -e "\n⚙️  Installing NixOS to /mnt via nixos-install..."
+      if ! sudo nixos-install --root /mnt --system "$system_path" --no-root-passwd --no-channel-copy; then
+        echo -e "\n❌ nixos-install failed!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      if [[ "$mkrepo" == true ]]; then
+        echo -e "\n📂 Setting up repository at /mnt/home/cloudburst/nixos..."
+        local target_home="/mnt/home/cloudburst"
+        sudo mkdir -p "$target_home/nixos"
+        sudo rsync -avz --exclude='.git/' "$REPO_ROOT/" "$target_home/nixos/"
+        sudo chown -R 1000:100 "$target_home" 2>/dev/null || true
+        echo "✓ Repository ready at /home/cloudburst/nixos"
+      fi
+
+    else
+      # Remote installation
+      echo -e "\n📂 Ensuring /mnt/nix/store exists on $ssh_target..."
+      local prep_store_cmd="$sudo_cmd mkdir -p /mnt/nix/store /mnt/nix/var/nix && $sudo_cmd chown -R \$(id -u):\$(id -g) /mnt/nix"
+      if [[ -n "$remote_pass" ]]; then
+        echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$prep_store_cmd"
+      else
+        ssh "${SSH_OPTS[@]}" "$ssh_target" "$prep_store_cmd"
+      fi
+
+      export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
+      echo -e "\n🚚 Pushing closure directly to /mnt/nix/store on $ssh_target ($system_path)..."
+      local copy_success=false
+      if nix copy --to "ssh://$ssh_target?remote-store=local?root=/mnt" "$system_path" 2>&1 | $nom_cmd; then
+        copy_success=true
+      else
+        echo "⚠️  nix copy to remote-store failed, falling back to nix-store pipe..."
+        if nix-store --export $(nix-store -qR "$system_path") | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nix-store --store /mnt --import"; then
+          copy_success=true
+        fi
+      fi
+
+      if [[ "$copy_success" != true ]]; then
+        echo -e "\n❌ Failed to copy closure to /mnt/nix/store on $ssh_target!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      # Restore ownership to root before running nixos-install
+      local chown_store_cmd="$sudo_cmd chown -R root:root /mnt/nix"
+      if [[ -n "$remote_pass" ]]; then
+        echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$chown_store_cmd"
+      else
+        ssh "${SSH_OPTS[@]}" "$ssh_target" "$chown_store_cmd"
+      fi
+
+      # Ensure SSH host key exists on remote /mnt before installation
+      echo -e "\n🔑 Ensuring SSH host key is preserved on $ssh_target:/mnt/etc/ssh..."
+      local ssh_key_sync_cmd='
+        mkdir -p /mnt/etc/ssh
+        if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key ]; then
+          if [ -f /etc/ssh/ssh_host_ed25519_key ]; then
+            cp -a /etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/
+            chmod 600 /mnt/etc/ssh/ssh_host_ed25519_key
+            chmod 644 /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+          else
+            ssh-keygen -t ed25519 -N "" -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1 || true
+          fi
+        fi
+        cat /mnt/etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || true
+      '
+      local current_pub_key_raw=""
+      if [[ -n "$remote_pass" ]]; then
+        current_pub_key_raw=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd bash -c '$ssh_key_sync_cmd'" 2>/dev/null || true)
+      else
+        current_pub_key_raw=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd bash -c '$ssh_key_sync_cmd'" 2>/dev/null || true)
+      fi
+      local current_pub_key
+      current_pub_key=$(echo "$current_pub_key_raw" | awk '{print $1 " " $2}')
+      if [[ -n "$expected_key" ]]; then
+        if [[ "$expected_key" == "$current_pub_key"* ]]; then
+          echo "✓ Verified: SSH host key on /mnt matches secrets.nix for $hostname"
+        else
+          echo "⚠️  WARNING: SSH host key on /mnt does NOT match $hostname in secrets.nix!" >&2
+          echo "   secrets.nix: $expected_key" >&2
+          echo "   /mnt on disk: $current_pub_key" >&2
+          echo "   Agenix secrets may fail to decrypt on first boot until re-keyed." >&2
+        fi
+      elif [[ -n "$current_pub_key" ]]; then
+        echo "ℹ️  Host key on /mnt: $current_pub_key"
+      fi
+
+      echo -e "\n⚙️  Installing NixOS to /mnt on $ssh_target via nixos-install..."
+      local install_cmd="$sudo_cmd nixos-install --root /mnt --system $system_path --no-root-passwd --no-channel-copy"
+      if [[ -n "$remote_pass" ]]; then
+        if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$install_cmd"; then
+          echo -e "\n❌ nixos-install failed on $ssh_target!" >&2
+          popd > /dev/null
+          exit 1
+        fi
+      else
+        if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "$install_cmd"; then
+          echo -e "\n❌ nixos-install failed on $ssh_target!" >&2
+          popd > /dev/null
+          exit 1
+        fi
+      fi
+
+      if [[ "$mkrepo" == true ]]; then
+        echo -e "\n📂 Setting up repository at /mnt/home/cloudburst/nixos on $ssh_target..."
+        local target_home="/mnt/home/cloudburst"
+        local prep_home_cmd="$sudo_cmd mkdir -p $target_home/nixos && $sudo_cmd chown -R \$(id -u):\$(id -g) $target_home/nixos"
+        if [[ -n "$remote_pass" ]]; then
+          echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$prep_home_cmd"
+        else
+          ssh "${SSH_OPTS[@]}" "$ssh_target" "$prep_home_cmd"
+        fi
+
+        echo "🔄 Syncing local repository files to $ssh_target:$target_home/nixos/..."
+        rsync -avz --exclude='.git/' -e "ssh ${SSH_OPTS[*]}" "$REPO_ROOT/" "$ssh_target:$target_home/nixos/" || true
+
+        local fix_home_cmd="$sudo_cmd chown -R 1000:100 $target_home 2>/dev/null || true"
+        if [[ -n "$remote_pass" ]]; then
+          echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$fix_home_cmd"
+        else
+          ssh "${SSH_OPTS[@]}" "$ssh_target" "$fix_home_cmd"
+        fi
+        echo "✓ Repository ready at /home/cloudburst/nixos on $ssh_target"
+      fi
+    fi
+
+    echo -e "\n🎉 NixOS installed successfully to /mnt for $hostname!"
+    echo "👉 You can now safely reboot target into the new NixOS system."
+
+  else
+    # ── UPDATE / SWITCH MODE (/mnt is not mounted) ───────────────────────
+    if [[ "$is_local" == true ]]; then
+      echo -e "\n🔗 Registering new system profile locally..."
+      if ! sudo nix-env -p /nix/var/nix/profiles/system --set "$system_path"; then
+        echo -e "\n❌ Failed to set system profile locally!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      echo -e "\n⚡ Activating configuration (switch)..."
+      if ! sudo "$system_path/bin/switch-to-configuration" switch; then
+        echo -e "\n❌ Local activation failed!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      gen=$(nixos-rebuild list-generations --json 2>/dev/null | jq -r '.[] | select (.current == true) | .generation' 2>/dev/null || echo "unknown")
+
+    else
+      export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
+      echo -e "\n🚚 Pushing closure to $ssh_target ($system_path)..."
+      if ! nix-copy-closure --to "$ssh_target" "$system_path" 2>&1 | $nom_cmd; then
+        echo -e "\n❌ Failed to push closure to $ssh_target!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      echo -e "\n🔗 Registering new system profile on $ssh_target..."
+      if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nix-env -p /nix/var/nix/profiles/system --set $system_path"; then
+        echo -e "\n❌ Failed to set system profile on $ssh_target!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      echo -e "\n⚡ Activating configuration (switch) on $ssh_target..."
+      if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd $system_path/bin/switch-to-configuration switch"; then
+        echo -e "\n❌ Remote activation failed on $ssh_target!" >&2
+        popd > /dev/null
+        exit 1
+      fi
+
+      gen=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation' 2>/dev/null || echo "unknown")
+
+      if [[ "$mkrepo" == true ]]; then
+        echo -e "\n📂 Setting up repository at ~/nixos on $ssh_target..."
+        local repo_url
+        repo_url=$(git remote get-url origin 2>/dev/null || echo "git@github.com:C10udburst/nixos.git")
+
+        if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "[ -d ~/nixos/.git ]" 2>/dev/null; then
+          echo "📥 Cloning repository on $ssh_target..."
+          if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "git clone '$repo_url' ~/nixos" 2>/dev/null; then
+            local https_url="https://github.com/C10udburst/nixos.git"
+            echo "⚠️  SSH clone failed, trying HTTPS: $https_url..."
+            if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "git clone '$https_url' ~/nixos" 2>/dev/null; then
+              echo "⚠️  Remote clone failed. Syncing local working directory directly..."
+            fi
+          fi
+        fi
+
+        echo "🔄 Syncing local repository files to $ssh_target:~/nixos/..."
+        rsync -avz --exclude='.git/' -e "ssh ${SSH_OPTS[*]}" "$REPO_ROOT/" "$ssh_target:nixos/" || true
+        echo "✓ Repository ready at ~/nixos on $ssh_target"
+      fi
+    fi
+
+    [[ -z "$gen" || "$gen" == "null" ]] && gen="unknown"
+    echo -e "\n🎉 Configuration applied successfully to $hostname (generation $gen)!"
   fi
-
-  echo -e "\n⚡ Activating configuration (switch) on $ssh_target..."
-  if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd $system_path/bin/switch-to-configuration switch"; then
-    echo -e "\n❌ Remote activation failed on $ssh_target!" >&2
-    popd > /dev/null
-    exit 1
-  fi
-
-  local gen
-  gen=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation' 2>/dev/null || echo "unknown")
-  [[ -z "$gen" || "$gen" == "null" ]] && gen="unknown"
-
-  echo -e "\n🎉 Configuration applied successfully to $hostname (generation $gen)!"
 
   # Commit changes locally
   local commit_msg="${hostname}:${gen}"
@@ -367,30 +726,6 @@ cmd_apply() {
   else
     git commit -m "$commit_msg"
     echo "✅ Committed: $commit_msg"
-  fi
-
-  # Handle --mkrepo
-  if [[ "$mkrepo" == true ]]; then
-    echo -e "\n📂 Setting up repository at ~/nixos on $ssh_target..."
-    local repo_url
-    repo_url=$(git remote get-url origin 2>/dev/null || echo "git@github.com:C10udburst/nixos.git")
-
-    # Clone or ensure git repo exists on remote
-    if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "[ -d ~/nixos/.git ]" 2>/dev/null; then
-      echo "📥 Cloning repository on $ssh_target..."
-      if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "git clone '$repo_url' ~/nixos" 2>/dev/null; then
-        local https_url="https://github.com/C10udburst/nixos.git"
-        echo "⚠️  SSH clone failed, trying HTTPS: $https_url..."
-        if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "git clone '$https_url' ~/nixos" 2>/dev/null; then
-          echo "⚠️  Remote clone failed. Syncing local working directory directly..."
-        fi
-      fi
-    fi
-
-    # Sync local working tree (including newly initialized hosts and uncommitted changes)
-    echo "🔄 Syncing local repository files to $ssh_target:~/nixos/..."
-    rsync -avz --exclude='.git/' -e "ssh ${SSH_OPTS[*]}" "$REPO_ROOT/" "$ssh_target:nixos/" || true
-    echo "✓ Repository ready at ~/nixos on $ssh_target"
   fi
 
   popd > /dev/null
