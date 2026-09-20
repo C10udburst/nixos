@@ -42,10 +42,16 @@ in {
     cname = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       default = {
+        "${config.networking.hostName}" = baseDomain;
+        "${config.networking.hostName}.local" = baseDomain;
+        "${config.networking.hostName}.lan" = baseDomain;
+        "${config.networking.hostName}.home" = baseDomain;
+
         "go" = "go.${baseDomain}";
         "go.local" = "go.${baseDomain}";
         "go.lan" = "go.${baseDomain}";
         "go.home" = "go.${baseDomain}";
+
         "pi.hole" = "pihole.${baseDomain}";
       };
     };
@@ -63,7 +69,7 @@ in {
                 expr incidr(client_ip(), '100.64.0.0/10')
             }
             ${cnameTemplates}
-            template IN A ${baseDomain} {
+            template IN A ${baseDomain} ${config.networking.hostName} {
                 match .*
                 ${tailscaleAnswers}
             }
@@ -78,7 +84,7 @@ in {
                 expr true
             }
             ${cnameTemplates}
-            template IN A ${baseDomain} {
+            template IN A ${baseDomain} ${config.networking.hostName} {
                 match .*
                 ${localAnswers}
             }
