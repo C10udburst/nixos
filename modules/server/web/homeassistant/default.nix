@@ -64,6 +64,9 @@ in {
           extraOptions = [
             "--network=host"
             "--group-add=keep-groups"
+            "--security-opt=label=disable"
+            "--cap-add=NET_ADMIN"
+            "--cap-add=NET_RAW"
           ];
         };
       }
