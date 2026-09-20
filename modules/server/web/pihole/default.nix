@@ -91,7 +91,7 @@ in {
         };
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/pihole 2750 pihole-ftl web - -"
+          "d ${storage}/pihole 2750 pihole web - -"
         ];
 
         services.pihole-ftl = {

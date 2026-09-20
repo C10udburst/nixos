@@ -54,6 +54,9 @@
      ACCEL_MOUNT_MATRIX=0, -1, 0; -1, 0, 0; 0, 0, 1
   '';
 
+  # Disable Wi-Fi power saving for stable connectivity (Realtek RTL8723BS)
+  networking.networkmanager.wifi.powersave = false;
+
   networking.hostName = "cloudburst-tablet";
 
   system.stateVersion = "26.05";

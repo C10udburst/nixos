@@ -16,5 +16,9 @@ _: {
       };
       web.enable = true;
     };
+    services = {
+      tailscale.exitNode = true;
+      waypipe = false;
+    };
   };
 }

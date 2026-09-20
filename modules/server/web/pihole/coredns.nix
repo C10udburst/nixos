@@ -30,7 +30,7 @@ in {
     };
     tailscaleIp = lib.mkOption {
       type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
-      default = ["100.93.113.91"];
+      default = ["100.96.233.27"];
     };
     localIp = lib.mkOption {
       type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
