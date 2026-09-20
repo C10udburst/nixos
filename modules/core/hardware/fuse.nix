@@ -29,7 +29,7 @@ in {
 
     fileSystems = {
       "/mnt/brix0" = lib.mkIf (config.networking.hostName != "brix0") {
-        device = "//brix0/data";
+        device = "//brix0/dane";
         fsType = "cifs";
         options = [
           "x-systemd.automount"

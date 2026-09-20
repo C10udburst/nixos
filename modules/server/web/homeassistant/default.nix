@@ -39,7 +39,10 @@ in {
           home = "${storage}/homeassistant";
           autoSubUidGidRange = true;
           linger = true;
-          extraGroups = ["dialout"];
+          extraGroups = [
+            "dialout"
+            "bluetooth"
+          ];
         };
         users.groups.homeassistant = {};
 

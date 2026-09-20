@@ -31,6 +31,7 @@ in {
         ++ (lib.optional config.networking.networkmanager.enable "networkmanager")
         ++ (lib.optional (config.virtualisation.libvirtd.enable or false) "libvirtd")
         ++ (lib.optional (config.programs.wireshark.enable or false) "wireshark")
+        ++ (lib.optional (config.hardware.bluetooth.enable or false) "bluetooth")
         ++ [
           "video"
           "audio"
