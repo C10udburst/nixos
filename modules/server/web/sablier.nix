@@ -88,6 +88,13 @@ in {
         )
         suspendedApps))
       {
+        podman-sablier = {
+          restartTriggers = [
+            configFile
+            (pkgs.writeText "sablier-suspended-apps" (builtins.toJSON (map (a: {inherit (a) name suspend;}) suspendedApps)))
+          ];
+        };
+
         sablier-rebuild-poke = lib.mkIf (suspendedApps != []) {
           description = "Poke all Sablier groups after system rebuild";
           wantedBy = ["multi-user.target"];

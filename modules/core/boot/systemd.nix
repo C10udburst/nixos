@@ -7,7 +7,7 @@
 in {
   options.features.core.boot.systemd = lib.mkOption {
     type = lib.types.bool;
-    default = config.features.core.boot.enable && true;
+    default = config.features.core.boot.enable && !(cfg.grub or false) && !(cfg.grub32 or false);
   };
 
   config = lib.mkIf cfg.systemd {

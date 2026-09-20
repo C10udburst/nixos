@@ -1,98 +1,424 @@
 #!/usr/bin/env bash
 #
-# A script to bootstrap a new host configuration from the template
-set -e
-
-print_usage() {
-  echo "Usage: ./bootstrap <new-hostname>"
-  echo "Example: ./bootstrap my-new-server"
-}
-
-if [ -z "$1" ]; then
-  print_usage
-  exit 1
-fi
-
-HOSTNAME="$(echo "$1" | xargs)"
-if [ -z "$HOSTNAME" ]; then
-  echo "Error: hostname cannot be empty."
-  print_usage
-  exit 1
-fi
+# Bootstrap script for initializing and deploying new NixOS hosts
+set -eo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BOOTSTRAP_DIR="$REPO_ROOT/hosts/bootstrap"
-TARGET_DIR="$REPO_ROOT/hosts/$HOSTNAME"
+SSH_OPTS=(-o StrictHostKeyChecking=accept-new -o ConnectTimeout=10)
 
-if [ ! -d "$BOOTSTRAP_DIR" ]; then
-  echo "Error: Bootstrap template directory not found at $BOOTSTRAP_DIR"
-  exit 1
-fi
+print_usage() {
+  cat <<EOF
+Usage:
+  ./bootstrap init <ip> <hostname>
+  ./bootstrap apply <ip> <hostname> [--mkrepo]
+  ./bootstrap iso
 
-if [ -e "$TARGET_DIR" ]; then
-  echo "Error: Host directory already exists at $TARGET_DIR"
-  exit 1
-fi
+Commands:
+  iso
+      Builds the minimal bootable installation ISO image (result/iso/*.iso)
+      containing installer tools, SSH with authorized keys, and dual 32/64-bit GRUB.
 
-echo "Bootstrapping configuration for new host: '$HOSTNAME'..."
+  init <ip> <hostname>
+      Connects to <ip> via SSH, runs nixos-generate-config remotely to retrieve
+      the hardware configuration, creates ./hosts/<hostname>/ according to the
+      4-file dendritic pattern, and registers <hostname> in outputs.nix.
 
-# 1. Copy bootstrap template to target directory
-if cp -r "$BOOTSTRAP_DIR" "$TARGET_DIR"; then
-  echo "✓ Copied template to $TARGET_DIR"
-else
-  echo "Error copying template directory."
-  exit 1
-fi
+  apply <ip> <hostname> [--mkrepo]
+      Builds the NixOS closure for <hostname> locally, pushes it to <ip> via
+      nix-copy-closure, and activates the configuration.
+      If --mkrepo is provided, sets up and syncs this repository into ~/nixos
+      on the remote target.
 
-# 2. Update hostname in configuration.nix
-CONFIG_PATH="$TARGET_DIR/configuration.nix"
-if [ -f "$CONFIG_PATH" ]; then
-  sed -i "s/\"bootstrap-host\"/\"$HOSTNAME\"/g" "$CONFIG_PATH"
-  echo "✓ Set hostname to '$HOSTNAME' in configuration.nix"
-else
-  echo "Warning: configuration.nix not found at $CONFIG_PATH"
-fi
+Examples:
+  ./bootstrap iso
+  ./bootstrap init 192.168.1.50 my-server
+  ./bootstrap apply 192.168.1.50 my-server
+  ./bootstrap apply 192.168.1.50 my-server --mkrepo
+EOF
+}
 
-# 3. Copy hardware-configuration.nix from /etc/nixos/ if it exists
-ETC_HW_PATH="/etc/nixos/hardware-configuration.nix"
-TARGET_HW_PATH="$TARGET_DIR/hardware-configuration.nix"
-if [ -f "$ETC_HW_PATH" ]; then
-  if cp "$ETC_HW_PATH" "$TARGET_HW_PATH" 2>/dev/null; then
-    echo "✓ Copied hardware configuration from $ETC_HW_PATH"
-  else
-    echo "Warning: Could not copy $ETC_HW_PATH. Retaining template fallback."
+# Resolve SSH target string and detect active user
+resolve_ssh_target() {
+  local target="$1"
+  if [[ "$target" == *@* ]]; then
+    echo "$target"
+    return 0
   fi
-else
-  echo "Warning: $ETC_HW_PATH not found. Retaining template fallback hardware-configuration.nix."
-fi
 
-# 4. Modify outputs.nix to register the new host
-OUTPUTS_PATH="$REPO_ROOT/outputs.nix"
-if [ -f "$OUTPUTS_PATH" ]; then
-  sed -i "/nixosConfigurations = {/a \    $HOSTNAME = mkHost { hostName = \"$HOSTNAME\"; };" "$OUTPUTS_PATH"
-  echo "✓ Registered '$HOSTNAME' in outputs.nix under nixosConfigurations"
-else
-  echo "Error: outputs.nix not found at $OUTPUTS_PATH"
-  exit 1
-fi
+  # If no user is specified, try cloudburst first, then root, then nixos
+  for user in "cloudburst" "root" "nixos"; do
+    if ssh -q "${SSH_OPTS[@]}" -o BatchMode=yes "$user@$target" "true" 2>/dev/null; then
+      echo "$user@$target"
+      return 0
+    fi
+  done
 
-# 5. Format Nix files
-echo "Formatting repository with alejandra..."
-if (cd "$REPO_ROOT" && alejandra . &>/dev/null); then
-  echo "✓ Formatting completed successfully."
-else
-  echo "Warning: Failed to run alejandra formatting."
-fi
+  # Fallback to cloudburst@target
+  echo "cloudburst@$target"
+}
 
-# 6. Stage files in Git
-echo "Staging files in Git..."
-if (cd "$REPO_ROOT" && git add "hosts/$HOSTNAME" "outputs.nix"); then
-  echo "✓ Staged host configuration directory and outputs.nix."
-else
-  echo "Warning: Failed to run git add."
-fi
+# Acquire remote sudo password if needed
+get_sudo_prefix() {
+  local ssh_target="$1"
+  if ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -n true" 2>/dev/null; then
+    # Passwordless sudo
+    echo ""
+    return 0
+  fi
 
-echo ""
-echo "🎉 Successfully bootstrapped host '$HOSTNAME'!"
-echo "Configuration is located at: hosts/$HOSTNAME/"
-echo "You can dry-run build this config with: nixos-rebuild build --flake .#$HOSTNAME --no-link"
+  echo -n "[sudo] Password for remote target ($ssh_target): " >&2
+  read -rs REMOTE_PASS >&2
+  echo "" >&2
+  echo "$REMOTE_PASS"
+}
+
+cmd_init() {
+  local ip="$1"
+  local hostname="$2"
+
+  if [[ -z "$ip" || -z "$hostname" ]]; then
+    echo "Error: Both <ip> and <hostname> are required for init." >&2
+    print_usage
+    exit 1
+  fi
+
+  local target_dir="$REPO_ROOT/hosts/$hostname"
+  if [[ -e "$target_dir" ]]; then
+    echo "Error: Host directory already exists at $target_dir" >&2
+    exit 1
+  fi
+
+  echo "🔍 Resolving SSH connection to $ip..."
+  local ssh_target
+  ssh_target=$(resolve_ssh_target "$ip")
+  echo "✓ Using SSH target: $ssh_target"
+
+  local remote_pass
+  remote_pass=$(get_sudo_prefix "$ssh_target")
+
+  echo "📡 Fetching remote hardware configuration from $ssh_target..."
+  local remote_cmd='
+    if [ -f /mnt/etc/nixos/hardware-configuration.nix ]; then
+      cat /mnt/etc/nixos/hardware-configuration.nix
+    elif [ -f /etc/nixos/hardware-configuration.nix ]; then
+      cat /etc/nixos/hardware-configuration.nix
+    elif command -v nixos-generate-config >/dev/null 2>&1; then
+      if mountpoint -q /mnt 2>/dev/null; then
+        sudo nixos-generate-config --root /mnt --show-hardware-config
+      else
+        sudo nixos-generate-config --show-hardware-config
+      fi
+    else
+      echo "ERROR: Could not find or generate hardware-configuration.nix on remote host" >&2
+      exit 1
+    fi
+  '
+
+  local hw_config
+  if [[ -n "$remote_pass" ]]; then
+    hw_config=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -S bash -c '$remote_cmd'")
+  else
+    hw_config=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "bash -c '$remote_cmd'")
+  fi
+
+  if [[ -z "$hw_config" || "$hw_config" != *"boot."* && "$hw_config" != *"fileSystems"* ]]; then
+    echo "❌ Failed to retrieve valid hardware configuration from $ssh_target!" >&2
+    echo "Output was:" >&2
+    echo "$hw_config" >&2
+    exit 1
+  fi
+
+  echo "📁 Creating host directory at hosts/$hostname..."
+  mkdir -p "$target_dir"
+
+  # 1. Write hardware-configuration.nix
+  echo "$hw_config" > "$target_dir/hardware-configuration.nix"
+  echo "✓ Written hosts/$hostname/hardware-configuration.nix"
+
+  # 2. Write configuration.nix (Standard 4-File Pattern)
+  cat > "$target_dir/configuration.nix" <<EOF
+{...}: {
+  imports = [
+    ./hardware-configuration.nix
+    ./home-manager.nix
+    ./features.nix
+  ];
+
+  networking.hostName = "$hostname";
+
+  system.stateVersion = "26.05";
+}
+EOF
+  echo "✓ Written hosts/$hostname/configuration.nix"
+
+  # 3. Write home-manager.nix
+  cat > "$target_dir/home-manager.nix" <<EOF
+_: {
+  home-manager.users.cloudburst = {
+    # Host-specific Home Manager additions
+  };
+}
+EOF
+  echo "✓ Written hosts/$hostname/home-manager.nix"
+
+  # 4. Write features.nix
+  cat > "$target_dir/features.nix" <<EOF
+_: {
+  features = {
+    # Bootloader (defaults to systemd-boot. For GRUB: grub = true; and/or grub32 = true;)
+    # core.boot.grub = true;
+    # core.boot.grub32 = true;
+
+    # Customize dendritic feature toggles for $hostname
+  };
+}
+EOF
+  echo "✓ Written hosts/$hostname/features.nix"
+
+  # 5. Register in outputs.nix
+  local outputs_path="$REPO_ROOT/outputs.nix"
+  if grep -qE "^\s*${hostname}\s*=" "$outputs_path"; then
+    echo "✓ Host '$hostname' already registered in outputs.nix"
+  else
+    sed -i "/nixosConfigurations = {/a \    ${hostname} = mkHost { hostName = \"${hostname}\"; };" "$outputs_path"
+    echo "✓ Registered '${hostname}' in outputs.nix under nixosConfigurations"
+  fi
+
+  # 6. Retrieve or generate SSH host public key for agenix
+  echo "🔑 Retrieving SSH host public key for agenix..."
+  local remote_key_cmd='
+    if mountpoint -q /mnt 2>/dev/null; then
+      mkdir -p /mnt/etc/ssh
+      if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+        if [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+          cp -a /etc/ssh/ssh_host_ed25519_key* /mnt/etc/ssh/ 2>/dev/null || true
+        fi
+        if [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key.pub ]; then
+          ssh-keygen -t ed25519 -N "" -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1
+        fi
+      fi
+      cat /mnt/etc/ssh/ssh_host_ed25519_key.pub
+    elif [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+      cat /etc/ssh/ssh_host_ed25519_key.pub
+    else
+      mkdir -p /etc/ssh
+      ssh-keygen -t ed25519 -N "" -f /etc/ssh/ssh_host_ed25519_key -C "root@'"$hostname"'" >/dev/null 2>&1
+      cat /etc/ssh/ssh_host_ed25519_key.pub
+    fi
+  '
+
+  local host_pub_key_raw
+  if [[ -n "$remote_pass" ]]; then
+    host_pub_key_raw=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "sudo -S bash -c '$remote_key_cmd'" 2>/dev/null || true)
+  else
+    host_pub_key_raw=$(ssh "${SSH_OPTS[@]}" "$ssh_target" "bash -c '$remote_key_cmd'" 2>/dev/null || true)
+  fi
+
+  local host_pub_key
+  host_pub_key=$(echo "$host_pub_key_raw" | awk '{print $1 " " $2}')
+
+  # 7. Format with alejandra if available
+  if command -v alejandra &>/dev/null; then
+    echo "🎨 Formatting with alejandra..."
+    (cd "$REPO_ROOT" && alejandra . &>/dev/null || true)
+  fi
+
+  # 8. Stage in git
+  echo "📦 Staging files in Git..."
+  (cd "$REPO_ROOT" && git add "hosts/$hostname" "$outputs_path")
+
+  echo ""
+  echo "🎉 Successfully initialized host '$hostname'!"
+  echo "Configuration files:"
+  echo "  - hosts/$hostname/hardware-configuration.nix"
+  echo "  - hosts/$hostname/configuration.nix"
+  echo "  - hosts/$hostname/home-manager.nix"
+  echo "  - hosts/$hostname/features.nix"
+  echo ""
+  echo "========================================================================"
+  echo "🔑 SSH Host Public Key for agenix:"
+  if [[ -n "$host_pub_key" ]]; then
+    echo "   $hostname = \"$host_pub_key\";"
+    echo ""
+    echo "To enable agenix secrets on '$hostname':"
+    echo "  1. Add '$hostname = \"$host_pub_key\";' to secrets.nix under Host public keys."
+    echo "  2. Add '$hostname' to allHosts or serverHosts in secrets.nix."
+    echo "  3. Re-encrypt secrets with: agenix --rekey"
+  else
+    echo "   ⚠️  Could not automatically retrieve host key. Retrieve it manually from"
+    echo "      /etc/ssh/ssh_host_ed25519_key.pub on the remote host."
+  fi
+  echo "========================================================================"
+  echo ""
+  echo "Next steps:"
+  echo "  1. Customize hosts/$hostname/features.nix with desired features."
+  echo "  2. Deploy using: ./bootstrap apply $ip $hostname [--mkrepo]"
+}
+
+cmd_apply() {
+  local ip=""
+  local hostname=""
+  local mkrepo=false
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --mkrepo)
+        mkrepo=true
+        shift
+        ;;
+      *)
+        if [[ -z "$ip" ]]; then
+          ip="$1"
+        elif [[ -z "$hostname" ]]; then
+          hostname="$1"
+        fi
+        shift
+        ;;
+    esac
+  done
+
+  if [[ -z "$ip" || -z "$hostname" ]]; then
+    echo "Error: Both <ip> and <hostname> are required for apply." >&2
+    print_usage
+    exit 1
+  fi
+
+  local target_dir="$REPO_ROOT/hosts/$hostname"
+  if [[ ! -d "$target_dir" ]]; then
+    echo "Error: Host configuration for '$hostname' not found at $target_dir" >&2
+    echo "Run './bootstrap init $ip $hostname' first." >&2
+    exit 1
+  fi
+
+  pushd "$REPO_ROOT" > /dev/null
+
+  # Generate flake.nix if flake script exists
+  if [[ -x "./flake" ]]; then
+    ./flake
+  fi
+
+  nix flake lock
+
+  if command -v alejandra &>/dev/null; then
+    alejandra . &>/dev/null || true
+  fi
+  git add .
+
+  local ssh_target
+  ssh_target=$(resolve_ssh_target "$ip")
+  echo "✓ Using SSH target: $ssh_target"
+
+  local remote_pass
+  remote_pass=$(get_sudo_prefix "$ssh_target")
+
+  local sudo_cmd="sudo"
+  if [[ -n "$remote_pass" ]]; then
+    sudo_cmd="sudo -S"
+  fi
+
+  local nom_cmd="cat"
+  if command -v nom &>/dev/null; then
+    nom_cmd="nom"
+  fi
+
+  echo -e "\n📦 Building system closure locally for '$hostname'..."
+  if ! nixos-rebuild build --flake ".#$hostname" 2>&1 | tee nixos-bootstrap.log | $nom_cmd; then
+    echo -e "\n❌ Local build for $hostname failed!" >&2
+    grep --color -E -i "error|trace|failed" nixos-bootstrap.log || tail -n 20 nixos-bootstrap.log
+    popd > /dev/null
+    exit 1
+  fi
+
+  local system_path
+  system_path=$(readlink -f ./result)
+
+  export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
+  echo -e "\n🚚 Pushing closure to $ssh_target ($system_path)..."
+  if ! nix-copy-closure --to "$ssh_target" "$system_path" 2>&1 | $nom_cmd; then
+    echo -e "\n❌ Failed to push closure to $ssh_target!" >&2
+    popd > /dev/null
+    exit 1
+  fi
+
+  echo -e "\n🔗 Registering new system profile on $ssh_target..."
+  if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nix-env -p /nix/var/nix/profiles/system --set $system_path"; then
+    echo -e "\n❌ Failed to set system profile on $ssh_target!" >&2
+    popd > /dev/null
+    exit 1
+  fi
+
+  echo -e "\n⚡ Activating configuration (switch) on $ssh_target..."
+  if ! echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd $system_path/bin/switch-to-configuration switch"; then
+    echo -e "\n❌ Remote activation failed on $ssh_target!" >&2
+    popd > /dev/null
+    exit 1
+  fi
+
+  local gen
+  gen=$(echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$sudo_cmd nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation' 2>/dev/null || echo "unknown")
+  [[ -z "$gen" || "$gen" == "null" ]] && gen="unknown"
+
+  echo -e "\n🎉 Configuration applied successfully to $hostname (generation $gen)!"
+
+  # Commit changes locally
+  local commit_msg="${hostname}:${gen}"
+  if git diff --quiet && git diff --staged --quiet; then
+    echo "✅ No local git changes to commit."
+  else
+    git commit -m "$commit_msg"
+    echo "✅ Committed: $commit_msg"
+  fi
+
+  # Handle --mkrepo
+  if [[ "$mkrepo" == true ]]; then
+    echo -e "\n📂 Setting up repository at ~/nixos on $ssh_target..."
+    local repo_url
+    repo_url=$(git remote get-url origin 2>/dev/null || echo "git@github.com:C10udburst/nixos.git")
+
+    # Clone or ensure git repo exists on remote
+    if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "[ -d ~/nixos/.git ]" 2>/dev/null; then
+      echo "📥 Cloning repository on $ssh_target..."
+      if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "git clone '$repo_url' ~/nixos" 2>/dev/null; then
+        local https_url="https://github.com/C10udburst/nixos.git"
+        echo "⚠️  SSH clone failed, trying HTTPS: $https_url..."
+        if ! ssh "${SSH_OPTS[@]}" "$ssh_target" "git clone '$https_url' ~/nixos" 2>/dev/null; then
+          echo "⚠️  Remote clone failed. Syncing local working directory directly..."
+        fi
+      fi
+    fi
+
+    # Sync local working tree (including newly initialized hosts and uncommitted changes)
+    echo "🔄 Syncing local repository files to $ssh_target:~/nixos/..."
+    rsync -avz --exclude='.git/' -e "ssh ${SSH_OPTS[*]}" "$REPO_ROOT/" "$ssh_target:nixos/" || true
+    echo "✓ Repository ready at ~/nixos on $ssh_target"
+  fi
+
+  popd > /dev/null
+}
+
+# Entrypoint routing
+case "$1" in
+  iso)
+    echo "🔨 Building bootstrap ISO image..."
+    nix build .#iso
+    echo -e "\n🎉 ISO build complete!"
+    ls -lh ./result/iso/*.iso
+    ;;
+  init)
+    shift
+    cmd_init "$@"
+    ;;
+  apply)
+    shift
+    cmd_apply "$@"
+    ;;
+  help|-h|--help|"")
+    print_usage
+    exit 0
+    ;;
+  *)
+    echo "Unknown command: $1" >&2
+    print_usage
+    exit 1
+    ;;
+esac

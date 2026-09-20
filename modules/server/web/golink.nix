@@ -32,16 +32,19 @@ in {
 
         age.secrets.golink-tailscale-auth-key = {
           file = ../../../secrets/golink-tailscale-auth-key.age;
+          owner = "golink";
+          group = "golink";
+          mode = "0400";
         };
 
-        services.caddy.virtualHosts."http://go" = {
+        services.caddy.virtualHosts."http://go, http://go.local, http://go.lan, http://go.home" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString port}
           '';
         };
 
         systemd.tmpfiles.rules = [
-          "d ${storage}/golink 0755 root root -"
+          "d ${storage}/golink 0750 golink golink - -"
         ];
 
         systemd.services.golink = {

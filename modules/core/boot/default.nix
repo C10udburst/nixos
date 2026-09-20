@@ -17,6 +17,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    boot.loader.timeout = cfg.timeout;
+    boot.loader.timeout = lib.mkDefault cfg.timeout;
   };
 }

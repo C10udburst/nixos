@@ -40,4 +40,9 @@ in {
     bootstrap = mkHost {hostName = "bootstrap";};
     cache = mkHost {hostName = "cache";};
   };
+
+  packages.x86_64-linux = {
+    iso = self.nixosConfigurations.bootstrap.config.system.build.isoImage;
+    bootstrap-iso = self.nixosConfigurations.bootstrap.config.system.build.isoImage;
+  };
 }

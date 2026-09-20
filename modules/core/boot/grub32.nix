@@ -10,7 +10,7 @@ in {
     default = config.features.core.boot.enable && false;
   };
 
-  config = lib.mkIf cfg.grub32 {
+  config = lib.mkIf (cfg.grub32 && !(cfg.grub or false)) {
     boot.loader.efi.canTouchEfiVariables = false;
     boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot/efi";
     boot.loader.grub = {

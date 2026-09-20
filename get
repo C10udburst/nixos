@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TARGET_PATH="${1:-}"
+
+if [[ -z "$TARGET_PATH" ]]; then
+  echo "Usage: $0 <flake-attr-path> [flake-uri]" >&2
+  echo "Example: $0 outputs.nixosConfigurations" >&2
+  exit 1
+fi
+
+FLAKE_URI="${2:-.}"
+
+if [[ -e "$FLAKE_URI" ]]; then
+  FLAKE_URI="$(realpath "$FLAKE_URI")"
+fi
+
+# Escape double quotes and backslashes for the inline Nix string call
+SAFE_FLAKE_URI="${FLAKE_URI//\\/\\\\}"
+SAFE_FLAKE_URI="${SAFE_FLAKE_URI//\"/\\\"}"
+SAFE_TARGET_PATH="${TARGET_PATH//\\/\\\\}"
+SAFE_TARGET_PATH="${SAFE_TARGET_PATH//\"/\\\"}"
+
+read -r -d '' NIX_EXPR << 'EOF' || true
+flakeUri: targetPath:
+let
+  flake = builtins.getFlake flakeUri;
+
+  rawSegments = builtins.split "\\." targetPath;
+  pathSegments = builtins.filter (x: builtins.isString x && x != "") rawSegments;
+
+  resolvePath = root: segments:
+    builtins.foldl' (acc: attr:
+      if acc.success && builtins.isAttrs acc.value && builtins.hasAttr attr acc.value
+      then builtins.tryEval acc.value.${attr}
+      else { success = false; value = null; }
+    ) { success = true; value = root; } segments;
+
+  resolved = resolvePath flake pathSegments;
+
+  formatValue = val:
+    let
+      evaluated = builtins.tryEval val;
+    in
+      if !evaluated.success then
+        "<error: failed to evaluate>"
+      else
+        let v = evaluated.value; in
+        if builtins.isAttrs v then {}
+        else if builtins.isList v then []
+        else if builtins.isFunction v then "<function>"
+        else v;
+in
+if !resolved.success then
+  { "<error>" = "Path " + targetPath + " does not exist or failed to evaluate."; }
+else if !builtins.isAttrs resolved.value then
+  formatValue resolved.value
+else
+  builtins.mapAttrs (_: formatValue) resolved.value
+EOF
+
+nix eval --json --impure --expr "($NIX_EXPR) \"$SAFE_FLAKE_URI\" \"$SAFE_TARGET_PATH\""

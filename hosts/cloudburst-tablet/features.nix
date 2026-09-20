@@ -11,6 +11,10 @@ _: {
         slow = true;
         bluetooth = false;
       };
+      nix = {
+        vulnix = false;
+        ghcr = false;
+      };
     };
 
     shell = {
