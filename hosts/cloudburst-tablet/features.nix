@@ -9,7 +9,7 @@ _: {
         mobile = true;
         touchscreen = true;
         slow = true;
-        bluetooth = false;
+        eco = false;
       };
       nix = {
         vulnix = false;
