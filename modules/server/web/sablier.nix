@@ -50,7 +50,7 @@ in {
     };
     sessionDuration = lib.mkOption {
       type = lib.types.str;
-      default = "15m";
+      default = "8m";
     };
   };
 
@@ -130,7 +130,7 @@ in {
 
             ${lib.concatMapStringsSep "\n" (app: ''
                 echo "Poking Sablier group: ${app.name}"
-                curl -fsSL "http://127.0.0.1:10000/api/strategies/poke?group=${app.name}?session_duration=10m" || true
+                curl -fsSL "http://127.0.0.1:10000/api/strategies/poke?group=${app.name}&session_duration=5m" || true
               '')
               suspendedApps}
           '';

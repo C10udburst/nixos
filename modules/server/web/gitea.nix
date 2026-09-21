@@ -23,6 +23,14 @@ in {
         port = 3000;
       })
       {
+        systemd.tmpfiles.rules = lib.mkOverride 990 (
+          map (
+            rule: builtins.replaceStrings ["0750 gitea gitea"] ["2750 gitea web"] rule
+          )
+          config.systemd.tmpfiles.rules
+        );
+      }
+      {
         systemd.tmpfiles.rules = [
           "d ${storage}/gitea 2750 gitea web - -"
         ];

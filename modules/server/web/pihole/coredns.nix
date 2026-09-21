@@ -42,6 +42,8 @@ in {
     cname = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       default = {
+        "${config.features.server.web.tailscale.domain}" = baseDomain;
+
         "${config.networking.hostName}" = baseDomain;
         "${config.networking.hostName}.local" = baseDomain;
         "${config.networking.hostName}.lan" = baseDomain;

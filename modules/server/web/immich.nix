@@ -46,6 +46,11 @@ in {
           "d ${storage}/immich/cache 2750 immich web - -"
         ];
 
+        systemd.tmpfiles.settings.immich."/opt/immich".e = {
+          group = lib.mkForce "web";
+          mode = lib.mkForce "2750";
+        };
+
         users.users.immich.extraGroups = [
           "video"
           "render"

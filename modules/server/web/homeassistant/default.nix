@@ -36,8 +36,8 @@ in {
         systemd.tmpfiles.rules = [
           "d ${storage}/homeassistant 0755 root web - -"
           "z ${storage}/homeassistant 0755 root web - -"
-          "d ${storage}/homeassistant/config 0775 root web - -"
-          "z ${storage}/homeassistant/config 0775 root web - -"
+          "d ${storage}/homeassistant/config 2750 root web - -"
+          "z ${storage}/homeassistant/config 2750 root web - -"
         ];
 
         virtualisation.oci-containers.containers.homeassistant = {

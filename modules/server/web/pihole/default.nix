@@ -126,19 +126,6 @@ in {
           };
         };
 
-        systemd.services.pihole-ftl.preStart = let
-          gravityDB = config.services.pihole-ftl.settings.files.gravity;
-          ftlBin = lib.getExe config.services.pihole-ftl.package;
-          schema = "${config.services.pihole-ftl.piholePackage}/share/pihole/advanced/Templates/gravity.db.sql";
-        in ''
-          # Ensure gravity database exists and has required schema/tables
-          if [ ! -s "${gravityDB}" ] || ! ${ftlBin} sqlite3 -ni "${gravityDB}" "SELECT 1 FROM \"group\" LIMIT 1;" >/dev/null 2>&1; then
-            echo "Initializing Pi-hole gravity database schema at ${gravityDB}..."
-            ${ftlBin} sqlite3 -ni "${gravityDB}" < "${schema}"
-            ${ftlBin} sqlite3 -ni "${gravityDB}" "INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts', 1, 'Default StevenBlack blocklist');"
-          fi
-        '';
-
         services.pihole-web = {
           enable = true;
           hostName = "pihole.${baseDomain}";
