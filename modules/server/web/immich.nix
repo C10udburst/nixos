@@ -30,7 +30,6 @@ in {
         ];
         port = 2283;
         suspend = [
-          "immich.service"
           "immich-machine-learning.service"
           "immich-server.service"
         ];

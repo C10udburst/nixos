@@ -10,6 +10,17 @@
   storage = webCfg.storage;
   apps = webCfg.core._apps or [];
   suspendedApps = lib.filter (app: (app.suspend or []) != []) apps;
+  targetUnits = lib.unique (
+    lib.concatMap (
+      app:
+        map (s:
+          if lib.hasSuffix ".service" s
+          then s
+          else "${s}.service")
+        app.suspend
+    )
+    suspendedApps
+  );
 
   configFile = (pkgs.formats.yaml {}).generate "sablier.yaml" {
     provider = {
@@ -50,7 +61,7 @@ in {
     };
     sessionDuration = lib.mkOption {
       type = lib.types.str;
-      default = "8m";
+      default = "15m";
     };
   };
 
@@ -99,28 +110,51 @@ in {
           ];
         };
 
-        sablier-rebuild-poke = lib.mkIf (suspendedApps != []) {
-          description = "Poke all Sablier groups after system rebuild";
+        sablier-suspend = lib.mkIf (targetUnits != []) {
+          description = "Suspend all Sablier-managed services after boot or rebuild";
           wantedBy = ["multi-user.target"];
-          after = [
-            "podman-sablier.service"
-            "network.target"
-          ];
+          after =
+            [
+              "podman-sablier.service"
+              "network.target"
+            ]
+            ++ targetUnits;
           wants = ["podman-sablier.service"];
           restartTriggers = [
-            (pkgs.writeText "sablier-groups" (builtins.toJSON (map (a: a.name) suspendedApps)))
+            (pkgs.writeText "sablier-suspended-units" (builtins.toJSON targetUnits))
           ];
           path = [
             pkgs.curl
+            pkgs.systemd
             pkgs.coreutils
+            pkgs.util-linux
+            pkgs.gnugrep
           ];
           serviceConfig = {
-            Type = "oneshot";
+            Type = "simple";
             RemainAfterExit = false;
-            Restart = "on-failure";
-            RestartSec = "2s";
+            Restart = "no";
           };
           script = ''
+            # If a rebuild is in progress, wait for switch-to-configuration to completely finish
+            if [ -f /run/nixos/switch-to-configuration.lock ]; then
+              echo "Waiting for nixos-rebuild to finish..."
+              flock -s /run/nixos/switch-to-configuration.lock true || true
+            fi
+
+            # Wait for pending systemd jobs to finish
+            echo "Waiting for pending systemd jobs..."
+            for i in $(seq 1 60); do
+              if ! systemctl list-jobs --no-legend 2>/dev/null | grep -v "sablier-suspend" | grep -q .; then
+                break
+              fi
+              sleep 1
+            done
+
+            # Let services settle before suspending
+            sleep 5
+
+            # Wait for Sablier daemon to be healthy
             for i in $(seq 1 30); do
               if curl -s http://127.0.0.1:10000/health | grep -q "OK"; then
                 break
@@ -128,14 +162,28 @@ in {
               sleep 1
             done
 
-            ${lib.concatMapStringsSep "\n" (app: ''
-                echo "Poking Sablier group: ${app.name}"
-                curl -fsSL "http://127.0.0.1:10000/api/strategies/poke?group=${app.name}&session_duration=5m" || true
-              '')
-              suspendedApps}
+            for unit in ${lib.concatStringsSep " " targetUnits}; do
+              if systemctl is-active --quiet "$unit"; then
+                echo "Suspending Sablier service: $unit"
+                systemctl stop "$unit" || true
+              fi
+            done
           '';
         };
       }
     ];
+
+    system.activationScripts.sablier-suspend = lib.mkIf (targetUnits != []) {
+      supportsDryActivation = true;
+      text = ''
+        if [ "$NIXOS_ACTION" = "dry-activate" ]; then
+          mkdir -p /run/nixos
+          echo "sablier-suspend.service" >> /run/nixos/dry-activation-restart-list
+        else
+          mkdir -p /run/nixos
+          echo "sablier-suspend.service" >> /run/nixos/activation-restart-list
+        fi
+      '';
+    };
   };
 }

@@ -23,6 +23,9 @@ in {
           "vaultwarden"
         ];
         port = 8222;
+        suspend = [
+          "vaultwarden.service"
+        ];
       })
       {
         age.secrets.vaultwarden-env = {

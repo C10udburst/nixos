@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgsUnstable,
   ...
 }: let
   cfg = config.features.server.web.siyuan;
@@ -50,7 +51,7 @@ in {
           after = ["network.target"];
           serviceConfig = {
             ExecStart = ''
-              ${pkgs.siyuan.kernel}/bin/kernel serve \
+              ${pkgsUnstable.siyuan.kernel}/bin/kernel serve \
                 --workspace=${storage}/siyuan \
                 --wd=${pkgs.siyuan}/share/siyuan/resources \
                 --port=6806

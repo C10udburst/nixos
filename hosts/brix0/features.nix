@@ -3,6 +3,7 @@ _: {
     core = {
       boot.timeout = 1;
       hardware = {
+        fuse = false;
         pipewire = false;
       };
       java = false;

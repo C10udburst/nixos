@@ -57,7 +57,7 @@ in {
           serviceConfig = {
             Type = "oneshot";
             User = "litellm";
-            Group = "web";
+            Group = "litellm";
             WorkingDirectory = "${storage}/litellm";
             ExecStart = "${pythonWithDeps}/bin/python3 ${./_config.py} ${config.age.secrets.litellm.path} ${storage}/litellm/config.yaml";
           };
@@ -76,7 +76,7 @@ in {
           ];
           serviceConfig = {
             User = "litellm";
-            Group = "web";
+            Group = "litellm";
             WorkingDirectory = "${storage}/litellm";
             ExecStart = "${pkgs.litellm}/bin/litellm --config ${storage}/litellm/config.yaml --port 4000 --host 127.0.0.1";
             Restart = "on-failure";
