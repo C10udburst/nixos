@@ -33,41 +33,15 @@ in {
         port = 8123;
       })
       {
-        users.users.homeassistant = {
-          isSystemUser = true;
-          group = "homeassistant";
-          home = "${storage}/homeassistant";
-          autoSubUidGidRange = true;
-          linger = true;
-          extraGroups = [
-            "dialout"
-            "bluetooth"
-          ];
-        };
-        users.groups.homeassistant = {};
-
         systemd.tmpfiles.rules = [
-          "d ${storage}/homeassistant 0755 homeassistant web - -"
-          "z ${storage}/homeassistant 0755 homeassistant web - -"
-          "d ${storage}/homeassistant/config 0750 homeassistant web - -"
+          "d ${storage}/homeassistant 0755 root web - -"
+          "z ${storage}/homeassistant 0755 root web - -"
+          "d ${storage}/homeassistant/config 0775 root web - -"
+          "z ${storage}/homeassistant/config 0775 root web - -"
         ];
-
-        systemd.services."podman-homeassistant" = {
-          serviceConfig = {
-            AmbientCapabilities = [
-              "CAP_NET_ADMIN"
-              "CAP_NET_RAW"
-            ];
-            CapabilityBoundingSet = [
-              "CAP_NET_ADMIN"
-              "CAP_NET_RAW"
-            ];
-          };
-        };
 
         virtualisation.oci-containers.containers.homeassistant = {
           image = helpers.resolveImage "ghcr.io/home-assistant/home-assistant:stable";
-          podman.user = "homeassistant";
           inherit (cfg) devices;
           volumes = [
             "${storage}/homeassistant/config:/config"
@@ -76,10 +50,7 @@ in {
           ];
           extraOptions = [
             "--network=host"
-            "--group-add=keep-groups"
-            "--security-opt=label=disable"
-            "--cap-add=NET_ADMIN"
-            "--cap-add=NET_RAW"
+            "--privileged"
           ];
         };
       }
