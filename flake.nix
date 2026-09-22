@@ -48,6 +48,10 @@
       url = "github:IcaroJam/kimsay";
       flake = false;
     };
+    manyfold-printables = {
+      url = "https://github.com/nxn94/manyfold_printables";
+      flake = false;
+    };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs.nixpkgs.follows = "nixpkgs";

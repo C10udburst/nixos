@@ -36,12 +36,21 @@
     sablierConfig = lib.optionalString (suspendList != [] && sablierEnabled) ''
       forward_auth ${sablierHostPort} {
         uri /api/strategies/poke?group=${name}
+        header_up -Content-Type
+        header_up -Content-Length
+        @failures status 4xx 5xx
+        handle_response @failures {
+        }
       }
       handle_errors {
         @down expression `{err.status_code} in [502, 503, 504]`
         handle @down {
           rewrite * /api/strategies/dynamic?group=${name}
-          reverse_proxy ${sablierHostPort}
+          method GET
+          reverse_proxy ${sablierHostPort} {
+            header_up -Content-Type
+            header_up -Content-Length
+          }
         }
       }
     '';

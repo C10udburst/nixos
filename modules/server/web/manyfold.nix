@@ -2,7 +2,8 @@
   config,
   lib,
   pkgs,
-  helpers,
+  helpers ? null,
+  inputs,
   ...
 }: let
   cfg = config.features.server.web.manyfold;
@@ -15,61 +16,75 @@ in {
     default = config.features.server.web.enable && true;
   };
 
-  config = lib.mkIf cfg (
-    lib.mkMerge [
-      (webHelper.mkWebApp {
-        name = "3d";
-        aliases = [
-          "manyfold"
-          "models"
-          "stl"
-        ];
-        port = 3214;
-        suspend = "podman-manyfold.service";
-      })
-      {
-        age.secrets.manyfold-env = {
-          file = ../../../secrets/manyfold-env.age;
-          owner = "manyfold";
-          group = "manyfold";
-          mode = "0400";
+  config = lib.mkMerge [
+    {
+      flake-file.inputs = {
+        manyfold-printables = {
+          url = "https://github.com/nxn94/manyfold_printables";
+          flake = false;
         };
-
-        users.users.manyfold = {
-          isSystemUser = true;
-          group = "manyfold";
-          home = "${storage}/manyfold";
-          autoSubUidGidRange = true;
-          linger = true;
-        };
-        users.groups.manyfold = {};
-
-        systemd.tmpfiles.rules = [
-          "d ${storage}/manyfold 0750 manyfold web - -"
-          "z ${storage}/manyfold 0750 manyfold web - -"
-          "d ${storage}/manyfold/config 0750 manyfold web - -"
-          "d ${storage}/manyfold/libraries 0750 manyfold web - -"
-        ];
-
-        virtualisation.oci-containers.containers.manyfold = {
-          image = helpers.resolveImage "ghcr.io/manyfold3d/manyfold-solo:latest";
-          podman.user = "manyfold";
-          ports = [
-            "127.0.0.1:3214:3214"
+      };
+    }
+    (lib.mkIf cfg (
+      lib.mkMerge [
+        (webHelper.mkWebApp {
+          name = "3d";
+          aliases = [
+            "manyfold"
+            "models"
+            "stl"
           ];
-          volumes = [
-            "${storage}/manyfold/config:/config"
-            "${storage}/manyfold/data:/libraries"
-            "${storage}/manyfold/data:/models"
-          ];
-          environment = {
-            PUBLIC_HOSTNAME = "3d.${baseDomain}";
+          port = 3214;
+          suspend = "podman-manyfold.service";
+        })
+        {
+          age.secrets.manyfold-env = {
+            file = ../../../secrets/manyfold-env.age;
+            owner = "manyfold";
+            group = "manyfold";
+            mode = "0400";
           };
-          environmentFiles = [
-            config.age.secrets.manyfold-env.path
+
+          users.users.manyfold = {
+            isSystemUser = true;
+            group = "manyfold";
+            home = "${storage}/manyfold";
+            autoSubUidGidRange = true;
+            linger = true;
+          };
+          users.groups.manyfold = {};
+
+          systemd.tmpfiles.rules = [
+            "d ${storage}/manyfold 0750 manyfold web - -"
+            "z ${storage}/manyfold 0750 manyfold web - -"
+            "d ${storage}/manyfold/plugins 0750 manyfold web - -"
+            "z ${storage}/manyfold/plugins 0750 manyfold web - -"
+            "d ${storage}/manyfold/config 0750 manyfold web - -"
+            "d ${storage}/manyfold/libraries 0750 manyfold web - -"
           ];
-        };
-      }
-    ]
-  );
+
+          environment.etc."manyfold/plugins/manyfold_printables".source = inputs.manyfold-printables;
+
+          virtualisation.oci-containers.containers.manyfold = {
+            image = helpers.resolveImage "ghcr.io/manyfold3d/manyfold-solo:latest";
+            podman.user = "manyfold";
+            ports = [
+              "127.0.0.1:3214:3214"
+            ];
+            volumes = [
+              "${storage}/manyfold/config:/config"
+              "${storage}/manyfold/data:/libraries"
+              "${storage}/manyfold/data:/models"
+            ];
+            environment = {
+              PUBLIC_HOSTNAME = "3d.${baseDomain}";
+            };
+            environmentFiles = [
+              config.age.secrets.manyfold-env.path
+            ];
+          };
+        }
+      ]
+    ))
+  ];
 }
