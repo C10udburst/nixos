@@ -538,7 +538,7 @@ cmd_apply() {
     else
       # Remote installation
       echo -e "\n📂 Ensuring /mnt/nix/store exists on $ssh_target..."
-      local prep_store_cmd="$sudo_cmd mkdir -p /mnt/nix/store /mnt/nix/var/nix && $sudo_cmd chown -R \$(id -u):\$(id -g) /mnt/nix"
+      local prep_store_cmd="$sudo_cmd mkdir -p /mnt/nix/store /mnt/nix/var/nix"
       if [[ -n "$remote_pass" ]]; then
         echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$prep_store_cmd"
       else
@@ -563,8 +563,6 @@ cmd_apply() {
         exit 1
       fi
 
-      # Restore ownership to root before running nixos-install
-      local chown_store_cmd="$sudo_cmd chown -R root:root /mnt/nix"
       if [[ -n "$remote_pass" ]]; then
         echo "$remote_pass" | ssh "${SSH_OPTS[@]}" "$ssh_target" "$chown_store_cmd"
       else

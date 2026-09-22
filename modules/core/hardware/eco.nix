@@ -30,7 +30,7 @@ in {
       options snd_ac97_codec power_save=1
     '';
 
-    networking.networkmanager.wifi.powersave = true;
+    networking.networkmanager.wifi.powersave = lib.mkDefault true;
 
     environment.systemPackages = [
       pkgs.powertop
