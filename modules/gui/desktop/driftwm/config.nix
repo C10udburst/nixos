@@ -45,7 +45,7 @@ in {
         "mod+space" = "spawn noctalia msg panel-toggle launcher";
         "mod+return" = "spawn noctalia msg panel-toggle launcher";
         "mod+slash" = "spawn noctalia msg panel-toggle launcher \"/\"";
-        "mod+n" = "spawn noctalia msg notifications toggleHistory";
+        "mod+n" = "spawn noctalia msg panel-toggle control-center notifications";
         "mod+v" = "spawn noctalia msg panel-toggle clipboard";
         "mod+period" = "spawn noctalia msg panel-toggle launcher \"/emo \"";
         "mod+alt+period" = "spawn noctalia msg panel-toggle launcher \"/uni \"";
@@ -53,19 +53,21 @@ in {
         "mod+f11" = "spawn noctalia msg bar-toggle main";
         "mod+l" = "spawn noctalia msg session lock";
         "mod+r" = "spawn noctalia msg panel-toggle control-center";
+        "mod+f1" = "spawn noctalia msg panel-toggle control-center";
         "mod+m" = "spawn noctalia msg panel-toggle cloudburst/driftwm:minimap";
-        "XF86MonBrightnessUp" = "spawn noctalia msg brightness increase";
-        "XF86MonBrightnessDown" = "spawn noctalia msg brightness decrease";
+        "mod+p" = "spawn noctalia msg panel-open control-center media";
+        "XF86MonBrightnessUp" = "spawn noctalia msg brightness-up";
+        "XF86MonBrightnessDown" = "spawn noctalia msg brightness-down";
       };
 
       baseKeybindings = {
         "ctrl+alt+t" = "exec konsole";
         "ctrl+shift+escape" = "exec plasma-systemmonitor";
+
         "XF86Calculator" = "exec qalculate-qt";
         "XF86Search" = "exec brave";
         "XF86WWW" = "exec brave";
         "XF86Mail" = "exec brave https://mail.google.com";
-
         "XF86AudioRaiseVolume" = "spawn pamixer -i 5";
         "XF86AudioLowerVolume" = "spawn pamixer -d 5";
         "XF86AudioMute" = "spawn pamixer -t";

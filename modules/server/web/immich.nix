@@ -4,11 +4,13 @@
   pkgs,
   pkgsUnstable,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.immich;
   storage = config.features.server.web.storage;
-  webHelper = import ./_webService.nix {inherit config lib pkgs;};
-in {
+  webHelper = import ./_webService.nix { inherit config lib pkgs; };
+in
+{
   options.features.server.web.immich = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -32,6 +34,7 @@ in {
         suspend = [
           "immich-machine-learning.service"
           "immich-server.service"
+          "redis-immich.service"
         ];
         extraConfig = ''
           request_body {

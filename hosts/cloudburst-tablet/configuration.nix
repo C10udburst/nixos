@@ -1,4 +1,4 @@
-{...}: {
+{ pkgs, ... }: {
   imports = [
     ./hardware-configuration.nix
     ./home-manager.nix
@@ -56,6 +56,17 @@
 
   # Disable Wi-Fi power saving for stable connectivity (Realtek RTL8723BS)
   networking.networkmanager.wifi.powersave = false;
+
+  # legacy graphics driver for Intel Bay Trail (i915)
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-vaapi-driver
+    ];
+  };
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "i965";
+  };
 
   networking.hostName = "cloudburst-tablet";
 

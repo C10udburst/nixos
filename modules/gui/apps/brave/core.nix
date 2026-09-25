@@ -77,12 +77,14 @@ in {
               "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
               "--use-angle=gl"
               "--user-gl=angle"
+              "--enable-gpu-rasterization"
               "--use-vulkan"
               "--ignore-gpu-blocklist"
               "--force-device-scale-factor=0.9"
               "--password-store=basic"
             ]
             ++ lib.optionals isSlow [
+              "--enable-zero-copy"
               "--enable-low-end-device-mode"
             ]
             ++ cfg.extraCliFlags;
