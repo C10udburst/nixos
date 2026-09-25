@@ -549,7 +549,7 @@
     "manyfold-printables": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-d0O7bbvYoR+gf+2mvpnqQsI5aB3UUfz82Q82S+Hx4Nc=",
+        "narHash": "sha256-fZGZtYKCGlQh+mHZHL3DPZEAJHkWfc6tQVc6A0ZX82s=",
         "type": "file",
         "url": "https://github.com/nxn94/manyfold_printables"
       },
