@@ -1,4 +1,5 @@
 *.log
+.flakevuln
 .pi
 smb-secrets
 result

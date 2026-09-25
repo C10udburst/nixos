@@ -549,13 +549,17 @@
     "manyfold-printables": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-ZdbxAntQPa6d3+/azJonanRmX7OSeuw7HbFOcVewSVk=",
-        "type": "file",
-        "url": "https://github.com/nxn94/manyfold_printables"
+        "lastModified": 1788563121,
+        "narHash": "sha256-5Lp3W5JDxYaXOAcfkhPtEAD62icnGIm/+M2T41woQuk=",
+        "owner": "nxn94",
+        "repo": "manyfold_printables",
+        "rev": "4f7dd0d868cb6a1e1977bd94c72924f67d7bd7be",
+        "type": "github"
       },
       "original": {
-        "type": "file",
-        "url": "https://github.com/nxn94/manyfold_printables"
+        "owner": "nxn94",
+        "repo": "manyfold_printables",
+        "type": "github"
       }
     },
     "nix-alien": {

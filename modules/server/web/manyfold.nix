@@ -5,12 +5,14 @@
   helpers ? null,
   inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.manyfold;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
-  webHelper = import ./_webService.nix {inherit config lib pkgs;};
-in {
+  webHelper = import ./_webService.nix { inherit config lib pkgs; };
+in
+{
   options.features.server.web.manyfold = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.enable && true;
@@ -20,7 +22,7 @@ in {
     {
       flake-file.inputs = {
         manyfold-printables = {
-          url = "https://github.com/nxn94/manyfold_printables";
+          url = "github:nxn94/manyfold_printables";
           flake = false;
         };
       };
@@ -52,7 +54,7 @@ in {
             autoSubUidGidRange = true;
             linger = true;
           };
-          users.groups.manyfold = {};
+          users.groups.manyfold = { };
 
           systemd.tmpfiles.rules = [
             "d ${storage}/manyfold 0750 manyfold web - -"

@@ -1,0 +1,100 @@
+name: Scan for Vulnerabilities in Nix Flake Cache
+
+on:
+  workflow_run:
+    workflows: ["Build and Cache Hosts"]
+    types: [completed]
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: flakevuln
+  cancel-in-progress: false
+
+jobs:
+  flakevuln:
+    name: Scan for Vulnerabilities in Nix Flake Cache
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" 2>/dev/null || true
+          sudo docker image prune --all --force 2>/dev/null || true
+          df -h
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Setup access for private dependencies
+        run: |
+          if [[ -n "${{ secrets.SSH_PRIVATE_KEY }}" ]]; then
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            sudo mkdir -p /root/.ssh
+            sudo cp ~/.ssh/known_hosts /root/.ssh/known_hosts
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee /root/.ssh/id_ed25519 >/dev/null
+            sudo chmod 600 /root/.ssh/id_ed25519
+            echo -e "Host github.com\n  IdentityFile /root/.ssh/id_ed25519\n  StrictHostKeyChecking accept-new" | sudo tee -a /etc/ssh/ssh_config >/dev/null || true
+            echo -e "Host github.com\n  IdentityFile ~/.ssh/id_ed25519\n  StrictHostKeyChecking accept-new" >> ~/.ssh/config
+            eval $(ssh-agent -s)
+            ssh-add ~/.ssh/id_ed25519
+            echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+            echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          fi
+          if [[ -n "${{ secrets.GH_PAT }}" ]]; then
+            sudo git config --system url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
+            sudo git config --system --add url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "git@github.com:"
+            git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
+            git config --global --add url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "git@github.com:"
+            echo "extra-access-tokens = github.com=${{ secrets.GH_PAT }}" | sudo tee -a /etc/nix/nix.conf >/dev/null
+          fi
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Run garbage collection
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          export NIXCACHE_REPO="$REPO"
+          export NIXCACHE_IMAGE="ghcr.io/${NIXCACHE_REPO}/nix-cache"
+
+          # Resolve nixcache-oci source directly from locked flake inputs
+          NIXCACHE_SRC=$(nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixcache-oci.outPath')
+          source "${NIXCACHE_SRC}/lib/cache-builder.sh"
+
+          start_self_substituter
+
+          # Run vulnerability scan
+          nix run github:tiiuae/flakevuln#flakevuln -- local nixosConfigurations.cache.config.system.build.toplevel
+
+          stop_self_substituter
+
+      - name: Set github action markdown to the raport
+        run: |
+          echo ">>> Setting markdown report"
+          REPORT_FILE=".flakevuln/report/nixosConfigurations.cache.config.system.build.toplevel.md"
+          if [[ -f "$REPORT_FILE" ]]; then
+            echo ">>> Report file found: $REPORT_FILE"
+            echo ">>> Setting report as output"
+            echo "report<<EOF" >> "$GITHUB_OUTPUT"
+            cat "$REPORT_FILE" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          else
+            echo ">>> Report file not found: $REPORT_FILE"
+          fi
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: flakevuln-report
+          path: .flakevuln/*

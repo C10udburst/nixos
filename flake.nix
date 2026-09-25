@@ -49,7 +49,7 @@
       flake = false;
     };
     manyfold-printables = {
-      url = "https://github.com/nxn94/manyfold_printables";
+      url = "github:nxn94/manyfold_printables";
       flake = false;
     };
     nix-alien = {
