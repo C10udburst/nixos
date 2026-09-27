@@ -4,16 +4,14 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.shell.scripts.dev;
   gh-origin-mod = pkgs.writeShellScriptBin "gh-origin-mod" (builtins.readFile ./_gh-origin-mod.sh);
   nix-py = pkgs.writeShellScriptBin "nix-py" (builtins.readFile ./_nix-py.sh);
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ./_nx.sh);
-  sarif-md = pkgs.writers.writePython3Bin "sarif-md" { } (builtins.readFile ./_sarif-md.py);
+  sarif-md = pkgs.writers.writePython3Bin "sarif-md" {} (builtins.readFile ./_sarif-md.py);
   oci-lock = inputs.oci-lock.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
-{
+in {
   options.features.shell.scripts.dev = lib.mkOption {
     type = lib.types.bool;
     default = config.features.shell.scripts.enable && true;

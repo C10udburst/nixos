@@ -34,7 +34,7 @@ _: {
 
     server.samba = {
       enable = true;
-      paths = [ "/mnt/dane" ];
+      paths = ["/mnt/dane"];
     };
 
     # enable only for testing

@@ -4,14 +4,12 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.gui.apps.brave.apps.social;
   braveEnabled = config.features.gui.apps.brave.apps.enable;
-  icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or { };
-  mkWebApp = import ../_mkwebapp.nix { inherit lib pkgs; };
-in
-{
+  icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or {};
+  mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
+in {
   options.features.gui.apps.brave.apps.social = {
     core = lib.mkOption {
       type = lib.types.bool;

@@ -4,13 +4,11 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   devEnabled = config.features.gui.dev.enable;
   cfg = config.features.gui.dev.android;
   scrcpy-app = inputs.scrcpy-app-src.defaultPackage.${pkgs.stdenv.hostPlatform.system} or null;
-in
-{
+in {
   options.features.gui.dev.android = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -53,8 +51,7 @@ in
 
       environment.systemPackages =
         lib.optionals cfg.core (
-          with pkgs;
-          [
+          with pkgs; [
             android-tools
             jmtpfs
             android-file-transfer
@@ -62,10 +59,10 @@ in
         )
         ++ lib.optionals cfg.scrcpy (
           with pkgs;
-          [
-            scrcpy
-          ]
-          ++ lib.optional (scrcpy-app != null) scrcpy-app
+            [
+              scrcpy
+            ]
+            ++ lib.optional (scrcpy-app != null) scrcpy-app
         )
         ++ lib.optional cfg.jadx pkgs.jadx
         ++ lib.optionals cfg.dev [
@@ -74,7 +71,7 @@ in
               "35"
               "36"
             ];
-            buildToolsVersions = [ "35.0.0" ];
+            buildToolsVersions = ["35.0.0"];
           }).androidsdk
         ];
     })

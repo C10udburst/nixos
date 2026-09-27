@@ -4,11 +4,9 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.shell.nushell;
-in
-{
+in {
   options.features.shell.nushell.undo = lib.mkOption {
     type = lib.types.bool;
     default = config.features.shell.nushell.enable && false;

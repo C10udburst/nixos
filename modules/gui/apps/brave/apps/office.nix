@@ -4,15 +4,13 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.gui.apps.brave.apps.office;
   braveEnabled = config.features.gui.apps.brave.apps.enable;
-  icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or { };
-  mkWebApp = import ../_mkwebapp.nix { inherit lib pkgs; };
+  icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or {};
+  mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
   isLibreOffice = config.features.gui.apps.editors.office.libreoffice or false;
-in
-{
+in {
   options.features.gui.apps.brave.apps.office = lib.mkOption {
     type = lib.types.bool;
     default = braveEnabled && (!isLibreOffice);
@@ -51,7 +49,7 @@ in
         name = "Google Forms";
         url = "https://docs.google.com/forms";
         icon = icons.google-forms or "";
-        categories = [ "Office" ];
+        categories = ["Office"];
       })
       (mkWebApp {
         name = "Draw.io";

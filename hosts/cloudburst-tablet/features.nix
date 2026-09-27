@@ -10,6 +10,7 @@ _: {
         touchscreen = true;
         slow = true;
         eco = true;
+        ssd.smartd = false;
       };
       nix = {
         vulnix = false;
