@@ -20,7 +20,10 @@ _: {
       apps = {
         brave.apps = {
           office = true;
-          social.web = true;
+          social = {
+            discord = true;
+            telegram = true;
+          };
         };
         threed.freecad = false;
         threed.blender = false;

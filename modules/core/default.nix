@@ -25,6 +25,9 @@ in {
     services.upower.enable = lib.mkDefault true;
     hardware.i2c.enable = true;
 
+    security.sudo.enable = false;
+    security.sudo-rs.enable = true;
+
     home-manager.backupFileExtension = "hm-backup";
 
     services.udev.extraRules = ''

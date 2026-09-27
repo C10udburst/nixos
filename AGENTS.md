@@ -150,7 +150,7 @@ And in a child submodule, such as `./apps/office.nix`:
 { config, lib, pkgs, inputs, ... }:
 let
   cfg = config.features.gui.apps.brave.apps.office;
-  icons = inputs.webicons.packages.${pkgs.system};
+  icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   # No manual imports required! Discovered automatically by import-tree.

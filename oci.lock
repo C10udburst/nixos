@@ -5,5 +5,5 @@
   "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:f171f544b81ab92d373906a22114f65851b5b4f30861883baed754ca94651a7d",
   "ghcr.io/sablierapp/sablier:latest": "ghcr.io/sablierapp/sablier@sha256:c00c8a01c8c809dd258a8b362ad8ba9a9227753fc9857ae7506fd427175e038c",
   "ghcr.io/transmute-app/transmute:latest": "ghcr.io/transmute-app/transmute@sha256:51a32b28e0cb84cde624ca41570f069d91ee7e83fac5c9d0b970e7a583b3abde",
-  "ghcr.io/wealthfolio/wealthfolio:latest": "ghcr.io/wealthfolio/wealthfolio@sha256:3c6f117828949204029c2b4a391f039e62987b4e091139e11b04e6764b5f6866"
+  "ghcr.io/wealthfolio/wealthfolio:latest": "ghcr.io/wealthfolio/wealthfolio@sha256:5316836b02ca8841132d7bffa01ae33a6392c8f32e5f1e2ec44af44a3d8f49b2"
 }

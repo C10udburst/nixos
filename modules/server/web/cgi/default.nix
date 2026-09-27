@@ -39,6 +39,16 @@
       file_server
     }
   '';
+
+  cgiBinRoute = ''
+    @cgiBin path /cgi-bin /cgi-bin/*
+    handle @cgiBin {
+      route {
+        uri strip_prefix /cgi-bin
+        redir {uri} 302
+      }
+    }
+  '';
 in {
   options.features.server.web.cgi = {
     enable = lib.mkOption {
@@ -100,6 +110,7 @@ in {
         header -X-Frame-Options
         header ?Content-Security-Policy "frame-ancestors ${webHelper.allowedAncestors}"
 
+        ${cgiBinRoute}
         ${indexRoute}
         ${scriptRoutes}
       '';

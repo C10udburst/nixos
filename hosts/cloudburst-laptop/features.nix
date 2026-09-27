@@ -11,7 +11,10 @@ _: {
     };
 
     gui = {
-      apps.brave.apps.office = true;
+      apps.brave.apps = {
+        social.discord = true;
+        office = true;
+      };
       games.enable = true;
       dev.enable = true;
     };

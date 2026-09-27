@@ -210,10 +210,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1790334956,
-        "narHash": "sha256-Ym1ko5iNtJWHIe7OGMoUtff/EYrcnz8metpc8zRe4oY=",
+        "lastModified": 1790456897,
+        "narHash": "sha256-95wUM2p+Aj8Ae/6jZoVk+BggPTWGIxz4mXRCJOFNpzc=",
         "ref": "refs/heads/main",
-        "rev": "bf67ffab5fea3840975bbc4cf1c90163b2956525",
+        "rev": "5facdd90733a162542262e2d6e504b4fcc9df4a4",
         "revCount": 31,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/fetlife-browser.git"
@@ -666,11 +666,11 @@
     },
     "nixos-unstable": {
       "locked": {
-        "lastModified": 1789785513,
-        "narHash": "sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0=",
+        "lastModified": 1790323409,
+        "narHash": "sha256-VVTPf+Hyd5ebpjBMHmrLMSBIeW6ls48Bqtosj7CNKLA=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "20b1ddd1aa5ace70c9468305030aa4f9ef79671b",
+        "rev": "e94cb152ed51bd6e24eb4a41f1460252beb52cd2",
         "type": "github"
       },
       "original": {

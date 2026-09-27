@@ -4,9 +4,11 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.shell.nushell;
-in {
+in
+{
   options.features.shell.nushell.undo = lib.mkOption {
     type = lib.types.bool;
     default = config.features.shell.nushell.enable && false;
@@ -24,11 +26,13 @@ in {
     (lib.mkIf cfg.undo {
       home-manager.users.cloudburst = {
         home.packages = [
-          inputs.shell-undo.packages.${pkgs.system}.default
+          inputs.shell-undo.packages.${pkgs.stdenv.hostPlatform.system}.default
         ];
 
         programs.nushell.extraConfig = ''
-          let undo_lib = "${inputs.shell-undo.packages.${pkgs.system}.default}/lib/undo/libundo.so"
+          let undo_lib = "${
+            inputs.shell-undo.packages.${pkgs.stdenv.hostPlatform.system}.default
+          }/lib/undo/libundo.so"
 
           alias rm = ^rm
           alias cp = ^cp

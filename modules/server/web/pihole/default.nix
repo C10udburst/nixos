@@ -15,17 +15,18 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.pihole;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
-  webHelper = import ../_webService.nix { inherit config lib pkgs; };
+  webHelper = import ../_webService.nix {inherit config lib pkgs;};
   corednsEnabled = cfg.coredns.enable or cfg.coredns or false;
 
-  effectiveDnsPort = if corednsEnabled then 5354 else 53;
-in
-{
+  effectiveDnsPort =
+    if corednsEnabled
+    then 5354
+    else 53;
+in {
   options.features.server.web.pihole = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -49,7 +50,7 @@ in
       ];
     };
     dnsServers = lib.mkOption {
-      type = lib.types.coercedTo lib.types.str (s: [ s ]) (lib.types.listOf lib.types.str);
+      type = lib.types.coercedTo lib.types.str (s: [s]) (lib.types.listOf lib.types.str);
       default = [
         "192.168.1.10"
         "192.168.1.11"
@@ -73,7 +74,7 @@ in
         port = 8080;
       })
       {
-        networking.nameservers = [ "127.0.0.1" ];
+        networking.nameservers = ["127.0.0.1"];
 
         environment.etc = {
           "dnsmasq.d/dhcp-dns.conf".text = ''
@@ -126,7 +127,7 @@ in
         services.pihole-web = {
           enable = true;
           hostName = "pihole.${baseDomain}";
-          ports = [ 8080 ];
+          ports = [8080];
         };
 
         services.caddy.virtualHosts."http://pi.hole" = {

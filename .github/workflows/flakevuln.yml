@@ -7,7 +7,8 @@ on:
 
 permissions:
   contents: read
-  packages: write
+  actions: read
+  security-events: write
 
 concurrency:
   group: flakevuln
@@ -60,7 +61,7 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Run garbage collection
+      - name: Run vulnerability scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -76,7 +77,10 @@ jobs:
           start_self_substituter
 
           # Run vulnerability scan
-          nix run github:tiiuae/flakevuln#flakevuln -- local nixosConfigurations.cache.config.system.build.toplevel
+          nix run github:tiiuae/flakevuln#flakevuln -- \
+            local \
+            nixosConfigurations.cache.config.system.build.toplevel \
+            --sarif=.flakevuln/vuln.sarif
 
           stop_self_substituter
 
@@ -98,3 +102,8 @@ jobs:
         with:
           name: flakevuln-report
           path: .flakevuln/*
+      - name: Upload SARIF artifact
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: .flakevuln/vuln.sarif
+          category: vulnxscan

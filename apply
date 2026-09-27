@@ -150,11 +150,12 @@ for TARGET in "${TARGETS[@]}"; do
   COMMIT_ENTRIES+=("${HOST}:${GEN}")
 done
 
-COMMIT_MSG="${COMMIT_ENTRIES[*]}"
-
-if git diff --quiet && git diff --staged --quiet; then
+if [[ "$ACTION" == "test" ]]; then
+  echo -e "\n⚠️  Test action used, skipping commit."
+elif git diff --quiet && git diff --staged --quiet; then
   echo -e "\n✅ No git changes to commit."
 else
+  COMMIT_MSG="${COMMIT_ENTRIES[*]}"
   git commit -m "$COMMIT_MSG"
   echo -e "\n✅ Committed: $COMMIT_MSG"
 fi

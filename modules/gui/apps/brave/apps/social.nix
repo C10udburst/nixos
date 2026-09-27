@@ -4,20 +4,26 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.gui.apps.brave.apps.social;
   braveEnabled = config.features.gui.apps.brave.apps.enable;
-  icons = inputs.webicons.packages.${pkgs.system} or {};
-  mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
-in {
+  icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or { };
+  mkWebApp = import ../_mkwebapp.nix { inherit lib pkgs; };
+in
+{
   options.features.gui.apps.brave.apps.social = {
     core = lib.mkOption {
       type = lib.types.bool;
       default = true;
     };
-    web = lib.mkOption {
+    discord = lib.mkOption {
       type = lib.types.bool;
-      default = !(config.features.gui.apps.tools.social.enable or false);
+      default = !(config.features.gui.apps.tools.social.vesktop or false);
+    };
+    telegram = lib.mkOption {
+      type = lib.types.bool;
+      default = !(config.features.gui.apps.tools.social.telegram or false);
     };
   };
 
@@ -85,7 +91,7 @@ in {
           ];
         })
       ]
-      ++ lib.optionals cfg.web [
+      ++ lib.optionals cfg.discord [
         (mkWebApp {
           name = "Discord Web";
           url = "https://discord.com/app";
@@ -97,6 +103,8 @@ in {
             "Chat"
           ];
         })
+      ]
+      ++ lib.optionals cfg.telegram [
         (mkWebApp {
           name = "Telegram Web";
           url = "https://web.telegram.org/a/";

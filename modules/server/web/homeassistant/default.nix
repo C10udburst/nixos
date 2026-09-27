@@ -4,11 +4,14 @@
   pkgs,
   helpers,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.homeassistant;
   storage = config.features.server.web.storage;
-  webHelper = import ../_webService.nix {inherit config lib pkgs;};
-in {
+  baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  webHelper = import ../_webService.nix { inherit config lib pkgs; };
+in
+{
   options.features.server.web.homeassistant = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -52,6 +55,12 @@ in {
             "--network=host"
             "--privileged"
           ];
+        };
+
+        services.caddy.virtualHosts."http://homeassistant.local" = {
+          extraConfig = ''
+            redir https://hass.${baseDomain}{uri} 302
+          '';
         };
       }
     ]
