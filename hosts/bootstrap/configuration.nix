@@ -15,7 +15,7 @@
 
   services.openssh = {
     enable = true;
-    settings.PermitRootLogin = lib.mkDefault "prohibit-password";
+    settings.PermitRootLogin = "yes";
   };
 
   users.users.root.openssh.authorizedKeys.keys = [

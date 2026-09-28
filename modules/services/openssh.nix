@@ -23,7 +23,10 @@ in {
       enable = true;
       settings = {
         PasswordAuthentication = cfg.passwordAuthentication;
-        PermitRootLogin = "no";
+        PermitRootLogin =
+          if config.networking.hostName == "bootstrap"
+          then "yes"
+          else "no";
       };
     };
   };

@@ -7,6 +7,7 @@ let
   cloudburst-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP6nZFxrEKbYZ4zTRT1f6G5K/yOgCSEdutpfrGKd+AuW";
   cloudburst-laptop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXN+rc6QVRB54swk7dsXfbzHNIHNm4RjuSLueUzDi2H";
   cloudburst-tablet = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINn+GfTMQYqlUdiFhsTwoko21NzwL9CkEhiXigHTLFSL";
+  zeph = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILXk8zV68V9fJ812Yv0y6/TTeHWeyDwmX8aFYM5LnX6+";
   brix0 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFr0VqygSJ/VcNgkyDsyO2UCVis8iAvNKnK0TC4AdY7K";
 
   allHosts = [
@@ -14,11 +15,13 @@ let
     cloudburst-laptop
     cloudburst-tablet
     brix0
+    zeph
   ];
 
   serverHosts = [
     cloudburst-desktop
     brix0
+    zeph
   ];
 in {
   "secrets/cloudflare-api-token.age".publicKeys = users ++ serverHosts;

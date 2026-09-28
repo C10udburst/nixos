@@ -13,7 +13,7 @@ in {
   };
 
   config = lib.mkIf cfg.nvidia {
-    services.xserver.videoDrivers = lib.optionals isGui ["nvidia"];
+    services.xserver.videoDrivers = ["nvidia"];
     hardware.nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       modesetting.enable = true;
@@ -24,6 +24,5 @@ in {
     };
 
     hardware.nvidia-container-toolkit.enable = lib.mkIf podmanEnabled true;
-    virtualisation.containers.cdi.dynamic.nvidia.enable = lib.mkIf podmanEnabled true;
   };
 }
