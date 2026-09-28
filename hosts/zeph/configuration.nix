@@ -14,6 +14,11 @@
 
   services.asusd.enable = true;
 
+  # asusd systemd service requires /etc/asusd to exist for ReadWritePaths mount namespacing
+  systemd.tmpfiles.rules = [
+    "d /etc/asusd 0755 root root -"
+  ];
+
   environment.systemPackages = with pkgs; [
     asusctl
     supergfxctl
