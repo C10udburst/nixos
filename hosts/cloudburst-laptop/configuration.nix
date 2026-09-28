@@ -33,10 +33,10 @@
   };
 in {
   imports = [
+    inputs.nixos-hardware.nixosModules.msi-gl65-10SDR-492
     ./hardware-configuration.nix
     ./home-manager.nix
     ./features.nix
-    inputs.nixos-hardware.nixosModules.msi-gl65-10SDR-492
   ];
 
   # Load ec_sys kernel module with write support for MSI fan control (isw)

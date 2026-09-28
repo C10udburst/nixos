@@ -6,11 +6,11 @@
   ...
 }: {
   imports = [
+    inputs.nixos-hardware.nixosModules.common-cpu-intel
+    inputs.nixos-hardware.nixosModules.common-gpu-intel
     ./hardware-configuration.nix
     ./home-manager.nix
     ./features.nix
-    inputs.nixos-hardware.nixosModules.common-cpu-intel
-    inputs.nixos-hardware.nixosModules.common-gpu-intel
   ];
 
   networking.hostName = "brix0";

@@ -6,6 +6,7 @@ _: {
         fuse = true;
         pipewire = false;
         nvidia = true;
+        laptop-server = true;
       };
       java = false;
     };
@@ -13,7 +14,7 @@ _: {
     server = {
     };
     services = {
-      waypipe = false;
+      waypipe = true;
     };
     compat.podman.enable = true;
   };

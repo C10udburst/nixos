@@ -1,14 +1,15 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }: {
   imports = [
+    inputs.nixos-hardware.nixosModules.common-cpu-amd
+    inputs.nixos-hardware.nixosModules.common-gpu-amd
     ./hardware-configuration.nix
     ./home-manager.nix
     ./features.nix
-    inputs.nixos-hardware.nixosModules.common-cpu-amd
-    inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
 
   fileSystems."/mnt/dane" = {
@@ -32,6 +33,10 @@
   boot.supportedFilesystems = ["ntfs"];
 
   networking.hostName = "cloudburst-desktop";
+
+  environment.systemPackages = [
+    pkgs.nvtopPackages.amd
+  ];
 
   # Enable Multipath TCP (MPTCP) for simultaneous Ethernet and Wi-Fi transmission
   boot.kernel.sysctl."net.mptcp.enabled" = 1;

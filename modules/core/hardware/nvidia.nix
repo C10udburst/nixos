@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.features.core.hardware;
@@ -22,6 +23,10 @@ in {
       powerManagement.finegrained = lib.mkDefault false;
       nvidiaSettings = isGui;
     };
+
+    environment.systemPackages = [
+      pkgs.nvtopPackages.nvidia
+    ];
 
     hardware.nvidia-container-toolkit.enable = lib.mkIf podmanEnabled true;
   };

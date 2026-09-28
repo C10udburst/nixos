@@ -22,14 +22,6 @@
     ];
     text = builtins.readFile ./_auto-rotate.sh;
   };
-  desktop-kickoff = pkgs.writeShellScriptBin "desktop-kickoff" (builtins.readFile ./_desktop-kickoff.sh);
-  desktop-kickoff-launcher = pkgs.makeDesktopItem {
-    name = "desktop-kickoff";
-    desktopName = "Desktop Kickoff";
-    exec = "desktop-kickoff";
-    icon = "kde";
-    terminal = false;
-  };
   weylus-screen = pkgs.writeShellApplication {
     name = "weylus-screen";
     runtimeInputs = [
@@ -69,10 +61,6 @@ in {
         ]
         ++ lib.optionals (isGui && (config.features.services.weylus or false)) [
           weylus-screen
-        ]
-        ++ lib.optionals (isGui && (config.networking.hostName != "cloudburst-desktop")) [
-          desktop-kickoff
-          desktop-kickoff-launcher
         ];
     })
   ];
