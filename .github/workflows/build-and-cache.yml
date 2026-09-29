@@ -6,6 +6,10 @@ on:
       - master
       - main
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Update Flake Inputs"]
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -20,6 +24,7 @@ jobs:
   build-and-cache:
     name: Build and Cache Hosts
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout repository
