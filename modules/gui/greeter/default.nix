@@ -6,7 +6,7 @@
 }: let
   cfg = config.features.gui.greeter;
   hasAutologin = (cfg.autologin or null) != null && (cfg.autologin or false) != false;
-  useSddm = (cfg.sddm or false) && !hasAutologin;
+  useSddm = (cfg.sddm.enable or false) && !hasAutologin;
 in {
   options.features.gui.greeter = {
     enable = lib.mkOption {

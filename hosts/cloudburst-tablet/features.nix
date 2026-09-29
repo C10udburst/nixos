@@ -34,7 +34,8 @@ _: {
     };
 
     gui = {
-      greeter.autologin = "driftwm";
+      #greeter.autologin = "driftwm";
+      greeter.sddm.rotate = "270";
       desktop.plasma.enable = false;
       apps = {
         editors.enable = false;

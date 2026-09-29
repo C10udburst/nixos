@@ -6,9 +6,10 @@
   helpers ? null,
   ...
 }: let
-  cfg = config.features.gui.greeter;
-  greeterEnabled = config.features.gui.enable && cfg.enable;
-  hasAutologin = (cfg.autologin or null) != null && (cfg.autologin or false) != false;
+  greeterCfg = config.features.gui.greeter;
+  cfg = greeterCfg.sddm;
+  greeterEnabled = config.features.gui.enable && greeterCfg.enable;
+  hasAutologin = (greeterCfg.autologin or null) != null && (greeterCfg.autologin or false) != false;
 
   stylixEnabled = config.stylix.enable or false;
   h =
@@ -78,9 +79,11 @@
     then pkgs.callPackage "${inputs.silentsddm}/nix/fonts.nix" {}
     else null;
 in {
-  options.features.gui.greeter.sddm = lib.mkOption {
-    type = lib.types.bool;
-    default = greeterEnabled && !hasAutologin && !(cfg.regreet or false);
+  options.features.gui.greeter.sddm = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = greeterEnabled && !hasAutologin && !(greeterCfg.regreet or false);
+    };
   };
 
   config = lib.mkMerge [
@@ -92,7 +95,7 @@ in {
         };
       };
     }
-    (lib.mkIf (cfg.enable && cfg.sddm && !hasAutologin) {
+    (lib.mkIf (greeterCfg.enable && cfg.enable && !hasAutologin) {
       environment.systemPackages = lib.optional (themePkg != null) themePkg;
 
       fonts.packages = lib.optional (silentsddmFonts != null) silentsddmFonts;

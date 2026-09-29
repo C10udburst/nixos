@@ -46,10 +46,10 @@
       "unicode"
     ]
     ++ lib.optionals cfg.plugins.system [
-      "procmon"
       "screen-toolkit"
       "hassio"
     ]
+    ++ lib.optionals (cfg.plugins.system && !slow) ["procmon"]
     ++ lib.optionals (cfg.plugins.hardware && !slow) [
       "drive-health"
       "udiskie"
