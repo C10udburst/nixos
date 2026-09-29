@@ -74,6 +74,16 @@ in {
         warn-dirty = false;
       };
 
+      age.secrets.github-token = {
+        file = ../../secrets/github-token.age;
+        mode = "0440";
+        group = "wheel";
+      };
+
+      nix.extraOptions = ''
+        !include ${config.age.secrets.github-token.path}
+      '';
+
       services.nixcache-proxy = lib.mkIf cfg.ghcr {
         enable = true;
         repo = "C10udburst/nixos";

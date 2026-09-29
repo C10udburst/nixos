@@ -1021,6 +1021,7 @@
         "ranger-devicons": "ranger-devicons",
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
+        "silentsddm": "silentsddm",
         "stylix": "stylix",
         "tailcat": "tailcat",
         "webicons": "webicons"
@@ -1063,6 +1064,26 @@
       "original": {
         "owner": "edaywalid",
         "repo": "undo",
+        "type": "github"
+      }
+    },
+    "silentsddm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789658369,
+        "narHash": "sha256-5OWSB4OSVl9P60B1X9siRoNIIkhzEzWtiAna//YmFFI=",
+        "owner": "uiriansan",
+        "repo": "SilentSDDM",
+        "rev": "73380d331fe0f8b8a3b17991bb917a0d438a4d34",
+        "type": "github"
+      },
+      "original": {
+        "owner": "uiriansan",
+        "repo": "SilentSDDM",
         "type": "github"
       }
     },

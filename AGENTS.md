@@ -55,7 +55,7 @@ features
  │    ├── desktop          # Compositors & desktop environments
  │    │    ├── driftwm     # DriftWM compositor, desktop package & noctalia shell
  │    │    └── plasma      # KDE Plasma 6
- │    ├── greeter          # Display manager (greetd / tuigreet)
+ │    ├── greeter          # Display manager (sddm / greetd / regreet)
  │    ├── theme            # Stylix theming engine (core, wallpaper, font)
  │    ├── apps             # Desktop applications
  │    │    ├── brave       # Brave browser & categorized webapps

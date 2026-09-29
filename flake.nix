@@ -127,6 +127,10 @@
       url = "github:edaywalid/undo";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    silentsddm = {
+      url = "github:uiriansan/SilentSDDM";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     stylix = {
       url = "github:nix-community/stylix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";

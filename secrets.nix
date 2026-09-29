@@ -28,6 +28,7 @@ in {
   "secrets/copyparty-accounts.age".publicKeys = users ++ serverHosts;
   "secrets/duplicati-pass.age".publicKeys = users ++ serverHosts;
   "secrets/gitea-env.age".publicKeys = users ++ serverHosts;
+  "secrets/github-token.age".publicKeys = users ++ allHosts;
   "secrets/golink-tailscale-auth-key.age".publicKeys = users ++ serverHosts;
   "secrets/homarr-env.age".publicKeys = users ++ serverHosts;
   "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;

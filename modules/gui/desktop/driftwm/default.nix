@@ -48,6 +48,7 @@ in {
       programs.kdeconnect.enable = lib.mkDefault (!isSlow);
 
       systemd.packages = [pkgs.driftwm];
+      services.displayManager.sessionPackages = [pkgs.driftwm];
 
       environment.systemPackages =
         [
