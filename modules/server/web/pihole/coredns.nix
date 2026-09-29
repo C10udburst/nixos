@@ -6,6 +6,7 @@
   piholeCfg = config.features.server.web.pihole;
   cfg = config.features.server.web.pihole.coredns;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  i2pEnabled = config.features.server.web.i2p or false;
 
   cnameTemplates = lib.concatStringsSep "\n\n" (
     lib.mapAttrsToList (alias: target: ''
@@ -54,6 +55,11 @@ in {
         "go.lan" = "go.${baseDomain}";
         "go.home" = "go.${baseDomain}";
 
+        "i2prouter" = "i2p.${baseDomain}";
+        "i2prouter.local" = "i2p.${baseDomain}";
+        "i2prouter.lan" = "i2p.${baseDomain}";
+        "i2prouter.home" = "i2p.${baseDomain}";
+
         "pi.hole" = "pihole.${baseDomain}";
         "homeassistant.local" = "hass.${baseDomain}";
       };
@@ -72,7 +78,7 @@ in {
                 expr incidr(client_ip(), '100.64.0.0/10')
             }
             ${cnameTemplates}
-            template IN A ${baseDomain} ${config.networking.hostName} {
+            template IN A ${baseDomain} ${config.networking.hostName}${lib.optionalString i2pEnabled " i2p"} {
                 match .*
                 ${tailscaleAnswers}
             }
@@ -87,7 +93,7 @@ in {
                 expr true
             }
             ${cnameTemplates}
-            template IN A ${baseDomain} ${config.networking.hostName} {
+            template IN A ${baseDomain} ${config.networking.hostName}${lib.optionalString i2pEnabled " i2p"} {
                 match .*
                 ${localAnswers}
             }
