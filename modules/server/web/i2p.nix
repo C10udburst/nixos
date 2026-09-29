@@ -90,7 +90,7 @@ in {
             extraConfig = ''
               ${sablierConfig}
 
-              header Content-Security-Policy "script-src 'none'; object-src 'none';"
+              header Content-Security-Policy "default-src 'self' *.i2p; script-src 'none'; object-src 'none'; style-src 'self' *.i2p 'unsafe-inline'; img-src 'self' *.i2p data:; font-src 'self' *.i2p data:; media-src 'self' *.i2p; frame-src 'self' *.i2p; form-action 'self' *.i2p; base-uri 'self' *.i2p;"
 
               reverse_proxy 127.0.0.1:4444 {
                 header_up Host {host}
