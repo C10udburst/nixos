@@ -307,7 +307,7 @@ in {
             brightness = {
               enable_ddcutil = true;
               sync_all_monitors = true;
-              minimum_brightness = 0.1;
+              minimum_brightness = 0.01;
             };
 
             calendar = {

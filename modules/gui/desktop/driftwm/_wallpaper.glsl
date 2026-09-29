@@ -11,6 +11,7 @@ precision highp float;
 #define SHOW_GRID 0 // Option to show hexagonal patch grid (1 = enabled, 0 = disabled)
 #define CON 0       // Contrast-preserving interpolation
 #define Z   8.0     // Patch scale inside example texture
+#define SEED 42.0   // Random seed for hash function
 
 varying vec2 v_coords;
 uniform sampler2D tex;
@@ -29,8 +30,8 @@ uniform vec2 u_texture_size;
 // Safe hash that avoids float precision breakdown on large or negative coordinates
 vec2 hash2(vec2 p) {
     p = mod(mod(p, 1024.0) + 1024.0, 1024.0);
-    vec2 d = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
-    return fract(sin(d) * 43758.5453);
+    vec2 d = vec2(dot(p + SEED, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+    return fract(sin(d + SEED) * 43758.5453);
 }
 
 #define srgb2rgb(V) pow(max(V, 0.0), vec4(2.2))

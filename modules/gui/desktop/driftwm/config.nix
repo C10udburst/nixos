@@ -40,6 +40,12 @@ in {
         )
       );
 
+      mousePassApps = [
+        "blender"
+        "Mayo"
+        "org.nomacs.ImageLounge"
+      ];
+
       noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled {
         "mod+tab" = "spawn noctalia msg panel-toggle launcher \"/wind \"";
         "mod+space" = "spawn noctalia msg panel-toggle launcher";
@@ -82,6 +88,7 @@ in {
         "mod+w" = "center-nearest up";
         "mod+s" = "center-nearest down";
         "mod+a" = "center-nearest left";
+        "mod+f2" = "spawn plasmawindowed org.kde.plasma.kickoff";
         "mod+d" = "center-nearest right";
         "mod+q" = "close-window";
         "mod+e" = "exec dolphin";
@@ -105,23 +112,25 @@ in {
             app_id = "waydroid.*";
             decoration = "server";
           }
-          {
-            app_id = "blender";
-            pass_mouse = [
-              "alt+left"
-              "alt+middle"
-              "alt+right"
-            ];
-          }
-          {
-            app_id = "Mayo";
-            pass_mouse = [
-              "alt+left"
-              "alt+middle"
-              "alt+right"
-            ];
-          }
         ]
+        ++ lib.mapAttrsToList
+        (appId: _: {
+          app_id = appId;
+          pass_mouse = [
+            "alt+left"
+            "alt+middle"
+            "alt+right"
+          ];
+        })
+        (
+          lib.listToAttrs (
+            map (app: {
+              name = app;
+              value = "";
+            })
+            mousePassApps
+          )
+        )
         ++ lib.optionals (cfg.desktop or false) [
           {
             app_id = "driftwm.desktop";

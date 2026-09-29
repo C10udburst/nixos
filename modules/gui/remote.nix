@@ -85,6 +85,7 @@ in {
       type = lib.types.attrsOf lib.types.str;
       default = {
         cloudburst-desktop = "plasmawindowed org.kde.plasma.kickoff";
+        cloudburst-laptop = "plasmawindowed org.kde.plasma.kickoff";
       };
     };
   };

@@ -79,11 +79,15 @@ jobs:
           # Run vulnerability scan
           nix run github:tiiuae/flakevuln#flakevuln -- \
             local \
-            nixosConfigurations.cache.config.system.build.toplevel \
-            --sarif=.flakevuln/vuln.sarif
+            --nixtracker \
+            --nixprs \
+            nixosConfigurations.cache.config.system.build.toplevel
 
           stop_self_substituter
 
+      - name: Generete SARIF report
+        run: |
+          python3 .github/sarif.py .flakevuln/findings.json
       - name: Set github action markdown to the raport
         run: |
           echo ">>> Setting markdown report"
@@ -105,5 +109,5 @@ jobs:
       - name: Upload SARIF artifact
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: .flakevuln/vuln.sarif
+          sarif_file: .flakevuln/findings.sarif
           category: vulnxscan
