@@ -72,7 +72,7 @@ in {
           "dns"
         ];
         port = 8080;
-        protect = ["*"];
+        protect = ["/"];
       })
       {
         networking.nameservers = ["127.0.0.1"];
