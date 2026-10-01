@@ -38,6 +38,7 @@ in {
           ];
           port = port;
           suspend = "fetlife.service";
+          protect = ["/"];
         })
         {
           users.users.fetlife = {

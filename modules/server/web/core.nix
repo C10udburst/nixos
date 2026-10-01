@@ -24,6 +24,10 @@ in {
   config = lib.mkIf cfg.enable {
     services.caddy.enable = true;
 
+    systemd.tmpfiles.rules = [
+      "d /var/log/caddy 0750 caddy caddy - -"
+    ];
+
     networking.firewall.allowedTCPPorts = [
       80
       443

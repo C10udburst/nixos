@@ -9,6 +9,7 @@
   webCfg = config.features.server.web;
   storage = webCfg.storage;
   baseDomain = webCfg.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ../_webService.nix {inherit config lib pkgs;};
 
   rawApps = webCfg.core._apps or [];
@@ -41,6 +42,14 @@ in {
           "homepage"
         ];
         port = 7575;
+        oidc = {
+          id = "homarr";
+          name = "Homarr";
+          redirectUris = [
+            "https://home.${baseDomain}/api/auth/callback/oidc"
+            "https://home.${baseDomain}/api/auth/callback/custom"
+          ];
+        };
       })
       {
         age.secrets.homarr-env = {
@@ -86,6 +95,12 @@ in {
           volumes = [
             "${storage}/homarr/appdata:/appdata"
           ];
+          environment = lib.optionalAttrs autheliaEnabled {
+            AUTH_OIDC_ENABLED = "true";
+            AUTH_OIDC_ISSUER = "https://auth.${baseDomain}";
+            AUTH_OIDC_CLIENT_ID = "homarr";
+            AUTH_OIDC_CLIENT_NAME = "Authelia";
+          };
           environmentFiles = [
             config.age.secrets.homarr-env.path
           ];

@@ -36,6 +36,9 @@
       xf-host: X-Forwarded-Host
       rproxy: -1
 
+      acao: *
+      acam: *
+
       z, qr
 
     ${volumesConfig}
@@ -62,6 +65,7 @@ in {
           "copyparty"
         ];
         port = 3923;
+        cors = true;
         extraConfig = ''
           request_body {
             max_size 50000MB

@@ -24,6 +24,12 @@ let
     zeph
   ];
 in {
+  "secrets/authelia-jwt.age".publicKeys = users ++ serverHosts;
+  "secrets/authelia-oidc-clients.age".publicKeys = users ++ serverHosts;
+  "secrets/authelia-oidc-hmac.age".publicKeys = users ++ serverHosts;
+  "secrets/authelia-oidc-key.age".publicKeys = users ++ serverHosts;
+  "secrets/authelia-storage.age".publicKeys = users ++ serverHosts;
+  "secrets/authelia-users.age".publicKeys = users ++ serverHosts;
   "secrets/cloudflare-api-token.age".publicKeys = users ++ serverHosts;
   "secrets/copyparty-accounts.age".publicKeys = users ++ serverHosts;
   "secrets/duplicati-pass.age".publicKeys = users ++ serverHosts;
@@ -37,6 +43,7 @@ in {
   "secrets/resume-env.age".publicKeys = users ++ serverHosts;
   "secrets/siyuan-env.age".publicKeys = users ++ serverHosts;
   "secrets/smb-secrets.age".publicKeys = users ++ allHosts;
+  "secrets/rclone-conf.age".publicKeys = users ++ allHosts;
   "secrets/vaultwarden-env.age".publicKeys = users ++ serverHosts;
   "secrets/wealthfolio-env.age".publicKeys = users ++ serverHosts;
 }

@@ -21,6 +21,7 @@ in {
           "duplicati"
         ];
         port = 8200;
+        protect = ["*"];
       })
       {
         age.secrets.duplicati-pass = {

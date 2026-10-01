@@ -21,6 +21,13 @@ in {
         name = "git";
         aliases = ["gitea"];
         port = 3000;
+        oidc = {
+          id = "gitea";
+          name = "Gitea";
+          redirectUris = [
+            "https://git.${baseDomain}/user/oauth2/authelia/callback"
+          ];
+        };
       })
       {
         systemd.tmpfiles.rules = lib.mkOverride 990 (

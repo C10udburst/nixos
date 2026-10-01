@@ -27,6 +27,7 @@ in {
         ];
         port = 4000;
         suspend = "litellm.service";
+        cors = true;
       })
       {
         age.secrets.litellm = {
@@ -83,6 +84,8 @@ in {
             RestartSec = "5s";
             Environment = [
               "HOME=${storage}/litellm"
+              "LITELLM_CORS_ORIGINS=*"
+              "LITELLM_CORS_ALLOW_CREDENTIALS=true"
             ];
           };
           preStart = ''

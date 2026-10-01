@@ -7,6 +7,8 @@
 }: let
   cfg = config.features.server.web.siyuan;
   storage = config.features.server.web.storage;
+  baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.siyuan = lib.mkOption {
@@ -25,6 +27,7 @@ in {
         ];
         port = 6806;
         suspend = "siyuan.service";
+        protect = ["*"];
       })
       {
         age.secrets.siyuan-env = {
@@ -49,6 +52,7 @@ in {
           description = "SiYuan note-taking service";
           wantedBy = ["multi-user.target"];
           after = ["network.target"];
+
           serviceConfig = {
             ExecStart = ''
               ${pkgsUnstable.siyuan.kernel}/bin/kernel serve \

@@ -107,8 +107,22 @@ in {
     services.caddy.virtualHosts."${domain}" = {
       useACMEHost = lib.mkIf (config.features.server.web.ssl.enable or false) baseDomain;
       extraConfig = ''
+        log error_cgi {
+          output file /var/log/caddy/error-cgi.log {
+            roll_size 10MB
+            roll_keep 10
+            roll_keep_for 720h
+          }
+          format json
+          no_hostname
+        }
+
         header -X-Frame-Options
         header ?Content-Security-Policy "frame-ancestors ${webHelper.allowedAncestors}"
+
+        handle_errors {
+          log_name error_cgi
+        }
 
         ${cgiBinRoute}
         ${indexRoute}

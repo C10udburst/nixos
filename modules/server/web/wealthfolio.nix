@@ -8,6 +8,7 @@
   cfg = config.features.server.web.wealthfolio;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.wealthfolio = lib.mkOption {
@@ -22,6 +23,13 @@ in {
         aliases = ["wealthfolio"];
         port = 8088;
         suspend = "podman-wealthfolio.service";
+        oidc = {
+          id = "wealthfolio";
+          name = "Wealthfolio";
+          redirectUris = [
+            "https://wealth.${baseDomain}/api/v1/auth/oidc/callback"
+          ];
+        };
       })
       {
         age.secrets.wealthfolio-env = {
@@ -57,11 +65,21 @@ in {
           extraOptions = [
             "--userns=keep-id:uid=1000,gid=1000"
           ];
-          environment = {
-            WF_LISTEN_ADDR = "0.0.0.0:8088";
-            WF_DB_PATH = "/data/wealthfolio.db";
-            WF_CORS_ALLOW_ORIGINS = "wealth.${baseDomain}";
-          };
+          environment =
+            {
+              WF_LISTEN_ADDR = "0.0.0.0:8088";
+              WF_DB_PATH = "/data/wealthfolio.db";
+              WF_CORS_ALLOW_ORIGINS = "https://wealth.${baseDomain}";
+            }
+            // lib.optionalAttrs autheliaEnabled {
+              WF_OIDC_ENABLED = "true";
+              WF_OIDC_ISSUER_URL = "https://auth.${baseDomain}";
+              WF_OIDC_CLIENT_ID = "wealthfolio";
+              WF_OIDC_REDIRECT_URL = "https://wealth.${baseDomain}/api/v1/auth/oidc/callback";
+              WF_OIDC_SCOPES = "openid email profile";
+              WF_OIDC_ALLOW_ANY = "true";
+              WF_OIDC_POST_LOGOUT_REDIRECT_URL = "https://wealth.${baseDomain}";
+            };
           environmentFiles = [
             config.age.secrets.wealthfolio-env.path
           ];

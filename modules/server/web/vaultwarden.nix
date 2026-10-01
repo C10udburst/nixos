@@ -7,6 +7,7 @@
   cfg = config.features.server.web.vaultwarden;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.vaultwarden = lib.mkOption {
@@ -26,6 +27,14 @@ in {
         suspend = [
           "vaultwarden.service"
         ];
+        oidc = {
+          id = "vaultwarden";
+          name = "Vaultwarden";
+          pkce = true;
+          redirectUris = [
+            "https://vault.${baseDomain}/identity/connect/oidc-signin"
+          ];
+        };
       })
       {
         age.secrets.vaultwarden-env = {
@@ -43,12 +52,20 @@ in {
         services.vaultwarden = {
           enable = true;
           environmentFile = config.age.secrets.vaultwarden-env.path;
-          config = {
-            ROCKET_PORT = 8222;
-            ENABLE_WEBSOCKET = true;
-            DATA_FOLDER = "${storage}/vaultwarden";
-            DOMAIN = "https://vault.${baseDomain}";
-          };
+          config =
+            {
+              ROCKET_PORT = 8222;
+              ENABLE_WEBSOCKET = true;
+              DATA_FOLDER = "${storage}/vaultwarden";
+              DOMAIN = "https://vault.${baseDomain}";
+            }
+            // lib.optionalAttrs autheliaEnabled {
+              SSO_ENABLED = true;
+              SSO_AUTHORITY = "https://auth.${baseDomain}";
+              SSO_CLIENT_ID = "vaultwarden";
+              SSO_SCOPES = "openid email profile";
+              SSO_REDIRECT_URL = "https://vault.${baseDomain}/identity/connect/oidc-signin";
+            };
         };
       }
     ]

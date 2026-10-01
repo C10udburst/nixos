@@ -451,6 +451,9 @@ config = {
     "litellm_settings": {
         "drop_params": True,
     },
+    "general_settings": {
+        "allowed_cors_origins": ["*"],
+    },
 }
 
 print("Total models:", len(models_list))

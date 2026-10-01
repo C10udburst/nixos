@@ -48,6 +48,8 @@ in {
       {
         services.i2pd = {
           enable = true;
+          port = 4567;
+          upnp.enable = true;
           addressbook = {
             defaulturl = "http://shx5vqsw7usdaunyzr2qmes2fq37oumybpudrd4jjj4e4vk4uusa.b32.i2p/hosts.txt";
             subscriptions = [
@@ -68,6 +70,9 @@ in {
             enable = true;
           };
         };
+
+        networking.firewall.allowedTCPPorts = [4567];
+        networking.firewall.allowedUDPPorts = [4567];
 
         systemd.services.i2pd.preStart = ''
           mkdir -p /var/lib/i2pd/addressbook

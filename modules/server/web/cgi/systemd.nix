@@ -26,6 +26,7 @@ in {
         "gitea"
         "glances"
         "golink"
+        "i2pd"
         "immich-machine-learning"
         "immich-server"
         "karakeep-web"

@@ -1,4 +1,4 @@
-{lib, ...}: {
+{...}: {
   # Helper to define a CGI script under features.server.web.cgi.scripts
   # Usage:
   #   cgiHelper.mkCgiScript "name" <script>

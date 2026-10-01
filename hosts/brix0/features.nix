@@ -18,6 +18,7 @@ _: {
       web.enable = true;
     };
     services = {
+      rclone.enable = true;
       tailscale.exitNode = true;
       waypipe = false;
     };

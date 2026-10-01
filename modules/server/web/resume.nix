@@ -8,6 +8,7 @@
   cfg = config.features.server.web.resume;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
   port = 3100;
 in {
@@ -27,6 +28,13 @@ in {
         ];
         port = port;
         suspend = "podman-resume.service";
+        oidc = {
+          id = "resume";
+          name = "Reactive Resume";
+          redirectUris = [
+            "https://resume.${baseDomain}/api/auth/callback/custom"
+          ];
+        };
       })
       {
         age.secrets.resume-env = {
@@ -82,12 +90,22 @@ in {
             "--network=host"
             "--userns=keep-id:uid=1000,gid=1000"
           ];
-          environment = {
-            PORT = toString port;
-            APP_URL = "https://resume.${baseDomain}";
-            DATABASE_URL = "postgresql://reactive_resume@127.0.0.1:5432/reactive_resume";
-            TZ = config.time.timeZone;
-          };
+          environment =
+            {
+              PORT = toString port;
+              APP_URL = "https://resume.${baseDomain}";
+              DATABASE_URL = "postgresql://reactive_resume@127.0.0.1:5432/reactive_resume";
+              TZ = config.time.timeZone;
+            }
+            // lib.optionalAttrs autheliaEnabled {
+              OAUTH_PROVIDER_NAME = "Authelia";
+              OAUTH_CLIENT_ID = "resume";
+              OAUTH_DISCOVERY_URL = "https://auth.${baseDomain}/.well-known/openid-configuration";
+              OAUTH_AUTHORIZATION_URL = "https://auth.${baseDomain}/api/oidc/authorization";
+              OAUTH_TOKEN_URL = "https://auth.${baseDomain}/api/oidc/token";
+              OAUTH_USER_INFO_URL = "https://auth.${baseDomain}/api/oidc/userinfo";
+              OAUTH_SCOPES = "openid profile email";
+            };
           environmentFiles = [
             config.age.secrets.resume-env.path
           ];

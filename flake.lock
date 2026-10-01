@@ -1000,6 +1000,26 @@
         "type": "github"
       }
     },
+    "rclone-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790848727,
+        "narHash": "sha256-5vJNAtvSr6g+GLV6ZJjCegR22dGKsPs8Bq5GSVlxPLQ=",
+        "owner": "C10udburst",
+        "repo": "rclone-flake",
+        "rev": "4e66edb4f0648de6be1c1a3fb6c04b2d992200a0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "C10udburst",
+        "repo": "rclone-flake",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -1034,6 +1054,7 @@
         "plasma-manager": "plasma-manager",
         "ranger-archives": "ranger-archives",
         "ranger-devicons": "ranger-devicons",
+        "rclone-flake": "rclone-flake",
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
         "silentsddm": "silentsddm",

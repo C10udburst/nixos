@@ -9,6 +9,7 @@
   cfg = config.features.server.web.manyfold;
   storage = config.features.server.web.storage;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.manyfold = lib.mkOption {
@@ -36,6 +37,13 @@ in {
           ];
           port = 3214;
           suspend = "podman-manyfold.service";
+          oidc = {
+            id = "manyfold";
+            name = "Manyfold";
+            redirectUris = [
+              "https://3d.${baseDomain}/users/auth/openid_connect/callback"
+            ];
+          };
         })
         {
           age.secrets.manyfold-env = {
@@ -76,9 +84,16 @@ in {
               "${storage}/manyfold/data:/libraries"
               "${storage}/manyfold/data:/models"
             ];
-            environment = {
-              PUBLIC_HOSTNAME = "3d.${baseDomain}";
-            };
+            environment =
+              {
+                PUBLIC_HOSTNAME = "3d.${baseDomain}";
+              }
+              // lib.optionalAttrs autheliaEnabled {
+                OIDC_NAME = "Authelia";
+                OIDC_ISSUER = "https://auth.${baseDomain}";
+                OIDC_CLIENT_ID = "manyfold";
+                MULTIUSER = "true";
+              };
             environmentFiles = [
               config.age.secrets.manyfold-env.path
             ];

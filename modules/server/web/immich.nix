@@ -7,6 +7,8 @@
 }: let
   cfg = config.features.server.web.immich;
   storage = config.features.server.web.storage;
+  baseDomain = config.features.server.web.core.baseDomain or "example.com";
+  autheliaEnabled = config.features.server.web.authelia.enable or false;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
 in {
   options.features.server.web.immich = {
@@ -22,6 +24,17 @@ in {
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
+      (lib.mkIf autheliaEnabled {
+        services.immich.settings.oauth = {
+          enabled = true;
+          issuerUrl = "https://auth.${baseDomain}";
+          clientId = "immich";
+          autoRegister = true;
+          autoLaunch = false;
+          buttonText = "Login with Authelia";
+          scope = "openid email profile";
+        };
+      })
       (webHelper.mkWebApp {
         name = "photos";
         aliases = [
@@ -34,6 +47,17 @@ in {
           "immich-server.service"
           "redis-immich.service"
         ];
+        oidc = {
+          id = "immich";
+          name = "Immich";
+          public = true;
+          pkce = true;
+          redirectUris = [
+            "https://photos.${baseDomain}/auth/login"
+            "https://photos.${baseDomain}/user-settings"
+            "app.immich:///oauth-callback"
+          ];
+        };
         extraConfig = ''
           request_body {
             max_size 50000MB

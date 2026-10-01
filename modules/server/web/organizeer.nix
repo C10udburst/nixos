@@ -33,6 +33,7 @@ in {
             "todo"
           ];
           port = port;
+          protect = ["/"];
         })
         {
           users.users.organizeer = {

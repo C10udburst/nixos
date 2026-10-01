@@ -119,6 +119,10 @@
       url = "github:alexanderjeurissen/ranger_devicons";
       flake = false;
     };
+    rclone-flake = {
+      url = "github:C10udburst/rclone-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     scrcpy-app-src = {
       url = "github:C10udburst/scrcpy-app";
       inputs.nixpkgs.follows = "nixpkgs";

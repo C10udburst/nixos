@@ -15,6 +15,10 @@ in {
       bing-img.script = pkgs.writeShellScript "bing-img" ''
         exec ${pkgs.python3}/bin/python3 ${./_scripts/bing-img.py} "$@"
       '';
+
+      caddy_logs.script = pkgs.writeShellScript "caddy_logs" ''
+        exec ${pkgs.python3}/bin/python3 ${./_scripts/caddy_logs.py} "$@"
+      '';
     };
   };
 }
