@@ -60,6 +60,15 @@ in {
           "Office"
         ];
       })
+      (mkWebApp {
+        name = "Google Calendar";
+        url = "https://calendar.google.com";
+        icon = icons.google-calendar or "";
+        categories = [
+          "Office"
+          "Calendar"
+        ];
+      })
     ];
   };
 }
