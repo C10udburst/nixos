@@ -11,7 +11,7 @@ precision highp float;
 #define SHOW_GRID 0 // Option to show hexagonal patch grid (1 = enabled, 0 = disabled)
 #define CON 0       // Contrast-preserving interpolation
 #define Z   8.0     // Patch scale inside example texture
-#define SEED 42.0   // Random seed for hash function
+#define SEED 6.7   // Random seed for hash function
 
 varying vec2 v_coords;
 uniform sampler2D tex;

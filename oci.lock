@@ -1,5 +1,6 @@
 {
   "docker.io/jms1717/8mblocal:latest": "docker.io/jms1717/8mblocal@sha256:a034dbaa79610461b15e3acc14f02b5cfc51d27bf3af5a245db21d5742090d04",
+  "ghcr.io/alexta69/metube:latest": "ghcr.io/alexta69/metube@sha256:8e2fe9beeefc55a02f6e1d04cad0fc3c22e8f067d309188f016551dc99ec27b3",
   "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:d60120a04536ded5d8c3a478192dca549c3f16cae2f809ab094f95f011bb74e6",
   "ghcr.io/home-assistant/home-assistant:stable": "ghcr.io/home-assistant/home-assistant@sha256:3e6710a7ab2a61311d9d899b719f6c3657791c63e8f4942cec4ebc42401d6b76",
   "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:f171f544b81ab92d373906a22114f65851b5b4f30861883baed754ca94651a7d",

@@ -19,6 +19,10 @@ _: {
       dev.enable = true;
     };
 
-    compat.wine = true;
+    compat = {
+      wine = true;
+      podman.enable = true;
+      appimage = true;
+    };
   };
 }
