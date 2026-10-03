@@ -38,6 +38,7 @@ in {
         "podman-homarr"
         "podman-homeassistant"
         "podman-manyfold"
+        "podman-metube"
         "podman-resume"
         "podman-sablier"
         "podman-transmute"

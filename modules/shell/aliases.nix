@@ -26,12 +26,25 @@ in {
           pubip = "dig +short myip.opendns.com @resolver1.opendns.com";
           "cd.." = "cd ..";
           "-" = "cd -";
+          "code." = "code .";
         }
         // (lib.listToAttrs (
-          map (i: {
-            name = "..${toString i}";
-            value = "cd " + (lib.concatStringsSep "/" (map (_x: "..") (lib.range 1 i)));
-          }) (lib.range 2 10)
+          lib.flatten (
+            map (
+              i: let
+                path = lib.concatStringsSep "/" (map (_x: "..") (lib.range 1 i));
+              in [
+                {
+                  name = "..${toString i}";
+                  value = "cd ${path}";
+                }
+                {
+                  name = "cd..${toString i}";
+                  value = "cd ${path}";
+                }
+              ]
+            ) (lib.range 2 10)
+          )
         ));
     };
   };

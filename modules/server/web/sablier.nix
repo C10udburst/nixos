@@ -120,9 +120,12 @@ in {
             ]
             ++ targetUnits;
           wants = ["podman-sablier.service"];
-          restartTriggers = [
-            (pkgs.writeText "sablier-suspended-units" (builtins.toJSON targetUnits))
-          ];
+          restartTriggers =
+            [
+              (pkgs.writeText "sablier-suspended-units" (builtins.toJSON targetUnits))
+              configFile
+            ]
+            ++ (map (u: config.systemd.units.${u}.unit) targetUnits);
           path = [
             pkgs.curl
             pkgs.systemd
@@ -131,17 +134,11 @@ in {
             pkgs.gnugrep
           ];
           serviceConfig = {
-            Type = "simple";
-            RemainAfterExit = false;
+            Type = "oneshot";
+            RemainAfterExit = true;
             Restart = "no";
           };
           script = ''
-            # If a rebuild is in progress, wait for switch-to-configuration to completely finish
-            if [ -f /run/nixos/switch-to-configuration.lock ]; then
-              echo "Waiting for nixos-rebuild to finish..."
-              flock -s /run/nixos/switch-to-configuration.lock true || true
-            fi
-
             # Wait for pending systemd jobs to finish
             echo "Waiting for pending systemd jobs..."
             for i in $(seq 1 60); do
@@ -172,18 +169,5 @@ in {
         };
       }
     ];
-
-    system.activationScripts.sablier-suspend = lib.mkIf (targetUnits != []) {
-      supportsDryActivation = true;
-      text = ''
-        if [ "$NIXOS_ACTION" = "dry-activate" ]; then
-          mkdir -p /run/nixos
-          echo "sablier-suspend.service" >> /run/nixos/dry-activation-restart-list
-        else
-          mkdir -p /run/nixos
-          echo "sablier-suspend.service" >> /run/nixos/activation-restart-list
-        fi
-      '';
-    };
   };
 }

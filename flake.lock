@@ -761,11 +761,11 @@
     "noctalia-cloudburst": {
       "flake": false,
       "locked": {
-        "lastModified": 1789416513,
-        "narHash": "sha256-/lo5FRTw6VUbePKC0Kqpz53WsIfArRpnDZA6/kBb1U4=",
+        "lastModified": 1791044074,
+        "narHash": "sha256-e75KkD8rQ9Zt5IwI8b6le8G9zliKSQtGqj9vUzB+WqE=",
         "owner": "C10udburst",
         "repo": "noctalia-v5",
-        "rev": "ccac250a1f19eb6c0a53aac1210b85faa7daf2c7",
+        "rev": "40c501bb156662684677dba06193551e2d6a1b56",
         "type": "github"
       },
       "original": {

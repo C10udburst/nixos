@@ -26,7 +26,6 @@ in {
           "litellm"
         ];
         port = 4000;
-        suspend = "litellm.service";
         cors = true;
       })
       {

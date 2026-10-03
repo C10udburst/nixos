@@ -45,6 +45,12 @@ in {
         oidc = {
           id = "homarr";
           name = "Homarr";
+          scopes = [
+            "openid"
+            "profile"
+            "email"
+            "groups"
+          ];
           redirectUris = [
             "https://home.${baseDomain}/api/auth/callback/oidc"
             "https://home.${baseDomain}/api/auth/callback/custom"
@@ -96,7 +102,7 @@ in {
             "${storage}/homarr/appdata:/appdata"
           ];
           environment = lib.optionalAttrs autheliaEnabled {
-            AUTH_OIDC_ENABLED = "true";
+            AUTH_PROVIDERS = "credentials,oidc";
             AUTH_OIDC_ISSUER = "https://auth.${baseDomain}";
             AUTH_OIDC_CLIENT_ID = "homarr";
             AUTH_OIDC_CLIENT_NAME = "Authelia";
