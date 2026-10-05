@@ -204,12 +204,13 @@ tools = {
     vesktop = true;
     telegram = true;
     signal = true;
+    zapfast = true;
   };
 };
 ```
 - If `gui.apps.tools.enable = false;`, all tools (dolphin, konsole, obs, social, associations) are **`false`**.
 - If `gui.apps.tools.enable = true;`, `dolphin` and `konsole` default to **`true`**, while `obs` and `social.enable` default to **`false`**.
-- If `gui.apps.tools.social.enable = true;`, then `vesktop`, `telegram`, and `signal` default to **`true`**.
+- If `gui.apps.tools.social.enable = true;`, then `vesktop`, `telegram`, `signal`, and `zapfast` default to **`true`**.
 
 #### Example 2: Enabling `compat`
 In `config-full.nix`, `compat` is defined with:

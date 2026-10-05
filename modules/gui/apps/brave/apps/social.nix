@@ -23,6 +23,10 @@ in {
       type = lib.types.bool;
       default = !(config.features.gui.apps.tools.social.telegram or false);
     };
+    whatsapp = lib.mkOption {
+      type = lib.types.bool;
+      default = !(config.features.gui.apps.tools.social.zapfast or false);
+    };
   };
 
   config = lib.mkIf braveEnabled {
@@ -32,17 +36,6 @@ in {
           name = "Messenger";
           url = "https://messenger.com";
           icon = icons.messenger or "";
-          size = "1100,740";
-          categories = [
-            "Network"
-            "InstantMessaging"
-            "Chat"
-          ];
-        })
-        (mkWebApp {
-          name = "WhatsApp Web";
-          url = "https://web.whatsapp.com";
-          icon = icons.whatsapp or "";
           size = "1100,740";
           categories = [
             "Network"
@@ -107,6 +100,19 @@ in {
           name = "Telegram Web";
           url = "https://web.telegram.org/a/";
           icon = icons.telegram or "";
+          size = "1100,740";
+          categories = [
+            "Network"
+            "InstantMessaging"
+            "Chat"
+          ];
+        })
+      ]
+      ++ lib.optionals cfg.whatsapp [
+        (mkWebApp {
+          name = "WhatsApp Web";
+          url = "https://web.whatsapp.com";
+          icon = icons.whatsapp or "";
           size = "1100,740";
           categories = [
             "Network"

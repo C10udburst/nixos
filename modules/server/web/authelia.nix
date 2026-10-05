@@ -141,11 +141,17 @@ in {
             };
             session = {
               name = "authelia_session";
+              expiration = "1w";
+              inactivity = "1w";
+              remember_me = "1M";
               cookies = [
                 {
                   domain = baseDomain;
                   authelia_url = "https://${domain}";
                   default_redirection_url = "https://home.${baseDomain}";
+                  expiration = "1w";
+                  inactivity = "1w";
+                  remember_me = "1M";
                 }
               ];
             };

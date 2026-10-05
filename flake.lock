@@ -1060,7 +1060,29 @@
         "silentsddm": "silentsddm",
         "stylix": "stylix",
         "tailcat": "tailcat",
-        "webicons": "webicons"
+        "webicons": "webicons",
+        "zapfast": "zapfast"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "zapfast",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789977098,
+        "narHash": "sha256-fKY4BedarKx4aR0+UOHk65hhDW8pxFytFkaUi0VYDYk=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "2776e42828203ec89511699c8dcdedec69ab98e1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "scrcpy-app-src": {
@@ -1393,6 +1415,27 @@
       "original": {
         "owner": "C10udburst",
         "repo": "webicons-nix",
+        "type": "github"
+      }
+    },
+    "zapfast": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1791139135,
+        "narHash": "sha256-TX2HxymJ6SxkNVi2E5tke/wgIVy0mlCZBvlExgsX0w0=",
+        "owner": "crmne",
+        "repo": "zapfast",
+        "rev": "63ed17c80ffa3df555f9d65a040eee92afff5644",
+        "type": "github"
+      },
+      "original": {
+        "owner": "crmne",
+        "repo": "zapfast",
         "type": "github"
       }
     }

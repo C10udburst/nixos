@@ -147,5 +147,9 @@
       url = "github:C10udburst/webicons-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    zapfast = {
+      url = "github:crmne/zapfast";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }
