@@ -4,12 +4,10 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   cfg = config.features.gui.apps.tools.social.zapfast;
   socialEnabled = config.features.gui.apps.tools.social.enable;
-in
-{
+in {
   options.features.gui.apps.tools.social.zapfast = lib.mkOption {
     type = lib.types.bool;
     default = socialEnabled && true;

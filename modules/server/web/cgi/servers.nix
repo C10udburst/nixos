@@ -8,7 +8,7 @@
   webCfg = config.features.server.web;
   baseDomain = webCfg.core.baseDomain or "example.com";
 
-  giteaEnabled = webCfg.gitea or false;
+  giteaEnabled = webCfg.gitea.enable or false;
   karakeepEnabled = webCfg.karakeep or false;
 
   pythonWithCgi = pkgs.python3.withPackages (ps: [ps.legacy-cgi]);

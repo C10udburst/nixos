@@ -33,21 +33,37 @@
     cfg.cname
   );
 
+  domainTemplates = viewName:
+    lib.concatStringsSep "\n" (
+      lib.filter (s: s != "") (
+        lib.mapAttrsToList (
+          domain: viewIps: let
+            ips = viewIps.${viewName} or [];
+            extraZones = lib.optionalString (
+              domain == baseDomain
+            ) " ${config.networking.hostName}${lib.optionalString i2pEnabled " i2p"}";
+          in
+            lib.optionalString (ips != []) ''
+              template IN A ${domain}${extraZones} {
+                  match .*
+              ${lib.concatMapStrings (ip: "    answer \"{{ .Name }} 60 IN A ${ip}\"\n") ips}}
+            ''
+        )
+        cfg.domains
+      )
+    );
+
   # Shared template block generator for CoreDNS views
   mkView = {
     name,
     expr,
-    ips,
   }: ''
     .:53 {
         view ${name} {
             expr ${expr}
         }
         ${cnameTemplates}
-        template IN A ${baseDomain} ${config.networking.hostName}${lib.optionalString i2pEnabled " i2p"} {
-            match .*
-            ${lib.concatMapStrings (ip: "answer \"{{ .Name }} 60 IN A ${ip}\"\n") ips}
-        }
+        ${domainTemplates name}
         template IN A myip.local {
             answer "{{ .Name }} 0 IN A {{ .Remote }}"
         }
@@ -63,16 +79,34 @@ in {
       type = lib.types.bool;
       default = piholeCfg.enable;
     };
-    tailscaleIp = lib.mkOption {
-      type = lib.types.coercedTo lib.types.str lib.singleton (lib.types.listOf lib.types.str);
-      default = ["100.96.233.27"];
-    };
-    localIp = lib.mkOption {
-      type = lib.types.coercedTo lib.types.str lib.singleton (lib.types.listOf lib.types.str);
-      default = [
-        "192.168.1.10"
-        "192.168.1.11"
-      ];
+    domains = lib.mkOption {
+      type = lib.types.attrsOf (
+        lib.types.submodule {
+          options = {
+            local = lib.mkOption {
+              type = lib.types.coercedTo lib.types.str lib.singleton (lib.types.listOf lib.types.str);
+              default = [];
+            };
+            tailscale = lib.mkOption {
+              type = lib.types.coercedTo lib.types.str lib.singleton (lib.types.listOf lib.types.str);
+              default = [];
+            };
+          };
+        }
+      );
+      default = {
+        "${baseDomain}" = {
+          local = [
+            "192.168.1.10"
+            "192.168.1.11"
+          ];
+          tailscale = ["100.96.233.27"];
+        };
+        "llm.wilkins.pl.eu.org" = {
+          local = [];
+          tailscale = ["100.126.72.97"];
+        };
+      };
     };
     cname = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
@@ -84,7 +118,9 @@ in {
         // withLocalSuffixes config.networking.hostName baseDomain
         // withLocalSuffixes "go" "go.${baseDomain}"
         // withLocalSuffixes "homeassistant" "hass.${baseDomain}"
-        // withLocalSuffixes "i2prouter" "i2p.${baseDomain}";
+        // withLocalSuffixes "i2prouter" "i2p.${baseDomain}"
+        // withLocalSuffixes "llm" "llm.wilkins.pl.eu.org"
+        // withLocalSuffixes "llm-x2" "llm.wilkins.pl.eu.org";
     };
   };
 
@@ -98,12 +134,10 @@ in {
         (mkView {
           name = "tailscale";
           expr = "incidr(client_ip(), '100.64.0.0/10')";
-          ips = cfg.tailscaleIp;
         })
         (mkView {
           name = "local";
           expr = "true";
-          ips = cfg.localIp;
         })
       ];
     };
