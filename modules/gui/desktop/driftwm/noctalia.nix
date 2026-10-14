@@ -33,7 +33,7 @@
     udiskie = "aristides/udiskie";
   };
 
-  batteryPluginNames = lib.optionals (mobile && cfg.plugins.mobile) ["battery-threshold"];
+  batteryPluginNames = lib.optionals cfg.plugins.batteryThreshold ["battery-threshold"];
   dockerPluginNames = lib.optionals (hasDocker && !slow && cfg.plugins.containers) ["mini-docker"];
   tailscalePluginNames = lib.optionals (hasTailscale && cfg.plugins.connectivity) ["tailscale"];
   nixIndexPluginNames = lib.optionals hasNixIndex ["cloudburst-nix"];
@@ -87,6 +87,10 @@ in {
       mobile = lib.mkOption {
         type = lib.types.bool;
         default = mobile;
+      };
+      batteryThreshold = lib.mkOption {
+        type = lib.types.bool;
+        default = mobile && cfg.plugins.mobile;
       };
       connectivity = lib.mkOption {
         type = lib.types.bool;
@@ -473,16 +477,15 @@ in {
                         ++ lib.optionals (hasDocker && !slow) ["mini-docker"];
                     }
                   ]
-                  ++ lib.optionals mobile [
+                  ++ lib.optionals (mobile || cfg.plugins.batteryThreshold) [
                     {
                       id = "battery_group";
                       accordion = true;
                       accordion_direction = "end";
                       enabled = true;
-                      members = [
-                        "battery"
-                        "battery-threshold"
-                      ];
+                      members =
+                        (lib.optionals mobile ["battery"])
+                        ++ (lib.optionals cfg.plugins.batteryThreshold ["battery-threshold"]);
                     }
                   ];
               };
@@ -567,6 +570,8 @@ in {
               }
               // lib.optionalAttrs mobile {
                 battery.display_mode = "graphic";
+              }
+              // lib.optionalAttrs cfg.plugins.batteryThreshold {
                 battery-threshold.type = "${battery-threshold}:battery-threshold";
               }
               // lib.optionalAttrs hasDocker {
@@ -588,6 +593,16 @@ in {
           };
         };
       };
+    })
+    (lib.mkIf (cfg.enable && cfg.plugins.batteryThreshold) {
+      users.groups.battery_ctl = {};
+      users.users.cloudburst.extraGroups = ["battery_ctl"];
+
+      services.udev.extraRules = ''
+        SUBSYSTEM=="power_supply", KERNEL=="BAT*", TEST=="charge_control_end_threshold", \
+          RUN+="${pkgs.coreutils}/bin/chgrp battery_ctl /sys$devpath/charge_control_end_threshold", \
+          RUN+="${pkgs.coreutils}/bin/chmod g+w /sys$devpath/charge_control_end_threshold"
+      '';
     })
   ];
 }

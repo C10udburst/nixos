@@ -3,35 +3,9 @@
   pkgs,
   lib,
   inputs,
+  pkgsUnstable,
   ...
-}: let
-  isw = pkgs.stdenv.mkDerivation {
-    pname = "isw";
-    version = "latest";
-
-    src = inputs.isw;
-
-    nativeBuildInputs = [pkgs.makeWrapper];
-    buildInputs = [pkgs.python3];
-
-    installPhase = ''
-      runHook preInstall
-      install -Dm755 isw $out/bin/isw
-      patchShebangs $out/bin/isw
-      wrapProgram $out/bin/isw \
-        --prefix PATH : ${lib.makeBinPath [pkgs.coreutils]}
-      install -Dm644 etc/isw.conf $out/etc/isw.conf
-      install -Dm644 usr/lib/systemd/system/isw@.service $out/lib/systemd/system/isw@.service
-      runHook postInstall
-    '';
-
-    postFixup = ''
-      substituteInPlace $out/lib/systemd/system/isw@.service \
-        --replace "/usr/bin/isw" "$out/bin/isw" \
-        --replace "/usr/bin/sleep" "${pkgs.coreutils}/bin/sleep"
-    '';
-  };
-in {
+}: {
   imports = [
     inputs.nixos-hardware.nixosModules.msi-gl65-10SDR-492
     ./hardware-configuration.nix
@@ -39,24 +13,15 @@ in {
     ./features.nix
   ];
 
-  # Load ec_sys kernel module with write support for MSI fan control (isw)
-  # and msi-ec out-of-tree kernel module for MSI Embedded Controller support
-  boot.extraModulePackages = [config.boot.kernelPackages.msi-ec];
+  # msi-ec out-of-tree kernel module for MSI Embedded Controller support
+  boot.extraModulePackages = [
+    (pkgsUnstable.linuxKernel.packagesFor config.boot.kernelPackages.kernel).msi-ec
+  ];
   boot.kernelModules = [
-    "ec_sys"
     "msi-ec"
   ];
-  boot.kernelParams = ["ec_sys.write_support=1"];
 
   networking.hostName = "cloudburst-laptop";
-
-  environment.systemPackages = [
-    isw
-  ];
-
-  environment.etc."isw.conf".source = "${isw}/etc/isw.conf";
-
-  systemd.packages = [isw];
 
   system.stateVersion = "26.05";
 }

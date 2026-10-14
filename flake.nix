@@ -31,15 +31,15 @@
       url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";
       flake = false;
     };
+    glmocr-src = {
+      url = "github:zai-org/GLM-OCR";
+      flake = false;
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     import-tree.url = "github:denful/import-tree";
-    isw = {
-      url = "github:YoyPa/isw";
-      flake = false;
-    };
     jetbra-netfilter = {
       url = "https://ipfs.filebase.io/ipns/3.jetbra.in/files/jetbra-8f6785eac5e6e7e8b20e6174dd28bb19d8da7550.zip";
       flake = false;
@@ -100,9 +100,13 @@
       flake = false;
     };
     organizeer.url = "git+ssh://git@github.com/C10udburst/Organizeer.git";
-    pi-agent = {
+    pi = {
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    pi-ponytail = {
+      url = "github:DietrichGebert/ponytail";
+      flake = false;
     };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";

@@ -56,10 +56,35 @@ in {
           wants = ["network-online.target"];
           serviceConfig = {
             Type = "oneshot";
+            RemainAfterExit = true;
             User = "litellm";
             Group = "litellm";
             WorkingDirectory = "${storage}/litellm";
             ExecStart = "${pythonWithDeps}/bin/python3 ${./_config.py} ${config.age.secrets.litellm.path} ${storage}/litellm/config.yaml";
+          };
+        };
+
+        # Path units can only start units, so bounce the generator through a
+        # throwaway oneshot: restart forces the oneshot to re-run and restarts
+        # the proxy so it picks up the regenerated model_list.
+        systemd.services.litellm-refresh = {
+          description = "Regenerate LiteLLM configuration and reload the proxy";
+          after = [
+            "litellm.service"
+            "litellm-config.service"
+          ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.systemd}/bin/systemctl restart litellm-config.service litellm.service";
+          };
+        };
+
+        systemd.paths.litellm-config = {
+          description = "Watch LiteLLM secrets for changes";
+          wantedBy = ["multi-user.target"];
+          pathConfig = {
+            PathChanged = [config.age.secrets.litellm.path];
+            Unit = "litellm-refresh.service";
           };
         };
 

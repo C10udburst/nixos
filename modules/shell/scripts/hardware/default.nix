@@ -37,31 +37,21 @@ in {
     default = config.features.shell.scripts.enable && true;
   };
 
-  config = lib.mkMerge [
-    {
-      flake-file.inputs = {
-        isw = {
-          url = "github:YoyPa/isw";
-          flake = false;
-        };
-      };
-    }
-    (lib.mkIf cfg {
-      environment.systemPackages =
-        [
-          serial
-          extract
-          www
-        ]
-        ++ lib.optionals isGui [
-          rofi
-        ]
-        ++ lib.optionals (isGui && (config.features.core.hardware.touchscreen or false)) [
-          auto-rotate
-        ]
-        ++ lib.optionals (isGui && (config.features.services.weylus or false)) [
-          weylus-screen
-        ];
-    })
-  ];
+  config = lib.mkIf cfg {
+    environment.systemPackages =
+      [
+        serial
+        extract
+        www
+      ]
+      ++ lib.optionals isGui [
+        rofi
+      ]
+      ++ lib.optionals (isGui && (config.features.core.hardware.touchscreen or false)) [
+        auto-rotate
+      ]
+      ++ lib.optionals (isGui && (config.features.services.weylus or false)) [
+        weylus-screen
+      ];
+  };
 }

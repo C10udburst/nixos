@@ -68,7 +68,9 @@
             answer "{{ .Name }} 0 IN A {{ .Remote }}"
         }
         rewrite edns0 subnet set 32 128
-        forward . 127.0.0.1:5354
+        forward . 127.0.0.1:5354 {
+            max_fails 0
+        }
         cache 30
         errors
     }
@@ -104,7 +106,7 @@ in {
         };
         "llm.wilkins.pl.eu.org" = {
           local = [];
-          tailscale = ["100.126.72.97"];
+          tailscale = ["100.121.147.100"];
         };
       };
     };
@@ -120,7 +122,8 @@ in {
         // withLocalSuffixes "homeassistant" "hass.${baseDomain}"
         // withLocalSuffixes "i2prouter" "i2p.${baseDomain}"
         // withLocalSuffixes "llm" "llm.wilkins.pl.eu.org"
-        // withLocalSuffixes "llm-x2" "llm.wilkins.pl.eu.org";
+        // withLocalSuffixes "llm-x2" "llm.wilkins.pl.eu.org"
+        // withLocalSuffixes "evo-x2" "llm.wilkins.pl.eu.org";
     };
   };
 

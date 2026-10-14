@@ -112,11 +112,11 @@
     "bun2nix": {
       "inputs": {
         "flake-parts": [
-          "pi-agent",
+          "pi",
           "flake-parts"
         ],
         "nixpkgs": [
-          "pi-agent",
+          "pi",
           "nixpkgs"
         ],
         "systems": "systems_4",
@@ -140,15 +140,15 @@
     "bun2nix-x86_64-darwin": {
       "inputs": {
         "flake-parts": [
-          "pi-agent",
+          "pi",
           "flake-parts"
         ],
         "nixpkgs": [
-          "pi-agent",
+          "pi",
           "nixpkgs-x86_64-darwin"
         ],
         "systems": [
-          "pi-agent",
+          "pi",
           "bun2nix",
           "systems"
         ],
@@ -415,6 +415,22 @@
         "url": "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage"
       }
     },
+    "glmocr-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776761530,
+        "narHash": "sha256-8kqcvencDZ/TVkjLbLjd3JPuOZrI3K6jLiBw9GWCHW0=",
+        "owner": "zai-org",
+        "repo": "GLM-OCR",
+        "rev": "cef4d0ea120d1741f5cefe8985eee45f6c8eff1d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zai-org",
+        "repo": "GLM-OCR",
+        "type": "github"
+      }
+    },
     "gnome-shell": {
       "flake": false,
       "locked": {
@@ -465,22 +481,6 @@
       "original": {
         "owner": "denful",
         "repo": "import-tree",
-        "type": "github"
-      }
-    },
-    "isw": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1582745508,
-        "narHash": "sha256-HN3egLX08CC9SLxldpCj5KHSiyV1F3HeR5NXk68NXY0=",
-        "owner": "YoyPa",
-        "repo": "isw",
-        "rev": "7c88670504ecd4462b1825a55bdb0be2944dfe94",
-        "type": "github"
-      },
-      "original": {
-        "owner": "YoyPa",
-        "repo": "isw",
         "type": "github"
       }
     },
@@ -920,7 +920,7 @@
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       }
     },
-    "pi-agent": {
+    "pi": {
       "inputs": {
         "bun2nix": "bun2nix",
         "bun2nix-x86_64-darwin": "bun2nix-x86_64-darwin",
@@ -932,16 +932,32 @@
         "nixpkgs-x86_64-darwin": "nixpkgs-x86_64-darwin"
       },
       "locked": {
-        "lastModified": 1791458664,
-        "narHash": "sha256-+G5kYoy/xb2pdX9rBOetC2eKp42cvfbppYdFZP9Lesg=",
+        "lastModified": 1791806371,
+        "narHash": "sha256-e9CjUJFD54x4sIau8yQ54gUhxER8yP7VjI2DN5bhTrQ=",
         "owner": "lukasl-dev",
         "repo": "pi.nix",
-        "rev": "d37155f96c30d4727ed37f9563359a9a50d530db",
+        "rev": "5cb34abc1ba8a7145f68a9ee456fa7225e935d09",
         "type": "github"
       },
       "original": {
         "owner": "lukasl-dev",
         "repo": "pi.nix",
+        "type": "github"
+      }
+    },
+    "pi-ponytail": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791605992,
+        "narHash": "sha256-S2gHV4/c8XPDqpf0jS8Q5r22//6skZjITf2T9CVhVRE=",
+        "owner": "DietrichGebert",
+        "repo": "ponytail",
+        "rev": "9b58c1ffb790c075ca32e70a89cf1d80588f4abf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DietrichGebert",
+        "repo": "ponytail",
         "type": "github"
       }
     },
@@ -1029,9 +1045,9 @@
         "fetlife-browser": "fetlife-browser",
         "flake-file": "flake-file",
         "gitr": "gitr",
+        "glmocr-src": "glmocr-src",
         "home-manager": "home-manager",
         "import-tree": "import-tree",
-        "isw": "isw",
         "jetbra-netfilter": "jetbra-netfilter",
         "kimsay": "kimsay",
         "manyfold-printables": "manyfold-printables",
@@ -1050,7 +1066,8 @@
         "openscad-obiscad": "openscad-obiscad",
         "openscad-round-anything": "openscad-round-anything",
         "organizeer": "organizeer",
-        "pi-agent": "pi-agent",
+        "pi": "pi",
+        "pi-ponytail": "pi-ponytail",
         "plasma-manager": "plasma-manager",
         "ranger-archives": "ranger-archives",
         "ranger-devicons": "ranger-devicons",
@@ -1357,7 +1374,7 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
-          "pi-agent",
+          "pi",
           "bun2nix",
           "nixpkgs"
         ]
@@ -1379,7 +1396,7 @@
     "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
-          "pi-agent",
+          "pi",
           "bun2nix-x86_64-darwin",
           "nixpkgs"
         ]

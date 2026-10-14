@@ -62,6 +62,7 @@ in {
           "https://hyprland.cachix.org"
           "https://numtide.cachix.org"
           "https://noctalia.cachix.org"
+          "https://pi.cachix.org"
         ];
         extra-trusted-public-keys = [
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
@@ -69,6 +70,7 @@ in {
           "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
           "numtide.cachix.org-1:psk1bDfU1UhVfiVNyPCxyhR+FtmpNkamWT0DwIK+jic="
           "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+          "pi.cachix.org-1:lGeoGJaZ5ZDabuRzkcD5EBTNnDM4HJ1vqeOxlWk1Flk="
         ];
         auto-optimise-store = cfg.autoOptimise;
         warn-dirty = false;

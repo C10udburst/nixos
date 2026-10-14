@@ -15,10 +15,13 @@ _: {
         enable = true;
         paths = ["/opt/dane"];
       };
-      web.enable = true;
+      web = {
+        enable = true;
+        googleAiProxy = true;
+      };
     };
     services = {
-      rclone.enable = true;
+      rclone.enable = false;
       tailscale.exitNode = true;
       waypipe = false;
     };

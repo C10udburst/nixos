@@ -65,6 +65,7 @@
     aliases ? [],
     port ? null,
     socket ? null,
+    upstream ? null,
     suspend ? null,
     cors ? false,
     protect ? [],
@@ -72,12 +73,14 @@
     extraConfig ? "",
   }: let
     domain = "${name}.${baseDomain}";
-    upstream =
-      if socket != null
+    upstreamTarget =
+      if upstream != null
+      then upstream
+      else if socket != null
       then "unix/${socket}"
       else if port != null
       then "127.0.0.1:${toString port}"
-      else throw "mkWebApp requires either port or socket for ${name}";
+      else throw "mkWebApp requires either port, socket or upstream for ${name}";
 
     suspendList =
       if suspend == null
@@ -173,6 +176,15 @@
         header -X-Frame-Options
         header ?Content-Security-Policy "frame-ancestors ${allowedAncestors}"
 
+        # Defaults only: upstream-provided CORS headers are preserved (wildcards
+        # are invalid together with Access-Control-Allow-Credentials).
+        ${lib.optionalString cors ''
+          header ?Access-Control-Allow-Origin "*"
+          header ?Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+          header ?Access-Control-Allow-Headers "*"
+          header ?Access-Control-Expose-Headers "*"
+        ''}
+
         ${sablierPoke}
 
         handle_errors {
@@ -194,20 +206,10 @@
         handle {
           ${autheliaForwardAuth}
           ${extraConfig}
-          reverse_proxy ${upstream} {
+          reverse_proxy ${upstreamTarget} {
             header_down -X-Frame-Options
             header_down Content-Security-Policy "frame-ancestors 'none'" "frame-ancestors 'self'"
             header_down Content-Security-Policy "frame-ancestors ([^;]+)" "frame-ancestors $1 ${homeAncestors}"
-            ${lib.optionalString cors ''
-          header_down -Access-Control-Allow-Origin
-          header_down Access-Control-Allow-Origin *
-          header_down -Access-Control-Allow-Methods
-          header_down Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
-          header_down -Access-Control-Allow-Headers
-          header_down Access-Control-Allow-Headers *
-          header_down -Access-Control-Expose-Headers
-          header_down Access-Control-Expose-Headers *
-        ''}
             @err status 5xx
             handle_response @err {
               log_name error_${safeName}

@@ -35,18 +35,17 @@ in {
     upstreams = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [
+        # cloudflare
+        "1.1.1.1"
+        "1.0.0.1"
         # dns.watch
-        "84.200.69.80"
-        "2001:1608:10:25:0:0:9249:d69b"
+        "84.200.70.40"
         # OpenNIC
         "185.226.181.19"
         "195.10.195.195"
-        "2a00:f826:8:2::195"
         # DNS.SB
         "185.222.222.222"
         "45.11.45.11"
-        "2a09::"
-        "2a11::"
       ];
     };
     dnsServers = lib.mkOption {
