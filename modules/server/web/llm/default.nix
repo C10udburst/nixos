@@ -54,13 +54,14 @@ in {
           before = ["litellm.service"];
           after = ["network-online.target"];
           wants = ["network-online.target"];
+          restartTriggers = [./_config];
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
             User = "litellm";
             Group = "litellm";
             WorkingDirectory = "${storage}/litellm";
-            ExecStart = "${pythonWithDeps}/bin/python3 ${./_config.py} ${config.age.secrets.litellm.path} ${storage}/litellm/config.yaml";
+            ExecStart = "${pythonWithDeps}/bin/python3 ${./_config}/main.py ${config.age.secrets.litellm.path} ${storage}/litellm/config.yaml";
           };
         };
 
@@ -99,6 +100,7 @@ in {
             "network-online.target"
             "litellm-config.service"
           ];
+          restartTriggers = [./_config];
           serviceConfig = {
             User = "litellm";
             Group = "litellm";

@@ -17,6 +17,24 @@
           "maxTokens": 32768
         },
         {
+          "id": "qwen3.8-flash-next-uncensored",
+          "name": "Qwen 3.8 Flash Next Uncensored Q4 Mix with MTP speculative decoding & vision",
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        },
+        {
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3-Flash EXL3 (320B total, 18B active) with MTP speculative decoding & vision",
+          "contextWindow": 524288,
+          "maxTokens": 32768
+        },
+        {
+          "id": "glm-5.3-flash-uncensored",
+          "name": "GLM-5.3-Flash EXL3 Uncensored (320B, runtime refusal-direction ablit hook)",
+          "contextWindow": 524288,
+          "maxTokens": 32768
+        },
+        {
           "id": "deepseek-r1-distill-qwen-32b",
           "name": "DeepSeek R1 Distill Qwen 32B (Q8_0)",
           "reasoning": true,

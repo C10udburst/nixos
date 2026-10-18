@@ -260,7 +260,10 @@ Modules coordinate this via conditional defaults referencing the parent node's e
 ### Automatic Module Discovery (`import-tree`)
 - The root flake evaluates `(inputs.import-tree ./modules)`.
 - Every `.nix` file inside `modules/` is imported automatically.
-- **Convention**: Any auxiliary file, template, or helper that is NOT a NixOS module MUST have its filename or enclosing folder prefixed with an underscore `_` (e.g. `_templates/`, `_helpers.nix`) to prevent `import-tree` from evaluating it as a module.
+- The filter (see `lib/import-tree.nix`) is literally `andNot (hasInfix "/_") (hasSuffix ".nix")`, matched against the path relative to the imported root: **only** `.nix` files are ever imported, and **any** path component starting with `_` prunes the whole subtree.
+- **Convention**: Auxiliary content that is NOT a NixOS module (templates, scripts, Python packages, assets) sits under an `_`-prefixed file or folder. Prefixing the folder is enough: files inside it, and any folder below it, may be **normally named** (`_config/main.py`, `_config/gateways/groq.py`). Use a `_`-prefixed *file* for single stray helpers (`_helpers.nix`, `_wallpaper.glsl`).
+- Trap: a `.nix` file inside a `_`-prefixed folder is silently **not** imported. Keep such folders free of NixOS modules.
+- An `_`-prefixed folder may be referenced as a store path: `${./_config}/main.py` copies the whole tree (required when a script imports its sibling modules), while `${./_config/main.py}` copies that single file only and breaks sibling imports.
 
 ### Regenerating `flake.nix` (`flake-file`)
 Never manually edit the inputs in `flake.nix`. When adding or changing a flake input:

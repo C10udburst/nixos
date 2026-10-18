@@ -28,6 +28,13 @@ in {
       type = lib.types.nullOr lib.types.str;
       default = "https://google-ai-proxy.brix0.wilkins.pl.eu.org";
     };
+
+    # Base URL of a LiteLLM gateway (e.g. https://llm.<baseDomain>).
+    # null leaves the litellm extension out of the agent entirely.
+    litellmProxy = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://llm.brix0.wilkins.pl.eu.org";
+    };
   };
 
   config = lib.mkMerge [
@@ -57,6 +64,9 @@ in {
           lib.optionals (cfg.googleProxy != null) [
             ./_google-search.ts
           ]
+          ++ lib.optionals (cfg.litellmProxy != null) [
+            ./_litellm.ts
+          ]
           ++ lib.optionals (inputs ? pi-ponytail) [
             "${inputs.pi-ponytail}/pi-extension/index.js"
           ];
@@ -80,6 +90,11 @@ in {
     # so no token is configured here.
     (lib.mkIf (cfg.enable && cfg.googleProxy != null) {
       programs.pi.coding-agent.environment.GOOGLE_SEARCH_API_BASE.value = cfg.googleProxy;
+    })
+
+    # LiteLLM gateway URL
+    (lib.mkIf (cfg.enable && cfg.litellmProxy != null) {
+      programs.pi.coding-agent.environment.LITELLM_API_BASE.value = cfg.litellmProxy;
     })
   ];
 }

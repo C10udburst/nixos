@@ -7,3 +7,4 @@ features-full.nix
 secret.key
 public.key
 *.key
+__pycache__/

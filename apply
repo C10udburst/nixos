@@ -95,7 +95,7 @@ for TARGET in "${TARGETS[@]}"; do
   if [[ "$HOST" == "$LOCAL_HOST" && "$DEST" == "$LOCAL_HOST" ]]; then
     echo "$PASSWORD" | sudo -S -v &>/dev/null
 
-    if ! echo "$PASSWORD" | sudo -S nixos-rebuild "$ACTION" --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
+    if ! echo "$PASSWORD" | sudo --preserve-env=SSH_AUTH_SOCK -S nixos-rebuild "$ACTION" --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
       echo -e "\n❌ Local rebuild failed on $HOST!"
       grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
       exit 1

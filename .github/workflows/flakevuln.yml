@@ -115,8 +115,8 @@ jobs:
         with:
           name: flakevuln-report
           path: .flakevuln/*
-      - name: Upload SARIF artifact
-        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
-        with:
-          sarif_file: .flakevuln/findings.sarif
-          category: vulnxscan
+      # - name: Upload SARIF artifact
+      #   uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+      #   with:
+      #     sarif_file: .flakevuln/findings.sarif
+      #     category: vulnxscan

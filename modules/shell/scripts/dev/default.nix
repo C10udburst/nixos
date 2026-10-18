@@ -7,6 +7,11 @@
 }: let
   cfg = config.features.shell.scripts.dev;
   gh-origin-mod = pkgs.writeShellScriptBin "gh-origin-mod" (builtins.readFile ./_gh-origin-mod.sh);
+  nix-index-update = pkgs.writeShellApplication {
+    name = "nix-index-update";
+    runtimeInputs = [pkgs.curl pkgs.jq];
+    text = builtins.readFile ./_nix-index-update.sh;
+  };
   nix-py = pkgs.writeShellScriptBin "nix-py" (builtins.readFile ./_nix-py.sh);
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ./_nx.sh);
   sarif-md = pkgs.writers.writePython3Bin "sarif-md" {} (builtins.readFile ./_sarif-md.py);
@@ -29,6 +34,7 @@ in {
     (lib.mkIf cfg {
       environment.systemPackages = [
         gh-origin-mod
+        nix-index-update
         nix-py
         nx
         sarif-md

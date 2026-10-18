@@ -10,6 +10,7 @@
 
   giteaEnabled = webCfg.gitea.enable or false;
   karakeepEnabled = webCfg.karakeep or false;
+  metubeEnabled = webCfg.metube or false;
 
   pythonWithCgi = pkgs.python3.withPackages (ps: [ps.legacy-cgi]);
 in {
@@ -43,6 +44,14 @@ in {
             set +a
           fi
           exec ${pythonWithCgi}/bin/python3 ${./_scripts/git_mirror.py} "$@"
+        '';
+      })
+      (lib.mkIf metubeEnabled {
+        metube_add.script = pkgs.writeShellScript "metube_add" ''
+          export METUBE_WAKE_URL="https://ytdlp.${baseDomain}"
+          export METUBE_BASE="http://127.0.0.1:8081"
+          export METUBE_REDIRECT_AFTER="https://ytdlp.${baseDomain}/"
+          exec ${pkgs.python3}/bin/python3 ${./_scripts/metube_add.py} "$@"
         '';
       })
       (lib.mkIf karakeepEnabled {

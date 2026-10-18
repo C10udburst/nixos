@@ -271,6 +271,7 @@ in {
 
             dock = {
               auto_hide = false;
+              reserve_space = false;
               cross_axis_padding = 4;
               main_axis_padding = 4;
               item_spacing = 4;
@@ -513,7 +514,8 @@ in {
               "${screen-toolkit}" = {
                 panel_placement = "attached";
                 result_placement = "attached";
-                selected-ocr-lang = "eng+pl";
+                selected-ocr-lang = "eng+pl"; # Dont use cammelCase here
+                videoPath = config.xdg.userDirs.videos;
               };
               "${udiskie}" = {
                 manager_open_near_click = true;

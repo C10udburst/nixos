@@ -71,6 +71,8 @@
     protect ? [],
     oidc ? null,
     extraConfig ? "",
+    extraProxyConfig ? "",
+    extraErrorsConfig ? "",
   }: let
     domain = "${name}.${baseDomain}";
     upstreamTarget =
@@ -190,6 +192,7 @@
         handle_errors {
           log_name error_${safeName}
           ${sablierHandler}
+          ${extraErrorsConfig}
         }
 
         ${lib.optionalString cors ''
@@ -207,6 +210,7 @@
           ${autheliaForwardAuth}
           ${extraConfig}
           reverse_proxy ${upstreamTarget} {
+            ${extraProxyConfig}
             header_down -X-Frame-Options
             header_down Content-Security-Policy "frame-ancestors 'none'" "frame-ancestors 'self'"
             header_down Content-Security-Policy "frame-ancestors ([^;]+)" "frame-ancestors $1 ${homeAncestors}"

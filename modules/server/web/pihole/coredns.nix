@@ -108,6 +108,10 @@ in {
           local = [];
           tailscale = ["100.121.147.100"];
         };
+        "bastion.wilkins.pl.eu.org" = {
+          local = ["100.101.145.40"];
+          tailscale = ["100.101.145.40"];
+        };
       };
     };
     cname = lib.mkOption {
@@ -123,7 +127,8 @@ in {
         // withLocalSuffixes "i2prouter" "i2p.${baseDomain}"
         // withLocalSuffixes "llm" "llm.wilkins.pl.eu.org"
         // withLocalSuffixes "llm-x2" "llm.wilkins.pl.eu.org"
-        // withLocalSuffixes "evo-x2" "llm.wilkins.pl.eu.org";
+        // withLocalSuffixes "evo-x2" "llm.wilkins.pl.eu.org"
+        // withLocalSuffixes "bastion" "bastion.wilkins.pl.eu.org";
     };
   };
 

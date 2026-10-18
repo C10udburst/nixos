@@ -8,14 +8,16 @@
   webCfg = config.features.server.web;
   baseDomain = config.features.server.web.core.baseDomain or "example.com";
   storage = webCfg.storage;
-  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+  webHelper = import ../_webService.nix {inherit config lib pkgs;};
 in {
-  options.features.server.web.gitea = lib.mkOption {
-    type = lib.types.bool;
-    default = webCfg.enable && true;
+  options.features.server.web.gitea = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = webCfg.enable && true;
+    };
   };
 
-  config = lib.mkIf cfg (
+  config = lib.mkIf cfg.enable (
     lib.mkMerge [
       (webHelper.mkWebApp {
         name = "git";
@@ -40,6 +42,7 @@ in {
       {
         systemd.tmpfiles.rules = [
           "d ${storage}/gitea 2750 gitea web - -"
+          "z ${storage}/gitea 2750 gitea web - -"
         ];
 
         services.gitea = {
@@ -54,6 +57,9 @@ in {
             };
             service = {
               DISABLE_REGISTRATION = false;
+            };
+            security = {
+              RUN_AS_ROOT = true;
             };
           };
         };
