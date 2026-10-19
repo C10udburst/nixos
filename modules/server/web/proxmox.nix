@@ -15,11 +15,11 @@ in {
     };
     bastionHost = lib.mkOption {
       type = lib.types.str;
-      default = "100.101.145.40";
+      default = "nixos-lxc";
     };
     bastionUser = lib.mkOption {
       type = lib.types.str;
-      default = "tomasz";
+      default = "cloudburst";
     };
     targetHost = lib.mkOption {
       type = lib.types.str;

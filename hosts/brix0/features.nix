@@ -22,7 +22,10 @@ _: {
     };
     services = {
       rclone.enable = false;
-      tailscale.exitNode = true;
+      tailscale = {
+        exitNode = true;
+        interface = "enp0s31f6";
+      };
       waypipe = false;
     };
     compat.podman.enable = true;

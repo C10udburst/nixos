@@ -29,7 +29,10 @@ in {
     };
     ghcr = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default =
+        if isSlow
+        then false
+        else true;
     };
   };
 
@@ -76,13 +79,14 @@ in {
         warn-dirty = false;
       };
 
-      age.secrets.github-token = {
+      # Hosts must appear as recipients in secrets.nix, otherwise agenix fails activation
+      age.secrets.github-token = lib.mkIf config.features.core.secrets.enable {
         file = ../../secrets/github-token.age;
         mode = "0440";
         group = "wheel";
       };
 
-      nix.extraOptions = ''
+      nix.extraOptions = lib.mkIf config.features.core.secrets.enable ''
         !include ${config.age.secrets.github-token.path}
       '';
 

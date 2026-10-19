@@ -109,8 +109,12 @@ in {
           tailscale = ["100.121.147.100"];
         };
         "bastion.wilkins.pl.eu.org" = {
-          local = ["100.101.145.40"];
+          local = [];
           tailscale = ["100.101.145.40"];
+        };
+        "home.praworzadnyzly.pl" = {
+          local = [];
+          tailscale = ["100.80.36.58"];
         };
       };
     };
@@ -128,7 +132,8 @@ in {
         // withLocalSuffixes "llm" "llm.wilkins.pl.eu.org"
         // withLocalSuffixes "llm-x2" "llm.wilkins.pl.eu.org"
         // withLocalSuffixes "evo-x2" "llm.wilkins.pl.eu.org"
-        // withLocalSuffixes "bastion" "bastion.wilkins.pl.eu.org";
+        // withLocalSuffixes "bastion" "bastion.wilkins.pl.eu.org"
+        // withLocalSuffixes "nixos-lxc" "home.praworzadnyzly.pl";
     };
   };
 
