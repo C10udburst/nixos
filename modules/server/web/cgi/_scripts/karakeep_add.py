@@ -48,6 +48,9 @@ def main():
     url = (form.getfirst("url") or "").strip()
     token = (form.getfirst("token") or "").strip()
 
+    if not url.startswith("http"):
+        url = "http://" + url  # allow users to omit scheme
+
     for _ in range(30):
         try:
             req = urllib.request.urlopen(KARAKEEP_WAKE_URL, timeout=5)
