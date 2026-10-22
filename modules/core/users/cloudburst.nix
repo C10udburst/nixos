@@ -68,19 +68,6 @@ in {
 
       xdg.configFile."fontconfig/conf.d/10-hm-fonts.conf".force = lib.mkIf isGui true;
 
-      # Localized XDG user dirs; declared so modules can resolve them at eval time
-      xdg.userDirs = {
-        desktop = "${config.users.users.cloudburst.home}/Pulpit";
-        download = "${config.users.users.cloudburst.home}/Pobrane";
-        templates = "${config.users.users.cloudburst.home}/Szablony";
-        publicShare = "${config.users.users.cloudburst.home}/Publiczny";
-        documents = "${config.users.users.cloudburst.home}/Dokumenty";
-        music = "${config.users.users.cloudburst.home}/Muzyka";
-        pictures = "${config.users.users.cloudburst.home}/Obrazy";
-        videos = "${config.users.users.cloudburst.home}/Wideo";
-        projects = "${config.users.users.cloudburst.home}/Projekty";
-      };
-
       gtk = lib.mkIf isGui {
         enable = true;
         gtk2.force = true;

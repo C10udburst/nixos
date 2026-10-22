@@ -1,10 +1,11 @@
 {
   "docker.io/jms1717/8mblocal:latest": "docker.io/jms1717/8mblocal@sha256:a034dbaa79610461b15e3acc14f02b5cfc51d27bf3af5a245db21d5742090d04",
-  "ghcr.io/alexta69/metube:latest": "ghcr.io/alexta69/metube@sha256:df929ef2453fd75c1f1cbd8dafb309ee03ff18d8705c7c1e01642b1202d4a650",
+  "ghcr.io/alexta69/metube:latest": "ghcr.io/alexta69/metube@sha256:392208fd46aba4479815aaeb71240a02e75fd3e06a8bcec32af78dfd666c7d2a",
   "ghcr.io/highkay/googleaisearch2api:latest": "ghcr.io/highkay/googleaisearch2api@sha256:e3b4208eb38538cb36e5b3cc30cad7191a8b11de5f7e1d3ffa10a73e687bea7c",
-  "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr-test@sha256:bb7fe850153ea8066a2c38e611638b145894e3eed7e965e3c44ba2398d012240",
+  "ghcr.io/homarr-labs/homarr-test:pr-7120": "ghcr.io/homarr-labs/homarr-test@sha256:0eef910d29a0108e9e6a3b22569a5f6872d91d8618817c971abc78b3512a7ae1",
+  "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:f532ce7cb2a388096d6dce30b7ee41ff4b413b48ddc219ad2321dedb758cd772",
   "ghcr.io/home-assistant/home-assistant:stable": "ghcr.io/home-assistant/home-assistant@sha256:33afb0659d786213264c2211f8d91c5fe87461c56eba6a3a546eb05fc71e89f4",
-  "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:772bcb18f0cb69d4fd0630d4676516f34fb37e42c3ac9d65eea5f173728e818e",
+  "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:161109b917a158b5efd8478a437e9900db7bdc57235c167aa70d5ad69425fc31",
   "ghcr.io/sablierapp/sablier:latest": "ghcr.io/sablierapp/sablier@sha256:c00c8a01c8c809dd258a8b362ad8ba9a9227753fc9857ae7506fd427175e038c",
   "ghcr.io/transmute-app/transmute:latest": "ghcr.io/transmute-app/transmute@sha256:87b669d835d9e68bdbc4082ab061cb361cd3ecee69c14ccfa9a3814d326b6707",
   "ghcr.io/wealthfolio/wealthfolio:latest": "ghcr.io/wealthfolio/wealthfolio@sha256:6dcf9019aee7ba0747344087365ea57846107943ff0e2718a9bee72a98e20f85"

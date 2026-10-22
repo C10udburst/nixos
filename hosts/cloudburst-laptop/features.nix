@@ -8,6 +8,7 @@ _: {
     services = {
       weylus = true;
       usbip = true;
+      vpn.openvpn = true;
     };
 
     gui = {

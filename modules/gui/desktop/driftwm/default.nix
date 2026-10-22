@@ -8,6 +8,16 @@
   cfg = config.features.gui.desktop.driftwm;
   isSlow = config.features.core.hardware.slow or false;
   isTouchscreen = config.features.core.hardware.touchscreen or false;
+  nm-connection-editor =
+    pkgs.runCommand "nm-connection-editor" {
+      meta.mainProgram = "nm-connection-editor";
+    } ''
+      mkdir -p $out
+      cp -rs --no-preserve=mode ${pkgs.networkmanagerapplet}/* $out/
+      rm -rf $out/etc/xdg/autostart
+      rm -f $out/bin/*applet*
+      rm -f $out/share/applications/nm-applet.desktop
+    '';
 in {
   options.features.gui.desktop.driftwm = {
     enable = lib.mkOption {
@@ -69,6 +79,7 @@ in {
           pkgs.kdePackages.breeze.qt5
           pkgs.kdePackages.breeze-gtk
           pkgs.kdePackages.qqc2-breeze-style
+          nm-connection-editor
         ]
         ++ lib.optionals (!isSlow) [
           pkgs.kdePackages.kdeconnect-kde
@@ -77,6 +88,13 @@ in {
         ++ lib.optionals isTouchscreen [
           pkgs.wvkbd
         ];
+
+      environment.etc."xdg/autostart/nm-applet.desktop".text = ''
+        [Desktop Entry]
+        Type=Application
+        Name=Network
+        Hidden=true
+      '';
 
       environment.etc."xdg/menus/applications.menu".source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
       environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";

@@ -44,8 +44,8 @@ in {
           url = "github:lukasl-dev/pi.nix";
           inputs.nixpkgs.follows = "nixpkgs";
         };
-        pi-ponytail = {
-          url = "github:DietrichGebert/ponytail";
+        pi-context = {
+          url = "github:ttttmr/pi-context";
           flake = false;
         };
       };
@@ -60,20 +60,18 @@ in {
 
       programs.pi.coding-agent = {
         enable = true;
+        # Passed as a directory: its package.json `pi.extensions` declares the entry points.
         extensions =
-          lib.optionals (cfg.googleProxy != null) [
+          [
+            "${inputs.pi-context}"
+          ]
+          ++ lib.optionals (cfg.googleProxy != null) [
             ./_google-search.ts
           ]
           ++ lib.optionals (cfg.litellmProxy != null) [
             ./_litellm.ts
-          ]
-          ++ lib.optionals (inputs ? pi-ponytail) [
-            "${inputs.pi-ponytail}/pi-extension/index.js"
           ];
 
-        skills = lib.optionals (inputs ? pi-ponytail) [
-          "${inputs.pi-ponytail}/skills"
-        ];
         settings = {
           theme = "dark";
           tuiMode = "regular";

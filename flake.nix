@@ -104,8 +104,8 @@
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pi-ponytail = {
-      url = "github:DietrichGebert/ponytail";
+    pi-context = {
+      url = "github:ttttmr/pi-context";
       flake = false;
     };
     plasma-manager = {

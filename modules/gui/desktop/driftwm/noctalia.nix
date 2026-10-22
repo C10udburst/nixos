@@ -14,6 +14,7 @@
   compactMode = mobile && touchscreen;
   hasDocker = config.features.compat.podman.enable or false;
   hasTailscale = config.features.services.tailscale.enable or false;
+  hasOpenvpn = config.features.services.vpn.openvpn or false;
   hasNixIndex = config.features.shell.utils.nix or false;
 
   pluginMap = {
@@ -28,14 +29,16 @@
     mini-docker = "8bury/mini-docker";
     phone-connect = "icefish/phone-connect";
     procmon = "weinguyen/procmon";
-    screen-toolkit = "alexander/screen-toolkit";
+    screen-toolkit = "cloudburst/screen-toolkit";
     tailscale = "davemhammer/tailscale";
     udiskie = "aristides/udiskie";
+    vpn-manager = "andrewdems/vpn-manager";
   };
 
   batteryPluginNames = lib.optionals cfg.plugins.batteryThreshold ["battery-threshold"];
   dockerPluginNames = lib.optionals (hasDocker && !slow && cfg.plugins.containers) ["mini-docker"];
   tailscalePluginNames = lib.optionals (hasTailscale && cfg.plugins.connectivity) ["tailscale"];
+  vpnPluginNames = lib.optionals (hasOpenvpn && cfg.plugins.connectivity) ["vpn-manager"];
   nixIndexPluginNames = lib.optionals hasNixIndex ["cloudburst-nix"];
 
   selectedPluginNames =
@@ -58,6 +61,7 @@
     ++ batteryPluginNames
     ++ dockerPluginNames
     ++ tailscalePluginNames
+    ++ vpnPluginNames
     ++ nixIndexPluginNames;
 
   enabledPluginIds = map (name: pluginMap.${name}) (lib.unique selectedPluginNames);
@@ -148,6 +152,7 @@ in {
             smartmontools
             kdePackages.kdeconnect-kde
             sshfs
+            glib
           ]);
 
         xdg.configFile."noctalia/palettes/Stylix.json".text = builtins.toJSON {
@@ -428,7 +433,10 @@ in {
                       accordion = true;
                       accordion_direction = "end";
                       enabled = true;
-                      members = ["network"] ++ (lib.optionals hasTailscale ["tailscale_status"]);
+                      members =
+                        ["network"]
+                        ++ (lib.optionals hasTailscale ["tailscale_status"])
+                        ++ (lib.optionals hasOpenvpn ["vpn_manager"]);
                     }
                     {
                       id = "storage_privacy";
@@ -515,7 +523,6 @@ in {
                 panel_placement = "attached";
                 result_placement = "attached";
                 selected-ocr-lang = "eng+pl"; # Dont use cammelCase here
-                videoPath = config.xdg.userDirs.videos;
               };
               "${udiskie}" = {
                 manager_open_near_click = true;
@@ -531,6 +538,7 @@ in {
               "${battery-threshold}".panel_placement = "attached";
               "${mini-docker}".manager_placement = "attached";
               "${tailscale}".manager_placement = "attached";
+              "${vpn-manager}".panel_placement = "attached";
             };
 
             widget = with pluginMap;
@@ -543,7 +551,12 @@ in {
                     else "{:%H:%M:%S %a, %d.%m}";
                   vertical_format = "{:%H:%M}";
                 };
-                network.show_label = !compactMode;
+                network = {
+                  show_label = !compactMode;
+                  actions = {
+                    middle = "exec nm-connection-editor";
+                  };
+                };
                 driftwm.type = "${driftwm}:widget";
                 lock_keys = {
                   hide_when_off = true;
@@ -581,6 +594,9 @@ in {
               }
               // lib.optionalAttrs hasTailscale {
                 tailscale_status.type = "${tailscale}:status";
+              }
+              // lib.optionalAttrs hasOpenvpn {
+                vpn_manager.type = "${vpn-manager}:bar";
               }
               // lib.optionalAttrs touchscreen {
                 wvkbd_toggle = {

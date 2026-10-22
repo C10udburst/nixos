@@ -78,7 +78,9 @@ in {
         "XF86AudioLowerVolume" = "spawn pamixer -d 5";
         "XF86AudioMute" = "spawn pamixer -t";
 
+        "mod+Print" = "spawn driftwm msg screenshot window -o - | wl-copy";
         "alt+f4" = "close-window";
+        "mod+g" = "fill-window";
         "mod+equal" = "zoom-in";
         "mod+minus" = "zoom-out";
         "mod+up" = "center-nearest up";
@@ -92,6 +94,7 @@ in {
         "mod+d" = "center-nearest right";
         "mod+q" = "close-window";
         "mod+e" = "exec dolphin";
+        "mod+f10" = "exec nm-connection-editor";
         "mod+shift+w" = "pan-viewport up";
         "mod+shift+s" = "pan-viewport down";
         "mod+shift+a" = "pan-viewport left";

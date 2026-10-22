@@ -93,7 +93,7 @@ in {
         };
 
         virtualisation.oci-containers.containers.homarr = {
-          image = helpers.resolveImage "ghcr.io/homarr-labs/homarr:latest";
+          image = helpers.resolveImage "ghcr.io/homarr-labs/homarr-test:pr-7120";
           podman.user = "homarr";
           ports = [
             "127.0.0.1:7575:7575"

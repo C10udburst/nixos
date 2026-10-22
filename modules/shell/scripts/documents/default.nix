@@ -8,6 +8,7 @@
   beamer-clean = pkgs.writers.writePython3Bin "beamer-clean" {libraries = with pkgs.python3Packages; [pypdf];} (builtins.readFile ./_beamer-clean.py);
   ics-merge = pkgs.writers.writePython3Bin "ics-merge" {} (builtins.readFile ./_ics-merge.py);
   gcode-bounds = pkgs.writers.writePython3Bin "gcode-bounds" {} (builtins.readFile ./_gcode-bounds.py);
+  humanizer = pkgs.writers.writePython3Bin "humanizer" {} (builtins.readFile ./_humanizer.py);
 in {
   options.features.shell.scripts.documents = lib.mkOption {
     type = lib.types.bool;
@@ -19,6 +20,7 @@ in {
       beamer-clean
       ics-merge
       gcode-bounds
+      humanizer
     ];
   };
 }
