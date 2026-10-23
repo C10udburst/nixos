@@ -274,13 +274,9 @@ Never manually edit the inputs in `flake.nix`. When adding or changing a flake i
      inputs.nixpkgs.follows = "nixpkgs";
    };
    ```
-2. Run the generator script:
+2. Run the generator script (the flake itself exposes no `write-flake` output):
    ```bash
-   nix run .#write-flake
-   ```
-3. To check if `flake.nix` is up to date in CI/checks:
-   ```bash
-   nix run .#write-flake -- --check
+   ./flake
    ```
 
 ### Module Scaffolding Helper (`./mkmodule`)
@@ -353,7 +349,7 @@ Each host directory under `hosts/<hostname>/` is organized into four distinct fi
 7. **No Manual Module Imports**:
    Never declare `imports = [ ... ]` in module files under `./modules/`. `import-tree` automatically discovers all `.nix` files recursively. All imports are 100% implicit.
 8. **Never Use `pkgs.fetchurl` Directly**:
-   Never use `pkgs.fetchurl` directly for external archives or binaries. Always declare all external URLs, archives, and dependencies co-located in `flake-file.inputs` (e.g. with `flake = false;`), and run `./flake` (or `nix run .#write-flake`) to regenerate `flake.nix`.
+   Never use `pkgs.fetchurl` directly for external archives or binaries. Always declare all external URLs, archives, and dependencies co-located in `flake-file.inputs` (e.g. with `flake = false;`), and run `./flake` to regenerate `flake.nix`.
 9. **Option Definition Convention (No `coercedTo lib.types.bool`)**:
    Never use `lib.types.coercedTo lib.types.bool`. Keep option definitions simple:
    - If a given `options.features` node has children or other config flags, use `options.features.<path>.enable = parent && true/false` (defined alongside its sibling options/submodules).

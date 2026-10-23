@@ -60,6 +60,8 @@ in {
 
       programs.pi.coding-agent = {
         enable = true;
+        # The nixos/home-manager modules still default to the npm-built variant.
+        package = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
         # Passed as a directory: its package.json `pi.extensions` declares the entry points.
         extensions =
           [

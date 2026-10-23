@@ -83,6 +83,10 @@
       url = "github:C10udburst/oci-lock";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    omp = {
+      url = "github:can1357/oh-my-pi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     openscad-bosl2 = {
       url = "github:BelfrySCAD/BOSL2";
       flake = false;

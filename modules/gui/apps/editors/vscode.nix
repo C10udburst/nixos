@@ -96,7 +96,7 @@
       pkgs.vscode-extensions.ms-vscode.cpptools
     ]
     ++ lib.optionals isThreed [exts.appliedengdesign.vscode-gcode-syntax]
-    ++ lib.optionals isLlm [exts.kaiwood.tauren];
+    ++ lib.optionals isLlm [exts.johnny-zhao.pi-agent-studio];
 
   fhsVscode = pkgs.vscode.fhsWithPackages (
     p:
@@ -248,6 +248,10 @@ in {
                 "workbench.editor.enablePreview" = false;
                 "workbench.startupEditor" = "none";
 
+                # Keep the auxiliary bar (Copilot / chat view) closed on startup
+                # default is "visibleInWorkspace", which autoopens chat in every window
+                "workbench.secondarySideBar.defaultVisibility" = "hidden";
+
                 # ── Telemetry — fully disabled ────────────────────────────────────────
                 "telemetry.telemetryLevel" = "off";
                 "redhat.telemetry.enabled" = false;
@@ -295,6 +299,9 @@ in {
                 # ── Window ────────────────────────────────────────────────────────────
                 "window.titleBarStyle" = "custom";
                 "window.zoomLevel" = 0;
+
+                # ── Pi Agent Studio (LLM) ─────────────────────────────────────────────
+                "pi-agent-studio.ui" = "webview";
               };
             };
           };
