@@ -27,6 +27,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-file.url = "github:vic/flake-file";
+    freecad-nxt = {
+      url = "github:obelisk79/FreeCAD-Nxt";
+      flake = false;
+    };
+    freecad-searchbar = {
+      url = "github:APEbbers/SearchBar";
+      flake = false;
+    };
     gitr = {
       url = "https://github.com/islandspan-solutions/gitr/releases/latest/download/gitr-x86_64.AppImage";
       flake = false;
@@ -142,6 +150,10 @@
     silentsddm = {
       url = "github:uiriansan/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    simplecad = {
+      url = "github:igsova/SimpleCAD";
+      flake = false;
     };
     stylix = {
       url = "github:nix-community/stylix/release-26.05";

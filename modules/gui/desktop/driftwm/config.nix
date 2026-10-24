@@ -46,25 +46,30 @@ in {
         "org.nomacs.ImageLounge"
       ];
 
-      noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled {
-        "mod+tab" = "spawn noctalia msg panel-toggle launcher \"/wind \"";
-        "mod+space" = "spawn noctalia msg panel-toggle launcher";
-        "mod+return" = "spawn noctalia msg panel-toggle launcher";
-        "mod+slash" = "spawn noctalia msg panel-toggle launcher \"/\"";
-        "mod+n" = "spawn noctalia msg panel-toggle control-center notifications";
-        "mod+v" = "spawn noctalia msg panel-toggle clipboard";
-        "mod+period" = "spawn noctalia msg panel-toggle launcher \"/emo \"";
-        "mod+alt+period" = "spawn noctalia msg panel-toggle launcher \"/uni \"";
-        "mod+escape" = "spawn noctalia msg panel-toggle session";
-        "mod+f11" = "spawn noctalia msg bar-toggle main";
-        "mod+l" = "spawn noctalia msg session lock";
-        "mod+r" = "spawn noctalia msg panel-toggle control-center";
-        "mod+f1" = "spawn noctalia msg panel-toggle control-center";
-        "mod+m" = "spawn noctalia msg panel-toggle cloudburst/driftwm:minimap";
-        "mod+p" = "spawn noctalia msg panel-open control-center media";
-        "XF86MonBrightnessUp" = "spawn noctalia msg brightness-up";
-        "XF86MonBrightnessDown" = "spawn noctalia msg brightness-down";
-      };
+      noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled (
+        {
+          "mod+tab" = "spawn noctalia msg panel-toggle launcher \"/wind \"";
+          "mod+space" = "spawn noctalia msg panel-toggle launcher";
+          "mod+return" = "spawn noctalia msg panel-toggle launcher";
+          "mod+slash" = "spawn noctalia msg panel-toggle launcher \"/\"";
+          "mod+n" = "spawn noctalia msg panel-toggle control-center notifications";
+          "mod+v" = "spawn noctalia msg panel-toggle clipboard";
+          "mod+period" = "spawn noctalia msg panel-toggle launcher \"/emo \"";
+          "mod+alt+period" = "spawn noctalia msg panel-toggle launcher \"/uni \"";
+          "mod+escape" = "spawn noctalia msg panel-toggle session";
+          "mod+f11" = "spawn noctalia msg bar-toggle main";
+          "mod+l" = "spawn noctalia msg session lock";
+          "mod+r" = "spawn noctalia msg panel-toggle control-center";
+          "mod+f1" = "spawn noctalia msg panel-toggle control-center";
+          "mod+m" = "spawn noctalia msg panel-toggle cloudburst/driftwm:minimap";
+          "mod+p" = "spawn noctalia msg panel-open control-center media";
+          "XF86MonBrightnessUp" = "spawn noctalia msg brightness-up";
+          "XF86MonBrightnessDown" = "spawn noctalia msg brightness-down";
+        }
+        // lib.optionalAttrs (!isSlow) {
+          "mod+f12" = "spawn noctalia msg panel-toggle umedbazarov/crashes:panel";
+        }
+      );
 
       baseKeybindings = {
         "ctrl+alt+t" = "exec konsole";

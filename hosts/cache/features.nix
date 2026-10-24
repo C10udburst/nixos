@@ -25,7 +25,7 @@ _: {
             telegram = true;
           };
         };
-        threed.freecad = false;
+        threed.freecad.enable = false;
         threed.blender = false;
       };
       dev = {

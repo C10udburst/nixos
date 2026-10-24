@@ -479,6 +479,38 @@
         "type": "github"
       }
     },
+    "freecad-nxt": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792845629,
+        "narHash": "sha256-lD2TYtzStO0w1tlz2ZKkWIf3dy1TMyN2Od49lCHWYH8=",
+        "owner": "obelisk79",
+        "repo": "FreeCAD-Nxt",
+        "rev": "334d6bf5a4450e50a6cbbc42fbffda6d62a40ca3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "obelisk79",
+        "repo": "FreeCAD-Nxt",
+        "type": "github"
+      }
+    },
+    "freecad-searchbar": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790869897,
+        "narHash": "sha256-abAx4ddmx2TR/G9Abi+MTlSDIU29NpB8002BOczLWOQ=",
+        "owner": "APEbbers",
+        "repo": "SearchBar",
+        "rev": "c36a2ed17e2ba5572fb0af19c5c560084f42296a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "APEbbers",
+        "repo": "SearchBar",
+        "type": "github"
+      }
+    },
     "fromYaml": {
       "flake": false,
       "locked": {
@@ -1198,6 +1230,8 @@
         "driftwm-desktop": "driftwm-desktop",
         "fetlife-browser": "fetlife-browser",
         "flake-file": "flake-file",
+        "freecad-nxt": "freecad-nxt",
+        "freecad-searchbar": "freecad-searchbar",
         "gitr": "gitr",
         "glmocr-src": "glmocr-src",
         "home-manager": "home-manager",
@@ -1230,6 +1264,7 @@
         "scrcpy-app-src": "scrcpy-app-src",
         "shell-undo": "shell-undo",
         "silentsddm": "silentsddm",
+        "simplecad": "simplecad",
         "stylix": "stylix",
         "tailcat": "tailcat",
         "webicons": "webicons",
@@ -1335,6 +1370,22 @@
       "original": {
         "owner": "uiriansan",
         "repo": "SilentSDDM",
+        "type": "github"
+      }
+    },
+    "simplecad": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792841376,
+        "narHash": "sha256-bocZJ7vaNOznSNHyPw03YhnGC6IjnP+eadir9Ibzy3E=",
+        "owner": "igsova",
+        "repo": "SimpleCAD",
+        "rev": "cf80fdecb730eacda327a24628f4aec9d47fff3f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "igsova",
+        "repo": "SimpleCAD",
         "type": "github"
       }
     },

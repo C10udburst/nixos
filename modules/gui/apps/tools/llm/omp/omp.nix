@@ -61,6 +61,8 @@ in {
               export GOOGLE_SEARCH_API_BASE=${lib.escapeShellArg piCfg.googleProxy}
             ''
             + ''
+              export OMP_SKIP_SETUP=1
+              export VISUAL=kwrite
               exec ${basePackage}/bin/omp "$@"
             ''
           );
@@ -69,8 +71,11 @@ in {
           settings = {
             startup.quiet = true;
             theme.dark = "dark";
-            composer.shape = "rail";
-            composer.tokenRate = true;
+            composer = {
+              shape = "rail";
+              tokenRate = true;
+            };
+            edit.mode = "replace";
             colorBlindMode = false;
             symbolPreset = "nerd";
             modelRoles.default = "llm/qwen3.8-flash-next";
@@ -80,6 +85,10 @@ in {
             extendedContext = true;
             astGrep.enabled = true;
             dev.autoqa = false;
+            lsp = {
+              diagnosticsDeduplicate = true;
+              diagnosticsOnEdit = true;
+            };
           };
         };
 

@@ -178,7 +178,7 @@ in
 
 Every feature in the dendritic configuration tree is governed by strict parent-child gating and canonical defaults:
 
-### The Fundamental Rule: Gating + `config-full.nix` Defaults
+### The Fundamental Rule: Gating + `features-full.nix` Defaults
 1. **If Parent is `false` (`parent.enable == false`)**:
    - **All child submodules are `false`**. A disabled branch never activates any of its descendants.
 2. **If Parent is `true` (`parent.enable == true`)**:
@@ -192,7 +192,7 @@ Every feature in the dendritic configuration tree is governed by strict parent-c
 ### Concrete Examples
 
 #### Example 1: Enabling `gui.apps.tools`
-In `config-full.nix`, `tools` is defined with:
+In `features-full.nix`, `tools` is defined with:
 ```nix
 tools = {
   enable = true;
@@ -213,7 +213,7 @@ tools = {
 - If `gui.apps.tools.social.enable = true;`, then `vesktop`, `telegram`, `signal`, and `zapfast` default to **`true`**.
 
 #### Example 2: Enabling `compat`
-In `config-full.nix`, `compat` is defined with:
+In `features-full.nix`, `compat` is defined with:
 ```nix
 compat = {
   enable = true;

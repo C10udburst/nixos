@@ -7,20 +7,24 @@
   cfg = config.features.gui.apps.brave;
   isSlow = config.features.core.hardware.slow or false;
   flags = [
-    "brave-dark-mode-block@2"
+    "brave-extension-network-blocking@1"
     "brave-history-embeddings@1"
     "brave-origin@1"
+    "brave-request-otr-tab@1"
+    "brave-round-time-stamps@1"
+    "brave-rounded-corners-by-default@1"
+    "brave-show-strict-fingerprinting-mode@1"
+    "brave-shred@1"
     "brave-tree-tab@1"
+    "brave-wayback-machine-auto-show-bubble@1"
+    "brave-web-bluetooth-api@1"
     "containers@1"
+    "desktop-glow-up@1"
     "enable-parallel-downloading@1"
     "enable-quic@1"
+    "extensions-menu-access-control@1"
     "middle-button-autoscroll@1"
     "smooth-scrolling@1"
-    "ignore-gpu-blocklist@1"
-    "brave-round-time-stamps@1"
-    "brave-web-bluetooth-api@1"
-    "brave-rounded-corners-by-default@1"
-    "brave-request-otr-tab@1"
   ];
   effectiveFlags = flags ++ cfg.extraFlags;
 in {

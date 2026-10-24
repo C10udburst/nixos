@@ -24,6 +24,7 @@
     driftwm-windows = "cloudburst/driftwm-windows";
     unicode = "cloudburst/unicode";
     cloudburst-nix = "cloudburst/nix";
+    crashes = "umedbazarov/crashes";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
     mini-docker = "8bury/mini-docker";
@@ -53,6 +54,7 @@
       "hassio"
     ]
     ++ lib.optionals (cfg.plugins.system && !slow) ["procmon"]
+    ++ lib.optionals (!slow) ["crashes"]
     ++ lib.optionals (cfg.plugins.hardware && !slow) [
       "drive-health"
       "udiskie"
@@ -217,10 +219,22 @@ in {
               panel_anchor_bar = "main";
               screen_time_enabled = true;
               settings_window_translucent = true;
-              launcher.providers.windows.global = true;
+              clipboard_image_action_command = "nomacs {path}";
+              animation.speed = 0.85;
+              launcher = {
+                app_grid = true;
+                category_icons_only = true;
+                layout = "simple";
+                show_app_actions = true;
+                providers.windows.global = true;
+              };
               panel = {
                 session_position = "center";
-                transparency_mode = "solid";
+                list_item_background = true;
+                transparency_mode =
+                  if slow
+                  then "solid"
+                  else "soft";
                 control_center_placement = "floating";
                 open_near_click_control_center = true;
                 session_placement = "floating";
@@ -272,6 +286,7 @@ in {
             lockscreen = {
               blurred_desktop = true;
               allow_empty_password = false;
+              transition = ["fade"];
             };
 
             dock = {
@@ -285,6 +300,12 @@ in {
               icon_size = 28;
               launcher_position = "start";
               show_dots = true;
+              magnification_scale = 1.55;
+              pinned = [
+                "brave-browser"
+                "org.kde.dolphin"
+                "org.kde.konsole"
+              ];
             };
 
             idle = {
@@ -346,7 +367,13 @@ in {
               order = ["main"];
               main = {
                 radius = 24;
-                background_opacity = 0.75;
+                background_opacity = 0.65;
+                dead_zone.actions = {
+                  scroll_up = "exec driftwm msg action pan-viewport up";
+                  scroll_down = "exec driftwm msg action pan-viewport down";
+                  scroll_left = "exec driftwm msg action pan-viewport left";
+                  scroll_right = "exec driftwm msg action pan-viewport right";
+                };
                 margin_ends =
                   if compactMode
                   then 10
@@ -482,7 +509,10 @@ in {
                         [
                           "cat_widget"
                         ]
-                        ++ (lib.optionals (!slow) ["procmon_widget"])
+                        ++ (lib.optionals (!slow) [
+                          "procmon_widget"
+                          "crashes_button"
+                        ])
                         ++ lib.optionals (hasDocker && !slow) ["mini-docker"];
                     }
                   ]
@@ -535,6 +565,10 @@ in {
                 entity_manager_placement = "attached";
               };
               "${procmon}".panel_placement = "attached";
+              "${crashes}" = {
+                agent_cmd = "omp --";
+                terminal_cmd = "konsole --workdir /home/cloudburst/nixos -e";
+              };
               "${battery-threshold}".panel_placement = "attached";
               "${mini-docker}".manager_placement = "attached";
               "${tailscale}".manager_placement = "attached";
@@ -582,6 +616,12 @@ in {
                 drive_summary.type = "${drive-health}:summary";
                 screen_toolkit.type = "${screen-toolkit}:widget";
                 procmon_widget.type = "${procmon}:widget";
+                crashes_button = {
+                  type = "custom_button";
+                  glyph = "bug";
+                  tooltip = "Crashes";
+                  actions.left = "panel-toggle ${crashes}:panel";
+                };
               }
               // lib.optionalAttrs mobile {
                 battery.display_mode = "graphic";
