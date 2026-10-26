@@ -52,7 +52,9 @@ in {
           };
           extraConfig = ''
             default_linemode devicons
-            map xb binwalk_extract
+
+            # Full-screen fzf picker; overrides ranger's <PAGEDOWN> alias
+            map <C-f> console fzf
           '';
           plugins = [
             {

@@ -13,10 +13,7 @@ in {
   config = lib.mkIf cfg.zram {
     zramSwap = {
       enable = true;
-      memoryPercent =
-        if cfg.slow
-        then 100
-        else 50;
+      memoryPercent = 50;
       priority = 100;
     };
 

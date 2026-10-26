@@ -10,6 +10,7 @@
 
   mobile = config.features.core.hardware.mobile or false;
   touchscreen = config.features.core.hardware.touchscreen or false;
+  steviaEnabled = config.features.gui.desktop.driftwm.stevia;
   slow = config.features.core.hardware.slow or false;
   compactMode = mobile && touchscreen;
   hasDocker = config.features.compat.podman.enable or false;
@@ -129,11 +130,6 @@ in {
     (lib.mkIf cfg.enable {
       home-manager.users.cloudburst = {config, ...}: let
         colors = config.lib.stylix.colors.withHashtag;
-        stylixColors = config.lib.stylix.colors;
-        wvkbdCmd = "${pkgs.wvkbd}/bin/wvkbd-mobintl -L 280 -H 300 -R 16 -l fullwide --landscape-layers fullwide --bg ${stylixColors.base00} --fg ${stylixColors.base01} --fg-sp ${stylixColors.base02} --press ${stylixColors.base0D} --press-sp ${stylixColors.base0E} --text ${stylixColors.base05} --text-sp ${stylixColors.base07}";
-        wvkbdPackage = pkgs.writeShellScriptBin "wvkbd" ''
-          ${wvkbdCmd} "$@"
-        '';
       in {
         imports =
           lib.optional (
@@ -146,7 +142,6 @@ in {
             ddcutil
             wl-screenrec
           ]
-          ++ (lib.optionals touchscreen [wvkbdPackage])
           ++ (lib.optionals mobile [upower])
           ++ (lib.optionals (!slow) [
             tesseract
@@ -239,6 +234,12 @@ in {
                 open_near_click_control_center = true;
                 session_placement = "floating";
                 floating_offset = 16;
+                # With the OSK on demand, an attached launcher keeps the panel
+                # compact so the keyboard doesn't fight a floating overlay.
+                launcher_placement =
+                  if steviaEnabled
+                  then "attached"
+                  else "floating";
               };
               session.actions = [
                 {
@@ -415,14 +416,14 @@ in {
                     ["driftwm"]
                     ++ lib.optionals (!slow) ["screen_toolkit"]
                     ++ ["session"]
-                    ++ lib.optionals touchscreen ["wvkbd_toggle"]
+                    ++ lib.optionals steviaEnabled ["osk_toggle"]
                     ++ [
                       "clipboard"
                       "group:notifications_group"
                     ]
                   else
                     ["group:window_session"]
-                    ++ lib.optionals touchscreen ["wvkbd_toggle"]
+                    ++ lib.optionals steviaEnabled ["osk_toggle"]
                     ++ [
                       "lock_keys"
                       "active_window"
@@ -638,13 +639,13 @@ in {
               // lib.optionalAttrs hasOpenvpn {
                 vpn_manager.type = "${vpn-manager}:bar";
               }
-              // lib.optionalAttrs touchscreen {
-                wvkbd_toggle = {
+              // lib.optionalAttrs steviaEnabled {
+                osk_toggle = {
                   type = "custom_button";
                   glyph = "keyboard";
                   tooltip = "On-Screen Keyboard";
                   actions = {
-                    left = "exec pkill wvkbd-mobintl || wvkbd";
+                    left = "exec osk-toggle";
                   };
                 };
               };

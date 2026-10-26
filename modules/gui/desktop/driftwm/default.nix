@@ -7,7 +7,6 @@
 }: let
   cfg = config.features.gui.desktop.driftwm;
   isSlow = config.features.core.hardware.slow or false;
-  isTouchscreen = config.features.core.hardware.touchscreen or false;
   nm-connection-editor =
     pkgs.runCommand "nm-connection-editor" {
       meta.mainProgram = "nm-connection-editor";
@@ -84,9 +83,6 @@ in {
         ++ lib.optionals (!isSlow) [
           pkgs.kdePackages.kdeconnect-kde
           pkgs.sshfs
-        ]
-        ++ lib.optionals isTouchscreen [
-          pkgs.wvkbd
         ];
 
       environment.etc."xdg/autostart/nm-applet.desktop".text = ''

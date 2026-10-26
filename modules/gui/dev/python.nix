@@ -28,7 +28,6 @@
     ++ (lib.optionals cfg.utils (
       with ps; [
         requests
-        pypdf
         tkinter
       ]
     ));
@@ -42,21 +41,22 @@ in {
     };
     dataScience = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
     };
     ai = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
     };
     utils = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
     };
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       pythonPkg
+      pkgs.pyright
     ];
 
     environment.sessionVariables = {

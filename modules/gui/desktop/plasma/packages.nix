@@ -23,6 +23,7 @@ in {
     ];
 
     environment.plasma6.excludePackages = with pkgs.kdePackages; [
+      drkonqi
       discover
       plasma-browser-integration
       khelpcenter

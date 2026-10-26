@@ -28,6 +28,12 @@ _: {
         threed.freecad.enable = false;
         threed.blender = false;
       };
+      desktop = {
+        driftwm = {
+          enable = true;
+          stevia = true;
+        };
+      };
       dev = {
         enable = true;
         documents.enable = false;

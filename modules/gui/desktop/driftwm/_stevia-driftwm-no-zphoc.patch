@@ -1,0 +1,33 @@
+driftwm (smithay) does not advertise zphoc_device_state_v1 (gmobile protocol, only
+offered by phosh/wlroots-based compositors with the gmobile patchset). Stevia 0.54.0
+gates all rendering on that protocol being bound: without it the process starts,
+registers nothing and never maps a surface. Relax the readiness gate and make the
+hardware-keyboard tracker tolerate a NULL device-state, so stevia falls back to
+virtual-keyboard mode (which driftwm implements) instead of idling forever.
+
+Drop this patch once driftwm advertises zphoc_device_state_v1.
+
+--- a/src/pos-hw-tracker.c
++++ b/src/pos-hw-tracker.c
+@@ -71,8 +71,10 @@ static void
+ pos_hw_tracker_set_device_state (PosHwTracker *self,
+                                  gpointer      device_state)
+ {
+   self->device_state = device_state;
+-  zphoc_device_state_v1_add_listener (self->device_state, &device_state_listener, self);
++  if (self->device_state) {
++    zphoc_device_state_v1_add_listener (self->device_state, &device_state_listener, self);
++  }
+ }
+ 
+ 
+--- a/src/pos-wayland.c
++++ b/src/pos-wayland.c
+@@ -387,7 +387,6 @@ pos_wayland_has_wl_protcols (PosWayland *self)
+           self->zwlr_foreign_toplevel_manager_v1 &&
+           self->layer_shell &&
+           self->zxdg_output_manager_v1 &&
+-          self->zphoc_device_state_v1 &&
+           self->wlr_data_control_manager);
+ }
+ 

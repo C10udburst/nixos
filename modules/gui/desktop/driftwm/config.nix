@@ -146,9 +146,10 @@ in {
             decoration = "none";
           }
         ]
-        ++ lib.optionals isTouchscreen [
+        ++ lib.optionals cfg.stevia [
           {
-            app_id = "wvkbd";
+            # stevia's wlr-layer-shell namespace
+            app_id = "osk";
             pinned_to_screen = true;
           }
         ];
