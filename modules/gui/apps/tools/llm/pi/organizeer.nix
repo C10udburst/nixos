@@ -34,15 +34,15 @@ let
               exposure = "direct";
             };
           };
-          extensions =
-            [
-              "${inputs.pi-context}"
-            ]
-            ++ lib.optionals (piCfg.litellmProxy != null) [
-              ./_litellm.ts
-            ];
+          extensions = [
+            "${inputs.pi-context}"
+          ]
+          ++ lib.optionals (piCfg.litellmProxy != null) [
+            ./_litellm.ts
+          ];
           environment = {
-            PI_CODING_AGENT_DIR.value = "${config.home.homeDirectory}/.pi/organizeer";
+            # TODO: can i use "~" here instead of hardcoding the path?
+            PI_CODING_AGENT_DIR.value = "/home/cloudburst/.pi/organizeer";
           }
           // lib.optionalAttrs (piCfg.litellmProxy != null) {
             LITELLM_API_BASE.value = piCfg.litellmProxy;
