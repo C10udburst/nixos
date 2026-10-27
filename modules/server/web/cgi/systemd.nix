@@ -3,10 +3,12 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.features.server.web.cgi;
   systemdCfg = cfg.systemd;
-in {
+in
+{
   options.features.server.web.cgi.systemd = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -34,7 +36,9 @@ in {
         "meilisearch"
         "organizeer"
         "pihole-ftl"
+        "podman-aistudio-api"
         "podman-eightmb"
+        "podman-google-ai-proxy"
         "podman-homarr"
         "podman-homeassistant"
         "podman-manyfold"

@@ -3,17 +3,19 @@
   lib,
   pkgs,
   ...
-}: let
-  cfg = config.features.server.web.llm;
+}:
+let
+  cfg = config.features.server.web.llm.enable;
   webCfg = config.features.server.web;
   storage = webCfg.storage;
-  webHelper = import ../_webService.nix {inherit config lib pkgs;};
+  webHelper = import ../_webService.nix { inherit config lib pkgs; };
   pythonWithDeps = pkgs.python3.withPackages (ps: [
     ps.requests
     ps.pyyaml
   ]);
-in {
-  options.features.server.web.llm = lib.mkOption {
+in
+{
+  options.features.server.web.llm.enable = lib.mkOption {
     type = lib.types.bool;
     default = webCfg.enable && true;
   };
@@ -40,9 +42,9 @@ in {
           isSystemUser = true;
           group = "litellm";
           home = "${storage}/litellm";
-          extraGroups = ["web"];
+          extraGroups = [ "web" ];
         };
-        users.groups.litellm = {};
+        users.groups.litellm = { };
 
         systemd.tmpfiles.rules = [
           "d ${storage}/litellm 2750 litellm web - -"
@@ -50,11 +52,11 @@ in {
 
         systemd.services.litellm-config = {
           description = "Generate LiteLLM configuration";
-          wantedBy = ["litellm.service"];
-          before = ["litellm.service"];
-          after = ["network-online.target"];
-          wants = ["network-online.target"];
-          restartTriggers = [./_config];
+          wantedBy = [ "litellm.service" ];
+          before = [ "litellm.service" ];
+          after = [ "network-online.target" ];
+          wants = [ "network-online.target" ];
+          restartTriggers = [ ./_config ];
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
@@ -82,16 +84,16 @@ in {
 
         systemd.paths.litellm-config = {
           description = "Watch LiteLLM secrets for changes";
-          wantedBy = ["multi-user.target"];
+          wantedBy = [ "multi-user.target" ];
           pathConfig = {
-            PathChanged = [config.age.secrets.litellm.path];
+            PathChanged = [ config.age.secrets.litellm.path ];
             Unit = "litellm-refresh.service";
           };
         };
 
         systemd.services.litellm = {
           description = "LiteLLM Proxy Service";
-          wantedBy = ["multi-user.target"];
+          wantedBy = [ "multi-user.target" ];
           wants = [
             "network-online.target"
             "litellm-config.service"
@@ -100,7 +102,7 @@ in {
             "network-online.target"
             "litellm-config.service"
           ];
-          restartTriggers = [./_config];
+          restartTriggers = [ ./_config ];
           serviceConfig = {
             User = "litellm";
             Group = "litellm";

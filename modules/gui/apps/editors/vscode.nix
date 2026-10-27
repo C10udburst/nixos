@@ -4,7 +4,8 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   cfg = config.features.gui.apps.editors.vscode;
   editorsEnabled = config.features.gui.apps.editors.enable;
 
@@ -54,25 +55,26 @@
 
   programmingExtensions = lib.optionals isProgramming (
     with exts;
-      [
-        wholroyd.jinja
-        jock.svg
-        slevesque.shader
-      ]
-      ++ lib.optionals isRust [
-        rust-lang.rust-analyzer
-      ]
-      ++ lib.optionals isGo [
-        golang.go
-      ]
-      ++ lib.optionals isKotlin [
-        mathiasfrohlich.kotlin
-      ]
+    [
+      wholroyd.jinja
+      jock.svg
+      slevesque.shader
+    ]
+    ++ lib.optionals isRust [
+      rust-lang.rust-analyzer
+    ]
+    ++ lib.optionals isGo [
+      golang.go
+    ]
+    ++ lib.optionals isKotlin [
+      jetbrains.kotlin-server
+    ]
   );
 
   # Python extensions
   pythonExtensions = lib.optionals isPython (
-    with exts; [
+    with exts;
+    [
       ms-python.python
       ms-python.vscode-pylance
       ms-python.debugpy
@@ -89,53 +91,55 @@
     coreExtensions
     ++ programmingExtensions
     ++ pythonExtensions
-    ++ lib.optionals isLatex [exts.james-yu.latex-workshop]
-    ++ lib.optionals isTypst [exts.myriad-dreamin.tinymist]
+    ++ lib.optionals isLatex [ exts.james-yu.latex-workshop ]
+    ++ lib.optionals isTypst [ exts.myriad-dreamin.tinymist ]
     ++ lib.optionals isArduino [
       exts.platformio.platformio-ide
       pkgs.vscode-extensions.ms-vscode.cpptools
     ]
-    ++ lib.optionals isThreed [exts.appliedengdesign.vscode-gcode-syntax]
-    ++ lib.optionals isLlm [exts.johnny-zhao.pi-agent-studio];
+    ++ lib.optionals isThreed [ exts.appliedengdesign.vscode-gcode-syntax ]
+    ++ lib.optionals isLlm [ exts.johnny-zhao.pi-agent-studio ];
 
   fhsVscode = pkgs.vscode.fhsWithPackages (
     p:
-      lib.optionals isProgramming (
-        with p;
-          lib.optionals isRust [
-            cargo
-            rustc
-            rust-analyzer
-          ]
-          ++ lib.optionals isGo [
-            go
-            gopls
-          ]
-      )
-      ++ lib.optionals isPython (
-        with p; [
-          python3
-          python3Packages.ipykernel
-          black
-          isort
-        ]
-      )
-      ++ lib.optionals isTypst (
-        with p; [
-          typst
-          typstyle
-        ]
-      )
-      ++ [
-        p.nixd
-        p.nixfmt
+    lib.optionals isProgramming (
+      with p;
+      lib.optionals isRust [
+        cargo
+        rustc
+        rust-analyzer
       ]
+      ++ lib.optionals isGo [
+        go
+        gopls
+      ]
+    )
+    ++ lib.optionals isPython (
+      with p;
+      [
+        python3
+        python3Packages.ipykernel
+        black
+        isort
+      ]
+    )
+    ++ lib.optionals isTypst (
+      with p;
+      [
+        typst
+        typstyle
+      ]
+    )
+    ++ [
+      p.nixd
+      p.nixfmt
+    ]
   );
 
   ephemeralVscode = pkgs.symlinkJoin {
     name = "code";
-    paths = [fhsVscode];
-    nativeBuildInputs = [pkgs.makeWrapper];
+    paths = [ fhsVscode ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       rm $out/bin/code
       makeWrapper ${fhsVscode}/bin/code $out/bin/code \
@@ -182,7 +186,8 @@
         --add-flags '--enable-features=UseOzonePlatform --ozone-platform=wayland'
     '';
   };
-in {
+in
+{
   options.features.gui.apps.editors.vscode = lib.mkOption {
     type = lib.types.bool;
     default = editorsEnabled && true;
@@ -199,7 +204,7 @@ in {
     }
     (lib.mkIf cfg {
       nixpkgs.overlays = [
-        (inputs.nix-vscode-extensions.overlays.default or (_: _: {}))
+        (inputs.nix-vscode-extensions.overlays.default or (_: _: { }))
       ];
 
       home-manager.users.cloudburst = lib.mkMerge [
@@ -308,33 +313,33 @@ in {
 
           xdg.mimeApps = {
             defaultApplications = {
-              "text/javascript" = ["code.desktop"];
-              "application/javascript" = ["code.desktop"];
-              "text/x-python" = ["code.desktop"];
-              "text/x-rust" = ["code.desktop"];
-              "text/x-c" = ["code.desktop"];
-              "text/x-c++" = ["code.desktop"];
-              "text/x-go" = ["code.desktop"];
-              "text/x-java" = ["code.desktop"];
-              "text/x-shellscript" = ["code.desktop"];
-              "application/json" = ["code.desktop"];
-              "text/x-nix" = ["code.desktop"];
-              "text/x-yaml" = ["code.desktop"];
-              "text/x-toml" = ["code.desktop"];
-              "text/x-ini" = ["code.desktop"];
-              "text/x-xml" = ["code.desktop"];
-              "text/x-sql" = ["code.desktop"];
-              "text/x-php" = ["code.desktop"];
-              "text/x-perl" = ["code.desktop"];
-              "text/x-ruby" = ["code.desktop"];
-              "text/x-lua" = ["code.desktop"];
-              "text/x-haskell" = ["code.desktop"];
-              "text/x-scala" = ["code.desktop"];
-              "text/x-kotlin" = ["code.desktop"];
-              "text/x-vb" = ["code.desktop"];
+              "text/javascript" = [ "code.desktop" ];
+              "application/javascript" = [ "code.desktop" ];
+              "text/x-python" = [ "code.desktop" ];
+              "text/x-rust" = [ "code.desktop" ];
+              "text/x-c" = [ "code.desktop" ];
+              "text/x-c++" = [ "code.desktop" ];
+              "text/x-go" = [ "code.desktop" ];
+              "text/x-java" = [ "code.desktop" ];
+              "text/x-shellscript" = [ "code.desktop" ];
+              "application/json" = [ "code.desktop" ];
+              "text/x-nix" = [ "code.desktop" ];
+              "text/x-yaml" = [ "code.desktop" ];
+              "text/x-toml" = [ "code.desktop" ];
+              "text/x-ini" = [ "code.desktop" ];
+              "text/x-xml" = [ "code.desktop" ];
+              "text/x-sql" = [ "code.desktop" ];
+              "text/x-php" = [ "code.desktop" ];
+              "text/x-perl" = [ "code.desktop" ];
+              "text/x-ruby" = [ "code.desktop" ];
+              "text/x-lua" = [ "code.desktop" ];
+              "text/x-haskell" = [ "code.desktop" ];
+              "text/x-scala" = [ "code.desktop" ];
+              "text/x-kotlin" = [ "code.desktop" ];
+              "text/x-vb" = [ "code.desktop" ];
             };
             associations.added = {
-              "inode/directory" = ["code.desktop"];
+              "inode/directory" = [ "code.desktop" ];
             };
           };
         }

@@ -1,9 +1,10 @@
 {
   "docker.io/jms1717/8mblocal:latest": "docker.io/jms1717/8mblocal@sha256:a034dbaa79610461b15e3acc14f02b5cfc51d27bf3af5a245db21d5742090d04",
-  "ghcr.io/alexta69/metube:latest": "ghcr.io/alexta69/metube@sha256:367d9d1b5122f2e88263a689998f8b11c4e9a188c9cbdace0ace8bd197935ad8",
+  "ghcr.io/alexta69/metube:latest": "ghcr.io/alexta69/metube@sha256:78560456793445f4449d8b9d92374350c652725aa76dc75f8682d43fc5ff9a5b",
   "ghcr.io/highkay/googleaisearch2api:latest": "ghcr.io/highkay/googleaisearch2api@sha256:e3b4208eb38538cb36e5b3cc30cad7191a8b11de5f7e1d3ffa10a73e687bea7c",
-  "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:21f5ef759181f74c6ad2bd3dbf2d0eb3b8a502ba04980703a2a82945447f58f5",
-  "ghcr.io/home-assistant/home-assistant:stable": "ghcr.io/home-assistant/home-assistant@sha256:407b89cd11a8cb67d388d21739a226c74acbbebe1ac59e3b83b11b43ce76b98f",
+  "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:9421086c541f0e83057eaac7b6181c6d3044835227017bea9fc4d0fffee49aa6",
+  "ghcr.io/home-assistant/home-assistant:stable": "ghcr.io/home-assistant/home-assistant@sha256:23f4dfbb69ce76315dbc4de7915504f1c2dcecd7ca2648113a493a385972e133",
+  "ghcr.io/ibuhub/aistudio-to-api:latest": "ghcr.io/ibuhub/aistudio-to-api@sha256:223e4a66af259e2617847947639b7c00224773207017a20b34b139f6dbf4d9d0",
   "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:161109b917a158b5efd8478a437e9900db7bdc57235c167aa70d5ad69425fc31",
   "ghcr.io/sablierapp/sablier:latest": "ghcr.io/sablierapp/sablier@sha256:c00c8a01c8c809dd258a8b362ad8ba9a9227753fc9857ae7506fd427175e038c",
   "ghcr.io/transmute-app/transmute:latest": "ghcr.io/transmute-app/transmute@sha256:87b669d835d9e68bdbc4082ab061cb361cd3ecee69c14ccfa9a3814d326b6707",
