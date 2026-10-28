@@ -4,11 +4,10 @@
   pkgs,
   helpers,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.llm.aistudioApi;
   storage = config.features.server.web.storage;
-  webHelper = import ../_webService.nix { inherit config lib pkgs; };
+  webHelper = import ../_webService.nix {inherit config lib pkgs;};
 
   # AIStudioToAPI: exposes Google AI Studio Build apps as OpenAI/Gemini/Anthropic-compatible
   # APIs. Google accounts are added interactively through the web console (VNC login), so the
@@ -16,8 +15,7 @@ let
   # lazily wake it, which clients absorb by retrying while the proxy waits for the container.
   name = "aistudio-api";
   port = 7860;
-in
-{
+in {
   options.features.server.web.llm.aistudioApi = lib.mkOption {
     type = lib.types.bool;
     default = config.features.server.web.llm.enable && true;
@@ -37,7 +35,7 @@ in
           autoSubUidGidRange = true;
           linger = true;
         };
-        users.groups.${name} = { };
+        users.groups.${name} = {};
 
         # The app persists Google auth files in /app/configs/auth and request statistics in
         # /app/data (usage-stats.jsonl).
@@ -66,7 +64,7 @@ in
             "${storage}/${name}/auth:/app/configs/auth"
             "${storage}/${name}/data:/app/data"
           ];
-          extraOptions = [ "--network=host" ];
+          extraOptions = ["--network=host"];
         };
       }
     ]

@@ -46,10 +46,12 @@
     then config.stylix.fonts.sansSerif.name
     else "RedHatDisplay";
 
-  renderedConfig = h.render "stylix.conf" ./_stylix.conf.j2 (colors
+  renderedConfig = h.render "stylix.conf" ./_stylix.conf.j2 (
+    colors
     // {
       inherit fontFamily;
-    });
+    }
+  );
 
   silentsddmPackage =
     if inputs ? silentsddm && inputs.silentsddm ? packages

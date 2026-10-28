@@ -34,6 +34,9 @@ _: {
     };
 
     gui = {
+      desktop.driftwm.extracmds = [
+        "wlr-randr --output eDP-1 --transform 270"
+      ];
       #greeter.autologin = "driftwm";
       greeter.sddm.rotate = "270";
       desktop.plasma.enable = false;

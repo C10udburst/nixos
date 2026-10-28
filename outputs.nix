@@ -40,6 +40,7 @@ in {
     cloudburst-desktop = mkHost {hostName = "cloudburst-desktop";};
     cloudburst-laptop = mkHost {hostName = "cloudburst-laptop";};
     cloudburst-tablet = mkHost {hostName = "cloudburst-tablet";};
+    surface = mkHost {hostName = "surface";};
     bootstrap = mkHost {hostName = "bootstrap";};
     cache = mkHost {hostName = "cache";};
   };
@@ -47,5 +48,8 @@ in {
   packages.x86_64-linux = {
     iso = self.nixosConfigurations.bootstrap.config.system.build.isoImage;
     bootstrap-iso = self.nixosConfigurations.bootstrap.config.system.build.isoImage;
+    # Live-ISO variant of the surface host. Enable after uncommenting
+    # installation-cd-base.nix in hosts/surface/configuration.nix:
+    # surface-iso = self.nixosConfigurations.surface.config.system.build.isoImage;
   };
 }

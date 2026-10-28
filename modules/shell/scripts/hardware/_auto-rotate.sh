@@ -18,7 +18,7 @@ rotate() {
 }
 
 # Initial rotation on boot (default to 270 degrees)
-rotate "270"
+#rotate "270"
 
 exec monitor-sensor --accel | while read -r line; do
   case "$line" in

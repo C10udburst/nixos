@@ -27,6 +27,7 @@ in {
           "cd.." = "cd ..";
           "-" = "cd -";
           "code." = "code .";
+          "zed." = "zed .";
         }
         // (lib.listToAttrs (
           lib.flatten (

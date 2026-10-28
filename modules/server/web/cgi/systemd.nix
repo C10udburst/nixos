@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.features.server.web.cgi;
   systemdCfg = cfg.systemd;
-in
-{
+in {
   options.features.server.web.cgi.systemd = {
     enable = lib.mkOption {
       type = lib.types.bool;

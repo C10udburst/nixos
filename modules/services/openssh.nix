@@ -10,10 +10,6 @@ in {
       type = lib.types.bool;
       default = config.features.services.enable && true;
     };
-    passwordAuthentication = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -21,13 +17,6 @@ in {
 
     services.openssh = {
       enable = true;
-      settings = {
-        PasswordAuthentication = cfg.passwordAuthentication;
-        PermitRootLogin =
-          if config.networking.hostName == "bootstrap"
-          then "yes"
-          else "no";
-      };
     };
   };
 }

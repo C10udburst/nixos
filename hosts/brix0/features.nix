@@ -13,7 +13,7 @@ _: {
       enable = true;
       samba = {
         enable = true;
-        paths = [ "/opt/dane" ];
+        paths = ["/opt/dane"];
       };
       web = {
         enable = true;

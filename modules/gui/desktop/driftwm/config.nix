@@ -104,6 +104,10 @@ in {
         "mod+shift+s" = "pan-viewport down";
         "mod+shift+a" = "pan-viewport left";
         "mod+shift+d" = "pan-viewport right";
+        "mod+alt+w" = "nudge-window up";
+        "mod+alt+s" = "nudge-window down";
+        "mod+alt+a" = "nudge-window left";
+        "mod+alt+d" = "nudge-window right";
       };
 
       windowRules =
