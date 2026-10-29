@@ -1723,11 +1723,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790876914,
-        "narHash": "sha256-3VXp0Zgvztxh6Mai+Fz7mPxmZ4LhD0xHfKuuCe7/x/o=",
+        "lastModified": 1793281117,
+        "narHash": "sha256-j53bH7al1ir2JPRzThBCtOzIHVKfYO/elUpTqDSFrGo=",
         "owner": "C10udburst",
         "repo": "webicons-nix",
-        "rev": "18a5eea23ccddad1dda6735cdb8e71b84d119ee1",
+        "rev": "2082c2e0e876bca45f4bb6a4503919e20cfa037b",
         "type": "github"
       },
       "original": {

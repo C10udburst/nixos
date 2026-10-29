@@ -9,12 +9,16 @@
   piCfg = config.features.gui.apps.tools.llm.pi;
   orgCfg = config.features.gui.apps.tools.organizeer;
   organizeerUrl = "https://tasks.brix0.wilkins.pl.eu.org/mcp";
+  piPackage =
+    if piCfg.useNodeRuntime
+    then inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent
+    else inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
   organizeerAgent = inputs.pi.lib.mkCodingAgent {
     inherit pkgs;
     modules = [
       {
         pi.coding-agent = {
-          package = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
+          package = piPackage;
           models = ./_models.json;
           rules = ./_organizeer-agent.md;
           settings = {

@@ -1,6 +1,7 @@
 _: {
   features = {
     core = {
+      java = false;
       boot = {
         systemd = false;
         grub = true;
@@ -29,11 +30,17 @@ _: {
         threed.enable = false;
         tools = {
           obs = false;
+          net = false;
+          organizeer = false;
           social = {
             vesktop = false;
             signal = false;
           };
-          llm.antigravity = false;
+          llm = {
+            pi.useNodeRuntime = true;
+            pi.organizeer = true;
+            antigravity = false;
+          };
         };
       };
       dev = {

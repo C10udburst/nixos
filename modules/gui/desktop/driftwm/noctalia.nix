@@ -141,10 +141,10 @@ in {
           [
             ddcutil
             wl-screenrec
+            tesseract
           ]
           ++ (lib.optionals mobile [upower])
           ++ (lib.optionals (!slow) [
-            tesseract
             udiskie
             smartmontools
             kdePackages.kdeconnect-kde
@@ -230,13 +230,20 @@ in {
                   if slow
                   then "solid"
                   else "soft";
-                control_center_placement = "floating";
                 open_near_click_control_center = true;
                 session_placement = "floating";
                 floating_offset = 16;
                 # With the OSK on demand, an attached launcher keeps the panel
                 # compact so the keyboard doesn't fight a floating overlay.
                 launcher_placement =
+                  if steviaEnabled
+                  then "attached"
+                  else "floating";
+                clipboard_placement =
+                  if steviaEnabled
+                  then "attached"
+                  else "floating";
+                control_center_placement =
                   if steviaEnabled
                   then "attached"
                   else "floating";
@@ -252,7 +259,7 @@ in {
                   shortcut = "2";
                 }
                 {
-                  action = "lock_and_suspend";
+                  action = "suspend";
                   shortcut = "3";
                 }
                 {
@@ -311,22 +318,17 @@ in {
 
             idle = {
               behavior_order =
-                if (mobile && !slow)
+                if mobile
                 then [
                   "lock"
                   "screen-off"
                   "suspend"
                 ]
-                else if mobile
-                then [
-                  "lock"
-                  "screen-off"
-                ]
                 else ["screen-off"];
               behavior = {
                 screen-off.enabled = true;
                 lock.enabled = mobile;
-                suspend.enabled = mobile && !slow;
+                suspend.enabled = mobile;
               };
             };
 
@@ -414,8 +416,10 @@ in {
                   if compactMode
                   then
                     ["driftwm"]
-                    ++ lib.optionals (!slow) ["screen_toolkit"]
-                    ++ ["session"]
+                    ++ [
+                      "screen_toolkit"
+                      "session"
+                    ]
                     ++ lib.optionals steviaEnabled ["osk_toggle"]
                     ++ [
                       "clipboard"
@@ -462,7 +466,9 @@ in {
                       accordion_direction = "end";
                       enabled = true;
                       members =
-                        ["network"]
+                        [
+                          "network"
+                        ]
                         ++ (lib.optionals hasTailscale ["tailscale_status"])
                         ++ (lib.optionals hasOpenvpn ["vpn_manager"]);
                     }

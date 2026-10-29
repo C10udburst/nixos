@@ -7,6 +7,10 @@
 }: let
   cfg = config.features.gui.apps.tools.llm.pi;
   llmEnabled = config.features.gui.apps.tools.llm.enable;
+  piPackage =
+    if cfg.useNodeRuntime
+    then inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent
+    else inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
 in {
   imports =
     lib.optionals (inputs ? pi && inputs.pi ? nixosModules) [
@@ -35,6 +39,13 @@ in {
       type = lib.types.nullOr lib.types.str;
       default = "https://llm.brix0.wilkins.pl.eu.org";
     };
+
+    # The bun runtime binary requires AVX (SIGILL on `vzeroupper` pre-Haswell,
+    # e.g. the Pentium 4415Y in surface). The node variant runs everywhere.
+    useNodeRuntime = lib.mkOption {
+      type = lib.types.bool;
+      default = config.features.core.hardware.slow;
+    };
   };
 
   config = lib.mkMerge [
@@ -60,8 +71,7 @@ in {
 
       programs.pi.coding-agent = {
         enable = true;
-        # The nixos/home-manager modules still default to the npm-built variant.
-        package = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
+        package = piPackage;
         # Passed as a directory: its package.json `pi.extensions` declares the entry points.
         extensions =
           [
