@@ -17,7 +17,7 @@
   # linux-surface kernel (built from source with Surface hardware patches).
   # Forcing standard nixpkgs Linux for now for fast builds and first boot tests.
   # To test the patched linux-surface kernel instead, comment this line out:
-  #boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
   hardware.enableRedistributableFirmware = true;
   nixpkgs.config.allowUnfree = true;

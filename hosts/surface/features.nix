@@ -23,10 +23,7 @@ _: {
         "wlr-randr --output eDP-1 --scale 1.5"
       ];
       apps = {
-        editors = {
-          enable = false;
-          zed = true;
-        };
+        editors.enable = false;
         threed.enable = false;
         tools = {
           obs = false;

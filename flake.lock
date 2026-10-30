@@ -1109,11 +1109,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1793367238,
-        "narHash": "sha256-qSgXPiAEp1qrbSvQ2ZsbnbkhaPj/YkWOrtj4+xaPxSE=",
+        "lastModified": 1793393323,
+        "narHash": "sha256-mNOBDVuLbzGjDvOaAKBW1wGbMAeiDOyf8edupoDgqpg=",
         "ref": "refs/heads/master",
-        "rev": "e7b423b2190f04afb7d05f6366d70b8e57ebe494",
-        "revCount": 149,
+        "rev": "c704330f64ae3f4342bf3e809229c21757987d44",
+        "revCount": 150,
         "type": "git",
         "url": "ssh://git@github.com/C10udburst/Organizeer.git"
       },
