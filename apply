@@ -64,6 +64,17 @@ echo ""
 COMMIT_ENTRIES=()
 REBOOT_LOCAL=false
 
+export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
+
+# Run a command as root on the target host (local via sudo, remote via ssh)
+run_root() {
+  if [[ "$IS_LOCAL" == true ]]; then
+    echo "$PASSWORD" | sudo -S bash -c "$1"
+  else
+    echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S bash -c '$1'"
+  fi
+}
+
 for TARGET in "${TARGETS[@]}"; do
   HOST="$TARGET"
   DEST="$TARGET"
@@ -92,58 +103,66 @@ for TARGET in "${TARGETS[@]}"; do
     echo -e "\n🚀 NixOS Rebuilding host '$HOST' with action '$DISPLAY_ACTION'..."
   fi
 
-  if [[ "$HOST" == "$LOCAL_HOST" && "$DEST" == "$LOCAL_HOST" ]]; then
-    echo "$PASSWORD" | sudo -S -v &>/dev/null
+  IS_LOCAL=false
+  if [[ "$HOST" == "$LOCAL_HOST" && "$DEST" == "$LOCAL_HOST" ]]; then IS_LOCAL=true; fi
 
-    if ! echo "$PASSWORD" | sudo --preserve-env=SSH_AUTH_SOCK -S nixos-rebuild "$ACTION" --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
-      echo -e "\n❌ Local rebuild failed on $HOST!"
-      grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
-      exit 1
-    fi
-    GEN=$(nixos-rebuild list-generations --json | jq -r '.[] | select (.current == true) | .generation')
-    if [[ "$DO_REBOOT" == true ]]; then
-      REBOOT_LOCAL=true
-    fi
+  if [[ "$IS_LOCAL" == true ]]; then
+    CURRENT=$(readlink -f /run/current-system 2>/dev/null || true)
   else
-    export NIX_SSHOPTS="-o StrictHostKeyChecking=accept-new"
+    CURRENT=$(ssh $NIX_SSHOPTS "$DEST" "readlink -f /run/current-system" 2>/dev/null || true)
+  fi
 
-    echo "   📦 Building system closure locally..."
-    if ! nixos-rebuild build --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
-      echo -e "\n❌ Local build for remote host $HOST failed!"
-      grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
-      exit 1
-    fi
+  echo "   📦 Building system closure locally..."
+  if ! nixos-rebuild build --flake ".#$HOST" 2>&1 | tee nixos-switch.log | nom; then
+    echo -e "\n❌ Build for $HOST failed!"
+    grep --color -E -i "error|trace|failed" nixos-switch.log || tail -n 20 nixos-switch.log
+    exit 1
+  fi
 
-    SYSTEM_PATH=$(readlink -f ./result)
+  SYSTEM_PATH=$(readlink -f ./result)
 
+  echo "   🔍 Diffing against current system..."
+  if [[ -z "$CURRENT" ]]; then
+    echo "      No current system on '$HOST' (first activation?), skipping diff."
+  elif [[ ! -e "$CURRENT" ]]; then
+    echo "      Current system '$CURRENT' not in local store, skipping diff."
+  else
+    nix run nixpkgs#nvd -- diff "$CURRENT" "$SYSTEM_PATH" -s || true
+  fi
+
+  if [[ "$IS_LOCAL" != true ]]; then
     echo "   🚚 Pushing closure to $DEST..."
     if ! nix-copy-closure --to "$DEST" "$SYSTEM_PATH" 2>&1 | nom; then
       echo -e "\n❌ Failed to push closure to $DEST!"
       exit 1
     fi
+  fi
 
-    echo "   🔗 Registering new system profile..."
-    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S nix-env -p /nix/var/nix/profiles/system --set $SYSTEM_PATH"; then
-       echo -e "\n❌ Failed to set system profile on $DEST!"
-       exit 1
-    fi
+  echo "   🔗 Registering new system profile..."
+  if ! run_root "nix-env -p /nix/var/nix/profiles/system --set $SYSTEM_PATH"; then
+    echo -e "\n❌ Failed to set system profile on $DEST!"
+    exit 1
+  fi
 
-    echo "   ⚡ Activating configuration ($ACTION)..."
-    if ! echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S $SYSTEM_PATH/bin/switch-to-configuration $ACTION"; then
-       echo -e "\n❌ Remote activation failed on $DEST!"
-       exit 1
-    fi
+  echo "   ⚡ Activating configuration ($ACTION)..."
+  if ! run_root "$SYSTEM_PATH/bin/switch-to-configuration $ACTION"; then
+    echo -e "\n❌ Activation failed on $DEST!"
+    exit 1
+  fi
 
-    GEN=$(echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
-    [[ -z "$GEN" || "$GEN" == "null" ]] && GEN="unknown"
+  GEN=$(run_root "nixos-rebuild list-generations --json 2>/dev/null" | jq -r '.[] | select (.current == true) | .generation')
+  [[ -z "$GEN" || "$GEN" == "null" ]] && GEN="unknown"
 
-    if [[ "$DO_REBOOT" == true ]]; then
+  if [[ "$DO_REBOOT" == true ]]; then
+    if [[ "$IS_LOCAL" == true ]]; then
+      REBOOT_LOCAL=true
+    else
       if [[ "$HOST" != "$DEST" ]]; then
         echo "   🔄 Rebooting remote host '$HOST' ($DEST)..."
       else
         echo "   🔄 Rebooting remote host '$HOST'..."
       fi
-      echo "$PASSWORD" | ssh $NIX_SSHOPTS "$DEST" "sudo -S reboot" &>/dev/null || true
+      run_root "reboot" &>/dev/null || true
     fi
   fi
 
