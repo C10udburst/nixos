@@ -189,11 +189,16 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         pass_log_prefix = os.path.join(tmpdir, "ffmpeg2pass")
 
+        # Video filter to ensure width and height are divisible by 2
+        # (truncates odd dimensions down by 1 pixel)
+        scale_filter = "scale=trunc(iw/2)*2:trunc(ih/2)*2"
+
         # Pass 1
         pass1_cmd = [
             "ffmpeg",
             "-y",
             "-i", input_file,
+            "-vf", scale_filter,
             "-c:v", "libx264",
             "-b:v", video_bitrate_str,
             "-pass", "1",
@@ -208,6 +213,7 @@ def main():
             "ffmpeg",
             "-y",
             "-i", input_file,
+            "-vf", scale_filter,
             "-c:v", "libx264",
             "-b:v", video_bitrate_str,
             "-pass", "2",

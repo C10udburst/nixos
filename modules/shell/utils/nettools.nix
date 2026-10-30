@@ -6,7 +6,7 @@
   ...
 }: let
   cfg = config.features.shell.utils.nettools;
-  isGui = config.features.gui.enable or false;
+  hasWireshark = config.features.gui.apps.tools.net;
 in {
   options.features.shell.utils.nettools = lib.mkOption {
     type = lib.types.bool;
@@ -35,7 +35,7 @@ in {
     programs.wireshark = {
       enable = true;
       package =
-        if isGui
+        if hasWireshark
         then pkgs.wireshark
         else pkgs.wireshark-cli;
     };
