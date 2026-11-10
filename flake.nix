@@ -43,6 +43,10 @@
       url = "github:zai-org/GLM-OCR";
       flake = false;
     };
+    handwriting-input = {
+      url = "github:C10udburst/handwriting-input";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -54,6 +58,10 @@
     };
     kimsay = {
       url = "github:IcaroJam/kimsay";
+      flake = false;
+    };
+    manyfold-openscad = {
+      url = "https://github.com/cmeister2/manyfold_openscad/releases/download/0.3.1/manyfold_openscad.zip";
       flake = false;
     };
     manyfold-printables = {
@@ -118,6 +126,10 @@
     };
     pi-context = {
       url = "github:ttttmr/pi-context";
+      flake = false;
+    };
+    pimpmyfreecad = {
+      url = "github:sedatkrn/PimpMyFreeCAD";
       flake = false;
     };
     plasma-manager = {

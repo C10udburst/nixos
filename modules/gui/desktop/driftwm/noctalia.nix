@@ -11,6 +11,7 @@
   mobile = config.features.core.hardware.mobile or false;
   touchscreen = config.features.core.hardware.touchscreen or false;
   steviaEnabled = config.features.gui.desktop.driftwm.stevia;
+  handwritingEnabled = config.features.gui.desktop.driftwm.handwriting or false;
   slow = config.features.core.hardware.slow or false;
   compactMode = mobile && touchscreen;
   hasDocker = config.features.compat.podman.enable or false;
@@ -248,30 +249,30 @@ in {
                   then "attached"
                   else "floating";
               };
-              session.actions = [
-                {
-                  action = "lock";
-                  shortcut = "1";
-                }
-                {
-                  action = "logout";
-                  command = "driftwm msg action quit";
-                  shortcut = "2";
-                }
-                {
-                  action = "suspend";
-                  shortcut = "3";
-                }
-                {
-                  action = "reboot";
-                  shortcut = "4";
-                }
-                {
-                  action = "shutdown";
-                  shortcut = "5";
-                  variant = "destructive";
-                }
-              ];
+              session.actions =
+                lib.imap0
+                (
+                  i: action:
+                    action
+                    // {
+                      shortcut = toString (i + 1);
+                      countdown_seconds = 3;
+                    }
+                )
+                [
+                  {action = "lock";}
+                  {
+                    action = "logout";
+                    command = "driftwm msg action quit";
+                  }
+                  {action = "suspend";}
+                  {action = "reboot";}
+                  {action = "reboot_uefi";}
+                  {
+                    action = "shutdown";
+                    variant = "destructive";
+                  }
+                ];
             };
 
             wallpaper.enabled = false;
@@ -420,14 +421,14 @@ in {
                       "screen_toolkit"
                       "session"
                     ]
-                    ++ lib.optionals steviaEnabled ["osk_toggle"]
+                    ++ lib.optionals (steviaEnabled || handwritingEnabled) ["group:osk_group"]
                     ++ [
                       "clipboard"
                       "group:notifications_group"
                     ]
                   else
                     ["group:window_session"]
-                    ++ lib.optionals steviaEnabled ["osk_toggle"]
+                    ++ lib.optionals (steviaEnabled || handwritingEnabled) ["group:osk_group"]
                     ++ [
                       "lock_keys"
                       "active_window"
@@ -521,6 +522,17 @@ in {
                           "crashes_button"
                         ])
                         ++ lib.optionals (hasDocker && !slow) ["mini-docker"];
+                    }
+                  ]
+                  ++ lib.optionals (steviaEnabled || handwritingEnabled) [
+                    {
+                      id = "osk_group";
+                      accordion = true;
+                      accordion_direction = "end";
+                      enabled = true;
+                      members =
+                        (lib.optionals steviaEnabled ["osk_toggle"])
+                        ++ (lib.optionals handwritingEnabled ["handwriting_toggle"]);
                     }
                   ]
                   ++ lib.optionals (mobile || cfg.plugins.batteryThreshold) [
@@ -652,6 +664,16 @@ in {
                   tooltip = "On-Screen Keyboard";
                   actions = {
                     left = "exec osk-toggle";
+                  };
+                };
+              }
+              // lib.optionalAttrs handwritingEnabled {
+                handwriting_toggle = {
+                  type = "custom_button";
+                  glyph = "writing";
+                  tooltip = "Handwriting Input";
+                  actions = {
+                    left = "exec handwriting-input /home/cloudburst/.config/handwriting-input/config.toml";
                   };
                 };
               };

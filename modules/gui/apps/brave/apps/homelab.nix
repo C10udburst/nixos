@@ -21,7 +21,7 @@ in {
       lib.optionals (!isOrganizeer) [
         (mkWebApp {
           name = "Organizeer";
-          url = "https://tasks.brix0.wilkins.pl.eu.org/";
+          homelab = "tasks";
           icon = icons.organizeer or "";
           size = "1100,750";
           categories = [
@@ -33,14 +33,14 @@ in {
       ++ [
         (mkWebApp {
           name = "Home Assistant";
-          url = "http://go/b/hass";
+          homelab = "hass";
           icon = icons.home-assistant or "";
           size = "820,700";
           categories = ["Utility"];
         })
         (mkWebApp {
           name = "Wealthfolio";
-          url = "http://go/b/wealth";
+          homelab = "wealth";
           icon = icons.wealthfolio or "";
           size = "1024,920";
           categories = [
@@ -50,14 +50,14 @@ in {
         })
         (mkWebApp {
           name = "SiYuan Notes";
-          url = "http://go/b/notes";
+          homelab = "notes";
           icon = icons.siyuan or "";
           size = "1400,800";
           categories = ["Office"];
         })
         (mkWebApp {
           name = "Karakeep Bookmarks";
-          url = "http://go/b/bookmark";
+          homelab = "bookmark";
           icon = icons.karakeep or "";
           size = "1220,640";
           categories = ["Utility"];

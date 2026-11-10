@@ -14,6 +14,7 @@ in {
 
   config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
+      marktext
       karp
       poppler-utils
       pandoc

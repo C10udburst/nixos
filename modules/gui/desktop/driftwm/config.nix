@@ -8,6 +8,59 @@
   isSlow = config.features.core.hardware.slow or false;
   isTouchscreen = config.features.core.hardware.touchscreen or false;
   noctaliaEnabled = config.features.gui.desktop.driftwm.noctalia.enable or false;
+
+  # keybinding help menu shown on mod+f1 (uses the rofi -> noctalia dmenu compat shim)
+  helpDmenu = pkgs.writeShellApplication {
+    name = "driftwm-help-dmenu";
+    runtimeInputs = [(pkgs.python3.withPackages (ps: [ps.tomli]))];
+    text = ''
+      exec python ${./_help-dmenu.py} "$@"
+    '';
+  };
+
+  # function that generates keybindings for all 4 directions, including arrows and wasd
+  genDirectionalBindings = keyPrefix: commandPrefix:
+    lib.listToAttrs (
+      map
+      (direction: {
+        name = "${keyPrefix}+${direction.key}";
+        value = "${commandPrefix} ${direction.value}";
+      })
+      [
+        {
+          key = "up";
+          value = "up";
+        }
+        {
+          key = "down";
+          value = "down";
+        }
+        {
+          key = "left";
+          value = "left";
+        }
+        {
+          key = "right";
+          value = "right";
+        }
+        {
+          key = "w";
+          value = "up";
+        }
+        {
+          key = "s";
+          value = "down";
+        }
+        {
+          key = "a";
+          value = "left";
+        }
+        {
+          key = "d";
+          value = "right";
+        }
+      ]
+    );
 in {
   options.features.gui.desktop.driftwm = {
     extracmds = lib.mkOption {
@@ -57,10 +110,13 @@ in {
           "mod+period" = "spawn noctalia msg panel-toggle launcher \"/emo \"";
           "mod+alt+period" = "spawn noctalia msg panel-toggle launcher \"/uni \"";
           "mod+escape" = "spawn noctalia msg panel-toggle session";
-          "mod+f11" = "spawn noctalia msg bar-toggle main";
+          "mod+f11" = "spawn ${pkgs.writeShellScript "driftwm-fullscreen-toggle" ''
+            #!/usr/bin/env bash
+            noctalia msg bar-toggle main
+            noctalia msg dock-toggle
+          ''}";
           "mod+l" = "spawn noctalia msg session lock";
           "mod+r" = "spawn noctalia msg panel-toggle control-center";
-          "mod+f1" = "spawn noctalia msg panel-toggle control-center";
           "mod+m" = "spawn noctalia msg panel-toggle cloudburst/driftwm:minimap";
           "mod+p" = "spawn noctalia msg panel-open control-center media";
           "XF86MonBrightnessUp" = "spawn noctalia msg brightness-up";
@@ -70,6 +126,14 @@ in {
           "mod+f12" = "spawn noctalia msg panel-toggle umedbazarov/crashes:panel";
         }
       );
+
+      directionalBindings =
+        genDirectionalBindings "mod" "center-nearest"
+        // genDirectionalBindings "mod+shift" "pan-viewport"
+        // genDirectionalBindings "mod+alt" "move-to-snap"
+        // genDirectionalBindings "mod+alt+shift" "nudge-window"
+        // genDirectionalBindings "mod+ctrl" "grow-window"
+        // genDirectionalBindings "mod+ctrl+shift" "shrink-window";
 
       baseKeybindings = {
         "ctrl+alt+t" = "exec konsole";
@@ -88,26 +152,11 @@ in {
         "mod+g" = "fill-window";
         "mod+equal" = "zoom-in";
         "mod+minus" = "zoom-out";
-        "mod+up" = "center-nearest up";
-        "mod+down" = "center-nearest down";
-        "mod+left" = "center-nearest left";
-        "mod+right" = "center-nearest right";
-        "mod+w" = "center-nearest up";
-        "mod+s" = "center-nearest down";
-        "mod+a" = "center-nearest left";
         "mod+f2" = "spawn plasmawindowed org.kde.plasma.kickoff";
-        "mod+d" = "center-nearest right";
         "mod+q" = "close-window";
         "mod+e" = "exec dolphin";
+        "mod+f1" = "spawn ${helpDmenu}/bin/driftwm-help-dmenu";
         "mod+f10" = "exec nm-connection-editor";
-        "mod+shift+w" = "pan-viewport up";
-        "mod+shift+s" = "pan-viewport down";
-        "mod+shift+a" = "pan-viewport left";
-        "mod+shift+d" = "pan-viewport right";
-        "mod+alt+w" = "nudge-window up";
-        "mod+alt+s" = "nudge-window down";
-        "mod+alt+a" = "nudge-window left";
-        "mod+alt+d" = "nudge-window right";
       };
 
       windowRules =
@@ -171,31 +220,41 @@ in {
             "_JAVA_AWT_WM_NONREPARENTING" = "1";
             "QT_QPA_PLATFORM" = "wayland;xcb";
           };
-          input.keyboard = {
-            layout = "pl";
-            num_lock = true;
+          input = {
+            keyboard = {
+              layout = "pl";
+              num_lock = true;
+            };
+            mouse = {
+              accel_speed = 0.1;
+              accel_profile = "adaptive";
+            };
+            trackpad = {
+              accel_speed = 0.1;
+              click_method = "button_areas";
+            };
           };
-          input.mouse = {
-            accel_speed = 0.1;
-            accel_profile = "adaptive";
-          };
-          input.trackpad = {
-            accel_speed = 0.1;
-            click_method = "button_areas";
+          session = {
+            restore_windows = false;
+            restore_camera = false;
           };
           cursor.inactive_opacity = 0.25;
-          mouse.on-canvas = lib.optionalAttrs noctaliaEnabled {
-            "right" = "spawn noctalia msg panel-toggle launcher";
+          mouse = {
+            on-canvas = lib.optionalAttrs noctaliaEnabled {
+              "right" = "spawn noctalia msg panel-toggle launcher";
+            };
+            anywhere = {
+              "ctrl+alt+trackpad-scroll" = "pan-viewport";
+              "ctrl+alt+left" = "pan-viewport";
+            };
           };
-          mouse.anywhere = {
-            "ctrl+alt+trackpad-scroll" = "pan-viewport";
-            "ctrl+alt+left" = "pan-viewport";
-          };
-          touch.on-canvas = lib.optionalAttrs noctaliaEnabled {
-            "2-finger-tap" = "spawn noctalia msg panel-toggle launcher";
-          };
-          touch.anywhere = lib.optionalAttrs noctaliaEnabled {
-            "4-finger-tap" = "spawn noctalia msg panel-toggle launcher";
+          touch = {
+            on-canvas = lib.optionalAttrs noctaliaEnabled {
+              "2-finger-tap" = "spawn noctalia msg panel-toggle launcher";
+            };
+            anywhere = lib.optionalAttrs noctaliaEnabled {
+              "4-finger-tap" = "spawn noctalia msg panel-toggle launcher";
+            };
           };
           gestures = {
             swipe_threshold = 6;
@@ -255,7 +314,7 @@ in {
             enabled = true;
             path = "${lib.getExe pkgs.xwayland-satellite}";
           };
-          keybindings = baseKeybindings // bookmarkBindings // noctaliaKeybindings;
+          keybindings = baseKeybindings // bookmarkBindings // noctaliaKeybindings // directionalBindings;
           window_rules = windowRules;
         }
         cfg.extraConfig;

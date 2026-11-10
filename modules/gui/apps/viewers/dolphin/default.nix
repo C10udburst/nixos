@@ -7,6 +7,7 @@
   cfg = config.features.gui.apps.viewers.dolphin;
   viewersEnabled = config.features.gui.apps.viewers.enable;
   isVscode = config.features.gui.apps.editors.vscode or false;
+  isZed = config.features.gui.apps.editors.zed or false;
   isProgramming = config.features.gui.dev.programming.enable or false;
 in {
   options.features.gui.apps.viewers.dolphin = lib.mkOption {
@@ -23,6 +24,10 @@ in {
 
       xdg.dataFile."kio/servicemenus/vscode.desktop" = lib.mkIf isVscode {
         source = ./_vscode.desktop;
+      };
+
+      xdg.dataFile."kio/servicemenus/zeditor.desktop" = lib.mkIf isZed {
+        source = ./_zeditor.desktop;
       };
 
       xdg.dataFile."kio/servicemenus/gitr.desktop" = lib.mkIf isProgramming {

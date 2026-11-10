@@ -86,3 +86,12 @@ providers:
           efforts: [xhigh, max]
         contextWindow: 131072
         maxTokens: 32768
+      - id: mimo-v2.6-flash-mopd
+        name: MiMo V2.6 Flash MOPD mixed IQ2_XXS/XS + Q8 (309.8B) with vision, audio and video
+        reasoning: true
+        input: [text, image]
+        thinking:
+          mode: effort
+          efforts: [xhigh, max]
+        contextWindow: 1048576
+        maxTokens: 32768

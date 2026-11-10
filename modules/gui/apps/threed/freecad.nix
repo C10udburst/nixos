@@ -43,6 +43,10 @@ in {
           url = "github:APEbbers/SearchBar";
           flake = false;
         };
+        pimpmyfreecad = {
+          url = "github:sedatkrn/PimpMyFreeCAD";
+          flake = false;
+        };
       };
     }
     (lib.mkIf cfg.enable {
@@ -56,10 +60,14 @@ in {
                 inputs.simplecad
                 inputs.freecad-nxt
                 searchbar
+                # Rail Pipe / Rail Groove, Magic Loft and Dome for PartDesign and
+                # Part. Plain addon tree (Init.py + InitGui.py), no third-party
+                # Python beyond the numpy/pivy FreeCAD already ships.
+                inputs.pimpmyfreecad
               ];
               # SearchBar needs defusedxml (startup XML parsing, dark-mode
-              # detection) and lxml (search results); Nxt and SimpleCAD use only
-              # what FreeCAD already bundles.
+              # detection) and lxml (search results); Nxt, SimpleCAD and Pimp My
+              # FreeCAD use only what FreeCAD already bundles.
               pythons = [
                 (ps: [ps.defusedxml ps.lxml])
               ];

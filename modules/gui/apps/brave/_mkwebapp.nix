@@ -2,7 +2,12 @@
   lib,
   pkgs,
 }: {
-  url,
+  homelab ? "",
+  url ? (
+    if homelab != ""
+    then "https://${homelab}.brix0.wilkins.pl.eu.org/"
+    else ""
+  ),
   name,
   icon ? "",
   size ? "",

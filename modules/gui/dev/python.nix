@@ -58,9 +58,5 @@ in {
       pythonPkg
       pkgs.pyright
     ];
-
-    environment.sessionVariables = {
-      PYTHONPATH = "${pythonPkg}/${pythonPkg.sitePackages}";
-    };
   };
 }

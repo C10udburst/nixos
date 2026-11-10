@@ -19,7 +19,7 @@ in {
     environment.systemPackages = [
       (mkWebApp {
         name = "Immich Photos";
-        url = "http://go/b/photos";
+        homelab = "photos";
         icon = icons.immich or "";
         size = "1240,760";
         categories = [

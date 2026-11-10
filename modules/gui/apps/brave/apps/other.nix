@@ -31,7 +31,7 @@ in {
         })
         (mkWebApp {
           name = "Fetlife DB";
-          url = "http://go/b/fl";
+          homelab = "fetlife";
           icon = icons.fetlife or "";
           size = "730,1000";
           categories = [
