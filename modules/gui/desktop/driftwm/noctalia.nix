@@ -69,6 +69,8 @@
     ++ nixIndexPluginNames;
 
   enabledPluginIds = map (name: pluginMap.${name}) (lib.unique selectedPluginNames);
+
+  hasScreenToolkit = lib.elem "screen-toolkit" selectedPluginNames;
 in {
   options.features.gui.desktop.driftwm.noctalia = {
     enable = lib.mkOption {
@@ -144,6 +146,11 @@ in {
             wl-screenrec
             tesseract
           ]
+          ++ (lib.optionals hasScreenToolkit [
+            imagemagick
+            hyprpicker
+            zbar
+          ])
           ++ (lib.optionals mobile [upower])
           ++ (lib.optionals (!slow) [
             udiskie
