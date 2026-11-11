@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{inputs, ...}: {
   imports = [
     # Enabling this makes cache compile the kernel for surface go
     inputs.nixos-hardware.nixosModules.microsoft-surface-go
