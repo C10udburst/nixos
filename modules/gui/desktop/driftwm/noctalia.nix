@@ -18,6 +18,8 @@
   hasTailscale = config.features.services.tailscale.enable or false;
   hasOpenvpn = config.features.services.vpn.openvpn or false;
   hasNixIndex = config.features.shell.utils.nix or false;
+  hasVoxtype = config.features.gui.services.voxtype.enable or false;
+  hasOsk = steviaEnabled || handwritingEnabled;
 
   pluginMap = {
     battery-threshold = "damian-ds7/battery-threshold";
@@ -29,6 +31,7 @@
     crashes = "umedbazarov/crashes";
     drive-health = "gustav0ar/drive-health";
     hassio = "pozzoo/hassio";
+    voxtype = "gabedunn/voxtype";
     mini-docker = "8bury/mini-docker";
     phone-connect = "icefish/phone-connect";
     procmon = "weinguyen/procmon";
@@ -66,7 +69,8 @@
     ++ dockerPluginNames
     ++ tailscalePluginNames
     ++ vpnPluginNames
-    ++ nixIndexPluginNames;
+    ++ nixIndexPluginNames
+    ++ lib.optionals hasVoxtype ["voxtype"];
 
   enabledPluginIds = map (name: pluginMap.${name}) (lib.unique selectedPluginNames);
 
@@ -397,6 +401,8 @@ in {
                   else 1.0;
                 compact = compactMode;
 
+                # the left cluster sits between the cpu cat (sysmon_group) and the
+                # home assistant status: osk, lock keys, then the dictation button
                 start =
                   if compactMode
                   then
@@ -405,6 +411,11 @@ in {
                       "clock"
                     ]
                     ++ lib.optionals (!slow) ["procmon_widget"]
+                    ++ lib.optionals hasOsk ["group:osk_group"]
+                    ++ [
+                      "lock_keys"
+                    ]
+                    ++ lib.optionals hasVoxtype ["voxtype_status"]
                     ++ [
                       "hassio_status"
                     ]
@@ -417,31 +428,31 @@ in {
                     ++ lib.optionals (!slow) ["group:sysmon_group"]
                     ++ [
                       "group:media_group"
+                    ]
+                    ++ lib.optionals hasOsk ["group:osk_group"]
+                    ++ [
+                      "lock_keys"
+                    ]
+                    ++ lib.optionals hasVoxtype ["voxtype_status"]
+                    ++ [
                       "hassio_status"
                     ];
 
                 center =
                   if compactMode
-                  then
-                    ["driftwm"]
-                    ++ [
-                      "screen_toolkit"
-                      "session"
-                    ]
-                    ++ lib.optionals (steviaEnabled || handwritingEnabled) ["group:osk_group"]
-                    ++ [
-                      "clipboard"
-                      "group:notifications_group"
-                    ]
-                  else
-                    ["group:window_session"]
-                    ++ lib.optionals (steviaEnabled || handwritingEnabled) ["group:osk_group"]
-                    ++ [
-                      "lock_keys"
-                      "active_window"
-                      "clipboard"
-                      "group:notifications_group"
-                    ];
+                  then [
+                    "driftwm"
+                    "screen_toolkit"
+                    "session"
+                    "clipboard"
+                    "group:notifications_group"
+                  ]
+                  else [
+                    "group:window_session"
+                    "active_window"
+                    "clipboard"
+                    "group:notifications_group"
+                  ];
 
                 end =
                   [
@@ -599,6 +610,7 @@ in {
               "${mini-docker}".manager_placement = "attached";
               "${tailscale}".manager_placement = "attached";
               "${vpn-manager}".panel_placement = "attached";
+              "${voxtype}".osd_enabled = true;
             };
 
             widget = with pluginMap;
@@ -639,6 +651,7 @@ in {
                 };
                 udiskie_status.type = "${udiskie}:status";
                 hassio_status.type = "${hassio}:status";
+                voxtype_status.type = "${voxtype}:status";
                 drive_summary.type = "${drive-health}:summary";
                 screen_toolkit.type = "${screen-toolkit}:widget";
                 procmon_widget.type = "${procmon}:widget";

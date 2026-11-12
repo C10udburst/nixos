@@ -135,29 +135,33 @@ in {
         // genDirectionalBindings "mod+ctrl" "grow-window"
         // genDirectionalBindings "mod+ctrl+shift" "shrink-window";
 
-      baseKeybindings = {
-        "ctrl+alt+t" = "exec konsole";
-        "ctrl+shift+escape" = "exec plasma-systemmonitor";
+      baseKeybindings =
+        {
+          "ctrl+alt+t" = "exec konsole";
+          "ctrl+shift+escape" = "exec plasma-systemmonitor";
 
-        "XF86Calculator" = "exec qalculate-qt";
-        "XF86Search" = "exec brave";
-        "XF86WWW" = "exec brave";
-        "XF86Mail" = "exec brave https://mail.google.com";
-        "XF86AudioRaiseVolume" = "spawn pamixer -i 5";
-        "XF86AudioLowerVolume" = "spawn pamixer -d 5";
-        "XF86AudioMute" = "spawn pamixer -t";
+          "XF86Calculator" = "exec qalculate-qt";
+          "XF86Search" = "exec brave";
+          "XF86WWW" = "exec brave";
+          "XF86Mail" = "exec brave https://mail.google.com";
+          "XF86AudioRaiseVolume" = "spawn pamixer -i 5";
+          "XF86AudioLowerVolume" = "spawn pamixer -d 5";
+          "XF86AudioMute" = "spawn pamixer -t";
 
-        "mod+Print" = "spawn driftwm msg screenshot window -o - | wl-copy";
-        "alt+f4" = "close-window";
-        "mod+g" = "fill-window";
-        "mod+equal" = "zoom-in";
-        "mod+minus" = "zoom-out";
-        "mod+f2" = "spawn plasmawindowed org.kde.plasma.kickoff";
-        "mod+q" = "close-window";
-        "mod+e" = "exec dolphin";
-        "mod+f1" = "spawn ${helpDmenu}/bin/driftwm-help-dmenu";
-        "mod+f10" = "exec nm-connection-editor";
-      };
+          "mod+Print" = "spawn driftwm msg screenshot window -o - | wl-copy";
+          "alt+f4" = "close-window";
+          "mod+g" = "fill-window";
+          "mod+equal" = "zoom-in";
+          "mod+minus" = "zoom-out";
+          "mod+f2" = "spawn plasmawindowed org.kde.plasma.kickoff";
+          "mod+q" = "close-window";
+          "mod+e" = "exec dolphin";
+          "mod+f1" = "spawn ${helpDmenu}/bin/driftwm-help-dmenu";
+          "mod+f10" = "exec nm-connection-editor";
+        }
+        // lib.optionalAttrs config.features.gui.services.voxtype.enable or false {
+          "mod+shift+return" = "exec voxtype record toggle";
+        };
 
       windowRules =
         [

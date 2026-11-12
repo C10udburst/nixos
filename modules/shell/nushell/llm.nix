@@ -54,7 +54,7 @@ in {
 
           let response = (
             http post --content-type application/json
-              "http://llm:8080/v1/chat/completions"
+              "https://evo-x2.brix0.wilkins.pl.eu.org/v1/chat/completions"
               $body
           )
 

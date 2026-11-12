@@ -70,6 +70,11 @@ in {
         '')
       ];
 
+      home.file.".pi/organizeer/models.json" = {
+        source = ./_models.json;
+        force = true;
+      };
+
       xdg.desktopEntries.organizeer-pi = {
         name = "Organizeer Pi";
         genericName = "Organizeer Task Agent";
