@@ -22,6 +22,7 @@
         mode = "remote";
         remote_endpoint = cfg.endpoint;
         remote_model = cfg.model;
+        model = cfg.model;
         language = cfg.language;
       };
 
