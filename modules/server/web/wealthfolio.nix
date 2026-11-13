@@ -70,6 +70,7 @@ in {
               WF_LISTEN_ADDR = "0.0.0.0:8088";
               WF_DB_PATH = "/data/wealthfolio.db";
               WF_CORS_ALLOW_ORIGINS = "https://wealth.${baseDomain}";
+              WF_MCP_ENABLED = "true";
             }
             // lib.optionalAttrs autheliaEnabled {
               WF_OIDC_ENABLED = "true";
