@@ -9,10 +9,11 @@
   piCfg = config.features.gui.apps.tools.llm.pi;
   orgCfg = config.features.gui.apps.tools.organizeer;
   organizeerUrl = "https://tasks.brix0.wilkins.pl.eu.org/mcp";
+  # bun needs AVX, node runs everywhere (see the pi module)
   piPackage =
-    if piCfg.useNodeRuntime
-    then inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent
-    else inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
+    if config.features.core.hardware.avx
+    then inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun
+    else inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent;
   organizeerAgent = inputs.pi.lib.mkCodingAgent {
     inherit pkgs;
     modules = [

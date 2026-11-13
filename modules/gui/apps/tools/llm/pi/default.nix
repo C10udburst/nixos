@@ -7,10 +7,12 @@
 }: let
   cfg = config.features.gui.apps.tools.llm.pi;
   llmEnabled = config.features.gui.apps.tools.llm.enable;
+  # The bun runtime binary requires AVX (SIGILL on `vzeroupper` pre-Haswell,
+  # e.g. the Pentium 4415Y in surface). The node variant runs everywhere.
   piPackage =
-    if cfg.useNodeRuntime
-    then inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent
-    else inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun;
+    if config.features.core.hardware.avx
+    then inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent-bun
+    else inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.coding-agent;
 in {
   imports =
     lib.optionals (inputs ? pi && inputs.pi ? nixosModules) [
@@ -38,13 +40,6 @@ in {
     litellmProxy = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = "https://llm.brix0.wilkins.pl.eu.org";
-    };
-
-    # The bun runtime binary requires AVX (SIGILL on `vzeroupper` pre-Haswell,
-    # e.g. the Pentium 4415Y in surface). The node variant runs everywhere.
-    useNodeRuntime = lib.mkOption {
-      type = lib.types.bool;
-      default = config.features.core.hardware.slow;
     };
   };
 

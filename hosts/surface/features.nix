@@ -37,7 +37,6 @@ _: {
             signal = false;
           };
           llm = {
-            pi.useNodeRuntime = true;
             pi.organizeer = true;
             antigravity = false;
           };

@@ -5,15 +5,36 @@
   ...
 }: let
   cfg = config.features.gui.services.voxtype;
+  avxEnabled = config.features.core.hardware.avx;
 
   tomlFormat = pkgs.formats.toml {};
+
+  # nixpkgs pins RUSTFLAGS = "-C target-cpu=x86-64-v3", so the stock binary is
+  # AVX2-only and SIGILLs on the surface CPU. The bundled whisper.cpp/ggml part
+  # is already ISA-neutral (dropping the pin leaves exactly as much AVX in the
+  # binary as turning GGML_AVX/GGML_AVX2/GGML_FMA/GGML_F16C off through the
+  # GGML_* env defines whisper-rs-sys forwards to CMake: 4644 ymm uses, all of
+  # them inside ring/memchr/teddy functions behind is_x86_feature_detected!),
+  # so RUSTFLAGS alone is enough. Whisper runs remotely anyway.
+  voxtypeSafe = pkgs.voxtype.overrideAttrs (_finalAttrs: previousAttrs: {
+    env =
+      (previousAttrs.env or {})
+      // {
+        RUSTFLAGS = "-C target-cpu=x86-64-v2";
+      };
+  });
+
+  voxtypePackage =
+    if avxEnabled
+    then pkgs.voxtype
+    else voxtypeSafe;
 
   # voxtype deserializes hotkey/audio/output without defaults, so a partial
   # config.toml is rejected outright ("missing field `audio`"). Merge the
   # defaults the package ships at share/voxtype/default-config.toml.
   configToml = tomlFormat.generate "voxtype-config.toml" (
     lib.recursiveUpdate
-    (builtins.fromTOML (builtins.readFile "${pkgs.voxtype}/share/voxtype/default-config.toml"))
+    (builtins.fromTOML (builtins.readFile "${voxtypePackage}/share/voxtype/default-config.toml"))
     # Remote-only setup: whisper runs on the EVO-X2 inference gateway, so no local
     # model is ever downloaded and `whisper.model` stays unused. The endpoint is
     # OpenAI compatible; voxtype appends /v1/audio/transcriptions itself.
@@ -56,7 +77,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     # the bar plugin shells out to `voxtype`, so it has to be on the system PATH
-    environment.systemPackages = [pkgs.voxtype];
+    environment.systemPackages = [voxtypePackage];
 
     home-manager.users.cloudburst = {
       # force = true because `voxtype configure` writes this very file
@@ -78,7 +99,7 @@ in {
 
         Service = {
           Type = "simple";
-          ExecStart = "${pkgs.voxtype}/bin/voxtype daemon";
+          ExecStart = "${voxtypePackage}/bin/voxtype daemon";
           Restart = "on-failure";
           RestartSec = "5";
         };
