@@ -81,6 +81,16 @@ in {
               # Gateway is unauthenticated; a placeholder key satisfies the
               # OpenAI client requirement (same convention as the pi/omp configs).
               OPENAI_API_KEY = "none";
+              # RAG embeddings: EmbeddingGemma 300M on the gateway (768-dim).
+              RAG_EMBEDDING_ENGINE = "openai";
+              RAG_EMBEDDING_MODEL = "embed-gemma:300m";
+              RAG_OPENAI_API_BASE_URL = gatewayUrl;
+              RAG_OPENAI_API_KEY = "none";
+              # Voice input: faster-whisper turbo via the gateway's ASR backend.
+              AUDIO_STT_ENGINE = "openai";
+              AUDIO_STT_MODEL = "whisper-v3:turbo";
+              AUDIO_STT_OPENAI_API_BASE_URL = gatewayUrl;
+              AUDIO_STT_OPENAI_API_KEY = "none";
             }
             // lib.optionalAttrs autheliaEnabled {
               OAUTH_CLIENT_ID = "openwebui";
