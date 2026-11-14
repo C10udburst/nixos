@@ -14,5 +14,7 @@ in {
   config = lib.mkIf cfg {
     virtualisation.waydroid.enable = true;
     virtualisation.waydroid.package = pkgs.waydroid-nftables;
+    # Prevent automatic boot startup while keeping D-Bus activation intact
+    systemd.services.waydroid-container.wantedBy = lib.mkForce [];
   };
 }

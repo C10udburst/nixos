@@ -25,7 +25,10 @@ _: {
       apps = {
         editors = {
           enable = false;
-          media.krita = true;
+          media = {
+            krita = true;
+            rnote = true;
+          };
         };
         threed.enable = false;
         tools = {
@@ -54,6 +57,7 @@ _: {
 
     compat = {
       enable = false;
+      waydroid = true;
     };
   };
 }
