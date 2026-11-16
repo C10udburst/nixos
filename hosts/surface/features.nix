@@ -39,10 +39,6 @@ _: {
             vesktop = false;
             signal = false;
           };
-          llm = {
-            pi.organizeer = true;
-            antigravity = false;
-          };
         };
       };
       dev = {
@@ -53,6 +49,11 @@ _: {
           ai = false;
         };
       };
+    };
+
+    shell.utils.llm = {
+      pi.organizeer = true;
+      antigravity = false;
     };
 
     compat = {

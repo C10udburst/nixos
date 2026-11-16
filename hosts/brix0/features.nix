@@ -27,6 +27,7 @@ _: {
       };
       waypipe = false;
     };
+    shell.utils.llm.enable = false;
     compat.podman.enable = true;
   };
 }

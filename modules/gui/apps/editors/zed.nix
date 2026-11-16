@@ -17,7 +17,7 @@
   isTypst = isDev && (config.features.gui.dev.documents.typst or false);
   isArduino = isDev && (config.features.gui.dev.arduino.enable or false);
   isThreed = config.features.gui.apps.threed.enable or false;
-  isOmp = config.features.gui.apps.tools.llm.omp.enable or false;
+  isOmp = config.features.shell.utils.llm.omp.enable or false;
 
   # Zed extensions (slugs from https://github.com/zed-industries/extensions).
   # Rust, Go, Python, JSON, YAML and Markdown are bundled with Zed itself,
@@ -64,7 +64,7 @@
     ]
     ++ lib.optionals isThreed ["gcode"];
   # NOTE: no Zed equivalent exists for Pi Agent Studio; Zed's agent panel is
-  # configured via userSettings instead, so `tools.llm` adds no extension.
+  # configured via userSettings instead, so `utils.llm` adds no extension.
 in {
   options.features.gui.apps.editors.zed = lib.mkOption {
     type = lib.types.bool;

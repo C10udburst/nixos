@@ -5,15 +5,15 @@
   inputs,
   ...
 }: let
-  cfg = config.features.gui.apps.tools.llm.omp;
-  piCfg = config.features.gui.apps.tools.llm.pi;
-  llmEnabled = config.features.gui.apps.tools.llm.enable;
+  cfg = config.features.shell.utils.llm.omp;
+  piCfg = config.features.shell.utils.llm.pi;
+  llmEnabled = config.features.shell.utils.llm.enable;
   system = pkgs.stdenv.hostPlatform.system;
   basePackage = inputs.omp.packages.${system}.default;
   # Shared EVO-X2 gateway catalog; omp gets its models.yml generated from it.
   evoX2 = import ../_evo-x2.nix;
 in {
-  options.features.gui.apps.tools.llm.omp = {
+  options.features.shell.utils.llm.omp = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = llmEnabled && true;

@@ -68,6 +68,10 @@
       url = "github:nxn94/manyfold_printables";
       flake = false;
     };
+    mini-swe-agent-src = {
+      url = "github:swe-agent/mini-swe-agent";
+      flake = false;
+    };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs.nixpkgs.follows = "nixpkgs";

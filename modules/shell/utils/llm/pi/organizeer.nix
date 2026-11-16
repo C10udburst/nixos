@@ -5,8 +5,8 @@
   inputs,
   ...
 }: let
-  cfg = config.features.gui.apps.tools.llm.pi.organizeer;
-  piCfg = config.features.gui.apps.tools.llm.pi;
+  cfg = config.features.shell.utils.llm.pi.organizeer;
+  piCfg = config.features.shell.utils.llm.pi;
   orgCfg = config.features.gui.apps.tools.organizeer;
   organizeerUrl = "https://tasks.brix0.wilkins.pl.eu.org/mcp";
   # Shared EVO-X2 gateway catalog; this agent's models.json is generated from it.
@@ -59,7 +59,7 @@
     ];
   };
 in {
-  options.features.gui.apps.tools.llm.pi.organizeer = lib.mkOption {
+  options.features.shell.utils.llm.pi.organizeer = lib.mkOption {
     type = lib.types.bool;
     default = piCfg.enable && orgCfg;
   };

@@ -735,6 +735,22 @@
         "type": "github"
       }
     },
+    "mini-swe-agent-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788411959,
+        "narHash": "sha256-9gVNooXn10vBy2VLyY4+hrD1nmfYYVhzE96k4gh8JW4=",
+        "owner": "swe-agent",
+        "repo": "mini-swe-agent",
+        "rev": "04d809ceab9df28f9adaed044884180159172930",
+        "type": "github"
+      },
+      "original": {
+        "owner": "swe-agent",
+        "repo": "mini-swe-agent",
+        "type": "github"
+      }
+    },
     "nix-alien": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -1309,6 +1325,7 @@
         "kimsay": "kimsay",
         "manyfold-openscad": "manyfold-openscad",
         "manyfold-printables": "manyfold-printables",
+        "mini-swe-agent-src": "mini-swe-agent-src",
         "nix-alien": "nix-alien",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixcache-oci": "nixcache-oci",

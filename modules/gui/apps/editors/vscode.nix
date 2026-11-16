@@ -18,7 +18,7 @@
   isTypst = isDev && (config.features.gui.dev.documents.typst or false);
   isArduino = isDev && (config.features.gui.dev.arduino.enable or false);
   isThreed = config.features.gui.apps.threed.enable or false;
-  isLlm = config.features.gui.apps.tools.llm.enable or false;
+  isLlm = config.features.shell.utils.llm.enable or false;
 
   exts = pkgs.vscode-marketplace;
 

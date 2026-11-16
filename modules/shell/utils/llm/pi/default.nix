@@ -5,8 +5,8 @@
   inputs,
   ...
 }: let
-  cfg = config.features.gui.apps.tools.llm.pi;
-  llmEnabled = config.features.gui.apps.tools.llm.enable;
+  cfg = config.features.shell.utils.llm.pi;
+  llmEnabled = config.features.shell.utils.llm.enable;
   # Shared EVO-X2 gateway catalog; pi gets its models.json generated from it.
   evoX2 = import ../_evo-x2.nix;
   # The bun runtime binary requires AVX (SIGILL on `vzeroupper` pre-Haswell,
@@ -24,7 +24,7 @@ in {
       inputs.pi-agent.nixosModules.default
     ];
 
-  options.features.gui.apps.tools.llm.pi = {
+  options.features.shell.utils.llm.pi = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = llmEnabled && true;

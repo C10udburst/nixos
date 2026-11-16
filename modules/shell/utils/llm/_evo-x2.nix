@@ -86,23 +86,6 @@ let
 
   models = [
     {
-      id = "deepseek-r1-distill-qwen-32b";
-      name = "DeepSeek R1 Distill Qwen 32B (Q8_0)";
-      contextWindow = 131072;
-      maxTokens = 65536;
-    }
-    {
-      id = "deepseek-v4-flash";
-      name = "DeepSeek V4 Flash IQ2XXS (80.76 GiB) with DSpark speculative decoding";
-      contextWindow = 131072;
-      maxTokens = 32768;
-      effortMap = {
-        off = "none";
-        xhigh = "xhigh";
-        max = "max";
-      };
-    }
-    {
       id = "deepseek-v4.1-flash";
       name = "DeepSeek V4.1 Flash UD-IQ1_M (140 GB + 203 GB streamed Engram table) with DSpark drafting, 1M context";
       contextWindow = 1048576;
@@ -187,12 +170,6 @@ let
     {
       id = "nanbeige4.1:3b";
       name = "NanBeige 4.1 3B on the Ryzen AI NPU via OpenFlowLM - pareto optimal chat/tool calling model";
-      contextWindow = 32768;
-      maxTokens = 8192;
-    }
-    {
-      id = "qwen2.5-72b-instruct";
-      name = "Qwen 2.5 72B Instruct (Q4_K_M)";
       contextWindow = 32768;
       maxTokens = 8192;
     }
