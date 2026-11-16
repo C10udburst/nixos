@@ -9,6 +9,9 @@
   piCfg = config.features.gui.apps.tools.llm.pi;
   orgCfg = config.features.gui.apps.tools.organizeer;
   organizeerUrl = "https://tasks.brix0.wilkins.pl.eu.org/mcp";
+  # Shared EVO-X2 gateway catalog; this agent's models.json is generated from it.
+  evoX2 = import ../_evo-x2.nix;
+  modelsJson = pkgs.writeText "organizeer-models.json" evoX2.piJson;
   # bun needs AVX, node runs everywhere (see the pi module)
   piPackage =
     if config.features.core.hardware.avx
@@ -20,7 +23,7 @@
       {
         pi.coding-agent = {
           package = piPackage;
-          models = ./_models.json;
+          models = modelsJson;
           rules = ./_organizeer-agent.md;
           settings = {
             theme = "dark";
@@ -39,9 +42,7 @@
             };
           };
           extensions =
-            [
-              "${inputs.pi-context}"
-            ]
+            []
             ++ lib.optionals (piCfg.litellmProxy != null) [
               ./_litellm.ts
             ];
@@ -72,7 +73,7 @@ in {
       ];
 
       home.file.".pi/organizeer/models.json" = {
-        source = ./_models.json;
+        text = evoX2.piJson;
         force = true;
       };
 

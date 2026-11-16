@@ -124,10 +124,6 @@
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pi-context = {
-      url = "github:ttttmr/pi-context";
-      flake = false;
-    };
     pimpmyfreecad = {
       url = "github:sedatkrn/PimpMyFreeCAD";
       flake = false;

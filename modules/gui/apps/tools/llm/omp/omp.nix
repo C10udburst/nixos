@@ -10,6 +10,8 @@
   llmEnabled = config.features.gui.apps.tools.llm.enable;
   system = pkgs.stdenv.hostPlatform.system;
   basePackage = inputs.omp.packages.${system}.default;
+  # Shared EVO-X2 gateway catalog; omp gets its models.yml generated from it.
+  evoX2 = import ../_evo-x2.nix;
 in {
   options.features.gui.apps.tools.llm.omp = {
     enable = lib.mkOption {
@@ -27,8 +29,8 @@ in {
     }
 
     (lib.mkIf cfg.enable {
-      # omp keeps its own agent directory (~/.omp/agent): models.yml mirrors pi's
-      # _models.json (local LLM gateway) as YAML, and the google-search extension
+      # omp keeps its own agent directory (~/.omp/agent): models.yml is rendered
+      # from the shared llm/_evo-x2.nix catalog, and the google-search extension
       # sits in the native auto-discovery root ~/.omp/agent/extensions. LiteLLM's
       # free-model catalog needs no shared pi extension here: omp discovers it
       # natively from the gateway pointed at by LITELLM_BASE_URL.
@@ -44,7 +46,7 @@ in {
             # gateway config next to config.yml.
             {
               home.file.".omp/agent/models.yml" = {
-                source = ./_models.yml;
+                source = (pkgs.formats.yaml {}).generate "models.yml" evoX2.ompRegistry;
                 force = true;
               };
             }
@@ -79,7 +81,6 @@ in {
             colorBlindMode = false;
             symbolPreset = "nerd";
             modelRoles.default = "llm/qwen3.8-flash-next";
-            bash.gitGuard = true;
             browser.enabled = true;
             tui.textSizing = true;
             extendedContext = true;

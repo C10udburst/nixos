@@ -1199,22 +1199,6 @@
         "type": "github"
       }
     },
-    "pi-context": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1793075984,
-        "narHash": "sha256-CuyvfmKmtQadB/CPVYDvVeVGbgxPFLMjG4WM797FLr8=",
-        "owner": "ttttmr",
-        "repo": "pi-context",
-        "rev": "03c2681c5e74ae35eef5ea6187ca264ac5a2232c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ttttmr",
-        "repo": "pi-context",
-        "type": "github"
-      }
-    },
     "pimpmyfreecad": {
       "flake": false,
       "locked": {
@@ -1342,7 +1326,6 @@
         "openscad-round-anything": "openscad-round-anything",
         "organizeer": "organizeer",
         "pi": "pi",
-        "pi-context": "pi-context",
         "pimpmyfreecad": "pimpmyfreecad",
         "plasma-manager": "plasma-manager",
         "ranger-archives": "ranger-archives",

@@ -7,6 +7,8 @@
 }: let
   cfg = config.features.gui.apps.tools.llm.pi;
   llmEnabled = config.features.gui.apps.tools.llm.enable;
+  # Shared EVO-X2 gateway catalog; pi gets its models.json generated from it.
+  evoX2 = import ../_evo-x2.nix;
   # The bun runtime binary requires AVX (SIGILL on `vzeroupper` pre-Haswell,
   # e.g. the Pentium 4415Y in surface). The node variant runs everywhere.
   piPackage =
@@ -50,16 +52,14 @@ in {
           url = "github:lukasl-dev/pi.nix";
           inputs.nixpkgs.follows = "nixpkgs";
         };
-        pi-context = {
-          url = "github:ttttmr/pi-context";
-          flake = false;
-        };
       };
     }
     (lib.mkIf cfg.enable {
       home-manager.users.cloudburst = {
+        # Generated from llm/_evo-x2.nix, the single source of truth for the
+        # gateway's chat models.
         home.file.".pi/agent/models.json" = {
-          source = ./_models.json;
+          text = evoX2.piJson;
           force = true;
         };
       };
@@ -67,10 +67,8 @@ in {
       programs.pi.coding-agent = {
         enable = true;
         package = piPackage;
-        # Passed as a directory: its package.json `pi.extensions` declares the entry points.
         extensions =
           [
-            "${inputs.pi-context}"
           ]
           ++ lib.optionals (cfg.googleProxy != null) [
             ./_google-search.ts
