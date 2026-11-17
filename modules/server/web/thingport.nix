@@ -36,9 +36,9 @@ in {
   config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
-        name = "3d";
+        name = "thingport";
         aliases = [
-          "thingport"
+          "3d"
           "prints"
           "thing"
           "stl"
