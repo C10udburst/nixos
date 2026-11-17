@@ -20,6 +20,7 @@ _: {
       };
     };
     services = {
+      flaresolverr.enable = true;
       rclone.enable = false;
       tailscale = {
         exitNode = true;
