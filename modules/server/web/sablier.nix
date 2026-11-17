@@ -53,6 +53,48 @@
       };
     };
   };
+
+  sablierSuspendScript = pkgs.writeShellApplication {
+    name = "sablier-suspend";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.gnugrep
+      pkgs.curl
+      pkgs.systemd
+    ];
+    text = ''
+      # Wait for pending systemd jobs to finish
+      echo "Waiting for pending systemd jobs..."
+      attempts=60
+      while [ "$attempts" -gt 0 ]; do
+        if ! systemctl list-jobs --no-legend 2>/dev/null | grep -v "sablier-suspend" | grep -q .; then
+          break
+        fi
+        sleep 1
+        attempts=$((attempts - 1))
+      done
+
+      # Let services settle before suspending
+      sleep 5
+
+      # Wait for Sablier daemon to be healthy
+      attempts=30
+      while [ "$attempts" -gt 0 ]; do
+        if curl -sf http://127.0.0.1:10000/health | grep -q "OK"; then
+          break
+        fi
+        sleep 1
+        attempts=$((attempts - 1))
+      done
+
+      for unit in ${lib.concatStringsSep " " targetUnits}; do
+        if systemctl is-active --quiet "$unit"; then
+          echo "Suspending Sablier service: $unit"
+          systemctl stop "$unit" || true
+        fi
+      done
+    '';
+  };
 in {
   options.features.server.web.sablier = {
     enable = lib.mkOption {
@@ -109,65 +151,11 @@ in {
             ))
           ];
         };
-
-        sablier-suspend = lib.mkIf (targetUnits != []) {
-          description = "Suspend all Sablier-managed services after boot or rebuild";
-          wantedBy = ["multi-user.target"];
-          after =
-            [
-              "podman-sablier.service"
-              "network.target"
-            ]
-            ++ targetUnits;
-          wants = ["podman-sablier.service"];
-          restartTriggers =
-            [
-              (pkgs.writeText "sablier-suspended-units" (builtins.toJSON targetUnits))
-              configFile
-            ]
-            ++ (map (u: config.systemd.units.${u}.unit) targetUnits);
-          path = [
-            pkgs.curl
-            pkgs.systemd
-            pkgs.coreutils
-            pkgs.util-linux
-            pkgs.gnugrep
-          ];
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            Restart = "no";
-          };
-          script = ''
-            # Wait for pending systemd jobs to finish
-            echo "Waiting for pending systemd jobs..."
-            for i in $(seq 1 60); do
-              if ! systemctl list-jobs --no-legend 2>/dev/null | grep -v "sablier-suspend" | grep -q .; then
-                break
-              fi
-              sleep 1
-            done
-
-            # Let services settle before suspending
-            sleep 5
-
-            # Wait for Sablier daemon to be healthy
-            for i in $(seq 1 30); do
-              if curl -s http://127.0.0.1:10000/health | grep -q "OK"; then
-                break
-              fi
-              sleep 1
-            done
-
-            for unit in ${lib.concatStringsSep " " targetUnits}; do
-              if systemctl is-active --quiet "$unit"; then
-                echo "Suspending Sablier service: $unit"
-                systemctl stop "$unit" || true
-              fi
-            done
-          '';
-        };
       }
+    ];
+
+    environment.systemPackages = [
+      sablierSuspendScript
     ];
   };
 }

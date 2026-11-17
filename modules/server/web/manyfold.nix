@@ -1,3 +1,4 @@
+# TODO: DEPRECATE
 {
   config,
   lib,
@@ -25,7 +26,7 @@
 in {
   options.features.server.web.manyfold = lib.mkOption {
     type = lib.types.bool;
-    default = config.features.server.web.enable && true;
+    default = config.features.server.web.enable && false;
   };
 
   config = lib.mkMerge [
@@ -102,11 +103,13 @@ in {
               ''
                 install -d -m 0750 -o manyfold -g web ${hostPluginsPath}
               ''
-              + lib.concatStringsSep "\n" (lib.mapAttrsToList (name: source: ''
+              + lib.concatStringsSep "\n" (
+                lib.mapAttrsToList (name: source: ''
                   install -d -m 0750 -o manyfold -g web ${hostPluginsPath}/${name}
                   ${pkgs.rsync}/bin/rsync -a --delete --chown=manyfold:web ${source}/ ${hostPluginsPath}/${name}/
                 '')
-                plugins);
+                plugins
+              );
           };
 
           virtualisation.oci-containers.containers.manyfold = {

@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   helpers,
   ...
 }: let
@@ -13,25 +12,21 @@
   flaresolverrCfg = config.features.services.flaresolverr or {};
   flaresolverrEnabled = flaresolverrCfg.enable or false;
   flaresolverrPort = flaresolverrCfg.port or 8191;
-  webHelper = import ./_webService.nix {inherit config lib pkgs;};
+  webHelper = import ./_webService.nix {inherit config lib;};
 
-  # The frontend image runs nginx and proxies /api/* to http://backend:8000 by container
-  # name, so the API port is fixed by the image and `backend` has to resolve somewhere.
-  # There is no compose network here: the backend shares the host network namespace (which
-  # is also how it reaches the local PostgreSQL on 127.0.0.1), and the frontend -- which
-  # keeps its own rootless network, since nginx binds port 80 inside the container -- is
-  # given `backend` as a host entry pointing at the host gateway.
+  # The frontend proxies /api/* to http://backend:8000 by container name, which no
+  # rootless network of its own answers, so the backend takes the host network (also how it
+  # reaches PostgreSQL on 127.0.0.1) and the frontend gets `backend` as a host entry pointing
+  # at the gateway. Both ports are part of the frontend image either way.
   apiPort = 8000;
   webPort = 3218;
   hostGateway = "169.254.1.2";
+  # Slug of the provider in the database, naming the callback path.
+  oidcSlug = "authelia";
 
   backend = "thingport-backend";
   frontend = "thingport-frontend";
   user = "thingport";
-
-  # Slug of the sign-in provider inside Thingport (Administration -> Auth -> Sign-in
-  # Methods). It names the callback path and cannot change once the provider is added.
-  oidcSlug = "authelia";
 in {
   options.features.server.web.thingport = lib.mkOption {
     type = lib.types.bool;
@@ -41,11 +36,12 @@ in {
   config = lib.mkIf cfg (
     lib.mkMerge [
       (webHelper.mkWebApp {
-        name = "thingport";
+        name = "3d";
         aliases = [
-          "tp"
+          "thingport"
           "prints"
           "thing"
+          "stl"
         ];
         port = webPort;
         suspend = [
@@ -55,16 +51,11 @@ in {
         oidc = {
           id = "thingport";
           name = "Thingport";
-          # Thingport always signs in with the authorization code flow and PKCE (S256).
           pkce = true;
           redirectUris = [
             "https://${domain}/api/auth/oidc/${oidcSlug}/callback"
           ];
         };
-        # Uploads up to 512 MB and answers that take minutes (a slow local AI writing a
-        # description, a connected instance streaming a partner's files back) are passed
-        # through as they come rather than buffered. Caddy puts no cap of its own on the
-        # body size; the frontend's nginx keeps its 512 MB limit.
         extraProxyConfig = ''
           flush_interval -1
         '';
@@ -79,14 +70,17 @@ in {
         };
         users.groups.${user} = {};
 
+        # Not group `web` like the other apps' data: the backend chowns the folders it writes
+        # to uid/gid 1000, a subordinate id inside the container, and chown(2) fails with EPERM
+        # when the folder's current group has no mapping there. Reach is up to the 0750 home
+        # directory above; the wider bits let the backup job read storage and people drop files
+        # into consume. Migrate is only ever read, so it keeps web.
         systemd.tmpfiles.rules = [
           "d ${storage}/thingport 0750 ${user} web - -"
           "z ${storage}/thingport 0750 ${user} web - -"
-          # FILE_STORAGE, the consume folder watched by Administration -> Storage, and the
-          # folder Administration -> Migrate reads another instance's dump from.
-          "d ${storage}/thingport/storage 0750 ${user} web - -"
-          "d ${storage}/thingport/consume 0750 ${user} web - -"
-          "d ${storage}/thingport/migrate 0750 ${user} web - -"
+          "d ${storage}/thingport/storage 0755 ${user} ${user} - -"
+          "d ${storage}/thingport/consume 0777 ${user} ${user} - -"
+          "d ${storage}/thingport/migrate 2775 ${user} web - -"
         ];
 
         services.postgresql = {
@@ -104,10 +98,22 @@ in {
           '';
         };
 
-        # Prisma migrations run in the backend's entrypoint, so the database comes first.
         systemd.services."podman-${backend}" = {
           after = ["postgresql.service"];
           requires = ["postgresql.service"];
+
+          # A rebuild hands the folders back to the account while a running app writes as the
+          # id it took them with, so every start gives them back. `podman unshare` works out
+          # which host id 1000 is, keeping /etc/subuid out of the configuration.
+          path = [
+            config.virtualisation.podman.package
+          ];
+          preStart = ''
+            podman unshare chown 1000 \
+              ${storage}/thingport/storage \
+              ${storage}/thingport/consume \
+              || echo "thingport: could not hand the folders to the container uid" >&2
+          '';
         };
 
         virtualisation.oci-containers.containers.${backend} = {
@@ -115,6 +121,13 @@ in {
           podman.user = user;
           extraOptions = [
             "--network=host"
+            # The generated container hosts file points every app domain at the podman
+            # gateway, which is right for bridge containers and unreachable for one sharing
+            # the host namespace. Loopback is where Caddy answers, and single sign-on needs
+            # it to read Authelia's discovery document.
+            "--add-host=auth.${baseDomain}:127.0.0.1"
+            "--add-host=3d.${baseDomain}:127.0.0.1"
+            "--add-host=llm.${baseDomain}:127.0.0.1"
           ];
           volumes = [
             "${storage}/thingport/storage:/app/storage"
@@ -126,15 +139,12 @@ in {
               API_PORT = toString apiPort;
               FILE_STORAGE = "/app/storage";
               DATABASE_URL = "postgresql://${user}@127.0.0.1:5432/thingport?schema=public";
-              # Seeds Administration -> Auth -> Public URL, which single sign-on needs.
               PUBLIC_URL = "https://${domain}";
               CORS_ORIGINS = "https://${domain}";
               TZ = config.time.timeZone;
             }
             // lib.optionalAttrs flaresolverrEnabled {
-              # Seeded into Administration -> Connections -> FlareSolverr on first start.
               FLARESOLVERR_URL = "http://127.0.0.1:${toString flaresolverrPort}/v1";
-              # Plain HTTP is then allowed for the loopback solver only.
               FLARESOLVERR_REQUIRE_HTTPS = "true";
             };
         };
@@ -144,7 +154,6 @@ in {
           podman.user = user;
           dependsOn = [backend];
           ports = [
-            # The image always listens on 80 internally; only the host port is ours to pick.
             "127.0.0.1:${toString webPort}:80"
           ];
           extraOptions = [
