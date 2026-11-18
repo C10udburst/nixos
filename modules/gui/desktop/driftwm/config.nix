@@ -97,6 +97,7 @@ in {
         "blender"
         "Mayo"
         "org.nomacs.ImageLounge"
+        "brave-browser"
       ];
 
       noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled (

@@ -383,12 +383,6 @@ in {
               main = {
                 radius = 24;
                 background_opacity = 0.65;
-                dead_zone.actions = {
-                  scroll_up = "exec driftwm msg action pan-viewport up";
-                  scroll_down = "exec driftwm msg action pan-viewport down";
-                  scroll_left = "exec driftwm msg action pan-viewport left";
-                  scroll_right = "exec driftwm msg action pan-viewport right";
-                };
                 margin_ends =
                   if compactMode
                   then 10

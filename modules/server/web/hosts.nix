@@ -20,14 +20,13 @@
 
   ips = [
     "169.254.1.2"
-    "10.88.0.1"
-    "172.17.0.1"
+    #"10.88.0.1"
+    #"172.17.0.1"
   ];
 
   ipDomainLines =
     lib.concatMapStrings (
-      ip:
-        lib.concatMapStrings (domain: "${ip} ${domain}\n") allDomains
+      ip: lib.concatMapStrings (domain: "${ip} ${domain}\n") allDomains
     )
     ips;
 

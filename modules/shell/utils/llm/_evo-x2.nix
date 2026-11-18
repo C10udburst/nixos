@@ -109,7 +109,7 @@ let
     }
     {
       id = "gemma4-it:e2b";
-      name = "Gemma 4 IT e2b on the Ryzen AI NPU via OpenFlowLM - pareto optimal chat/tool calling model";
+      name = "Gemma 4 IT e2b on the Ryzen AI NPU via OpenFlowLM";
       contextWindow = 32768;
       maxTokens = 8192;
     }
@@ -168,8 +168,8 @@ let
       };
     }
     {
-      id = "nanbeige4.1:3b";
-      name = "NanBeige 4.1 3B on the Ryzen AI NPU via OpenFlowLM - pareto optimal chat/tool calling model";
+      id = "qwen3:8b";
+      name = "Qwen 3:8B on the Ryzen AI NPU via OpenFlowLM";
       contextWindow = 32768;
       maxTokens = 8192;
     }
