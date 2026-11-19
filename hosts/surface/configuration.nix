@@ -32,7 +32,7 @@
   };
 
   # Fixes stylus IC getting stuck in a bad state after suspend/resume cycles, which causes the stylus to stop working until a reboot.
-  boot.kernelParams = ["i2c_hid.disable_runtime_pm=1"];
+  boot.kernelParams = ["i2c_hid.aux_runtime_pm=0"];
 
   hardware.enableRedistributableFirmware = true;
   nixpkgs.config.allowUnfree = true;

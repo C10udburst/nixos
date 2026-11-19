@@ -6,6 +6,11 @@
 }: let
   cfg = config.features.server.web.cgi;
   systemdCfg = cfg.systemd;
+  apps = config.features.server.web.core._apps or [];
+  suspendedApps = lib.filter (app: (app.suspend or []) != []) apps;
+  targetUnits = lib.unique (
+    lib.concatMap (app: map (lib.removeSuffix ".service") app.suspend) suspendedApps
+  );
 in {
   options.features.server.web.cgi.systemd = {
     enable = lib.mkOption {
@@ -15,42 +20,25 @@ in {
 
     services = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [
-        "caddy"
-        "copyparty"
-        "coredns"
-        "duplicati"
-        "esphome"
-        "fcgiwrap-cgi"
-        "fetlife"
-        "gitea"
-        "glances"
-        "golink"
-        "i2pd"
-        "immich-machine-learning"
-        "immich-server"
-        "karakeep-web"
-        "karakeep-workers"
-        "meilisearch"
-        "organizeer"
-        "pihole-ftl"
-        "podman-aistudio-api"
-        "podman-eightmb"
-        "podman-google-ai-proxy"
-        "podman-homarr"
-        "podman-homeassistant"
-        "podman-manyfold"
-        "podman-metube"
-        "podman-resume"
-        "podman-sablier"
-        "podman-transmute"
-        "podman-wealthfolio"
-        "postgres"
-        "siyuan"
-        "sshd"
-        "tailscaled"
-        "vaultwarden"
-      ];
+      default =
+        [
+          "caddy"
+          "copyparty"
+          "coredns"
+          "duplicati"
+          "fcgiwrap-cgi"
+          "gitea"
+          "golink"
+          "organizeer"
+          "pihole-ftl"
+          "podman-homarr"
+          "podman-homeassistant"
+          "podman-sablier"
+          "postgres"
+          "sshd"
+          "tailscaled"
+        ]
+        ++ targetUnits;
     };
   };
 
