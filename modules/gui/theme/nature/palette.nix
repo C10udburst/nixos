@@ -12,26 +12,25 @@ in {
 
   config = lib.mkIf cfg {
     stylix.base16Scheme = {
-      #https://tinted-theming.github.io/tinted-gallery/#base16-black-metal-burzum
-      scheme = "Stylix";
-      slug = "stylix";
-      author = "Stylix";
-      base00 = "000000";
-      base01 = "121212";
-      base02 = "222222";
-      base03 = "333333";
-      base04 = "999999";
-      base05 = "c1c1c1";
-      base06 = "999999"; # Uwaga: w Twojej liście base04/base06 oraz base05/base07 powtarzają się
-      base07 = "c1c1c1";
-      base08 = "5f8787";
-      base09 = "aaaaaa";
-      base0A = "99bbaa";
-      base0B = "ddeecc";
-      base0C = "aaaaaa";
-      base0D = "888888";
-      base0E = "999999";
-      base0F = "444444";
+      scheme = "Nature";
+      slug = "nature";
+      author = "cloudburst";
+      base00 = "131513"; # background
+      base01 = "151a15"; # color0 (same as background — no lighter bg in xresources)
+      base02 = "687d68"; # color8 (bright black)
+      base03 = "6c786c"; # color8 (duplicated — no dedicated comment color)
+      base04 = "7c9e7c"; # color7 (duplicated — no darker foreground)
+      base05 = "8ca68c"; # foreground
+      base06 = "8ca68c"; # color7 (duplicated — no lighter foreground)
+      base07 = "f0fff0"; # color15 (lightest foreground)
+      base08 = "a41d24"; # color1 (red)
+      base09 = "f69890"; # color9 (soft red, used as orange stand-in)
+      base0A = "faab46"; # color3 (yellow)
+      base0B = "1b5836"; # color2 (green)
+      base0C = "62a8a8"; # color6 (cyan)
+      base0D = "3c5786"; # color4 (blue)
+      base0E = "6d4685"; # color5 (magenta)
+      base0F = "e9b552"; # color9 (duplicated — no brown/deprecated color)
     };
   };
 }
