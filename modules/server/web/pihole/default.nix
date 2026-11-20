@@ -67,7 +67,6 @@ in {
       (webHelper.mkWebApp {
         name = "pihole";
         aliases = [
-          "pi"
           "dns"
         ];
         port = 8080;

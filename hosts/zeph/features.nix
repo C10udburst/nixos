@@ -1,16 +1,19 @@
 _: {
   features = {
     core = {
-      boot.timeout = 1;
       hardware = {
         fuse = true;
         pipewire = false;
         nvidia = true;
         laptop-server = true;
+        unattended = true;
       };
       java = false;
     };
-    gui.enable = false;
+    gui = {
+      enable = false;
+      dev.python.enable = true;
+    };
     server = {
       llm.ollama = {
         enable = true;
@@ -24,6 +27,11 @@ _: {
     services = {
       waypipe = true;
       tailscale.enable = false;
+    };
+    shell.utils.llm.pi.web = {
+      enable = true;
+      port = 30141;
+      allowedHosts = ["pi.brix0.wilkins.pl.eu.org"];
     };
     compat.podman.enable = true;
   };

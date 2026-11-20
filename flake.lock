@@ -1215,6 +1215,22 @@
         "type": "github"
       }
     },
+    "pi-web": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795178111,
+        "narHash": "sha256-ezRShjwsGhiDDlA7vbl1pRXnvRt7pY+Sc1SmVoqj8WQ=",
+        "owner": "agegr",
+        "repo": "pi-web",
+        "rev": "be11335fcd8d155c690ef2a72826d145e5f77896",
+        "type": "github"
+      },
+      "original": {
+        "owner": "agegr",
+        "repo": "pi-web",
+        "type": "github"
+      }
+    },
     "pimpmyfreecad": {
       "flake": false,
       "locked": {
@@ -1343,6 +1359,7 @@
         "openscad-round-anything": "openscad-round-anything",
         "organizeer": "organizeer",
         "pi": "pi",
+        "pi-web": "pi-web",
         "pimpmyfreecad": "pimpmyfreecad",
         "plasma-manager": "plasma-manager",
         "ranger-archives": "ranger-archives",

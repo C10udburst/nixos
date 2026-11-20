@@ -189,6 +189,8 @@ Every feature in the dendritic configuration tree is governed by strict parent-c
 4. **Overrides parent flags**:
    - If a host explicitly sets `parent.enable = false;`, but `parent.child.enable = true;`, the child should be **`true`**. The host's explicit override takes precedence over the parent gating.
 
+Do NOT manually modify the features-full.nix file, configure the defaults within the working modules, then verify correct defaults by executing `./features` to regenerate features-full.nix and read it.
+
 ### Concrete Examples
 
 #### Example 1: Enabling `gui.apps.tools`

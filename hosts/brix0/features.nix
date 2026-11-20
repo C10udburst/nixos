@@ -1,10 +1,10 @@
 _: {
   features = {
     core = {
-      boot.timeout = 1;
       hardware = {
         fuse = false;
         pipewire = false;
+        unattended = true;
       };
       java = false;
     };

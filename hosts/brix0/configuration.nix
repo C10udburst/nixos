@@ -18,12 +18,9 @@
   # EFI bootloader mount point
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-  # Server optimizations: headless 24/7 operation (Gigabyte BRIX Skylake i3-6100U)
-  # Disable power-saving sleep/suspend states that disrupt servers
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
+  # Headless 24/7 operation (Gigabyte BRIX Skylake i3-6100U) is provided by
+  # features.core.hardware.unattended: panic reboots, no sleep states, short
+  # boot menu timeout.
 
   networking.interfaces.enp0s31f6.ipv4.addresses = [
     {
@@ -54,9 +51,6 @@
     "net.ipv4.conf.default.arp_announce" = 2;
 
     "vm.vfs_cache_pressure" = 50;
-
-    # Automatically reboot 10 seconds after kernel panic
-    "kernel.panic" = 10;
   };
 
   # Disable Wi-Fi power saving for stable server connectivity (Intel AC-3165)
@@ -64,12 +58,6 @@
 
   # Thermal management for mini-PC chassis
   services.thermald.enable = true;
-
-  # Reboot on initrd failure
-  boot.kernelParams = [
-    "panic=10"
-    "boot.panic_on_fail"
-  ];
 
   # Intel VA-API hardware acceleration (Intel HD Graphics 520) for media & transcoding
   hardware.graphics = {

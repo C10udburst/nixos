@@ -128,6 +128,10 @@
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pi-web = {
+      url = "github:agegr/pi-web";
+      flake = false;
+    };
     pimpmyfreecad = {
       url = "github:sedatkrn/PimpMyFreeCAD";
       flake = false;

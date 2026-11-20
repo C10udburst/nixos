@@ -4,6 +4,7 @@ _: {
       hardware = {
         enable = false;
         slow = true;
+        unattended = true;
       };
       boot.enable = false;
       java = false;
