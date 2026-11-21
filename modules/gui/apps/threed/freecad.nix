@@ -16,6 +16,16 @@
     substituteInPlace $out/ResultsToolbar.py \
       --replace-fail 'print(f"{workbench.name()} not available")' 'print(f"{wbname} not available")'
   '';
+  # Upstream breakage on CurvesWB main (2587899): init_gui.py imports
+  # RectangularFaceFP and lists a Curves_RectangularFace command, but that module
+  # exists on no branch or tag, so the ImportError aborts the whole
+  # CurvesWorkbench registration. Drop both. Revert once upstream ships the file.
+  curveswb = pkgs.runCommand "freecad-curveswb" {} ''
+    cp -r --no-preserve=mode ${inputs.curveswb} $out
+    sed -i '/from \. import RectangularFaceFP/d' $out/freecad/Curves/init_gui.py
+    substituteInPlace $out/freecad/Curves/init_gui.py \
+      --replace-fail ' "Curves_RectangularFace"]' ']'
+  '';
 in {
   options.features.gui.apps.threed.freecad = {
     enable = lib.mkOption {
@@ -47,6 +57,10 @@ in {
           url = "github:sedatkrn/PimpMyFreeCAD";
           flake = false;
         };
+        curveswb = {
+          url = "github:tomate44/CurvesWB";
+          flake = false;
+        };
       };
     }
     (lib.mkIf cfg.enable {
@@ -64,10 +78,17 @@ in {
                 # Part. Plain addon tree (Init.py + InitGui.py), no third-party
                 # Python beyond the numpy/pivy FreeCAD already ships.
                 inputs.pimpmyfreecad
+                # Curves workbench: NURBS curves and surfaces (parametric blend
+                # curve, Gordon surfaces, sweep on rails, discretize, geometric
+                # analysis). Namespace addon (package.xml + freecad/Curves with
+                # init_gui.py), discovered by pkgutil on the module path; its
+                # declared deps are numpy/scipy, both already bundled by FreeCAD.
+                curveswb
               ];
               # SearchBar needs defusedxml (startup XML parsing, dark-mode
-              # detection) and lxml (search results); Nxt, SimpleCAD and Pimp My
-              # FreeCAD use only what FreeCAD already bundles.
+              # detection) and lxml (search results); Curves only needs
+              # defusedxml for Paste SVG and falls back to xml.sax; Nxt,
+              # SimpleCAD and Pimp My FreeCAD use what FreeCAD already bundles.
               pythons = [
                 (ps: [ps.defusedxml ps.lxml])
               ];

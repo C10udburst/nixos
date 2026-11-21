@@ -232,6 +232,22 @@
         "type": "github"
       }
     },
+    "curveswb": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795195974,
+        "narHash": "sha256-NWivEVuDltOhJPCmCQqj24fXIS6KA0Oa5ho1gtswP9s=",
+        "owner": "tomate44",
+        "repo": "CurvesWB",
+        "rev": "258789996c27bd7db335076934221d4abd8938c7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tomate44",
+        "repo": "CurvesWB",
+        "type": "github"
+      }
+    },
     "driftwm": {
       "inputs": {
         "nixpkgs": [
@@ -1326,6 +1342,7 @@
       "inputs": {
         "agenix": "agenix",
         "antigravity-nix": "antigravity-nix",
+        "curveswb": "curveswb",
         "driftwm": "driftwm",
         "driftwm-desktop": "driftwm-desktop",
         "fetlife-browser": "fetlife-browser",
@@ -1842,11 +1859,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793281117,
-        "narHash": "sha256-j53bH7al1ir2JPRzThBCtOzIHVKfYO/elUpTqDSFrGo=",
+        "lastModified": 1795191942,
+        "narHash": "sha256-+f6uFvIqhqrs5Wim/1F89+2DSXNaYE6se6v2xWMlapI=",
         "owner": "C10udburst",
         "repo": "webicons-nix",
-        "rev": "2082c2e0e876bca45f4bb6a4503919e20cfa037b",
+        "rev": "f6e20830ec25751ceba2c129f913e9d3e268ed05",
         "type": "github"
       },
       "original": {

@@ -13,6 +13,7 @@ _: {
     gui = {
       enable = false;
       dev.python.enable = true;
+      apps.editors.vscode.web.enable = true;
     };
     server = {
       llm.ollama = {

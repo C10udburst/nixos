@@ -6,8 +6,9 @@
 {
   pkgs,
   src,
-  npmDepsHash,
 }: let
+  npmDepsHash = "sha256-vbXuQyHzmHP4VUFGPxI/f3WH9Paxwlk+ZR3JXWZjw2A=";
+
   version = (builtins.fromJSON (builtins.readFile (src + "/package.json"))).version;
 
   fontShim = pkgs.writeText "pi-font-shim.ts" ''

@@ -17,7 +17,6 @@
   piWeb = import ./_pi-web.nix {
     inherit pkgs;
     src = inputs.pi-web;
-    npmDepsHash = "sha256-vbXuQyHzmHP4VUFGPxI/f3WH9Paxwlk+ZR3JXWZjw2A=";
   };
 
   # Shared EVO-X2 gateway catalog, same source as the terminal agent's.
@@ -65,10 +64,10 @@
       agent_dir="$PI_CODING_AGENT_DIR"
       mkdir -p "$agent_dir"
 
-      # the gateway catalog, installed once and afterwards owned by the user
-      if [ ! -e "$agent_dir/models.json" ]; then
-        install -m 0600 ${modelsJson} "$agent_dir/models.json"
+      if [ -e "$agent_dir/models.json" ]; then
+        rm "$agent_dir/models.json"
       fi
+      install -m 0600 ${modelsJson} "$agent_dir/models.json"
 
       # pi-web loads pi's plugins through settings.json, so the declared plugin
       # paths are merged in before the server starts. Both merges only fill

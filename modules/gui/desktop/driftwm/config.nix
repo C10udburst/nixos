@@ -98,6 +98,7 @@ in {
         "Mayo"
         "org.nomacs.ImageLounge"
         "brave-browser"
+        "org.freecad.FreeCAD"
       ];
 
       noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled (

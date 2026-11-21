@@ -7,6 +7,7 @@ _: {
         grub = true;
       };
       hardware = {
+        camera.enable = true;
         mobile = true;
         touchscreen = true;
         slow = true;

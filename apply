@@ -181,7 +181,7 @@ fi
 
 popd > /dev/null
 
-notify-send -e "NixOS Rebuilt OK!" "${COMMIT_ENTRIES[*]}" --icon=system-software-update || true
+timeout 2s notify-send -e "NixOS Rebuilt OK!" "${COMMIT_ENTRIES[*]}" --icon=system-software-update || true
 
 if [[ "$REBOOT_LOCAL" == true ]]; then
   echo -e "\n🔄 Rebooting local host '$LOCAL_HOST'..."

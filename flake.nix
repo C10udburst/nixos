@@ -14,6 +14,10 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    curveswb = {
+      url = "github:tomate44/CurvesWB";
+      flake = false;
+    };
     driftwm = {
       url = "github:malbiruk/driftwm";
       inputs.nixpkgs.follows = "nixpkgs";

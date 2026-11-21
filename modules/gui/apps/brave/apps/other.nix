@@ -9,14 +9,20 @@
   braveEnabled = config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
-  isVscode = config.features.gui.apps.editors.vscode or false;
+  isVscode = config.features.gui.apps.editors.vscode.enable or false;
 in {
-  options.features.gui.apps.brave.apps.other = lib.mkOption {
-    type = lib.types.bool;
-    default = braveEnabled && true;
+  options.features.gui.apps.brave.apps.other = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = braveEnabled && true;
+    };
+    vscode = lib.mkOption {
+      type = lib.types.bool;
+      default = braveEnabled && (!isVscode);
+    };
   };
 
-  config = lib.mkIf cfg {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages =
       [
         (mkWebApp {
@@ -39,6 +45,15 @@ in {
             "Chat"
           ];
         })
+        (mkWebApp {
+          name = "Pi Web";
+          homelab = "pi";
+          icon = icons."pi-web" or "";
+          categories = [
+            "Development"
+            "Utility"
+          ];
+        })
       ]
       ++ lib.optionals (config.features.gui.apps.threed.enable or false) [
         (mkWebApp {
@@ -52,10 +67,10 @@ in {
           ];
         })
       ]
-      ++ lib.optionals (!isVscode) [
+      ++ lib.optionals (cfg.vscode) [
         (mkWebApp {
-          name = "VS Code Web";
-          url = "https://vscode.dev";
+          name = "Code";
+          homelab = "code";
           icon = icons.vscode or "";
           categories = [
             "Development"

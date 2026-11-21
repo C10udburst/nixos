@@ -6,6 +6,7 @@
 }: let
   cfg = config.features.server.web.pi;
   webHelper = import ./_webService.nix {inherit config lib pkgs;};
+  piWeb = config.features.shell.utils.llm.pi.web;
 in {
   options.features.server.web.pi = lib.mkOption {
     type = lib.types.bool;
@@ -20,7 +21,7 @@ in {
         "pi-agent"
         "zeph"
       ];
-      upstream = "zeph:30141";
+      upstream = "zeph:${toString piWeb.port}";
     }
   );
 }

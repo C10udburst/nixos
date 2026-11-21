@@ -27,6 +27,16 @@
     "smooth-scrolling@1"
   ];
   effectiveFlags = flags ++ cfg.extraFlags;
+
+  featureFlags = [
+    "VaapiVideoDecoder"
+    "VaapiVideoEncoder"
+    "VaapiVideoDecodeLinuxGL"
+    "Vulkan"
+    "VulkanFromANGLE"
+    "DefaultANGLEVulkan"
+    "WebRtcPipeWireCamera"
+  ];
 in {
   config = lib.mkMerge [
     {
@@ -78,7 +88,7 @@ in {
             [
               "--allow-insecure-localhost"
               "--ozone-platform=wayland"
-              "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan"
+              "--enable-features=${lib.concatStringsSep "," featureFlags}"
               "--use-angle=gl"
               "--user-gl=angle"
               "--enable-gpu-rasterization"

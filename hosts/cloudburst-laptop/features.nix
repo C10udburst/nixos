@@ -15,6 +15,7 @@ _: {
       apps.brave.apps = {
         social.discord = true;
         office = true;
+        other.vscode = true;
       };
       games.enable = true;
       dev.enable = true;
