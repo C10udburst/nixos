@@ -21,6 +21,8 @@
 
   # Shared EVO-X2 gateway catalog, same source as the terminal agent's.
   evoX2 = import ../_evo-x2.nix;
+  # Shared extension sources and gateway URLs (pi, omp and pi-web all read it).
+  ext = import ./_extensions.nix;
   modelsJson = pkgs.writeText "pi-web-models.json" evoX2.piJson;
 
   # Starting point for the separate agent directory: the settings the terminal
@@ -35,8 +37,10 @@
   # file inside the checked out flake.
   plugins = pkgs.writeText "pi-web-plugins.json" (
     builtins.toJSON (
-      lib.optionals (piCfg.litellmProxy != null) [(pkgs.copyPathToStore ./_litellm.ts)]
-      ++ lib.optionals (piCfg.googleProxy != null) [(pkgs.copyPathToStore ./_google-search.ts)]
+      [ (pkgs.copyPathToStore ext.extensions.systemPrompt) ]
+      ++ lib.optionals (piCfg.litellmProxy != null) [(pkgs.copyPathToStore ext.extensions.litellm)]
+      ++ lib.optionals (piCfg.googleProxy != null) [(pkgs.copyPathToStore ext.extensions.googleSearch)]
+      ++ lib.optionals (piCfg.reservationsApi != null) [(pkgs.copyPathToStore ext.extensions.queue)]
     )
   );
 
@@ -59,6 +63,10 @@
       ''}
       ${lib.optionalString (piCfg.googleProxy != null) ''
         export GOOGLE_SEARCH_API_BASE=${lib.escapeShellArg piCfg.googleProxy}
+      ''}
+      ${lib.optionalString (piCfg.reservationsApi != null) ''
+        export EVO_X2_RESERVATIONS_URL=${lib.escapeShellArg piCfg.reservationsApi}
+        export EVO_X2_QUEUE_DOMAIN=${lib.escapeShellArg ext.gatewayDomain}
       ''}
 
       agent_dir="$PI_CODING_AGENT_DIR"

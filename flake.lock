@@ -41,6 +41,26 @@
         "type": "github"
       }
     },
+    "artcraft": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794840314,
+        "narHash": "sha256-xviO/zWP6SKME7yNpnKu/JsB3sq/Ao64dTzyFAsbUiE=",
+        "owner": "mahlquistj",
+        "repo": "artcraft-flake",
+        "rev": "74ba42306cac328be93bf938598bae712815b831",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mahlquistj",
+        "repo": "artcraft-flake",
+        "type": "github"
+      }
+    },
     "base16": {
       "inputs": {
         "fromYaml": "fromYaml"
@@ -1342,6 +1362,7 @@
       "inputs": {
         "agenix": "agenix",
         "antigravity-nix": "antigravity-nix",
+        "artcraft": "artcraft",
         "curveswb": "curveswb",
         "driftwm": "driftwm",
         "driftwm-desktop": "driftwm-desktop",

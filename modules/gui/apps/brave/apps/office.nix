@@ -9,11 +9,17 @@
   braveEnabled = config.features.gui.apps.brave.apps.enable;
   icons = inputs.webicons.packages.${pkgs.stdenv.hostPlatform.system} or {};
   mkWebApp = import ../_mkwebapp.nix {inherit lib pkgs;};
-  isLibreOffice = config.features.gui.apps.editors.office.libreoffice or false;
+  hasOffice =
+    (config.features.gui.apps.editors.office.libreoffice or false)
+    || (
+      (config.features.gui.apps.editors.artcraft.gridcraft or false)
+      && (config.features.gui.apps.editors.artcraft.wordcraft or false)
+      && (config.features.gui.apps.editors.artcraft.deckcraft or false)
+    );
 in {
   options.features.gui.apps.brave.apps.office = lib.mkOption {
     type = lib.types.bool;
-    default = braveEnabled && (!isLibreOffice);
+    default = braveEnabled && (!hasOffice);
   };
 
   config = lib.mkIf cfg {

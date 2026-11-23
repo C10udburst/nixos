@@ -99,6 +99,7 @@ in {
         "org.nomacs.ImageLounge"
         "brave-browser"
         "org.freecad.FreeCAD"
+        "OrcaSlicer"
       ];
 
       noctaliaKeybindings = lib.optionalAttrs noctaliaEnabled (

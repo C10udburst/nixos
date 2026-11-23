@@ -13,11 +13,6 @@ in {
 
   config = lib.mkIf cfg {
     environment.systemPackages = with pkgs; [
-      (gimp3-with-plugins.override {
-        plugins = with pkgs.gimp3Plugins; [
-          resynthesizer
-        ];
-      })
       inkscape
       imagemagick
     ];

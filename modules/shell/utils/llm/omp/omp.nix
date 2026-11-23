@@ -12,6 +12,8 @@
   basePackage = inputs.omp.packages.${system}.default;
   # Shared EVO-X2 gateway catalog; omp gets its models.yml generated from it.
   evoX2 = import ../_evo-x2.nix;
+  # Shared extension sources and gateway URLs (pi, omp and pi-web all read it).
+  ext = import ../pi/_extensions.nix;
 in {
   options.features.shell.utils.llm.omp = {
     enable = lib.mkOption {
@@ -30,10 +32,11 @@ in {
 
     (lib.mkIf cfg.enable {
       # omp keeps its own agent directory (~/.omp/agent): models.yml is rendered
-      # from the shared llm/_evo-x2.nix catalog, and the google-search extension
-      # sits in the native auto-discovery root ~/.omp/agent/extensions. LiteLLM's
-      # free-model catalog needs no shared pi extension here: omp discovers it
-      # natively from the gateway pointed at by LITELLM_BASE_URL.
+      # from the shared llm/_evo-x2.nix catalog, and the extensions shared with
+      # the pi module (llm/pi/_extensions.nix) sit in the native auto-discovery
+      # root ~/.omp/agent/extensions. LiteLLM's free-model catalog needs no
+      # shared pi extension here: omp discovers it natively from the gateway
+      # pointed at by LITELLM_BASE_URL.
       home-manager.users.cloudburst = {
         imports =
           lib.optionals (inputs ? omp && inputs.omp ? homeManagerModules) [
@@ -61,6 +64,10 @@ in {
             ''
             + lib.optionalString (piCfg.googleProxy != null) ''
               export GOOGLE_SEARCH_API_BASE=${lib.escapeShellArg piCfg.googleProxy}
+            ''
+            + lib.optionalString (piCfg.reservationsApi != null) ''
+              export EVO_X2_RESERVATIONS_URL=${lib.escapeShellArg piCfg.reservationsApi}
+              export EVO_X2_QUEUE_DOMAIN=${lib.escapeShellArg ext.gatewayDomain}
             ''
             + ''
               export OMP_SKIP_SETUP=1
@@ -93,9 +100,17 @@ in {
           };
         };
 
-        # The google-search extension source is shared with the sibling pi module.
+        # Extension sources are shared with the sibling pi module via _extensions.nix.
+        home.file.".omp/agent/extensions/system-prompt.ts" = {
+          source = ext.extensions.systemPrompt;
+          force = true;
+        };
         home.file.".omp/agent/extensions/google-search.ts" = lib.mkIf (piCfg.googleProxy != null) {
-          source = ../pi/_google-search.ts;
+          source = ext.extensions.googleSearch;
+          force = true;
+        };
+        home.file.".omp/agent/extensions/evo-x2-queue.ts" = lib.mkIf (piCfg.reservationsApi != null) {
+          source = ext.extensions.queue;
           force = true;
         };
       };

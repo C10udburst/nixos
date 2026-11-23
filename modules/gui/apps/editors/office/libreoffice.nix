@@ -9,7 +9,7 @@
 in {
   options.features.gui.apps.editors.office.libreoffice = lib.mkOption {
     type = lib.types.bool;
-    default = officeEnabled && true;
+    default = officeEnabled && false;
   };
 
   config = lib.mkIf cfg {
