@@ -9,7 +9,7 @@
 # Backend URL and the python interpreter are substituted by the Nix module
 # (pkgs.substituteAll placeholders below).
 #
-# The model only produces images on a fixed set of canvases (ASPECT_SIZES).
+# The model only produces images on a fixed set of canvases (ASPECT_RATIOS).
 # When editing, the active layer's selected region (or the whole image) is
 # contain-scaled onto the canvas whose aspect ratio is closest, padded with
 # fully transparent pixels, and sent to the server, which supports
@@ -18,6 +18,7 @@
 # layer above the source layer, so the result blends back in seamlessly.
 
 import base64
+import functools
 import json
 import math
 import os
@@ -34,6 +35,8 @@ gi.require_version("Gimp", "3.0")
 from gi.repository import Gimp
 gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import GdkPixbuf
+gi.require_version("Gio", "2.0")
+from gi.repository import Gio
 gi.require_version("Gtk", "3.0")
 from gi.repository import GLib, GObject, Gtk
 
@@ -41,39 +44,43 @@ BACKEND_URL = "@aiBackendUrl@".rstrip("/")
 MODELS_TIMEOUT = 30
 GENERATE_TIMEOUT = 900
 
-# Canvas sizes per aspect ratio. These are the recommended pixel sizes for
-# qwen-image-2.1 and qwen-image-2.1-turbo and are reused as a sane fallback
-# for any other image model the backend may expose.
-ASPECT_SIZES = {
-    "1:1": (2048, 2048),
-    "4:3": (2400, 1792),
-    "3:4": (1792, 2400),
-    "3:2": (2528, 1696),
-    "2:3": (1696, 2528),
-    "16:9": (2752, 1536),
-    "9:16": (1536, 2752),
-}
+# The backend rejects anything that is not aligned and bounded:
+#   "image size must be multiples of 32, at most 4096 per side and 4 megapixels"
+SIZE_MULTIPLE = 32
+MAX_SIDE = 4096
+MAX_PIXELS = 4_000_000
 
-# Hardcoded model -> size map. Extend here for models that differ.
-MODEL_SIZES = {
-    "qwen-image-2.1": ASPECT_SIZES,
-    "qwen-image-2.1-turbo": ASPECT_SIZES,
-}
+# Aspect ratios offered in the UI. qwen-image-2.1 documents pixel canvases of
+# 2048x2048, 2400x1792, 2752x1536 and friends, but all of those are slightly
+# over the 4 MP cap, so the canvas is always computed from the ratio itself by
+# ratio_size() (which yields 1984x1984, 2304x1728, 2560x1440, ...).
+ASPECT_RATIOS = ("1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16")
 
-EDIT_PROMPT = """Edit the picture as described below.
+# Model-specific ratio lists, for models that accept fewer canvases. Extend
+# here; anything unlisted uses ASPECT_RATIOS.
+MODEL_RATIOS = {}
 
-CRITICAL CONSTRAINTS: this image is only a crop of a larger picture and it is
-padded with fully transparent margins. Keep the alpha channel intact and keep
-the outermost border rows/columns of pixels EXACTLY as they are: do not move,
-stretch, rotate, blur, recolor or repaint anything inside a few-pixel border
-of the image, do not extend content into the transparent margins, and do not
-fill in transparent areas. The result must blend back seamlessly at the edges.
+# GdkPixbuf has no "high" interpolation; HYPER is the highest-quality filter.
+INTERPOLATION = GdkPixbuf.InterpType.HYPER
 
-Editing instruction: """
+EDIT_PROMPT = "\n" + ("""
+
+Keep the alpha channel intact and keep the outermost border rows/columns of pixels EXACTLY
+as they are. The result must blend back seamlessly at the edges.
+
+""".replace("\n", " ").strip())
 
 
 class AIError(Exception):
     pass
+
+
+def pdb_error(result):
+    """The error string of a failed Gimp.ValueArray, if it carried one."""
+    try:
+        return str(result.index(1))
+    except Exception:  # noqa: BLE001 - value arrays without return values
+        return "the procedure returned no error detail"
 
 
 def N_(message):
@@ -84,8 +91,34 @@ def _(message):
     return GLib.dgettext(None, message)
 
 
+def ratio_size(ratio):
+    """Largest `"a:b"` canvas that satisfies the backend's size limits.
+
+    Both sides stay exact multiples of the ratio (so a 16:9 request really does
+    produce 16:9 output) and multiples of SIZE_MULTIPLE, never longer than
+    MAX_SIDE nor together more than MAX_PIXELS.
+    """
+    a, b = (int(part) for part in str(ratio).split(":"))
+    if a < 1 or b < 1:
+        return (SIZE_MULTIPLE, SIZE_MULTIPLE)
+    divisor = math.gcd(a, b)
+    a, b = a // divisor, b // divisor
+
+    # Smallest k with both a*k and b*k divisible by SIZE_MULTIPLE.
+    step = math.lcm(
+        SIZE_MULTIPLE // math.gcd(a, SIZE_MULTIPLE),
+        SIZE_MULTIPLE // math.gcd(b, SIZE_MULTIPLE),
+    )
+    limit = min(MAX_SIDE // a, MAX_SIDE // b, int(math.sqrt(MAX_PIXELS / (a * b))))
+    k = max(step, limit - limit % step)
+    return (a * k, b * k)
+
+
+@functools.lru_cache(maxsize=None)
 def sizes_for_model(model):
-    return MODEL_SIZES.get((model or "").lower().strip(), ASPECT_SIZES)
+    """Ratio -> canvas size, computed for the model in use."""
+    ratios = MODEL_RATIOS.get((model or "").lower().strip(), ASPECT_RATIOS)
+    return {ratio: ratio_size(ratio) for ratio in ratios}
 
 
 def best_ratio(w, h, sizes):
@@ -122,6 +155,8 @@ def http_json(url, data=None, headers=None, timeout=MODELS_TIMEOUT):
         raise AIError(f"HTTP {e.code} from {url}\n{body}") from e
     except urllib.error.URLError as e:
         raise AIError(f"Cannot reach {url}: {e.reason}") from e
+    except OSError as e:  # connection reset mid-response, timeout, ...
+        raise AIError(f"The backend at {url} failed the request: {e}") from e
 
 
 def list_image_models():
@@ -135,7 +170,7 @@ def list_image_models():
 
 def pixbuf_from_b64(b64):
     raw = base64.b64decode(b64)
-    stream = GLib.MemoryInputStream.new_from_bytes(GLib.Bytes.new(raw))
+    stream = Gio.MemoryInputStream.new_from_bytes(GLib.Bytes.new(raw))
     pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream)
     stream.close()
     if pixbuf is None:
@@ -240,21 +275,80 @@ def pixbuf_rgba8(pixbuf):
     return pixbuf
 
 
-def layer_region_pixbuf(layer, x, y, w, h):
-    """Exact 1:1 RGBA pixels of an image-space rectangle of `layer`."""
-    off_x, off_y = layer.get_offsets()
-    pixbuf = layer.get_sub_thumbnail(
-        x - off_x,
-        y - off_y,
-        w,
-        h,
-        w,
-        h,
-        Gimp.PixbufTransparency.KEEP_ALPHA,
+def export_layer_pixels(layer):
+    """Exact pixels of a whole layer.
+
+    `gimp_drawable_get_sub_thumbnail()` is not usable here: it refuses anything
+    larger than 1024x1024, thumbnails rather than copying pixels 1:1, and in
+    GIMP 3.0.8 it double-unrefs the returned GBytes (which aborts the plug-in
+    with "double free detected in tcache 2"). Instead the layer is copied into a
+    throw-away single-layer image and losslessly round-tripped through PNG.
+    """
+    image = layer.get_image()
+    temp = Gimp.Image.new(
+        layer.get_width(), layer.get_height(), image.get_base_type()
     )
+    fd, path = tempfile.mkstemp(prefix="gimp-ai-layer-", suffix=".png")
+    os.close(fd)
+    try:
+        # Layer.copy() yields a layer that insert_layer() refuses on a foreign
+        # image; new_from_drawable() is the cross-image copy.
+        copy = Gimp.Layer.new_from_drawable(layer, temp)
+        temp.insert_layer(copy, None, 0)
+        copy.set_offsets(0, 0)
+
+        procedure = Gimp.get_pdb().lookup_procedure("file-png-export")
+        if procedure is None:
+            raise AIError("the PNG export procedure is not available")
+        config = procedure.create_config()
+        config.set_property("run-mode", Gimp.RunMode.NONINTERACTIVE)
+        config.set_property("image", temp)
+        config.set_property("file", Gio.File.new_for_path(path))
+        result = procedure.run(config)
+        if result.index(0) != Gimp.PDBStatusType.SUCCESS:
+            raise AIError(f"could not export the layer as PNG: {pdb_error(result)}")
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file(path)
+    finally:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+        temp.delete()
+
     if pixbuf is None:
-        raise AIError("could not read the pixels of the active layer")
+        raise AIError("could not read the exported pixels of the active layer")
     return pixbuf_rgba8(pixbuf)
+
+
+def layer_region_pixbuf(layer, x, y, w, h):
+    """Exact 1:1 RGBA pixels of an image-space rectangle of `layer`.
+
+    Areas of the rectangle that fall outside the layer itself stay fully
+    transparent.
+    """
+    # gimp_drawable_get_offsets() also returns the PDB success flag.
+    _, off_x, off_y = layer.get_offsets()
+    full = export_layer_pixels(layer)
+
+    canvas = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
+    canvas.fill(0)
+
+    start_x, start_y = max(x, off_x), max(y, off_y)
+    end_x, end_y = min(x + w, off_x + full.get_width()), min(
+        y + h, off_y + full.get_height()
+    )
+    if end_x > start_x and end_y > start_y:
+        full.copy_area(
+            start_x - off_x,
+            start_y - off_y,
+            end_x - start_x,
+            end_y - start_y,
+            canvas,
+            start_x - x,
+            start_y - y,
+        )
+    return canvas
 
 
 def pixbuf_png_bytes(pixbuf):
@@ -293,9 +387,12 @@ def build_edit_upload(layer, rect, model):
     plan = edit_plan(w, h, model)
     tw, th = plan["target"]
     sw, sh = plan["scaled"]
+    pad_x, pad_y = plan["pad"]
 
     region = layer_region_pixbuf(layer, x, y, w, h)
-    scaled = region.scale_simple(sw, sh, GdkPixbuf.InterpType.HIGH) if (sw, sh) != (w, h) else region
+    scaled = (
+        region.scale_simple(sw, sh, INTERPOLATION) if (sw, sh) != (w, h) else region
+    )
 
     canvas = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, tw, th)
     canvas.fill(0)  # fully transparent padding
@@ -313,9 +410,11 @@ def inverse_transform(pixbuf, plan):
     _, _, w, h = plan["rect"]
 
     if (pixbuf.get_width(), pixbuf.get_height()) != (tw, th):
-        pixbuf = pixbuf.scale_simple(tw, th, GdkPixbuf.InterpType.HIGH)
+        pixbuf = pixbuf.scale_simple(tw, th, INTERPOLATION)
     sub = pixbuf.new_subpixbuf(pad_x, pad_y, sw, sh)
-    result = sub.scale_simple(w, h, GdkPixbuf.InterpType.HIGH) if (sw, sh) != (w, h) else sub.copy()
+    result = (
+        sub.scale_simple(w, h, INTERPOLATION) if (sw, sh) != (w, h) else sub.copy()
+    )
     return pixbuf_rgba8(result)
 
 
@@ -610,7 +709,9 @@ class GimpAI(Gimp.PlugIn):
     def run_generate(self, procedure, run_mode, image, drawables, config, data):
         try:
             ref = self._reference_item(image, drawables)
-            interactive = run_mode != Gimp.RunMode.NONINTERACTIVE
+            # Only Gimp.RunMode.INTERACTIVE may pop dialogs; WITH_LAST_VALS must
+            # reuse the values GIMP already put into config.
+            interactive = run_mode == Gimp.RunMode.INTERACTIVE
 
             if interactive:
                 picked = self._generate_dialog(image)
@@ -653,12 +754,14 @@ class GimpAI(Gimp.PlugIn):
             return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
         except AIError as e:
             return self._failed(procedure, e)
+        except Exception as e:  # noqa: BLE001 - report a readable PDB error
+            return self._failed(procedure, f"{type(e).__name__}: {e}")
 
     def run_edit(self, procedure, run_mode, image, drawables, config, data):
         try:
             ref = self._reference_item(image, drawables)
             rect = selection_rect(image) or (0, 0, image.get_width(), image.get_height())
-            interactive = run_mode != Gimp.RunMode.NONINTERACTIVE
+            interactive = run_mode == Gimp.RunMode.INTERACTIVE
 
             if interactive:
                 picked = self._edit_dialog(image, ref, rect)
@@ -677,26 +780,30 @@ class GimpAI(Gimp.PlugIn):
             config.set_property("model", model)
             config.set_property("prompt", prompt)
 
-            def work():
-                png, plan = build_edit_upload(ref, rect, model)
-                answer = server_edit(model, prompt, png, *plan["target"])
-                return answer, plan
+            # Every pixel read travels over the GIMP wire, which is not
+            # reentrant: build the upload here, on the main thread, and hand
+            # only the pure-Python HTTP request to the worker thread behind the
+            # spinner (reading a layer off the wire from two threads at once
+            # corrupts the IPC stream and aborts the plug-in).
+            png, plan = build_edit_upload(ref, rect, model)
 
+            tw, th = plan["target"]
             if interactive:
-                answer, plan = run_with_spinner(
+                answer = run_with_spinner(
                     f"Editing {rect[2]}×{rect[3]} px with “{model}”",
-                    f"Uploading to the {edit_plan(rect[2], rect[3], model)['ratio']} "
-                    f"canvas ({plan_size_note(rect, model)})…",
-                    work,
+                    f"Uploading to the {plan['ratio']} canvas ({tw}×{th} px)…",
+                    lambda: server_edit(model, prompt, png, tw, th),
                 )
             else:
-                answer, plan = work()
+                answer = server_edit(model, prompt, png, tw, th)
 
             result = inverse_transform(answer, plan)
             add_generated_layer(image, ref, result, f"Generated {model}", rect[0], rect[1])
             return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
         except AIError as e:
             return self._failed(procedure, e)
+        except Exception as e:  # noqa: BLE001 - report a readable PDB error
+            return self._failed(procedure, f"{type(e).__name__}: {e}")
 
     # ── dialogs ──────────────────────────────────────────────────────────
 
@@ -834,14 +941,6 @@ class GimpAI(Gimp.PlugIn):
             result = (models.get_model(), prompt.get_text())
         dialog.destroy()
         return result
-
-
-def plan_size_note(rect, model):
-    try:
-        tw, th = edit_plan(rect[2], rect[3], model)["target"]
-        return f"{tw}×{th} px"
-    except Exception:
-        return "server canvas"
 
 
 Gimp.main(GimpAI.__gtype__, sys.argv)

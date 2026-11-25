@@ -21,8 +21,9 @@
 
   # Shared EVO-X2 gateway catalog, same source as the terminal agent's.
   evoX2 = import ../_evo-x2.nix;
-  # Shared extension sources and gateway URLs (pi, omp and pi-web all read it).
-  ext = import ./_extensions.nix;
+  # Extension groups and gateway URLs, shared with omp and the organizer pi
+  # through the llm/pi/extensions/default.nix module.
+  ext = piCfg.extensions;
   modelsJson = pkgs.writeText "pi-web-models.json" evoX2.piJson;
 
   # Starting point for the separate agent directory: the settings the terminal
@@ -31,17 +32,21 @@
     builtins.toJSON config.programs.pi.coding-agent.settings
   );
 
-  # pi-web has no --extension flag; it loads pi's resources from settings.json,
+  # pi-web has no --extension flag; it loads pi's plugins from settings.json,
   # so the plugin paths are handed to the wrapper as JSON. Each plugin is
   # copied out first: settings.json must name a store path of its own, not a
   # file inside the checked out flake.
   plugins = pkgs.writeText "pi-web-plugins.json" (
-    builtins.toJSON (
-      [ (pkgs.copyPathToStore ext.extensions.systemPrompt) ]
-      ++ lib.optionals (piCfg.litellmProxy != null) [(pkgs.copyPathToStore ext.extensions.litellm)]
-      ++ lib.optionals (piCfg.googleProxy != null) [(pkgs.copyPathToStore ext.extensions.googleSearch)]
-      ++ lib.optionals (piCfg.reservationsApi != null) [(pkgs.copyPathToStore ext.extensions.queue)]
-    )
+    builtins.toJSON (map pkgs.copyPathToStore cfg.plugins)
+  );
+
+  # The npm/git sources of settings.json, the other place pi loads resources
+  # from and the one the web UI's plugin page writes.
+  packages = pkgs.writeText "pi-web-packages.json" (builtins.toJSON cfg.packages);
+
+  # The gateway URLs the loaded extensions read, one export per line.
+  exports = lib.concatStrings (
+    lib.mapAttrsToList (name: value: "export ${name}=${lib.escapeShellArg value}\n") ext.environment
   );
 
   piWebWrapper = pkgs.writeShellApplication {
@@ -55,18 +60,9 @@
       export PI_CODING_AGENT_DIR="''${PI_CODING_AGENT_DIR:-$HOME/.pi/web}"
       export PI_WEB_SKIP_VERSION_CHECK=1
       export PI_WEB_IDLE_TIMEOUT_MS=0
+      ${exports}
       ${lib.optionalString (cfg.allowedHosts != []) ''
         export PI_WEB_ALLOWED_HOSTS=${lib.escapeShellArg (lib.concatStringsSep "," cfg.allowedHosts)}
-      ''}
-      ${lib.optionalString (piCfg.litellmProxy != null) ''
-        export LITELLM_API_BASE=${lib.escapeShellArg piCfg.litellmProxy}
-      ''}
-      ${lib.optionalString (piCfg.googleProxy != null) ''
-        export GOOGLE_SEARCH_API_BASE=${lib.escapeShellArg piCfg.googleProxy}
-      ''}
-      ${lib.optionalString (piCfg.reservationsApi != null) ''
-        export EVO_X2_RESERVATIONS_URL=${lib.escapeShellArg piCfg.reservationsApi}
-        export EVO_X2_QUEUE_DOMAIN=${lib.escapeShellArg ext.gatewayDomain}
       ''}
 
       agent_dir="$PI_CODING_AGENT_DIR"
@@ -77,25 +73,28 @@
       fi
       install -m 0600 ${modelsJson} "$agent_dir/models.json"
 
-      # pi-web loads pi's plugins through settings.json, so the declared plugin
-      # paths are merged in before the server starts. Both merges only fill
-      # gaps: settings the user changed stay changed, and a plugin already
-      # listed is never added twice.
+      # settings.json is both how pi-web is handed its plugins and what the web
+      # UI writes: its plugin page appends npm/git sources to `packages` and its
+      # resource toggles prefix `extensions` entries with "+" and "-". So the two
+      # plugin keys are rewritten from nix on every start, while the rest of the
+      # settings only get filled in and stay as the UI left them.
       settings="$agent_dir/settings.json"
-      [ -e "$settings" ] || printf '%s\n' '{}' > "$settings"
+
+      # A truncated or hand-broken settings.json must not crash-loop the unit.
+      user="$(jq -c 'if type == "object" then . else {} end' "$settings" 2>/dev/null || printf '%s' '{}')"
 
       tmp="$(mktemp "$agent_dir/settings.json.XXXXXX")"
-      jq --slurpfile base ${baseSettings} --slurpfile plugins ${plugins} '
-        (.extensions // []) as $loaded
-        | ($base[0] * .)
-        | .extensions = ($loaded + ($plugins[0] - $loaded))
-      ' "$settings" > "$tmp"
+      jq -n --argjson user "$user" \
+        --slurpfile base "${baseSettings}" \
+        --slurpfile plugins "${plugins}" \
+        --slurpfile packages "${packages}" '
+          ($base[0] * $user)
+          | .extensions = $plugins[0]
+          | .packages = $packages[0]
+        ' > "$tmp"
       chmod 0600 "$tmp"
-      if cmp -s "$tmp" "$settings"; then
-        rm -f "$tmp"
-      else
-        mv "$tmp" "$settings"
-      fi
+      cmp -s "$tmp" "$settings" || mv "$tmp" "$settings"
+      rm -f "$tmp"
 
       exec ${piWeb}/bin/pi-web -H 0.0.0.0 -p ${toString cfg.port} --no-open "$@"
     '';
@@ -105,6 +104,19 @@ in {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = piCfg.enable && false;
+    };
+
+    # The plugins this server loads, and the only ones it ever loads: the wrapper
+    # overwrites both plugin keys of settings.json on every start, so whatever
+    # the web UI installed or toggled in them is gone again on the next restart.
+    plugins = lib.mkOption {
+      type = lib.types.listOf lib.types.path;
+      default = ext.piAgentExtensions;
+    };
+
+    packages = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
     };
 
     port = lib.mkOption {

@@ -9,6 +9,9 @@
   piCfg = config.features.shell.utils.llm.pi;
   orgCfg = config.features.gui.apps.tools.organizeer;
   organizeerUrl = "https://tasks.brix0.wilkins.pl.eu.org/mcp";
+  # Extension groups and gateway URLs, shared with the other pi agents through
+  # the llm/pi/extensions/default.nix module.
+  ext = piCfg.extensions;
   # Shared EVO-X2 gateway catalog; this agent's models.json is generated from it.
   evoX2 = import ../_evo-x2.nix;
   modelsJson = pkgs.writeText "organizeer-models.json" evoX2.piJson;
@@ -41,19 +44,15 @@
               exposure = "direct";
             };
           };
-          extensions =
-            []
-            ++ lib.optionals (piCfg.litellmProxy != null) [
-              ./_litellm.ts
-            ];
+          # The pi group: the machine lease, the <docs> strip and the LiteLLM
+          # catalog, same as the terminal agent minus the web search tool.
+          extensions = ext.piExtensions;
           environment =
             {
               # TODO: can i use "~" here instead of hardcoding the path?
               PI_CODING_AGENT_DIR.value = "/home/cloudburst/.pi/organizeer";
             }
-            // lib.optionalAttrs (piCfg.litellmProxy != null) {
-              LITELLM_API_BASE.value = piCfg.litellmProxy;
-            };
+            // lib.mapAttrs (_: value: {inherit value;}) ext.environment;
         };
       }
     ];

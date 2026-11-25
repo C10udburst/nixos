@@ -11,6 +11,28 @@ let
     "max"
   ];
 
+  supported = m: l: m.effortMap.${l} or null != null;
+
+  # Normalize thinkingFormat for OMP where Pi-specific formats like "deepseek"
+  # don't have a direct 1:1 value in models.yml.
+  toOmpThinkingFormat = fmt:
+    if fmt == "deepseek"
+    then "openai"
+    else fmt;
+
+  # Build per-model `compat` if `thinkingFormat` or `m.compat` is present.
+  mkCompat = m: mapFormat: let
+    baseCompat = m.compat or {};
+    fmtAttr =
+      if m ? thinkingFormat && m.thinkingFormat != null
+      then {thinkingFormat = mapFormat m.thinkingFormat;}
+      else {};
+    merged = baseCompat // fmtAttr;
+  in
+    if merged == {}
+    then {}
+    else {compat = merged;};
+
   # omp: thinking.efforts is the ordered non-null levels and thinking.effortMap
   # is emitted only when a level maps to a differently named provider value.
   toOmpModel = m:
@@ -28,6 +50,7 @@ let
       then {inherit (m) input;}
       else {}
     )
+    // (mkCompat m toOmpThinkingFormat)
     // (
       if m ? effortMap
       then let
@@ -73,6 +96,7 @@ let
       then {inherit (m) input;}
       else {}
     )
+    // (mkCompat m (fmt: fmt))
     // (
       if m ? effortMap
       then {
@@ -82,14 +106,13 @@ let
       else {}
     );
 
-  supported = m: l: m.effortMap.${l} or null != null;
-
   models = [
     {
       id = "deepseek-v4.1-flash";
       name = "DeepSeek V4.1 Flash UD-IQ1_M (140 GB + 203 GB streamed Engram table) with DSpark drafting, 1M context";
       contextWindow = 1048576;
       maxTokens = 32768;
+      thinkingFormat = "deepseek";
       effortMap = {
         off = "none";
         xhigh = "xhigh";
@@ -101,6 +124,7 @@ let
       name = "DeepSeek V4.1 Flash UD-IQ1_M Uncensored (runtime abliteration overlay, shared weights)";
       contextWindow = 1048576;
       maxTokens = 32768;
+      thinkingFormat = "deepseek";
       effortMap = {
         off = "none";
         xhigh = "xhigh";
@@ -122,6 +146,7 @@ let
         "text"
         "image"
       ];
+      thinkingFormat = "zai";
       # Thinking cannot be switched off and GLM-5.3 only accepts "max".
       effortMap = {
         off = null;
@@ -139,6 +164,7 @@ let
         "text"
         "image"
       ];
+      thinkingFormat = "zai";
       effortMap = {
         off = null;
         minimal = null;
@@ -161,6 +187,7 @@ let
         "text"
         "image"
       ];
+      thinkingFormat = "openai";
       effortMap = {
         off = "none";
         xhigh = "xhigh";
@@ -182,6 +209,7 @@ let
         "text"
         "image"
       ];
+      thinkingFormat = "qwen-chat-template";
       effortMap = {
         off = "none";
         xhigh = "xhigh";
@@ -197,6 +225,7 @@ let
         "text"
         "image"
       ];
+      thinkingFormat = "qwen-chat-template";
       effortMap = {
         off = "none";
         xhigh = "xhigh";
@@ -212,6 +241,7 @@ let
         "text"
         "image"
       ];
+      thinkingFormat = "qwen-chat-template";
       effortMap = {
         off = "none";
         xhigh = "xhigh";
@@ -220,7 +250,7 @@ let
     }
     {
       id = "ripple-65b";
-      name = "Ripple-65B Preview AD-Q6_K - dense 65B agentic coder (SWA + NoPE, ricursive arch)";
+      name = "Ripple-65B Preview AD-Q6_K - dense 65B agentic coder (SWA + NoPE, recursive arch)";
       contextWindow = 262144;
       maxTokens = 16384;
     }

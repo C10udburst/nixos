@@ -10,10 +10,27 @@
   llmEnabled = config.features.shell.utils.llm.enable;
   system = pkgs.stdenv.hostPlatform.system;
   basePackage = inputs.omp.packages.${system}.default;
-  # Shared EVO-X2 gateway catalog; omp gets its models.yml generated from it.
   evoX2 = import ../_evo-x2.nix;
-  # Shared extension sources and gateway URLs (pi, omp and pi-web all read it).
-  ext = import ../pi/_extensions.nix;
+  # Extension groups and gateway URLs, shared with the pi agents through the
+  # llm/pi/extensions/default.nix module. omp takes the shared machine lease plus
+  # the web search tool: it discovers LiteLLM's free-model catalog natively
+  # through LITELLM_BASE_URL, and its prompt carries no pi <docs> section for
+  # the docs-stripping extension to remove.
+  ext = piCfg.extensions;
+  ompExtensions =
+    ext.baseExtensions ++ lib.optional (ext.googleUrl != null) ext.shared.googleSearch;
+  # ~/.omp/agent/extensions is an auto-discovery root, and the `_` prefix that
+  # keeps the sources out of import-tree is dropped on the way in.
+  ompExtensionFiles = lib.listToAttrs (
+    map (path: {
+      name = ".omp/agent/extensions/${lib.removePrefix "_" (baseNameOf path)}";
+      value = {
+        source = path;
+        force = true;
+      };
+    })
+    ompExtensions
+  );
 in {
   options.features.shell.utils.llm.omp = {
     enable = lib.mkOption {
@@ -32,11 +49,8 @@ in {
 
     (lib.mkIf cfg.enable {
       # omp keeps its own agent directory (~/.omp/agent): models.yml is rendered
-      # from the shared llm/_evo-x2.nix catalog, and the extensions shared with
-      # the pi module (llm/pi/_extensions.nix) sit in the native auto-discovery
-      # root ~/.omp/agent/extensions. LiteLLM's free-model catalog needs no
-      # shared pi extension here: omp discovers it natively from the gateway
-      # pointed at by LITELLM_BASE_URL.
+      # from the shared llm/_evo-x2.nix catalog, and the extensions it loads sit
+      # in the native auto-discovery root ~/.omp/agent/extensions.
       home-manager.users.cloudburst = {
         imports =
           lib.optionals (inputs ? omp && inputs.omp ? homeManagerModules) [
@@ -58,16 +72,17 @@ in {
         programs.omp = {
           enable = true;
           package = pkgs.writeShellScriptBin "omp" (
-            lib.optionalString (piCfg.litellmProxy != null) ''
-              export LITELLM_BASE_URL=${lib.escapeShellArg (piCfg.litellmProxy + "/v1")}
+            # omp names the LiteLLM gateway differently from the pi extensions.
+            lib.optionalString (ext.litellmUrl != null) ''
+              export LITELLM_BASE_URL=${lib.escapeShellArg (ext.litellmUrl + "/v1")}
               export LITELLM_API_KEY="''${LITELLM_API_KEY:-none}"
             ''
-            + lib.optionalString (piCfg.googleProxy != null) ''
-              export GOOGLE_SEARCH_API_BASE=${lib.escapeShellArg piCfg.googleProxy}
+            + lib.optionalString (ext.googleUrl != null) ''
+              export GOOGLE_SEARCH_API_BASE=${lib.escapeShellArg ext.googleUrl}
             ''
-            + lib.optionalString (piCfg.reservationsApi != null) ''
-              export EVO_X2_RESERVATIONS_URL=${lib.escapeShellArg piCfg.reservationsApi}
-              export EVO_X2_QUEUE_DOMAIN=${lib.escapeShellArg ext.gatewayDomain}
+            + lib.optionalString (ext.reservationsUrl != null) ''
+              export EVO_X2_RESERVATIONS_URL=${lib.escapeShellArg ext.reservationsUrl}
+              export EVO_X2_QUEUE_DOMAIN=${lib.escapeShellArg ext.shared.gatewayDomain}
             ''
             + ''
               export OMP_SKIP_SETUP=1
@@ -100,19 +115,7 @@ in {
           };
         };
 
-        # Extension sources are shared with the sibling pi module via _extensions.nix.
-        home.file.".omp/agent/extensions/system-prompt.ts" = {
-          source = ext.extensions.systemPrompt;
-          force = true;
-        };
-        home.file.".omp/agent/extensions/google-search.ts" = lib.mkIf (piCfg.googleProxy != null) {
-          source = ext.extensions.googleSearch;
-          force = true;
-        };
-        home.file.".omp/agent/extensions/evo-x2-queue.ts" = lib.mkIf (piCfg.reservationsApi != null) {
-          source = ext.extensions.queue;
-          force = true;
-        };
+        home.file = ompExtensionFiles;
       };
     })
   ];
