@@ -12,6 +12,9 @@
   # Extension groups and gateway URLs, shared with omp, the organizer pi and
   # pi-web through the llm/pi/extensions/default.nix module.
   ext = cfg.extensions;
+  # The system prompt that replaces pi's own, shared with pi-web and the
+  # organizer pi through the llm/pi/prompt/default.nix module.
+  prompt = cfg.prompt;
   # The bun runtime binary requires AVX (SIGILL on `vzeroupper` pre-Haswell,
   # e.g. the Pentium 4415Y in surface). The node variant runs everywhere.
   piPackage =
@@ -56,8 +59,9 @@ in {
       programs.pi.coding-agent = {
         enable = true;
         package = piPackage;
-        # Every extension a full pi agent loads: the machine lease, the docs
-        # strip, the LiteLLM catalog and the web search tool.
+        # Every extension a full pi agent loads: the machine lease, the LiteLLM
+        # catalog and the web search tool. The prompt is not one of them: pi reads
+        # it from its agent directory, see the prompt module.
         extensions = ext.piAgentExtensions;
 
         settings = {
@@ -77,6 +81,15 @@ in {
     (lib.mkIf cfg.enable {
       programs.pi.coding-agent.environment =
         lib.mapAttrs (_: value: {inherit value;}) ext.environment;
+    })
+
+    # <agent dir>/SYSTEM.md is the one place pi takes its whole prompt from: this
+    # replaces the preamble and leaves out the <docs> section pi would add.
+    (lib.mkIf (cfg.enable && prompt.enable) {
+      home-manager.users.cloudburst.home.file.".pi/agent/SYSTEM.md" = {
+        source = prompt.shared.mkSystemPrompt {name = "pi";};
+        force = true;
+      };
     })
   ];
 }

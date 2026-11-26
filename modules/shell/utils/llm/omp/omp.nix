@@ -14,8 +14,8 @@
   # Extension groups and gateway URLs, shared with the pi agents through the
   # llm/pi/extensions/default.nix module. omp takes the shared machine lease plus
   # the web search tool: it discovers LiteLLM's free-model catalog natively
-  # through LITELLM_BASE_URL, and its prompt carries no pi <docs> section for
-  # the docs-stripping extension to remove.
+  # through LITELLM_BASE_URL, and it runs on its own prompt, so it takes neither
+  # the pi extension group nor the SYSTEM.md the prompt module installs.
   ext = piCfg.extensions;
   ompExtensions =
     ext.baseExtensions ++ lib.optional (ext.googleUrl != null) ext.shared.googleSearch;

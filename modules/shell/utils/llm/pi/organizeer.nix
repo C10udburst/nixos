@@ -12,6 +12,9 @@
   # Extension groups and gateway URLs, shared with the other pi agents through
   # the llm/pi/extensions/default.nix module.
   ext = piCfg.extensions;
+  # This agent's prompt: the organizer template, and none of the sections that
+  # belong to a coding agent or to an extension this group does not load.
+  prompt = piCfg.prompt;
   # Shared EVO-X2 gateway catalog; this agent's models.json is generated from it.
   evoX2 = import ../_evo-x2.nix;
   modelsJson = pkgs.writeText "organizeer-models.json" evoX2.piJson;
@@ -27,7 +30,6 @@
         pi.coding-agent = {
           package = piPackage;
           models = modelsJson;
-          rules = ./_organizeer-agent.md;
           settings = {
             theme = "dark";
             tuiMode = "regular";
@@ -44,8 +46,9 @@
               exposure = "direct";
             };
           };
-          # The pi group: the machine lease, the <docs> strip and the LiteLLM
-          # catalog, same as the terminal agent minus the web search tool.
+          # The pi group: the machine lease and the LiteLLM catalog, same as the
+          # terminal agent minus the web search tool. No web search, so the prompt
+          # below must not mention it.
           extensions = ext.piExtensions;
           environment =
             {
@@ -73,6 +76,19 @@ in {
 
       home.file.".pi/organizeer/models.json" = {
         text = evoX2.piJson;
+        force = true;
+      };
+
+      # The agent directory this package is pointed at, so this is its whole
+      # system prompt: task management only, no code, no nix, no search.
+      home.file.".pi/organizeer/SYSTEM.md" = lib.mkIf prompt.enable {
+        source = prompt.shared.mkSystemPrompt {
+          name = "organizeer";
+          template = "organizeer";
+          google = false;
+          comma = false;
+          nix = false;
+        };
         force = true;
       };
 

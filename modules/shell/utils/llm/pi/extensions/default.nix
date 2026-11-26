@@ -8,7 +8,6 @@
   # The extension sources. Fixed locations, not options: they live next to this
   # module and only ever move with it. The `_` prefix keeps them out of
   # import-tree's module discovery, the `.ts` suffix keeps them out of Nix.
-  systemPrompt = ./_system-prompt.ts;
   litellm = ./_litellm.ts;
   googleSearch = ./_google-search.ts;
   queue = ./_queue.ts;
@@ -57,10 +56,13 @@ in {
     # Extension groups shared by every pi-family agent.
     #
     #   baseExtensions     the /enqueue machine lease; loaded by pi and omp.
-    #   piExtensions       base + the docs strip + the LiteLLM catalog; loaded by
-    #                      the full pi agent and the organizer pi.
+    #   piExtensions       base + the LiteLLM catalog; loaded by the full pi agent
+    #                      and the organizer pi.
     #   piAgentExtensions  pi + the web search tool; loaded by the terminal pi and
     #                      pi-web.
+    #
+    # The prompt is not in any group: every pi agent takes it from SYSTEM.md in
+    # its own agent directory, see the llm/pi/prompt/default.nix module.
     #
     # omp takes `baseExtensions` plus the search tool from `shared`.
     # ─────────────────────────────────────────────────────────────────────────────
@@ -71,7 +73,7 @@ in {
 
     piExtensions = lib.mkOption {
       type = lib.types.listOf lib.types.path;
-      default = cfg.baseExtensions ++ [systemPrompt] ++ lib.optional (cfg.litellmUrl != null) litellm;
+      default = cfg.baseExtensions ++ lib.optional (cfg.litellmUrl != null) litellm;
     };
 
     piAgentExtensions = lib.mkOption {

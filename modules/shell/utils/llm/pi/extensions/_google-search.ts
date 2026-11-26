@@ -408,7 +408,6 @@ export default function (pi: ExtensionAPI) {
             "google_search returns an answer, not a raw results list; the Sources block lists citable URLs.",
             "When you need several distinct sources or dates, ask for them in the query (\"list the five most recent X, with dates\").",
             "Ask it as a complete question. Do not pass site: operators or date ranges, they degrade results.",
-            "The gateway may be suspended: the tool already waits for it to wake, so a slow first call is normal.",
             "It fails when the upstream engine rate-limits or the answer quality gate rejects; retry once with a reworded query before giving up.",
             "A connection error means nothing is listening at the gateway URL — that is not a query problem; do not retry the same call.",
         ],

@@ -24,6 +24,9 @@
   # Extension groups and gateway URLs, shared with omp and the organizer pi
   # through the llm/pi/extensions/default.nix module.
   ext = piCfg.extensions;
+  # The prompt the terminal agent runs on, same text for these sessions: pi-web
+  # points PI_CODING_AGENT_DIR at ~/.pi/web and reads SYSTEM.md from there.
+  prompt = piCfg.prompt;
   modelsJson = pkgs.writeText "pi-web-models.json" evoX2.piJson;
 
   # Starting point for the separate agent directory: the settings the terminal
@@ -145,6 +148,13 @@ in {
     (lib.mkIf cfg.enable {
       home-manager.users.cloudburst = {
         home.packages = [piWebWrapper];
+
+        # Not the wrapper's own file: pi-web loads its prompt from the agent
+        # directory it is handed, the same way the terminal agent does.
+        home.file.".pi/web/SYSTEM.md" = lib.mkIf prompt.enable {
+          source = prompt.shared.mkSystemPrompt {name = "pi-web";};
+          force = true;
+        };
 
         systemd.user.services.pi-web = {
           Unit = {
