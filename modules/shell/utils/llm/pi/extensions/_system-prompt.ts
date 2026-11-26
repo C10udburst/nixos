@@ -15,23 +15,52 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-/** The XML-wrapped docs section, tolerant of surrounding whitespace. */
-const DOCS_SECTION = /\s*<docs>[\s\S]*?<\/docs>/gi;
+function stripDocs(prompt: string): string {
+    const lines = prompt.split(/\r?\n/);
+    const kept: string[] = [];
+    let inDocs = false;
 
-/** "> Pi can create extensions. Ask it to build one for your use case." */
-const EXTENSION_BANNER = /^\s*>?\s*Pi can create extensions[^\n]*\n?/im;
+    for (const line of lines) {
+        if (!inDocs) {
+            const openIdx = line.indexOf("<docs>");
+            if (openIdx !== -1) {
+                inDocs = true;
+                const beforeOpen = line.slice(0, openIdx);
+                const afterOpen = line.slice(openIdx + "<docs>".length);
+                const closeIdx = afterOpen.indexOf("</docs>");
+
+                if (closeIdx !== -1) {
+                    inDocs = false;
+                    const remainder = beforeOpen + afterOpen.slice(closeIdx + "</docs>".length);
+                    if (remainder.trim() !== "") kept.push(remainder);
+                } else if (beforeOpen.trim() !== "") {
+                    kept.push(beforeOpen);
+                }
+                continue;
+            }
+
+            kept.push(line);
+        } else {
+            const closeIdx = line.indexOf("</docs>");
+            if (closeIdx !== -1) {
+                inDocs = false;
+                const afterClose = line.slice(closeIdx + "</docs>".length);
+                if (afterClose.trim() !== "") kept.push(afterClose);
+            }
+        }
+    }
+
+    return kept.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
 
 export default function (pi: ExtensionAPI) {
     pi.on("before_agent_start", (event) => {
         const original = event.systemPrompt;
         if (!original) return undefined;
 
-        const stripped = original
-            .replace(DOCS_SECTION, "")
-            .replace(EXTENSION_BANNER, "")
-            .trim();
-
+        const stripped = stripDocs(original);
         if (stripped === original) return undefined;
+
         return { systemPrompt: stripped };
     });
 }

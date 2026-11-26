@@ -13,7 +13,6 @@ _: {
 
     gui = {
       apps.brave.apps = {
-        social.discord = true;
         office = true;
         other.vscode = true;
       };

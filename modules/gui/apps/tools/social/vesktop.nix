@@ -8,7 +8,7 @@
 in {
   options.features.gui.apps.tools.social.vesktop = lib.mkOption {
     type = lib.types.bool;
-    default = socialEnabled && true;
+    default = socialEnabled && false;
   };
 
   config = lib.mkIf cfg {

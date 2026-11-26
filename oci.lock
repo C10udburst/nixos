@@ -6,7 +6,6 @@
   "ghcr.io/homarr-labs/homarr:latest": "ghcr.io/homarr-labs/homarr@sha256:7b3ab85bad2656be6c940b9d26117254edb6d998aeb5b66dfdc795f2e737802a",
   "ghcr.io/home-assistant/home-assistant:stable": "ghcr.io/home-assistant/home-assistant@sha256:493a07e8f6530fc640223f4a0a5248f20a61ca2f718bb1d31efbf08a2c5ea28f",
   "ghcr.io/ibuhub/aistudio-to-api:latest": "ghcr.io/ibuhub/aistudio-to-api@sha256:223e4a66af259e2617847947639b7c00224773207017a20b34b139f6dbf4d9d0",
-  "ghcr.io/manyfold3d/manyfold-solo:latest": "ghcr.io/manyfold3d/manyfold-solo@sha256:958e0266bccfcdb8cb928f38a902049fffdfbf4c29520ba612137fb3cc2835c9",
   "ghcr.io/sablierapp/sablier:latest": "ghcr.io/sablierapp/sablier@sha256:ceb0b06eca3783991199ce392fa0af74ac28953918f7e558f574a8ca4f4458f8",
   "ghcr.io/tautvydasderzinskas/thingport-backend:latest": "ghcr.io/tautvydasderzinskas/thingport-backend@sha256:aa67c83af50d703c5445ce44f0e9d1866574f55c49460a6e9922a9e71ea110c7",
   "ghcr.io/tautvydasderzinskas/thingport-frontend:latest": "ghcr.io/tautvydasderzinskas/thingport-frontend@sha256:a6e10350c9a34c7fde9b3cbcda59270195f4357ebd0231a99836a1b485130bca",

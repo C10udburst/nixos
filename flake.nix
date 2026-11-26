@@ -68,14 +68,6 @@
       url = "github:IcaroJam/kimsay";
       flake = false;
     };
-    manyfold-openscad = {
-      url = "https://github.com/cmeister2/manyfold_openscad/releases/download/0.3.1/manyfold_openscad.zip";
-      flake = false;
-    };
-    manyfold-printables = {
-      url = "github:nxn94/manyfold_printables";
-      flake = false;
-    };
     mini-swe-agent-src = {
       url = "github:swe-agent/mini-swe-agent";
       flake = false;

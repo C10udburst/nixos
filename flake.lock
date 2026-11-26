@@ -742,35 +742,6 @@
         "type": "github"
       }
     },
-    "manyfold-openscad": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1793878970,
-        "narHash": "sha256-X0QBQe+2r8iYrMnXbPe1yj/O5a1bh5I4VEK+wS5DD7M=",
-        "type": "tarball",
-        "url": "https://github.com/cmeister2/manyfold_openscad/releases/download/0.3.1/manyfold_openscad.zip"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/cmeister2/manyfold_openscad/releases/download/0.3.1/manyfold_openscad.zip"
-      }
-    },
-    "manyfold-printables": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791072645,
-        "narHash": "sha256-kSmrsiH84kZEkAD6S7aG8EZ2jWDIG3kQVQsFU+wRFeo=",
-        "owner": "nxn94",
-        "repo": "manyfold_printables",
-        "rev": "a0a06f2b547a4dce2adb7da1361b4f116aac58ac",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nxn94",
-        "repo": "manyfold_printables",
-        "type": "github"
-      }
-    },
     "mini-swe-agent-src": {
       "flake": false,
       "locked": {
@@ -1377,8 +1348,6 @@
         "import-tree": "import-tree",
         "jetbra-netfilter": "jetbra-netfilter",
         "kimsay": "kimsay",
-        "manyfold-openscad": "manyfold-openscad",
-        "manyfold-printables": "manyfold-printables",
         "mini-swe-agent-src": "mini-swe-agent-src",
         "nix-alien": "nix-alien",
         "nix-vscode-extensions": "nix-vscode-extensions",

@@ -1,58 +1,63 @@
 /**
- * evo-x2-queue — /enqueue: a time-boxed lease on the shared EVO-X2 machine.
+ * evo-x2-queue — a request-level lease on the shared EVO-X2 machine.
  *
  * The EVO-X2 box behind the gateway models is a single shared resource: the
  * gateway hands out time-boxed slots through its reservation API
- * (`/api/reservations` on the dashboard host). This extension makes pi a
- * polite citizen of that queue:
+ * (`/api/reservations` on the dashboard host). This extension turns every
+ * provider request into a gate on that API:
  *
- *   /enqueue <allotment> [note]  reserve the machine; [note] is the comment
- *   /enqueue status              show the phase, queue and slot remaining
- *   /dequeue                     give up a pending wait or release a held slot
+ *   /enqueue <allotment> [comment]  want a slot of this size; [comment] is the
+ *                                   dashboard note (also the waitlist comment)
+ *   /enqueue status                 show lease state and the machine state
+ *   /dequeue                        give the slot back / stop wanting one
  *
- * A reservation is a lease, not a prompt. `/enqueue 45m rebasing the flake`
- * stamps "rebasing the flake" as the reservation note — the comment the
- * dashboard shows next to the active slot and the waitlist entry — and nothing
- * is ever injected into the model. Once the slot is ours the session is simply
- * handed back: the next message typed is the prompt, running on the machine we
- * just reserved.
+ * The gate lives in `before_provider_request`, which pi awaits after building
+ * the payload and before the HTTP call to /v1/chat/completions. When the
+ * machine is not ours, the handler simply does not return: the request hangs
+ * with no first token, exactly like a slow model would, and pi already handles
+ * long TTFT everywhere — spinner, Esc-abort, queued steering and follow-ups
+ * all keep working. Nothing is ever captured, replayed, or aborted: prompts
+ * typed while the gate is closed sit in pi's own queues and reach the model
+ * as later turns of the same run, strictly after the gate opened. Holding the
+ * lease is what the gate checks per request; one valid lease covers the whole
+ * run, so mid-run turns flow untouched while the slot is ours.
  *
- * The state machine:
+ * Two policies keep the shared box friendly:
+ *  - When the agent settles with nothing queued, the lease is released right
+ *    away — idle minutes are not hoarded — while the gate stays armed, so a
+ *    follow-up prompt re-queues and (the box usually still free) re-acquires
+ *    it without any user action.
+ *  - A request that reaches the gate with less than 10 minutes left on the
+ *    lease extends it through POST /extend by the original allotment
+ *    (halving the step while a collision 409 says the extra time would run
+ *    into a scheduled slot), so long-running work rolls its slot forward
+ *    instead of racing the expiry.
+ *
+ * The state machine per gate passage:
  *   1. check whether the machine is free,
- *   2. reserve it for the requested allotment, stamping the note,
- *   3. hold it. Prompts typed while still waiting are held back and delivered as
- *      user messages the moment the slot becomes ours; from then on input goes
- *      through untouched,
- *   4. after every finalized message (assistant reply or tool result), ask the
- *      API whether the slot is still ours; if it expired or someone else holds
- *      it, execution is aborted and the cycle starts again — re-reserving with
- *      the original allotment.
- *
- * The slot behaves like a semaphore: an idle agent does not give it back. The
- * lease ends with /dequeue, with the session, or with its expiry.
- *
- * Waiting is designed not to spam a busy gateway: when the machine is held by
- * someone else the extension waits min(5m, 2/3 of that holder's remaining time)
- * before asking again. When the machine is free but refuses the requested
- * allotment (a scheduled slot would cut it short, answered as HTTP 409 with
- * "Maximum available time is Xm"), it reserves the advertised maximum minus
- * five minutes instead.
+ *   2. reserve it for the wanted allotment, stamping the comment,
+ *   3. let the request through.
+ * When the slot expires mid-run, the next turn's request re-enters the gate
+ * and retakes it at the original allotment; if something else holds it, the
+ * run simply waits. Waiting never spams the gateway: it sleeps
+ * min(5m, 2/3 of the current holder's remaining time) between polls, and a
+ * free machine that refuses the requested allotment (409 "Maximum available
+ * time is Xm") is reserved at X - 5 minutes instead.
  *
  * Ownership is decided by the reservation rows this client creates: an active
  * row carrying one of those ids is ours even after the waitlist promoted it,
- * while a different client — or a different pi session behind the same egress
- * IP — reads as "someone else" even where the server's own `is_holder` flag
+ * while a different client — or a different session behind the same egress IP
+ * — reads as "someone else" even where the server's own `is_holder` flag
  * would disagree.
  *
- * All of this is gated on the current model actually being served from the
- * gateway domain, so sessions on other providers are untouched.
+ * Everything is gated on the current model actually being served from the
+ * gateway domain, so sessions on other providers never block.
  *
  * Config (env, read at load time):
  *   EVO_X2_RESERVATIONS_URL   default https://evo-x2.brix0.wilkins.pl.eu.org
  *                             (the host serving /api/reservations)
- *   EVO_X2_QUEUE_DOMAIN       default "evo-x2.brix0.wilkins.pl.eu.org"; a model
- *                             participates in the queue when its baseUrl or
- *                             provider contains this
+ *   EVO_X2_QUEUE_DOMAIN       default "evo-x2"; a model is gated when its
+ *                             baseUrl or provider contains this substring
  */
 
 import type {
@@ -73,21 +78,22 @@ const MIN_MINUTES = 1;
 const MAX_MINUTES = 1440;
 /** Reserve this much under the advertised maximum when the API shrinks a request. */
 const COLLISION_SLACK_MINUTES = 5;
-/** Below this a shrunk slot is not worth starting a run for; wait it out instead. */
+/** Below this a shrunk slot is not worth taking; wait the window out instead. */
 const MIN_VIABLE_MINUTES = 5;
 /** The API truncates notes at 256 characters. */
 const MAX_NOTE = 240;
 
-/** "wait min(5m, 2/3 of what is left, then ask again)" bounds. */
+/** Bounds for "sleep min(5m, 2/3 of what is left), then poll again". */
 const MIN_WAIT_MS = 30_000;
 const MAX_WAIT_MS = 5 * 60_000;
-/** Ownership checks ride on finalized messages; this throttles fast tool loops. */
-const MIN_CHECK_MS = 15_000;
-/** Slack after a slot's expiry before the timer-driven ownership re-check. */
-const EXPIRY_GRACE_MS = 5_000;
-const API_TIMEOUT_MS = 15_000;
+/** A request reaching the gate with less than this left on the lease extends it. */
+const EXTEND_HORIZON_MS = 10 * 60_000;
+/** Debounce for extension attempts; the ladder of shrink-on-409 stops at 5m. */
+const EXTEND_DEBOUNCE_MS = 30_000;
+const EXTEND_MIN_MINUTES = 5;
 /** Anything unreachable/unscheduled falls back to this pause. */
 const FALLBACK_WAIT_MS = 60_000;
+const API_TIMEOUT_MS = 15_000;
 
 const STATUS_KEY = "evo-x2-queue";
 
@@ -96,19 +102,15 @@ const STATUS_KEY = "evo-x2-queue";
 interface ActiveReservation {
     id: number | string;
     client_name?: string;
-    mode?: string;
-    duration_minutes?: number | null;
     expires_at?: number | null;
     remaining_seconds?: number | null;
+    duration_minutes?: number | null;
     note?: string;
 }
 
 interface QueueEntry {
     id: number | string;
     client_ip?: string;
-    client_name?: string;
-    mode?: string;
-    duration_minutes?: number | null;
     created_at?: number;
     note?: string;
 }
@@ -120,20 +122,17 @@ interface ReservationState {
         is_holder?: boolean;
         is_queued?: boolean;
         queue_position?: number | null;
-        queue_positions?: number[];
     };
     active?: ActiveReservation | null;
     queue?: QueueEntry[];
     server_time?: number;
 }
 
-/** Identity of the slot we hold: the server-side row id plus its expiry. */
+/** The slot we hold: server-side row id plus its computed expiry. */
 interface Identity {
     id: number | string;
     expiresAtMs: number;
 }
-
-type Phase = "idle" | "waiting" | "running";
 
 type ReserveOutcome =
     | { kind: "held" }
@@ -149,21 +148,31 @@ class ApiError extends Error {
 
 // ------------------------------------------------------------------ state
 
-let phase: Phase = "idle";
-/** Interactive prompts typed while the machine wait blocks execution. */
-let pending: string[] = [];
-/** The comment stamped on the reservation, set by /enqueue. */
+/** Did the user ask for a lease (/enqueue yes, /dequeue no)? */
+let wantLease = false;
 let note = "";
-/** The allotment /enqueue asked for; lost slots are retaken at this size. */
-let originalMinutes = DEFAULT_MINUTES;
-/** Every reservation row this client inserted, queued or active. */
+let wantedMinutes = DEFAULT_MINUTES;
+/** Rows we inserted, queued or active; the anchor of ownership. */
 let ourRows = new Set<number | string>();
 let identity: Identity | undefined;
-let preempted = false;
 let giveUp = false;
 let shuttingDown = false;
-let lastOwnershipCheck = 0;
-let wakeFn: (() => void) | undefined;
+/** Single-flight: every gate caller awaits the same ensureLease pass. */
+let leaseFlight: Promise<void> | undefined;
+
+let lastCtx: ExtensionContext | undefined;
+
+/** Fallback for the window before any event delivered a context. */
+const NULL_CTX = {
+    ui: {},
+    isIdle: () => true,
+    hasPendingMessages: () => false,
+    abort: () => undefined,
+} as unknown as ExtensionContext;
+
+function liveCtx(): ExtensionContext {
+    return lastCtx ?? NULL_CTX;
+}
 
 // ------------------------------------------------------------- reservations API
 
@@ -213,12 +222,14 @@ async function fetchState(): Promise<ReservationState | undefined> {
 }
 
 /**
- * POST /acquire with a time-boxed request carrying the note as its comment.
+ * POST /acquire with a time-boxed request carrying the comment as its note.
  *
- * - 200 acquired / already_active  -> the slot is ours.
- * - 200 queued                     -> someone holds it; wait out 2/3 of their remainder.
+ * - 200 acquired                   -> the slot is ours.
+ * - 200 queued                     -> someone holds it; wait out their remainder.
+ *   (the server has no already_active: even the holder's duplicate acquire
+ *   joins the FIFO, so we only ever acquire when we saw the box free).
  * - 409 "Maximum available time is Xm" -> the box is free but a scheduled slot
- *   cuts our allotment short; retry once with X - 5 minutes (bounded recursion).
+ *   cuts the allotment short; retry once with X - 5 minutes (bounded recursion).
  */
 async function reserve(minutes: number, depth = 0): Promise<ReserveOutcome> {
     try {
@@ -261,6 +272,33 @@ async function reserve(minutes: number, depth = 0): Promise<ReserveOutcome> {
     }
 }
 
+let lastExtendAttemptMs = 0;
+
+/**
+ * POST /extend — roll the active lease forward by the original allotment.
+ * The API adds minutes to `max(now, expires_at)` of our own active timeboxed
+ * row and answers 409 when the new horizon would overlap a scheduled slot;
+ * the step is then halved (30m -> 15m -> 8m ...) down to a 5m floor. Any
+ * other failure just leaves the current expiry standing for the next gate.
+ */
+async function tryExtend(): Promise<void> {
+    if (Date.now() - lastExtendAttemptMs < EXTEND_DEBOUNCE_MS) return;
+    lastExtendAttemptMs = Date.now();
+    const base = Math.min(240, Math.max(EXTEND_MIN_MINUTES, wantedMinutes));
+    for (let attempt = 0; attempt < 4; attempt++) {
+        const minutes = Math.max(EXTEND_MIN_MINUTES, Math.floor(base / 2 ** attempt));
+        try {
+            const res = await api<{ status?: string; state?: ReservationState }>("/extend", { minutes });
+            const act = res.state?.active;
+            if (act && isOurs(act)) adopt(act);
+            return;
+        } catch (err) {
+            if (err instanceof ApiError && err.status === 409 && minutes > EXTEND_MIN_MINUTES) continue;
+            return;
+        }
+    }
+}
+
 async function releaseAndCancel(): Promise<void> {
     try {
         await api("/release", {});
@@ -276,7 +314,6 @@ async function releaseAndCancel(): Promise<void> {
 
 // ------------------------------------------------------------------ identity
 
-/** The rows we inserted. Ids are unique, so no other client can match one. */
 function isOurs(active: ActiveReservation | null | undefined): boolean {
     if (!active) return false;
     if (identity && active.id === identity.id) return true;
@@ -304,7 +341,7 @@ function adopt(active: ActiveReservation): void {
     const expiresAtMs =
         typeof active.expires_at === "number"
             ? active.expires_at * 1000
-            : Date.now() + (active.duration_minutes ?? originalMinutes) * 60_000;
+            : Date.now() + wantedMinutes * 60_000;
     identity = { id: active.id, expiresAtMs };
     ourRows.add(active.id);
 }
@@ -364,26 +401,26 @@ function formatRemaining(expiresAtMs?: number): string {
     return formatDuration(Math.max(0, (expiresAtMs - Date.now()) / 1000));
 }
 
-/** Sleep that event handlers can cut short via wake(). */
-function waitOrWake(ms: number): Promise<void> {
+/** Sleep that wake() cuts short; pass an abort signal so Esc cancels the gate. */
+function nap(ms: number, signal?: AbortSignal): Promise<void> {
     const clamped = Math.max(1_000, Math.floor(ms));
     return new Promise((resolve) => {
         const finish = () => {
             clearTimeout(timer);
             wakeFn = undefined;
+            signal?.removeEventListener("abort", finish);
             resolve();
         };
         const timer = setTimeout(finish, clamped);
         if (typeof (timer as { unref?: () => void }).unref === "function") {
             (timer as { unref: () => void }).unref();
         }
-        wakeFn = () => {
-            clearTimeout(timer);
-            wakeFn = undefined;
-            resolve();
-        };
+        wakeFn = finish;
+        signal?.addEventListener("abort", finish, { once: true });
     });
 }
+
+let wakeFn: (() => void) | undefined;
 
 function wake(): void {
     const fn = wakeFn;
@@ -391,247 +428,148 @@ function wake(): void {
     if (fn) fn();
 }
 
-function status(ctx: ExtensionContext, text: string | undefined): void {
+function status(text: string | undefined): void {
     try {
-        ctx.ui.setStatus?.(STATUS_KEY, text);
+        lastCtx?.ui.setStatus?.(STATUS_KEY, text);
     } catch {
         // UI may be gone during shutdown.
     }
 }
 
-function holdingStatus(ctx: ExtensionContext): void {
-    status(
-        ctx,
-        `evo-x2: ours for ${formatRemaining(identity?.expiresAtMs)} — /dequeue to release`,
-    );
-}
-
-function say(ctx: ExtensionContext, text: string, level: "info" | "warning" | "error" = "info"): void {
+function say(text: string, level: "info" | "warning" | "error" = "info"): void {
     try {
-        ctx.ui.notify?.(`evo-x2: ${text}`, level);
+        lastCtx?.ui.notify?.(`evo-x2: ${text}`, level);
     } catch {
         // UI may be gone during shutdown.
     }
 }
 
-// ------------------------------------------------------------------ delivery
-
-/** Replay prompts that were held back during the wait, as if just typed. */
-async function deliver(pi: ExtensionAPI, ctx: ExtensionContext, texts: string[]): Promise<void> {
-    const failed: string[] = [];
-    for (const text of texts) {
-        try {
-            if (ctx.isIdle()) {
-                await pi.sendUserMessage(text);
-            } else {
-                await pi.sendUserMessage(text, { deliverAs: "followUp" });
-            }
-        } catch {
-            failed.push(text);
-        }
-    }
-    if (failed.length) {
-        pending.unshift(...failed);
-        say(ctx, `${failed.length} held message(s) could not be delivered; they will be retried`, "warning");
-    }
-}
-
-// ------------------------------------------------------------------ supervisor
+// ------------------------------------------------------------------ the gate
 
 /**
- * The state machine: idle -> waiting (blocked) -> running (lease held) -> idle.
- *
- * Awaited by the /enqueue command handler that started it, so the command
- * context stays valid for the whole reservation lifetime. The session is usable
- * throughout: while waiting, typed prompts are collected by the input handler;
- * while the lease is held they pass straight through to the model.
+ * Block until a lease is held. Returns early (letting the request through
+ * unreserved) when the lease was given up, the session is going away, or the
+ * caller's run was aborted with Esc — in those cases pi owns what happens to
+ * the request, not us.
  */
-async function supervisor(pi: ExtensionAPI, ctx: ExtensionCommandContext): Promise<void> {
-    try {
-        while (!shuttingDown && !giveUp) {
-            // ---- 1-2: execution blocked; wait for the machine and reserve it.
-            phase = "waiting";
-            let held = false;
-            while (!held && !shuttingDown && !giveUp) {
-                const state = await fetchState();
-                if (!state) {
-                    status(ctx, "evo-x2: reservations API unreachable");
-                    await waitOrWake(FALLBACK_WAIT_MS);
-                    continue;
-                }
-                if (isOurs(state.active)) {
-                    adopt(state.active!);
-                    held = true;
-                    break;
-                }
-                if (!state.active && !queuedByUs(state)) {
-                    const outcome = await reserve(originalMinutes);
-                    if (outcome.kind === "held") {
-                        held = true;
-                        break;
-                    }
-                    status(ctx, `evo-x2: waiting — ${outcome.why}`);
-                    await waitOrWake(outcome.retryMs);
-                    continue;
-                }
-                if (!state.active) {
-                    // Our row is the only thing standing between us and the
-                    // machine; the server promotes it on its next read.
-                    status(ctx, "evo-x2: next in line");
-                    await waitOrWake(MIN_WAIT_MS);
-                    continue;
-                }
-                status(
-                    ctx,
-                    `evo-x2: held by ${state.active.client_name ?? "another client"} (${formatDuration(state.active.remaining_seconds)} left)`,
-                );
-                await waitOrWake(holderWaitMs(state.active));
-            }
-            if (shuttingDown || giveUp) break;
-
-            // ---- 3: the machine is ours. Nothing is injected as a prompt — the
-            // user's next message is the prompt — but anything typed during the
-            // wait fires now.
-            phase = "running";
-            preempted = false;
-            lastOwnershipCheck = Date.now();
-            holdingStatus(ctx);
-            if (pending.length) {
-                await deliver(pi, ctx, pending.splice(0, pending.length));
-            }
-
-            // ---- 4: hold the lease. Wakes on a message-triggered preempt, on
-            // /dequeue or shutdown, or at the slot's expiry (+grace) at the latest.
-            let lost = false;
-            while (!shuttingDown && !giveUp) {
-                const dueMs = (identity?.expiresAtMs ?? Date.now() + FALLBACK_WAIT_MS) + EXPIRY_GRACE_MS;
-                await waitOrWake(dueMs - Date.now());
-                if (shuttingDown || giveUp) break;
-                if (preempted) {
-                    preempted = false;
-                    lost = true;
-                    break;
-                }
-
-                const state = await fetchState();
-                if (!state) {
-                    await waitOrWake(FALLBACK_WAIT_MS);
-                    continue;
-                }
-                if (isOurs(state.active)) {
-                    adopt(state.active!);
-                    holdingStatus(ctx);
-                    continue;
-                }
-                if (!state.active) {
-                    // Our slot expired with nobody promoted ahead: retake it at
-                    // the original allotment without interrupting the session.
-                    const outcome = await reserve(originalMinutes);
-                    if (outcome.kind === "held") continue;
-                    status(ctx, `evo-x2: re-reserving — ${outcome.why}`);
-                }
-                // Occupied by something else: block execution and go back to waiting.
-                lost = true;
-                try {
-                    ctx.abort();
-                } catch {
-                    // The run may already be finishing on its own.
-                }
-                break;
-            }
-            if (shuttingDown || giveUp) break;
-            if (lost) {
-                identity = undefined;
-                say(ctx, "lost the machine — requeueing; it will be retaken at the original allotment", "warning");
-            }
+async function ensureLease(signal?: AbortSignal): Promise<void> {
+    while (wantLease && !giveUp && !shuttingDown && !signal?.aborted) {
+        const state = await fetchState();
+        if (!state) {
+            status("evo-x2: reservations API unreachable — retrying");
+            await nap(FALLBACK_WAIT_MS, signal);
+            continue;
         }
-    } finally {
-        // Leaving for good: hand the machine back and drop the waitlist row.
-        const wasHeld = !!identity;
-        phase = "idle";
-        identity = undefined;
-        ourRows.clear();
-        status(ctx, undefined);
-        await releaseAndCancel();
-        if (giveUp) {
-            say(ctx, wasHeld ? "released the machine" : "gave up the wait");
+        if (isOurs(state.active)) {
+            adopt(state.active!);
+            if (identity && identity.expiresAtMs - Date.now() < EXTEND_HORIZON_MS) {
+                await tryExtend();
+                if (!identity || identity.expiresAtMs <= Date.now()) continue;
+            }
+            status(`evo-x2: lease ours for ${formatRemaining(identity?.expiresAtMs)} — /dequeue to release`);
+            return;
         }
+        if (!state.active && !queuedByUs(state)) {
+            const outcome = await reserve(wantedMinutes);
+            if (outcome.kind === "held") {
+                status(`evo-x2: lease ours for ${formatRemaining(identity?.expiresAtMs)} — /dequeue to release`);
+                return;
+            }
+            status(`evo-x2: waiting — ${outcome.why}`);
+            await nap(outcome.retryMs, signal);
+            continue;
+        }
+        if (!state.active) {
+            // Our row is the only thing standing between us and the machine;
+            // the server promotes it on its next read.
+            status("evo-x2: next in line");
+            await nap(MIN_WAIT_MS, signal);
+            continue;
+        }
+        status(
+            `evo-x2: held by ${state.active.client_name ?? "another client"} (${formatDuration(state.active.remaining_seconds)} left)`,
+        );
+        await nap(holderWaitMs(state.active), signal);
     }
+}
+
+/** Shared by every provider request and the eager /enqueue acquire. */
+function leaseGate(signal?: AbortSignal): Promise<void> {
+    if (!wantLease || giveUp) return Promise.resolve();
+    if (identity && identity.expiresAtMs - Date.now() > EXTEND_HORIZON_MS) return Promise.resolve();
+    if (!leaseFlight) {
+        leaseFlight = ensureLease(signal).finally(() => {
+            leaseFlight = undefined;
+        });
+    }
+    return leaseFlight;
 }
 
 // ------------------------------------------------------------------ extension
 
 export default function (pi: ExtensionAPI): void {
-    pi.on("session_start", () => {
-        // Reload/new session: the previous supervisor is gone; the server-side
-        // slot (if any) expires on its own.
-        shuttingDown = false;
+    pi.on("session_start", async (_event, ctx) => {
+        // Reload/new session: no lease wanted, and any previous wait is gone;
+        // a server-side slot (if one was still held) expires on its own.
+        wantLease = false;
         giveUp = false;
-        phase = "idle";
-        pending = [];
+        shuttingDown = false;
         note = "";
+        wantedMinutes = DEFAULT_MINUTES;
         ourRows = new Set();
         identity = undefined;
-        preempted = false;
+        leaseFlight = undefined;
+        lastCtx = ctx;
+        status(undefined);
     });
 
-    pi.on("session_shutdown", () => {
+    // Awaited so the release lands before the process goes away.
+    pi.on("session_shutdown", async () => {
         shuttingDown = true;
         wake();
+        if (identity || ourRows.size) await releaseAndCancel();
     });
 
-    // While the machine wait blocks execution, typed prompts are collected
-    // instead of starting runs. Our own injected prompts and slash commands
-    // always pass through.
-    pi.on("input", async (event, ctx) => {
-        if (phase !== "waiting") return undefined;
-        if (event.source !== "interactive") return undefined;
-        if (event.text.trimStart().startsWith("/")) return undefined;
-        if (!onGateway(ctx)) return undefined;
-        pending.push(event.text);
-        say(ctx, `held until the machine is ours (${pending.length} pending)`);
-        return { action: "handled" } as const;
+    // The gate. Awaits before the /v1/chat/completions (or other provider)
+    // request goes out: while the lease is not ours, the run simply waits with
+    // no first token, and pi's own queueing keeps collecting everything typed.
+    pi.on("before_provider_request", async (_event, ctx) => {
+        lastCtx = ctx;
+        if (!wantLease || giveUp || !onGateway(ctx)) return undefined;
+        await leaseGate(ctx.signal);
+        return undefined;
     });
 
-    // Every finalized assistant reply and tool result is a cheap moment to ask
-    // whether the machine is still ours, throttled so fast tool loops do not
-    // hammer the gateway.
-    pi.on("message_end", async (event, ctx) => {
-        if (phase !== "running") return;
-        const role = (event.message as { role?: string } | undefined)?.role;
-        if (role !== "assistant" && role !== "toolResult") return;
-        if (Date.now() - lastOwnershipCheck < MIN_CHECK_MS) return;
-        lastOwnershipCheck = Date.now();
-
-        const state = await fetchState();
-        if (!state) return;
-        if (isOurs(state.active)) {
-            adopt(state.active!);
-            return;
-        }
-        preempted = true;
-        try {
-            ctx.abort();
-        } catch {
-            // Already settling.
-        }
-        wake();
+    // The machine is shared hardware: hand the slot back as soon as the
+    // agent is done with it. The gate stays armed, so a follow-up prompt
+    // simply re-queues and — the box usually still free — re-acquires it.
+    pi.on("agent_settled", async (_event, ctx) => {
+        lastCtx = ctx;
+        if (!wantLease || giveUp || !identity) return;
+        if (ctx.hasPendingMessages?.()) return; // queued steer/follow-ups mean work remains
+        const left = formatRemaining(identity.expiresAtMs);
+        identity = undefined;
+        ourRows.clear();
+        await releaseAndCancel();
+        status("evo-x2: idle — released; the next request will re-queue");
+        say(`work settled with ${left} left — released the machine; next request re-queues`);
     });
 
     pi.on("model_select", async (event, ctx) => {
-        if (phase === "idle") return;
+        lastCtx = ctx;
+        if (!wantLease) return;
         const switched = {
             baseUrl: event.model?.baseUrl,
             provider: event.model?.provider,
             id: event.model?.id,
         } as ExtensionContext["model"];
         if (!onGateway({ ...ctx, model: switched } as ExtensionContext)) {
-            say(ctx, `model left the "${GATEWAY_DOMAIN}" gateway while ${phase}; /dequeue to drop the reservation`, "warning");
+            say(`model left the "${GATEWAY_DOMAIN}" gateway; the lease gate stays closed for it until you /dequeue and re-arm`, "warning");
         }
     });
 
     pi.registerCommand("enqueue", {
-        description: "Reserve the EVO-X2 machine; the text becomes the queue comment (usage: /enqueue 45m rebasing the flake)",
+        description: "Request an EVO-X2 lease; provider requests pause until it is held (usage: /enqueue 45m rebasing the flake)",
         getArgumentCompletions: (prefix: string) => {
             const needle = (prefix ?? "").trimStart().split(/\s+/)[0] ?? "";
             if (!needle && !prefix) return null;
@@ -641,22 +579,23 @@ export default function (pi: ExtensionAPI): void {
             return options.length > 0 ? options : null;
         },
         handler: async (args: string, ctx: ExtensionCommandContext) => {
+            lastCtx = ctx;
             const text = (args ?? "").trim();
             if (!text) {
-                say(ctx, "usage: /enqueue <allotment> [comment] — e.g. /enqueue 45m rebasing the flake");
+                say("usage: /enqueue <allotment> [comment] — e.g. /enqueue 45m rebasing the flake");
                 return;
             }
             if (text === "status") {
-                const lines = [`phase: ${phase}`];
+                const lines: string[] = [];
+                lines.push(`gate: ${wantLease ? (giveUp ? "given up" : "armed") : "disarmed (no /enqueue this session)"}`);
                 if (note) lines.push(`comment: ${note}`);
-                if (identity) lines.push(`slot: ours, expires in ${formatRemaining(identity.expiresAtMs)}`);
-                if (pending.length) lines.push(`messages held from the wait: ${pending.length}`);
+                if (identity) lines.push(`lease: ours, expires in ${formatRemaining(identity.expiresAtMs)}`);
                 const state = await fetchState();
                 const position = state?.client?.queue_position;
                 if (position) lines.push(`queue position: ${position}`);
                 if (state?.active && !isOurs(state.active)) {
                     lines.push(`machine: ${state.active.client_name ?? "another client"} for ${formatDuration(state.active.remaining_seconds)}`);
-                } else if (state && !state.active && phase === "idle") {
+                } else if (state && !state.active) {
                     lines.push("machine: free");
                 }
                 ctx.ui.notify?.(`evo-x2 queue\n${lines.join("\n")}`, "info");
@@ -666,60 +605,47 @@ export default function (pi: ExtensionAPI): void {
             const first = text.split(/\s+/)[0];
             const minutes = parseDurationToken(first);
             if (minutes === undefined) {
-                say(ctx, "usage: /enqueue <allotment> [comment] — allotment is 90, 45m, 1h or 1h30", "warning");
+                say("usage: /enqueue <allotment> [comment] — allotment is 90, 45m, 1h or 1h30", "warning");
                 return;
             }
             const comment = oneLine(text.slice(first.length));
 
-            // Off-gateway models need no reservation.
             if (!onGateway(ctx)) {
-                say(ctx, `current model is not served from "${GATEWAY_DOMAIN}" — no reservation needed`, "warning");
+                say(`current model is not served from "${GATEWAY_DOMAIN}" — no reservation needed`, "warning");
                 return;
             }
 
-            // Already waiting or holding: the lease was requested once, and the
-            // machine takes the prompt whenever it arrives.
-            if (phase === "waiting") {
-                if (comment) note = comment;
-                say(ctx, `already waiting for the machine (${formatDuration(minutes * 60)} requested)`);
-                return;
-            }
-            if (phase === "running" && identity) {
-                say(ctx, `the machine is ours for ${formatRemaining(identity.expiresAtMs)} — just type your prompt`);
-                return;
-            }
-
-            note = comment || "pi reservation";
-            originalMinutes = clampMinutes(minutes);
+            wantedMinutes = clampMinutes(minutes);
+            if (comment) note = comment;
+            if (!wantLease) note ||= "pi reservation";
+            const wasArmed = wantLease && !giveUp;
+            wantLease = true;
             giveUp = false;
-            await supervisor(pi, ctx);
+            say(`lease armed for ${formatDuration(wantedMinutes * 60)} — requests pause until the machine is ours`);
+            // Eagerly chase the slot so the first prompt does not wait; later
+            // requests join the same flight, and the gate is the authority.
+            if (!wasArmed || !leaseFlight) {
+                void leaseGate().catch(() => undefined);
+            }
         },
     });
 
     pi.registerCommand("dequeue", {
-        description: "Give up a pending EVO-X2 wait, or release a held slot",
+        description: "Release an EVO-X2 lease and stop gating requests on it",
         handler: async (_args: string, ctx: ExtensionCommandContext) => {
-            const dropped = pending.length;
-            pending.length = 0;
-
-            if (phase === "idle") {
-                await releaseAndCancel();
-                identity = undefined;
-                ourRows.clear();
-                status(ctx, undefined);
-                say(ctx, "no reservation held");
-                return;
-            }
-
-            // The supervisor sees the flag, releases the slot (or cancels the
-            // waitlist row) and reports what it gave up.
+            lastCtx = ctx;
+            const wasHeld = !!identity;
+            const hadState = wasHeld || ourRows.size > 0;
+            wantLease = false;
             giveUp = true;
-            if (!ctx.isIdle()) {
-                say(ctx, "releasing the reservation while a run is in flight", "warning");
-            } else if (dropped) {
-                say(ctx, `dropped ${dropped} held message(s)`);
-            }
-            wake();
+            identity = undefined;
+            wake(); // unblock any in-flight gate: it lets requests through
+            status(undefined);
+            // Requests in flight are let through unreserved (pi's run continues);
+            // only talk to the server when we actually have a row there.
+            if (hadState) await releaseAndCancel();
+            ourRows.clear();
+            say(wasHeld ? "released the machine" : "lease disarmed");
         },
     });
 }

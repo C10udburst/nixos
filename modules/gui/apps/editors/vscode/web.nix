@@ -46,6 +46,56 @@
       ext.vscodiumServer.extensions
     );
 
+  # Without the desktop app there is no `code` on PATH at all, so give the
+  # browser session the same spelling: `code .` resolves the argument to an
+  # absolute path and prints the deep link, which every terminal renders as a
+  # clickable URL. A file argument links the folder holding it, the workbench
+  # only takes folders.
+  codeLink = pkgs.writeShellApplication {
+    name = "code";
+
+    runtimeInputs = [pkgs.coreutils];
+
+    text = ''
+      base="''${CODE_WEB_URL:-https://${cfg.domain}}"
+
+      # stdout carries the link alone, so the usage goes to stderr
+      case "''${1:-}" in
+        -h | --help)
+          printf 'usage: code [PATH]\n\n' >&2
+          printf 'Print the link that opens PATH in the browser editor of %s, i.e.\n%s/?folder=<absolute PATH>. PATH defaults to the current directory\nand is always written out absolute, so a link printed on a remote shell\ncan be followed locally; a file links the folder holding it, the work-\nbench takes folders. CODE_WEB_URL overrides the base.\n' "$base" "$base" >&2
+          exit 0
+          ;;
+      esac
+
+      # the first argument that is not a flag, the rest is the server's business
+      target=""
+      for arg in "$@"; do
+        case "$arg" in
+          -*) continue ;;
+        esac
+        if [ -z "$target" ]; then
+          target="$arg"
+        fi
+      done
+
+      # -m: paths which do not exist yet are still worth a link
+      path="$(realpath -m -- "''${target:-$PWD}")"
+      if [ -f "$path" ]; then
+        path="$(dirname "$path")"
+      fi
+
+      # only the characters a query string cannot carry, the workbench decodes
+      path="''${path//%/%25}"
+      path="''${path// /%20}"
+      path="''${path//#/%23}"
+      path="''${path//'?'/%3F}"
+      path="''${path//&/%26}"
+
+      printf '%s/?folder=%s\n' "''${base%/}" "$path"
+    '';
+  };
+
   server = pkgs.writeShellApplication {
     name = "openvscode-server-web";
 
@@ -59,7 +109,7 @@
       user_data="$state_dir/user-data"
       extensions_dir="$state_dir/extensions"
 
-      mkdir -p "$user_data/User" "$extensions_dir" "$state_dir/server-data"
+      mkdir -p "$user_data/User" "$extensions_dir" "$state_dir/server-data" "$user_data/Machine"
 
       ${lib.optionalString (ext.vscodiumServer.extensions != []) ''
         # refresh the declared set: links of a previous generation go, real
@@ -71,10 +121,10 @@
       # the shared settings, merged in before the server starts: settings the
       # user changed in the browser stay changed, declared settings that are
       # missing get added
-      settings="$user_data/User/settings.json"
+      settings="$user_data/Machine/settings.json"
       [ -e "$settings" ] || printf '%s\n' '{}' > "$settings"
 
-      tmp="$(mktemp "$user_data/User/settings.json.XXXXXX")"
+      tmp="$(mktemp "$user_data/Machine/settings.json.XXXXXX")"
       jq --slurpfile base ${settingsJson} '$base[0] * .' "$settings" > "$tmp"
       chmod 0644 "$tmp"
       if cmp -s "$tmp" "$settings"; then
@@ -109,6 +159,13 @@ in {
       type = lib.types.port;
       default = 30142;
     };
+
+    # Where the server is published from: the vhost of a host running caddy in
+    # front of this one, not necessarily a vhost of this host.
+    domain = lib.mkOption {
+      type = lib.types.str;
+      default = "code.brix0.wilkins.pl.eu.org";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -120,7 +177,8 @@ in {
     ];
 
     home-manager.users.cloudburst = {
-      home.packages = [server];
+      # while the desktop app is enabled it owns the `code` name
+      home.packages = [server] ++ lib.optionals (!vscodeCfg.enable) [codeLink];
 
       systemd.user.services.openvscode-server-web = {
         Unit = {
