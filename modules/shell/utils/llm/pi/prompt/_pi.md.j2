@@ -21,7 +21,7 @@ The leading `,` is the command's real name, not a typo. `,-x <program>` prints t
 {%- if nix %}
 
 - `nix run nixpkgs#<pkg> -- <args>` runs a package by attribute, `nix build nixpkgs#<pkg>` puts it in `./result`, `nix-shell -p <pkg> --run '<cmd>'` gives a shell with the package and its dependencies.
-- `nix search nixpkgs <term>` and `nix eval nixpkgs#<pkg>.version` answer what exists and in which version.
+- `nix search nixpkgs <term>` answers what exists.
 {%- endif %}
 {%- if google %}
 

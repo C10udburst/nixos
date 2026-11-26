@@ -24,14 +24,13 @@
   # the sections, and every flag defaults to what the full pi agent really has:
   # the search tool only when the gateway is configured, comma only when the core
   # package set is installed. Agents whose group differs say so.
-  mkSystemPrompt =
-    {
-      name ? "pi",
-      template ? "pi",
-      google ? (ext.googleUrl != null),
-      comma ? config.features.shell.utils.core,
-      nix ? true,
-    }:
+  mkSystemPrompt = {
+    name ? "pi",
+    template ? "pi",
+    google ? (ext.googleUrl != null),
+    comma ? config.features.shell.utils.core,
+    nix ? true,
+  }:
     helpers.render "${name}-SYSTEM.md" templates.${template} {
       inherit google comma nix;
     };

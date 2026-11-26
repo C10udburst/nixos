@@ -42,6 +42,7 @@ in {
   "secrets/karakeep-env.age".publicKeys = users ++ serverHosts;
   "secrets/litellm.age".publicKeys = users ++ serverHosts;
   "secrets/manyfold-env.age".publicKeys = users ++ serverHosts;
+  "secrets/n8n-encryption-key.age".publicKeys = users ++ serverHosts;
   "secrets/openwebui-env.age".publicKeys = users ++ serverHosts;
   "secrets/resume-env.age".publicKeys = users ++ serverHosts;
   "secrets/siyuan-env.age".publicKeys = users ++ serverHosts;

@@ -1,0 +1,45 @@
+{
+  "name": "n8n-nodes-pi-web",
+  "version": "0.1.0",
+  "description": "n8n community node that drives a Pi Web session: create it in a directory, arm the EVO-X2 lease with /enqueue, then send the prompt",
+  "keywords": [
+    "n8n-community-node-package",
+    "pi",
+    "pi-web",
+    "coding-agent"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/agegr/pi-web",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "nodes/PiWeb.node.js",
+  "files": [
+    "nodes",
+    "credentials",
+    "package.json",
+    "README.md"
+  ],
+  "n8n": {
+    "n8n.nodes": [
+      {
+        "name": "PiWeb",
+        "displayName": "Pi Web",
+        "description": "Run a prompt through a Pi Web session, optionally behind an /enqueue lease",
+        "defaults": {
+          "name": "Pi Web",
+          "icon": "fa:robot"
+        },
+        "sourcePath": "nodes/PiWeb.node.js"
+      }
+    ],
+    "n8n.credentials": [
+      {
+        "name": "piWebApi",
+        "displayName": "Pi Web API",
+        "description": "Base URL and password of a Pi Web instance",
+        "sourcePath": "credentials/PiWebApi.credentials.js"
+      }
+    ]
+  }
+}

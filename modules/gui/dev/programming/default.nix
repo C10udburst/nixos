@@ -17,6 +17,7 @@ in {
     environment.systemPackages = with pkgs; [
       gcc
       nixd
+      nixfmt
     ];
 
     boot.kernel.sysctl."kernel.yama.ptrace_scope" = 0;

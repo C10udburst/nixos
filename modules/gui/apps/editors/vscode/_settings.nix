@@ -65,6 +65,7 @@
   # ── Nix IDE ───────────────────────────────────────────────────────────
   "nix.enableLanguageServer" = true;
   "nix.serverPath" = "nixd";
+  "nix.formatterPath" = "alejandra";
 
   # ── Rust Analyzer ─────────────────────────────────────────────────────
   "rust-analyzer.checkOnSave" = true;
