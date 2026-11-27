@@ -34,7 +34,7 @@ in {
     # features.server.web.pi.
     piWeb = lib.mkOption {
       type = lib.types.bool;
-      default = config.features.server.web.n8n.enable && true;
+      default = config.features.server.web.n8n.enable && false;
     };
   };
 

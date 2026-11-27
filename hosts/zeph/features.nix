@@ -12,7 +12,14 @@ _: {
     };
     gui = {
       enable = false;
-      dev.python.enable = true;
+      dev = {
+        android = {
+          enable = true;
+          scrcpy = false;
+          dev = true;
+        };
+        python.enable = true;
+      };
       apps.editors.vscode.web.enable = true;
     };
     server = {
