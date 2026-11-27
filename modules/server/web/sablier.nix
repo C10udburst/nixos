@@ -10,17 +10,27 @@
   storage = webCfg.storage;
   apps = webCfg.core._apps or [];
   suspendedApps = lib.filter (app: (app.suspend or []) != []) apps;
-  targetUnits = lib.unique (
-    lib.concatMap (
-      app:
-        map (s:
-          if lib.hasSuffix ".service" s
-          then s
-          else "${s}.service")
-        app.suspend
-    )
-    suspendedApps
-  );
+  unitName = s:
+    if lib.hasSuffix ".service" s
+    then s
+    else "${s}.service";
+
+  targetUnits = lib.unique (lib.concatMap (app: map unitName app.suspend) suspendedApps);
+
+  groupsForUnit = unit:
+    lib.unique (
+      map (app: app.name) (lib.filter (app: builtins.elem unit (map unitName app.suspend)) suspendedApps)
+    );
+
+  sablierUnitLabels = pkgs.linkFarm "sablier-unit-labels" (map (unit: {
+      name = unit;
+      path = pkgs.writeText "${lib.removeSuffix ".service" unit}-sablier" ''
+        [X-Sablier]
+        Enable = true
+        Group = ${lib.concatStringsSep "," (groupsForUnit unit)}
+      '';
+    })
+    targetUnits);
 
   configFile = (pkgs.formats.yaml {}).generate "sablier.yaml" {
     provider = {
@@ -105,6 +115,10 @@ in {
       type = lib.types.str;
       default = "15m";
     };
+    noAutostart = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -122,7 +136,7 @@ in {
         "${configFile}:/etc/sablier/sablier.yaml:ro"
         "/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket"
         "/run/dbus/system_bus_socket:/run/dbus/system_bus_socket"
-        "/etc/systemd/system:/etc/systemd/system:ro"
+        "${sablierUnitLabels}:/etc/systemd/system:ro"
         "/nix/store:/nix/store:ro"
         "${storage}/sablier:${storage}/sablier"
       ];
@@ -133,19 +147,30 @@ in {
     };
 
     systemd.services = lib.mkMerge [
-      (lib.mkMerge (
-        map (
-          app:
-            lib.genAttrs (map (lib.removeSuffix ".service") (lib.unique app.suspend)) (_name: {
-              serviceConfig."X-Sablier-Section = true\n\n[X-Sablier]\nEnable = true\nGroup" = app.name;
-            })
-        )
-        suspendedApps
+      (lib.optionalAttrs cfg.noAutostart (
+        lib.genAttrs (map (lib.removeSuffix ".service") targetUnits) (_name: {
+          wantedBy = lib.mkForce [];
+        })
       ))
+      (lib.optionalAttrs (cfg.noAutostart && targetUnits != []) {
+        sablier-holder = {
+          description = "Keep Sablier-managed units loaded, without starting them";
+          after = targetUnits;
+          wantedBy = ["multi-user.target"];
+          # A service with no ExecStart= is refused by systemd, hence the no-op.
+          script = "true";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+        };
+      })
       {
         podman-sablier = {
+          after = lib.optionals cfg.noAutostart ["sablier-holder.service"];
           restartTriggers = [
             configFile
+            sablierUnitLabels
             (pkgs.writeText "sablier-suspended-apps" (
               builtins.toJSON (map (a: {inherit (a) name suspend;}) suspendedApps)
             ))

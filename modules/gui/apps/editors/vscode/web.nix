@@ -102,7 +102,7 @@
     # PATH of the server itself, and therefore of every extension host it
     # spawns: language servers, formatters and the toolchain the integrated
     # terminal sees.
-    runtimeInputs = [pkgs.openvscode-server pkgs.jq] ++ ext.vscodiumServer.packages;
+    runtimeInputs = [pkgs.openvscode-server] ++ ext.vscodiumServer.packages;
 
     text = ''
       state_dir="''${OPENVSCODE_WEB_DIR:-$HOME/.local/state/openvscode-server-web}"
@@ -118,18 +118,14 @@
         ln -sfn ${extensionsDir}/* "$extensions_dir/"
       ''}
 
-      # the shared settings, merged in before the server starts: settings the
-      # user changed in the browser stay changed, declared settings that are
-      # missing get added
+      # the shared settings, laid down as the whole file before the server
+      # starts: the declared set is authoritative, so whatever the browser wrote
+      # is gone at the next start
       settings="$user_data/Machine/settings.json"
-      [ -e "$settings" ] || printf '%s\n' '{}' > "$settings"
-
-      tmp="$(mktemp "$user_data/Machine/settings.json.XXXXXX")"
-      jq --slurpfile base ${settingsJson} '$base[0] * .' "$settings" > "$tmp"
-      chmod 0644 "$tmp"
-      if cmp -s "$tmp" "$settings"; then
-        rm -f "$tmp"
-      else
+      if ! cmp -s ${settingsJson} "$settings"; then
+        tmp="$(mktemp "$user_data/Machine/settings.json.XXXXXX")"
+        cat ${settingsJson} > "$tmp"
+        chmod 0644 "$tmp"
         mv "$tmp" "$settings"
       fi
 
