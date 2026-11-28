@@ -73,6 +73,21 @@ in {
         '';
       })
       {
+        # pillow-jpls 1.3.2 (copyparty's JPEG-LS dep, dropped upstream in nixpkgs@4ad534c)
+        # fails its uint16 SPIFF cases against Pillow 13, so skip just those: NixOS/nixpkgs#582776.
+        nixpkgs.overlays = [
+          (_final: prev: {
+            pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+              (_pf: pp:
+                lib.optionalAttrs (pp ? pillow-jpls) {
+                  pillow-jpls = pp.pillow-jpls.overridePythonAttrs (old: {
+                    disabledTests = (old.disabledTests or []) ++ [ "test_encode_with_spiff_header" ];
+                  });
+                })
+            ];
+          })
+        ];
+
         age.secrets.copyparty-accounts = {
           file = ../../../secrets/copyparty-accounts.age;
           owner = "cloudburst";
