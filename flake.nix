@@ -128,6 +128,10 @@
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pi-dashboard = {
+      url = "github:C10udburst/pi-dashboard";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     pi-web = {
       url = "github:agegr/pi-web";
       flake = false;

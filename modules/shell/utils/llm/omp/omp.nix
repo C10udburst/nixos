@@ -11,16 +11,9 @@
   system = pkgs.stdenv.hostPlatform.system;
   basePackage = inputs.omp.packages.${system}.default;
   evoX2 = import ../_evo-x2.nix;
-  # Extension groups and gateway URLs, shared with the pi agents through the
-  # llm/pi/extensions/default.nix module. omp takes the shared machine lease plus
-  # the web search tool: it discovers LiteLLM's free-model catalog natively
-  # through LITELLM_BASE_URL, and it runs on its own prompt, so it takes neither
-  # the pi extension group nor the SYSTEM.md the prompt module installs.
   ext = piCfg.extensions;
   ompExtensions =
     ext.baseExtensions ++ lib.optional (ext.googleUrl != null) ext.shared.googleSearch;
-  # ~/.omp/agent/extensions is an auto-discovery root, and the `_` prefix that
-  # keeps the sources out of import-tree is dropped on the way in.
   ompExtensionFiles = lib.listToAttrs (
     map (path: {
       name = ".omp/agent/extensions/${lib.removePrefix "_" (baseNameOf path)}";

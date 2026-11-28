@@ -7,6 +7,7 @@
 }: let
   cfg = config.features.shell.utils.llm.pi.web;
   piCfg = config.features.shell.utils.llm.pi;
+  dash = cfg.dash;
 
   # pi-web embeds pi's own libraries and spawns the `pi` binary in its
   # terminals, so it gets the raw package rather than the wrapped
@@ -18,6 +19,10 @@
     inherit pkgs;
     src = inputs.pi-web;
   };
+
+  # Analytics over the session logs every agent leaves on disk: one binary that
+  # serves both its JSON API and its compiled Astro bundle on a single port.
+  piStats = inputs.pi-dashboard.packages.${pkgs.stdenv.hostPlatform.system}.pi-stats;
 
   # Shared EVO-X2 gateway catalog, same source as the terminal agent's.
   evoX2 = import ../_evo-x2.nix;
@@ -133,6 +138,53 @@ in {
       type = lib.types.listOf lib.types.str;
       default = [];
     };
+
+    # Session analytics over what these agents leave on disk (github:
+    # C10udburst/pi-dashboard): one process serving its JSON API and its Astro
+    # bundle on a single port, ingesting {agent}/sessions/*.jsonl into SQLite.
+    dash = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = cfg.enable && false;
+      };
+
+      # 0.0.0.0 for the same reason pi-web is: server.web.pi-dash fronts this
+      # port from another host, so the reverse proxy reaches it over the network.
+      host = lib.mkOption {
+        type = lib.types.str;
+        default = "0.0.0.0";
+      };
+
+      port = lib.mkOption {
+        type = lib.types.port;
+        default = 30143;
+      };
+
+      # Agent homes to scan. Empty leaves it to pi-stats, which takes ~/.pi and
+      # ~/.omp and so covers agent, web, organizeer and omp in one pass.
+      roots = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+      };
+
+      # The SQLite index; pi-stats expandusers it and creates its parent.
+      dbPath = lib.mkOption {
+        type = lib.types.str;
+        default = "~/.local/share/pi-stats/pi-stats.db";
+      };
+
+      pollInterval = lib.mkOption {
+        type = lib.types.int;
+        default = 300;
+      };
+
+      # Off makes it offline: the OpenRouter and LiteLLM catalogues are never
+      # contacted, and only what a gateway actually billed gets a price.
+      refreshPricing = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+      };
+    };
   };
 
   config = lib.mkMerge [
@@ -141,6 +193,10 @@ in {
         pi-web = {
           url = "github:agegr/pi-web";
           flake = false;
+        };
+        pi-dashboard = {
+          url = "github:C10udburst/pi-dashboard";
+          inputs.nixpkgs.follows = "nixpkgs";
         };
       };
     }
@@ -165,6 +221,45 @@ in {
           Service = {
             Type = "simple";
             ExecStart = "${lib.getExe piWebWrapper}";
+            Restart = "on-failure";
+            RestartSec = "5";
+          };
+
+          Install.WantedBy = ["default.target"];
+        };
+      };
+    })
+
+    # Its own unit next to pi-web's: it watches the session logs of every agent,
+    # the terminal one and omp as much as the web sessions.
+    (lib.mkIf dash.enable {
+      home-manager.users.cloudburst = {
+        # Also the CLI of the running service: pi-stats --sync-only, --version.
+        home.packages = [piStats];
+
+        systemd.user.services.pi-stats = {
+          Unit = {
+            Description = "Pi/omp session analytics dashboard";
+            After = ["network-online.target"];
+          };
+
+          Service = {
+            Type = "simple";
+            ExecStart = lib.concatStringsSep " " (
+              [
+                (lib.getExe piStats)
+                "--host"
+                dash.host
+                "--port"
+                (toString dash.port)
+                "--db-path"
+                (lib.escapeShellArg dash.dbPath)
+                "--poll-interval"
+                (toString dash.pollInterval)
+              ]
+              ++ lib.optionals (!dash.refreshPricing) ["--no-pricing-refresh"]
+              ++ lib.concatMap (root: ["--root" (lib.escapeShellArg root)]) dash.roots
+            );
             Restart = "on-failure";
             RestartSec = "5";
           };

@@ -8,7 +8,6 @@ _: {
         laptop-server = true;
         unattended = true;
       };
-      java = false;
     };
     gui = {
       enable = false;
@@ -40,6 +39,8 @@ _: {
       enable = true;
       port = 30141;
       allowedHosts = ["pi.brix0.wilkins.pl.eu.org"];
+      # Fronted by brix0 as pi-dash.brix0.wilkins.pl.eu.org.
+      dash.enable = true;
     };
     compat.podman.enable = true;
   };
